@@ -1,0 +1,67 @@
+{% extends "_layouts/base_leaflet.html" %}
+{% load markup_tags %}
+{% load leaflet_tags %}
+
+{% block css %}
+{{block.super}}
+
+<style>
+#place {
+    height: 600px;
+}
+
+ul.simple {
+    list-style: none;
+    padding-left: 1em;
+}
+
+ul.simple li {
+    padding-left: 3em;
+    font-size: 110%;
+}
+</style>
+{% endblock css %}
+
+
+{% block js %}
+{{block.super}}
+
+<script type="text/javascript">
+
+$(window).on('map:init', function (e) {
+        var redMarker = L.AwesomeMarkers.icon({
+icon: 'plus',
+markerColor: 'red' });
+
+        var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
+        detail.map.setView([{{ object.location.y }}, {{ object.location.x }}], 10);
+        L.marker([{{ object.location.y }}, {{ object.location.x }}]).addTo(detail.map);
+        });
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div style="margin-bottom: 50px;">
+            {% filter apply_markup:"genrestructuredtext" %}
+            {% include "genealogio/place_detail.rst" %}
+            {% endfilter %}
+            </div>
+
+            {% leaflet_map "place" %}
+        </div>
+        <div class="col-md-2 col-md-offset-1">
+        {% if user.is_authenticated and user.is_staff %}
+            <p style="margin-top:50px;">
+            <a style="font-family: Cabin, sans-serif; font-size: 80%;" href="/admin/genealogio/place/{{ object.id }}/">Ort editieren</a>
+            </p>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

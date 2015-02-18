@@ -1,0 +1,7 @@
+div.person div.grp-autocomplete-wrapper-fk {
+    min-width: 600px !important;
+}
+
+div.person div.grp-autocomplete-wrapper-fk input.ui-autocomplete-input {
+    min-width: 100% !important;
+}

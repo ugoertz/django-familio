@@ -1,0 +1,15 @@
+    <p>
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Vorherige Seite</a>{% endif %}
+
+    <span style="margin-left: 30px; margin-right: 30px;">
+        {% for i in page_obj.paginator.page_range %}
+        {% ifequal i page_obj.number %}
+        {{ i }}
+        {% else %}
+        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ i }}</a>
+        {% endifequal %}
+        {% endfor %}
+    </span>
+
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Nächste Seite</a>{% endif %}
+    </p>

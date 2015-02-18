@@ -1,0 +1,15 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Aktivierung fehlgeschlagen." %}{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+<h2>{% trans "Dein Account konnte nicht aktiviert werden ..." %}</h2>
+<p>{% trans "Dein Account konnte nicht aktiviert werden. Der Aktivierungslink ist nicht mehr gültig." %}</p>
+<p>{% trans "Versuche bitte erneut Dich anzumelden, oder schreibe uns eine Email." %}</p>
+  </div>
+  </div>
+{% endblock %}

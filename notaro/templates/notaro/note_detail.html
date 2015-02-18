@@ -1,0 +1,56 @@
+{% extends "_layouts/base.html" %}
+{% load partialdate_tags %}
+{% load markup_tags %}
+{% load typogrify_tags %}
+{% load fb_versions %}
+
+
+{% block css %}
+{{block.super}}
+
+<style>
+ul.simple {
+    list-style: none;
+    padding-left: 1em;
+}
+
+ul.simple li {
+    padding-left: 3em;
+    font-size: 110%;
+}
+</style>
+{% endblock css %}
+
+
+{% block content %}
+<div class="container">
+    <h1>{{ object.title }}</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            {{ object.text|apply_markup:"genrestructuredtext"|typogrify }}
+            <hr>
+            <p style="margin-top:30px;">Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.all %}{{ u.get_full_name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
+        </div>
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="col-md-2 col-md-offset-1">
+            <p>
+            <a style="font-family: Cabin, sans-serif; font-size: 80%;" href="/admin/notaro/note/{{ object.id }}/">Dokument editieren</a>
+            </p>
+            <p>
+            {% if object.published %}Veröffentlicht{% else %}<span class="cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
+        </div>
+        {% endif %}
+    </div>
+    <div class="row" style="margin-top: 100px;">
+        {% for pic in object.pictures.all %}
+        <div>
+            <a href="{{ pic.image.url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
+            <p style="margin-top: 20px;">{{ pic.caption }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+

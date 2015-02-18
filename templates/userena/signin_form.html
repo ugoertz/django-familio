@@ -1,0 +1,38 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+{% load url from future %}
+
+{% block title %}{% trans "Anmeldung" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+<div class="row">
+<form action="" method="post">
+    <div class="form-group">
+  {% csrf_token %}
+  <fieldset>
+    <legend>{% trans "Anmeldung" %}</legend>
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    {{ field.errors }}
+    {% comment %} Displaying checkboxes differently {% endcomment %}
+    {% if field.name == 'remember_me' %}
+    <p class="checkbox">
+    <label for="id_{{ field.name }}">{{ field }} {{ field.label }}</label>
+    </p>
+    {% else %}
+    <p>
+    {{ field.label_tag }}
+    {{ field }}
+    </p>
+    {% endif %}
+    {% endfor %}
+  </fieldset>
+  <input type="submit" value="{% trans "Anmeldung" %}" class="btn btn-default" />
+  {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+  </div>
+</form>
+<p class="forgot-password"><a href="{% url 'userena_password_reset' %}" title="{% trans 'Passwort vergessen?' %}">{% trans "Passwort vergessen?" %}</a></p>
+  </div>
+  </div>
+{% endblock %}

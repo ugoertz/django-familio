@@ -1,0 +1,17 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+{% load url from future %}
+
+
+{% block title %}{% trans "Account erneut aktiviert" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+<h2>{% trans "Reaktivierung des Zugangs" %}</h2>
+<p>{% blocktrans %}Du hast um die Reaktivierung Deines Accounts gebeten.{% endblocktrans %}</p>
+<p>{% blocktrans %}Wir haben Dir eine Email mit entsprechenden Informationen geschickt.{% endblocktrans %}</p>
+<p>{% blocktrans %}Bitte besuche den dort genannten Link innerhalb der nächsten {{ userena_activation_days }} Tage. {% endblocktrans %}</p>
+  </div>
+  </div>
+{% endblock %}

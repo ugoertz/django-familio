@@ -1,0 +1,16 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+{% load url from future %}
+
+
+{% block title %}{% trans "Aktivierung des Accounts fehlgeschlagen." %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+<h2>{% trans "Dein Account konnte nicht aktiviert werden..." %}</h2>
+<p>{% trans "Der Aktivierungslink ist nicht mehr gültig." %}</p>
+<p><a href="{% url 'userena_activate_retry' activation_key %}">{% trans "Neuen Aktivierungslink zuschicken." %}</a></p>
+  </div>
+  </div>
+{% endblock %}

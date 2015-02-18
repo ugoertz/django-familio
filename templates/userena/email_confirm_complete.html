@@ -1,0 +1,13 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Email-Adresse geändert!" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+<h2>{% trans 'Email-Adresse geändert' %}</h2>
+<p>{% blocktrans with site.name as site %}Deine Email-Adresse wurde geändert. Du kannst jetzt {{ site }} mit Deiner neuen Email-Adresse benutzen.{% endblocktrans %}</p>
+  </div>
+  </div>
+{% endblock %}

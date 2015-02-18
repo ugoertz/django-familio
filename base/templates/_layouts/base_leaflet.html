@@ -1,0 +1,19 @@
+{% extends "_layouts/base.html" %}
+{% load static%}
+{% load leaflet_tags %}
+
+{% block css %}
+{{block.super}}
+{% leaflet_css %}
+<link rel="stylesheet" href="{% static 'css/leaflet.awesome-markers.css' %}">
+{% endblock css %}
+
+
+{% block jsnocompress %}
+{{block.super}}
+{% leaflet_js %}
+<script src="{% static 'js/leaflet.awesome-markers.js' %}"></script>
+{% endblock jsnocompress %}
+
+
+

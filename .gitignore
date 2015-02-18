@@ -1,0 +1,15 @@
+*/settings/local.py
+*.py[co]
+*.sw[po]
+*.egg*
+.coverage
+pip-log.txt
+docs/_build
+.noseids
+tmp/*
+*.mo
+*.log
+*.db
+media/*
+static/*
+familio/wsgi.py

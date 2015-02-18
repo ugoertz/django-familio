@@ -1,0 +1,30 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+{% load url from future %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+
+<h2>{% blocktrans with user.username as username %}Account &raquo; {{ username }}{% endblocktrans %}</h2>
+
+<form action="" method="post">
+    <div class="form-group">
+  <ul class="list-group" id="box-nav">
+    <li class="list-group-item first"><a href="{% url 'userena_profile_detail' user.username %}"><span>{% trans 'Profil ansehen' %}</span></a></li>
+    <li class="list-group-item"><a href="{% url 'userena_profile_edit' user.username %}">{% trans "Profil bearbeiten" %}</a></li>
+    <li class="list-group-item"><a href="{% url 'userena_password_change' user.username %}">{% trans "Passwort ändern" %}</a></li>
+    <li style="background-color: lightgray;"  class="list-group-item last selected"><a href="{% url 'userena_email_change' user.username %}">{% trans "Email-Adresse ändern" %}</a></li>
+  </ul>
+  {% csrf_token %}
+  <fieldset>
+    <legend>{% trans "Email-Adresse ändern" %}</legend>
+    {{ form.as_p }}
+  </fieldset>
+  <input type="submit" value="{% trans "Email-Adresse ändern" %}" class="btn btn-default" />
+  </div>
+</form>
+  </div>
+  </div>
+{% endblock %}

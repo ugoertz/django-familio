@@ -1,0 +1,9 @@
+.CodeMirror {
+    line-height: 1.5 !important;
+    width: 60% !important;
+}
+
+.CodeMirror-measure {
+    width: 60% !important;
+}
+

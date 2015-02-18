@@ -1,0 +1,16 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Überprüfung der Email-Adresse" %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+
+
+<h2>{% trans 'Neue Email-Adresse bestätigen' %}</h2>
+<p>{% blocktrans with viewed_user.userena_signup.email_unconfirmed as email %}Wir haben eine Email an {{ email }} geschickt.{% endblocktrans %}</p>
+<p>{% blocktrans with viewed_user.username as username %}Um diese Email-Adresse für Deinen Account ({{ username }}) freizuschalten, klicke bitte auf den Link in dieser Nachricht.{% endblocktrans %}</p>
+  </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "_layouts/base.html" %}
+{% load markup_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="col-md-8">
+    <h1>Texte</h1>
+        {% filter apply_markup:"genrestructuredtext" %}
+        {% for note in object_list %}
+        {% include "notaro/note_trailer.rst" %}
+        {% endfor %}
+        {% endfilter %}
+
+    {% include "notaro/pagination.html" %}
+</div>
+</div>
+{% endblock %}
+
+

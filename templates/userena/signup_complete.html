@@ -1,0 +1,21 @@
+{% extends 'userena/base_userena.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Registrierung fast vollständig!" %}{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+<h2>{% trans "Anmeldung" %}</h2>
+<p>{% trans "Danke für Deine Anmeldung!" %}</p>
+
+{% if userena_activation_required %}
+<p>{% blocktrans %}Du hast eine Email mit einem Aktivierungslink bekommen.{% endblocktrans %}</p>
+<p>{% blocktrans %}Der Aktivierungslink ist {{ userena_activation_days }} Tage lang gültig. {% endblocktrans %}</p>
+{% else  %}
+<p>{% blocktrans %}Du kannst Dich nun einloggen.{% endblocktrans %}</p>
+{% endif %}
+  </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "_layouts/base.html" %}
+{% load markup_tags %}
+{% load typogrify_tags %}
+
+
+{% block content %}
+<div class="container">
+    <h1>Impressum</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            {% filter apply_markup:"genrestructuredtext" %}
+
+Dies ist eine nicht-kommerzielle Web-Seite, auf der Informationen zur Familiengeschichte der Familie Görtz unde verwandter Familien zusammengetragen sind.
+
+Verantwortlich:
+
+::
+
+  Ulrich Görtz
+  Ardeystr. 5
+  45134 Essen
+  ug@geometry.de
+
+
+-------------------
+Verwendete Software
+-------------------
+
+Die Webseite wurde mit einer Vielzahl von Open-Source-Softwarepaketen und -Projekten programmiert, unter anderem:
+
+`Python <http://www.python.org>`__
+
+`Django <http://www.djangoproject.com>`__
+
+`OpenStreetMaps <https://www.openstreetmap.org/about>`__
+
+`Leaflet <http://leafletjs.com/>`__
+
+`CodeMirror <http://codemirror.net/>`__
+
+`Wikidata <http://www.wikidata.org>`__
+
+`Vollkorn <http://vollkorn-typeface.com/>`__
+
+'jQuery <http://jquery.com/>`__
+
+`Bootstrap <http://getbootstrap.com/>`__
+... eine große Anzahl von Django-Paketen: grappelli, watson, userena, django-markup, reversion, dajaxice, django-leaflet, django-geojson, django-braces, ... 
+
+            {% endfilter %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

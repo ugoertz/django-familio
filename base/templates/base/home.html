@@ -1,0 +1,109 @@
+{% extends "_layouts/base_leaflet.html" %}
+{% load static %}
+{% load typogrify_tags %}
+{% load leaflet_tags %}
+
+{% block css %}
+{{block.super}}
+
+<style>
+#recentplaces {
+    height: 600px;
+}
+</style>
+{% endblock css %}
+
+{% block js %}
+{{block.super}}
+
+<script type="text/javascript">
+
+$(window).on('map:init', function (e) {
+    var redMarker = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'brown' });
+
+    var layer = L.geoJson([], { pointToLayer: function (feature, latlng) {
+        if (feature.properties.typ=="death")
+            return L.marker(latlng).bindPopup(feature.properties.title);
+        else
+            return L.marker(latlng, {icon: redMarker }).bindPopup(feature.properties.title);
+    }});
+    var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
+    detail.map.setView([52.3, 7.8], 7);
+    detail.map.addLayer(layer);
+    $.getJSON("{% url 'data' %}", function (data) {
+      layer.addData(data);
+    });
+});
+</script>
+{% endblock %}
+
+{% block page_title %}Unsere Familiengeschichte{% endblock %}
+{% block page_class %}home-page{% endblock %}
+{% block content %}
+
+    <div class="jumbotron">
+      <div class="container">
+        <h1>{{ "Die Familiengeschichte der Familie Görtz"|typogrify }}</h1>
+        <p>Auf dieser Webseite sind Informationen rund um die Familie Görtz und ihre Vorfahren gesammelt.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        {% if user.is_authenticated %}
+        <div class="col-md-6">
+            <h2>Die neuesten Texte</h2>
+            <ul class="list-group">
+                {% for note in notes %}
+                <li class="list-group-item"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <p><a href="{% url "note-list" %}">Alle Texte</a></p>
+            <h2>Kürzlich hinzugefügte Personen</h2>
+            <ul class="list-group">
+                {% for person in personen %}
+                <li class="list-group-item">{% include "genealogio/person_snippet_full.html" %}</li>
+                {% endfor %}
+            </ul>
+            <p><a href="{% url "person-list" %}">Alle Personen</a></p>
+        </div>
+        <div class="col-md-6">
+            <h2>Geburts- und Sterbeorte</h2>
+            {% leaflet_map "recentplaces" %}
+        </div>
+    {% else %}
+    <div class="col-md-6">
+        <h2>Anmelden</h2>
+    <form action="/accounts/signin/" method="post">
+        <div class="form-group">
+        {% csrf_token %}
+    <p>
+    <label for="id_identification">Benutzername:</label>
+    <input class="form-control required" id="id_identification" maxlength="75" name="identification" type="text" />
+    </p>
+
+    <p>
+    <label for="id_password">Passwort:</label>
+    <input class="form-control required" id="id_password" name="password" type="password" />
+    </p>
+
+    <div class="checkbox">
+    <label for="id_remember_me"><input id="id_remember_me" name="remember_me" type="checkbox" /> Für einen Monat eingeloggt bleiben.</label>
+    </div>
+
+  </fieldset>
+  <input type="submit" value="Anmelden" class="btn btn-default"/>
+  <input type="hidden" name="next" value="/" />
+  </div>
+</form>
+  <p class="forgot-password"><a href="/accounts/password/reset/" title="Passwort vergessen?">Passwort vergessen?</a></p>
+
+        </div>
+
+    {% endif %}
+    </div>
+</div>
+
+{% endblock %}

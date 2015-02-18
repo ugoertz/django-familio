@@ -1,0 +1,18 @@
+{% extends "_layouts/base.html" %}
+{% load fb_versions %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+    <h2>Personen</h2>
+    <ul class="list-group">
+        {% for person in object_list %}
+        <li class="list-group-item">{% if person.portrait.image %}<img src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% include "genealogio/person_snippet.html" %}</li>
+        {% endfor %}
+    </ul>
+
+    {% include "notaro/pagination.html" %}
+</div>
+</div>
+{% endblock %}
+
