@@ -13,3 +13,4 @@ tmp/*
 media/*
 static/*
 familio/wsgi.py
+backup-db
