@@ -283,7 +283,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
             # specified, so try to retrieve them using geopy
             from geopy.geocoders import Nominatim
             from django.contrib.gis.geos import fromstr
-            geolocator = Nominatim(country_bias="Deutschland", timeout=2)
+            geolocator = Nominatim(timeout=2)
             try:
                 location = geolocator.geocode(obj.title)
                 obj.location = fromstr('POINT(%f %f)' %
