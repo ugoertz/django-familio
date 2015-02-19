@@ -94,15 +94,20 @@ class FamilyPInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     sortable_excludes = ('position', 'child_type', )
 
 
-class PlaceFormSet(BaseInlineFormSet):
+class PPlaceFormSet(BaseInlineFormSet):
     """FormSet for the different Places of a Person.
     """
 
     def __init__(self, *args, **kwargs):
-        super(PlaceFormSet, self).__init__(*args, **kwargs)
+        super(PPlaceFormSet, self).__init__(*args, **kwargs)
 
-        # Check that the data doesn't already exist
-        if not kwargs['instance'].places.count():
+        try:
+            # Check that the data doesn't already exist
+            if not kwargs['instance'].places.count():
+                self.initial = [{'typ': PersonPlace.BIRTH, },
+                                {'typ': PersonPlace.DEATH, }, ]
+        except ValueError:
+            # Cannot access places yet, so we are newly adding a Person
             self.initial = [{'typ': PersonPlace.BIRTH, },
                             {'typ': PersonPlace.DEATH, }, ]
 
@@ -110,8 +115,10 @@ class PlaceFormSet(BaseInlineFormSet):
 class PPlaceInline(admin.TabularInline):
     """Inline class for PersonPlace used by PersonAdmin."""
 
+    formset = PPlaceFormSet
     model = PersonPlace
-    extra = 3
+    extra = 2
+    fields = ('place', 'typ', 'start', 'end', 'comment', )
     raw_id_fields = ('place', )
     autocomplete_lookup_fields = {'fk': ['place', ], }
     sortable_excludes = ('typ', )
@@ -120,9 +127,9 @@ class PPlaceInline(admin.TabularInline):
         """Dynamically sets the number of extra forms, depending on whether the
         related object already exists or the extra configuration otherwise."""
 
-        if obj:
-            # Don't add any extra forms if the related object already exists.
-            return 1
+        if obj and obj.places.count():
+            # Add no extra forms if the related object already exists.
+            return 0
         return self.extra
 
 

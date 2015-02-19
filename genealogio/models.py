@@ -210,11 +210,22 @@ class PersonPlace(models.Model):
                )
 
     person = models.ForeignKey('Person')
-    place = models.ForeignKey('Place')
-    start = PartialDateField(blank=True, null=True)
-    end = PartialDateField(blank=True, null=True)
-    typ = models.IntegerField(choices=PP_TYPE)
-    comment = models.CharField(max_length=500, blank=True, default='')
+    place = models.ForeignKey('Place', verbose_name='Ort')
+    start = PartialDateField(blank=True, null=True, verbose_name='Beginn')
+    end = PartialDateField(blank=True, null=True, verbose_name='Ende')
+    typ = models.IntegerField(choices=PP_TYPE, default=OTHER)
+    comment = models.CharField(max_length=500, blank=True, default='',
+                               verbose_name='Kommentar')
+
+    def save(self, *args, **kwargs):
+        # pylint: disable=no-member
+        if self.typ == PersonPlace.BIRTH and\
+                not self.start and self.person.datebirth:
+            self.start = self.person.datebirth
+        if self.typ == PersonPlace.DEATH and\
+                not self.start and self.person.datedeath:
+            self.start = self.person.datedeath
+        super(PersonPlace, self).save(*args, **kwargs)
 
     class Meta:
         ordering = ['start', ]
