@@ -246,6 +246,7 @@ class Person(PrimaryObject):
                    (MALE, 'männlich'),
                    (FEMALE, 'weiblich'), )
 
+    # these fields are set in the admin
     last_name = models.CharField(max_length=200, blank=True, default='')
     first_name = models.CharField(max_length=200, blank=True, default='')
 
@@ -292,33 +293,64 @@ class Person(PrimaryObject):
         except:
             return
 
-    def get_primary_name(self):
-        """
-        Return the preferred name of a person.
-        """
-
-        firstname = ''
-        try:
-            firstname = self.name_set.filter(typ=Name.FIRSTNAME)[0].name
-        except:
-            pass
+    def get_last_name(self):
+        """Return the last name, from the related Name instances."""
 
         birthname = ''
         try:
             birthname = self.name_set.filter(typ=Name.BIRTHNAME)[0].name
-        except:
+        except IndexError:
             pass
 
         marriedname = ''
         try:
             marriedname = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
-        except:
+        except IndexError:
             pass
 
-        if marriedname:
-            return '%s %s (geb. %s)' % (firstname, marriedname, birthname)
+        if marriedname and birthname:
+            return '%s (geb. %s)' % (marriedname, birthname)
+        elif birthname:
+            return '%s' % (birthname)
+        elif marriedname:
+            return '%s' % (marriedname)
         else:
-            return '%s %s' % (firstname, birthname)
+            return ''
+
+    def get_full_name(self):
+        """Return the full name information of the person:
+        - the first name, with the Rufname underlined (ReST-formatted)
+        - the nickname (if available), in parentheses
+        - the last name (birthname or marriedname + birthname)
+        """
+
+        name = self.first_name
+        try:
+            rufname = self.name_set.filter(typ=Name.RUFNAME)[0].name
+            name = name.replace(rufname, ':underline:`%s`' % rufname)
+        except IndexError:
+            pass
+
+        try:
+            if name:
+                name += ' (%s)'\
+                        % self.name_set.filter(typ=Name.NICKNAME)[0].name
+            else:
+                name = ' %s' % self.name_set.filter(typ=Name.NICKNAME)[0].name
+        except IndexError:
+            pass
+
+        return '%s %s' % (name, self.get_last_name())
+
+        # FIXME: incorporate further names (other types + several names
+        # of the same type)
+
+    def get_primary_name(self):
+        """
+        Return the preferred name of a person.
+        """
+
+        return '%s %s' % (self.first_name, self.get_last_name())
 
     def get_father(self):
         try:

@@ -1,8 +1,11 @@
 {% load partialdate_tags %}
 {% load fb_versions %}
 
+.. role:: underline
+    :class: underline
+
 ===============================================================================
-{{ object.get_primary_name }}
+{{ object.get_full_name }}
 ===============================================================================
 
 {% if object.portrait.image %}
