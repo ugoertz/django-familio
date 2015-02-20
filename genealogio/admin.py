@@ -412,7 +412,7 @@ class FamilyAdmin(reversion.VersionAdmin):
 
     fieldsets = (
         ('', {'fields': ('name', 'father', 'mother', 'family_rel_type', )}),
-        ('Daten', {'classes': ('grp-collapse grp-closed', ),
+        ('Daten', {'classes': ('grp-collapse grp-open', ),
                    'fields': ('start_date', 'end_date', )}),
         )
     inlines = [PersonFInline, EventFInline, SourceFInline, ]

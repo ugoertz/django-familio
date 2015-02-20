@@ -173,6 +173,9 @@ class Family(PrimaryObject):
         """Used by grappelli."""
         return ("id__iexact", "handle__icontains", )
 
+    def get_children(self):
+        return self.person_set.all().order_by('datebirth')
+
     def __unicode__(self):
         n = ''
 
