@@ -11,5 +11,5 @@
         {% endfor %}
     </span>
 
-    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Nächste Seite</a>{% endif %}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Nächste Seite</a>{% endif %} <span style="margin-left:20px; font-size: 80%;">(Insgesamt {{ page_obj.paginator.count }} Einträge)</span>
     </p>
