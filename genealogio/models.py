@@ -180,6 +180,8 @@ class Family(PrimaryObject):
         qslist = []
         for c in self.get_children():
             qslist.extend([v for k, v in c.get_children().items()])
+        if not qslist:
+            return
         qs = reduce(lambda x, y: x | y, qslist)
         return qs.distinct().order_by('datebirth')
 
