@@ -72,6 +72,17 @@ $(window).on('map:init', function (e) {
         <div class="col-md-6">
             <h2>Geburts- und Sterbeorte</h2>
             {% leaflet_map "recentplaces" %}
+            <h2>Geburts- und Todestage</h2>
+            <ul class="list-group">
+            {% for d, born, died in birthdeathdays %}
+            <li class="list-group-item"><p><b>{{ d|date:"j. F" }}</b></p>
+            <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}<br>
+            {% endfor %}</p>
+            <p>{% for person in died %}+ {% include "genealogio/person_snippet_full.html" %}<br>
+            {% endfor %}</p>
+            </li>
+            {% endfor %}
+            </ul>
         </div>
     {% else %}
     <div class="col-md-6">
