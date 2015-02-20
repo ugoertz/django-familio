@@ -386,7 +386,7 @@ USERENA_DISABLE_PROFILE_LIST = True
 
 VERSIONS_BASEDIR = os.path.join(PROJECT_ROOT, 'media/_versions')
 
-GRAPPELLI_ADMIN_TITLE = 'Unsere Familiengeschichte'
+GRAPPELLI_ADMIN_TITLE = '<a href="/">Unsere Familiengeschichte</a>'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 100
 
 MARKUP_SETTINGS = {
