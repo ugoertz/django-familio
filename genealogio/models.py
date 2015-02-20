@@ -389,11 +389,13 @@ class Person(PrimaryObject):
 
         children = OrderedDict()
         for fam in Family.objects.filter(father=self):
-            children[fam.mother] =\
-                fam.person_set.all().order_by('datebirth', 'handle')
+            if fam.person_set.count():
+                children[fam.mother] =\
+                    fam.person_set.all().order_by('datebirth', 'handle')
         for fam in Family.objects.filter(mother=self):
-            children[fam.father] =\
-                fam.person_set.all().order_by('datebirth', 'handle')
+            if fam.person_set.count():
+                children[fam.father] =\
+                    fam.person_set.all().order_by('datebirth', 'handle')
         return children
 
     def __unicode__(self):

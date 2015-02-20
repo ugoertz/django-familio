@@ -21,9 +21,10 @@
 
 **Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.get_mother %}
 
-{% if object.get_children %}**Kinder:**
+{% with allchildren=object.get_children %}
+{% if allchildren %}**Kinder:**
 
-{% for partner, children in object.get_children.items %}
+{% for partner, children in allchildren.items %}
 
 Mit {% include "genealogio/person_snippet.rst" with person=partner %}:
 
@@ -31,6 +32,7 @@ Mit {% include "genealogio/person_snippet.rst" with person=partner %}:
 * {% include "genealogio/person_snippet_full.rst" with person=child %}
 {% endfor %}
 {% endfor %}{% endif %}
+{% endwith %}
 
 {% if object.comments %}{{ object.comments }}{% endif %}
 
