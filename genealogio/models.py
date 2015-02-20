@@ -160,7 +160,8 @@ class Family(PrimaryObject):
     family_rel_type = models.IntegerField('FamilyRelType',
                                           choices=FAMILY_REL_TYPE, default=3)
 
-    name = models.ManyToManyField('Name', blank=True, null=True)
+    name = models.CharField(verbose_name='Familienname', max_length=200,
+                            blank=True, null=True)
 
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
     start_date = PartialDateField(blank=True, null=True)
@@ -173,17 +174,23 @@ class Family(PrimaryObject):
         return ("id__iexact", "handle__icontains", )
 
     def __unicode__(self):
+        n = ''
+
         # pylint: disable=no-member
-        qs = self.name.filter(typ=Name.FAMILYNAME)
-        if qs.count():
-            return qs[0].name
-        elif self.father and self.mother:
-            return u"%s und %s" % (self.father.get_primary_name(),
-                                   self.mother.get_primary_name(), )
-        else:
-            return self.handle
+        if self.name:
+            n += self.name
+        f = self.father.get_primary_name() if self.father else '?'
+        m = self.mother.get_primary_name() if self.mother else '?'
+        if n:
+            n = "%s (%s und %s)" % (n, f, m)
+        elif (f != '?' or m != '?'):
+            n = "%s und %s" % (f, m)
+        if n:
+            return n
+        return self.handle
 
     class Meta:
+        ordering = ('name', )
         verbose_name = 'Familie'
         verbose_name_plural = 'Familien'
 

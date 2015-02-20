@@ -411,14 +411,15 @@ class FamilyAdmin(reversion.VersionAdmin):
     """The FamilyAdmin class."""
 
     fieldsets = (
-        ('', {'fields': ('father', 'mother', 'family_rel_type', )}),
+        ('', {'fields': ('name', 'father', 'mother', 'family_rel_type', )}),
         ('Daten', {'classes': ('grp-collapse grp-closed', ),
                    'fields': ('start_date', 'end_date', )}),
         )
     inlines = [PersonFInline, EventFInline, SourceFInline, ]
     raw_id_fields = ('father', 'mother', )
     autocomplete_lookup_fields = {'fk': ['father', 'mother', ], }
-    search_fields = ('handle', 'father__name__name', 'mother__name__name', )
+    search_fields = ('handle', 'name',
+                     'father__name__name', 'mother__name__name', )
 
     def save_model(self, request, obj, form, change):
         """Create handle before saving Family instance."""
@@ -437,7 +438,9 @@ class FamilyAdmin(reversion.VersionAdmin):
                     obj.handle += unicode(obj.mother.datebirth.year)
             except:
                 pass
-            obj.handle += u'_' + unicode(datetime.now().microsecond)[:5]
+            obj.handle = u'%s_%s' % (
+                         obj.handle[:44],
+                         unicode(datetime.now().microsecond)[:5])
 
         super(FamilyAdmin, self).save_model(request, obj, form, change)
 
