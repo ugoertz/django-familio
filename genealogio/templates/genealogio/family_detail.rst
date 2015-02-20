@@ -25,6 +25,14 @@ Familie {{ object }}
 {% endfor %}
 {% endif %}
 
+{% with grandchildren=object.get_grandchildren %}
+{% if grandchildren.count %}**Enkel:**
+
+{% for child in grandchildren %}
+* {% include "genealogio/person_snippet_full.rst" with person=child %}
+{% endfor %}
+{% endif %}
+{% endwith %}
 
 {% if object.events.count %}
 ----------

@@ -176,6 +176,13 @@ class Family(PrimaryObject):
     def get_children(self):
         return self.person_set.all().order_by('datebirth')
 
+    def get_grandchildren(self):
+        qslist = []
+        for c in self.get_children():
+            qslist.extend([v for k, v in c.get_children().items()])
+        qs = reduce(lambda x, y: x | y, qslist)
+        return qs.distinct().order_by('datebirth')
+
     def __unicode__(self):
         n = ''
 
