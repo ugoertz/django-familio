@@ -1,6 +1,7 @@
 {% extends "_layouts/base_leaflet.html" %}
 {% load markup_tags %}
 {% load leaflet_tags %}
+{% load l10n %}
 
 {% block css %}
 {{block.super}}
@@ -26,18 +27,20 @@ ul.simple li {
 {% block js %}
 {{block.super}}
 
+{% localize off %}
 <script type="text/javascript">
 
 $(window).on('map:init', function (e) {
         var redMarker = L.AwesomeMarkers.icon({
-icon: 'plus',
-markerColor: 'red' });
+            icon: 'plus',
+            markerColor: 'red' });
 
         var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
         detail.map.setView([{{ object.location.y }}, {{ object.location.x }}], 10);
         L.marker([{{ object.location.y }}, {{ object.location.x }}]).addTo(detail.map);
         });
 </script>
+{% endlocalize %}
 {% endblock %}
 
 

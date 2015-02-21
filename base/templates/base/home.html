@@ -30,10 +30,11 @@ $(window).on('map:init', function (e) {
             return L.marker(latlng, {icon: redMarker }).bindPopup(feature.properties.title);
     }});
     var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
-    detail.map.setView([52.3, 7.8], 7);
     detail.map.addLayer(layer);
     $.getJSON("{% url 'data' %}", function (data) {
       layer.addData(data);
+      if (data.features.length > 1) detail.map.fitBounds(layer.getBounds());
+      else detail.map.setView([52.3, 7.8], 7);
     });
 });
 </script>
