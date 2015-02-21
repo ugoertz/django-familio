@@ -44,7 +44,7 @@ ul.simple li {
         <div class="col-md-3 col-md-offset-1">
             <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
             <p style="margin-bottom: 30px;">
-            {% if object.published %}<span class="cabin">Veröffentlicht</span>{% else %}<span class="cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
+            {% if object.published %}<label class="label label-success cabin">Veröffentlicht</span>{% else %}<span class="label label-warning cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
             </p>
             {% include "notaro/admin_links.html" with admin_edit_link="notaro/note" %}
             </div>
