@@ -1,4 +1,8 @@
 
+============================
+Bilder
+============================
+
 Bild (=Picture) besteht aus 
 * Bilddatei (image)
 * caption

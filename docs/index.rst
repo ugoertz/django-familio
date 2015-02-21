@@ -1,17 +1,11 @@
-========================================
-Welcome to familio's documentation!
-========================================
-
-This is a documentation template for a **web application using Django 1.5**.
-Feel free to change this to your liking.
+==============================================
+Dokumentation zur unserefamilie.net-Webseite
+==============================================
 
 
-About
--------------
 
-This project uses `Django <http://www.djangoproject.com/>`_.
 
-Contents
+Inhalt
 --------
 
 .. toctree::
@@ -26,8 +20,8 @@ Contents
 
 
 
-Indices and tables
-------------------
+Indizes und Tabellen
+--------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
