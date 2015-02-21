@@ -44,7 +44,7 @@ ul.simple li {
         <div class="col-md-3 col-md-offset-1">
             <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
             <p style="margin-bottom: 30px;">
-            {% if object.published %}<label class="label label-success cabin">Veröffentlicht</span>{% else %}<span class="label label-warning cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
+            {% if object.published %}<label class="label label-success cabin">Veröffentlicht</label>{% else %}<span class="label label-warning cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
             </p>
             {% include "notaro/admin_links.html" with admin_edit_link="notaro/note" %}
             </div>
@@ -55,7 +55,8 @@ ul.simple li {
         {% for pic in object.pictures.all %}
         <div>
             <a href="{{ pic.get_absolute_url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
-            <p style="margin-top: 20px;">{{ pic.caption }}</p>
+
+            {{ pic.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
         </div>
         {% endfor %}
     </div>

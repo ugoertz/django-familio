@@ -21,7 +21,7 @@
                 <img src="{% version object.image  'large' %}" style="margin-top: 50px; margin-bottom: 20px;">
             </a>
 
-            {{ object.caption|apply_markup:"genrestructuredtext"|typogrify }}
+            {{ object.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
 
             {% if object.date %}<p>{{ object.date }}</p>{% endif %}
         </div>

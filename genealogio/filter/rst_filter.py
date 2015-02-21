@@ -1,6 +1,8 @@
 from functools import partial
 from docutils import nodes
-from docutils.parsers.rst import roles
+from docutils.utils import new_document
+from docutils.frontend import OptionParser
+from docutils.parsers.rst import roles, Parser
 from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
 from ..models import Person, Place, Event, Family
@@ -71,21 +73,30 @@ def get_text(name, rawtext, text, lineno, inliner,
             # strangely, this does not work
             options['target'] = reverse('picture-detail',
                                         kwargs={'pk': img.id, })
-            node = nodes.image(uri=img.image.version_generate(version).url,
-                               **options)
+            nodelist = [nodes.image(
+                            uri=img.image.version_generate(version).url,
+                            **options), ]
+            if img.caption:
+                settings = OptionParser(components=(Parser,))\
+                           .get_default_values()
+                parser = Parser()
+                document = new_document('caption', settings)
+                parser.parse(img.get_caption(), document)
+                nodelist[0].children.extend(document.children)
         else:
             handle = text.split(' ')[-1]
             p = model.objects.get(handle=handle)
             for f in extra:
                 t += f(p)
-            node = nodes.reference('rawtext', t,
-                                   refuri=p.get_absolute_url(), **options)
+            nodelist = [nodes.reference(
+                            rawtext, t,
+                            refuri=p.get_absolute_url(), **options), ]
     except:
         msg = inliner.reporter.error('Problem when evaluating handle',
                                      line=lineno)
         prb = inliner.problematic(text, rawtext, msg)
         return [prb], [msg]
-    return [node], []
+    return nodelist, []
 
 # pylint: disable=no-member
 for role in genrst_roles:
