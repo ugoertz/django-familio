@@ -92,6 +92,9 @@ class Picture(models.Model):
         return ("id__iexact", "caption__icontains",
                 "image__icontains", )
 
+    def get_absolute_url(self):
+        return reverse('picture-detail', kwargs={'pk': self.id, })
+
     class Meta:
         verbose_name = 'Bild'
         verbose_name_plural = 'Bilder'

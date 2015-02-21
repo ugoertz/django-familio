@@ -54,7 +54,7 @@ ul.simple li {
     <div class="row" style="margin-top: 100px;">
         {% for pic in object.pictures.all %}
         <div>
-            <a href="{{ pic.image.url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
+            <a href="{{ pic.get_absolute_url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
             <p style="margin-top: 20px;">{{ pic.caption }}</p>
         </div>
         {% endfor %}

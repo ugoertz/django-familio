@@ -6,7 +6,13 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.core.exceptions import ObjectDoesNotExist
 from braces.views import LoginRequiredMixin
 
-from .models import Note
+from .models import Note, Picture
+
+
+class PictureDetail(LoginRequiredMixin, DetailView):
+    """Display a picture."""
+
+    model = Picture
 
 
 class NoteDetail(LoginRequiredMixin, DetailView):

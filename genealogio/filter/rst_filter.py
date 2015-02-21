@@ -2,6 +2,7 @@ from functools import partial
 from docutils import nodes
 from docutils.parsers.rst import roles
 from django_markup.filter.rst_filter import RstMarkupFilter
+from django.core.urlresolvers import reverse
 from ..models import Person, Place, Event, Family
 from notaro.models import Picture
 
@@ -65,9 +66,11 @@ def get_text(name, rawtext, text, lineno, inliner,
                            'l': 'large', }[name[1]]
             else:
                 version = 'medium'
-            print 'found i role', int(text)
             img = Picture.objects.get(id=int(text))
-            print 'retrieved image'
+
+            # strangely, this does not work
+            options['target'] = reverse('picture-detail',
+                                        kwargs={'pk': img.id, })
             node = nodes.image(uri=img.image.version_generate(version).url,
                                **options)
         else:
