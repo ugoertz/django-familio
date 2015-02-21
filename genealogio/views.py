@@ -21,6 +21,8 @@ import json
 # from django.db.models import Sum
 # from django.core.serializers.json import DateTimeAwareJSONEncoder
 # from django.db.models.query import Q
+
+from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import render
 from braces.views import LoginRequiredMixin
@@ -124,7 +126,9 @@ class Pedigree(LoginRequiredMixin, View):
             data = {'name': p.get_primary_name(),
                     'born': p.datebirth.year if p.datebirth else '',
                     'died': p.datedeath.year if p.datedeath else '',
-                    'url': p.get_absolute_url(), }
+                    'url': p.get_absolute_url(),
+                    'urlp': reverse("pedigree", kwargs={"pk": p.id, }),
+                    }
             if level > 0:
                 data['parents'] = [get_dict(p.get_father(), level-1),
                                    get_dict(p.get_mother(), level-1), ]

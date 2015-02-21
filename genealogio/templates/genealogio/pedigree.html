@@ -4,7 +4,7 @@
 <style>
 .name {
     font-weight: 600;
-    fill: blue;
+    fill: #666666;
 }
 
 .about {
@@ -16,6 +16,12 @@
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+}
+
+.control.glyphicon {
+    position: static;
+    cursor: pointer;
+    color: green;
 }
 </style>
 {% endblock css %}
@@ -60,20 +66,30 @@ var node = svg.selectAll(".node")
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
 node.append("svg:a")
-    .attr("xlink:href", function(d) { return d.url; })
+    .attr("xlink:href", function(d) { return d.urlp; })
     .append("text")
     .attr("class", "name")
-    .attr("x", 8)
+    .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-.5em")
     .text(function(d) { return d.name; });
+
+node.append("svg:a")
+    .attr("xlink:href", function(d) { return d.url;  })
+    .append("svg:foreignObject")
+    .attr("width", 25)
+    .attr("height", 25)
+    .attr("x", 8)
+    .attr("y", -26)
+    .append("xhtml:span")
+    .attr("class", "control glyphicon glyphicon-info-sign");
 
 node.append("text")
     .attr("x", 8)
     .attr("y", 8)
     .attr("dy", ".7em")
     .attr("class", "about lifespan")
-    .text(function(d) { return d.born + "–" + d.died; });
+    .text(function(d) { if (d.born || d.died) return d.born + "–" + d.died; });
 
 function elbow(d, i) {
     return "M" + d.source.y + "," + d.source.x
