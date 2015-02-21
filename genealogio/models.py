@@ -179,7 +179,8 @@ class Family(PrimaryObject):
     def get_grandchildren(self):
         qslist = []
         for c in self.get_children():
-            qslist.extend([v for k, v in c.get_children().items()])
+            qslist.extend([v for k, v, t in c.get_children()
+                           if v.count()])
         if not qslist:
             return
         qs = reduce(lambda x, y: x | y, qslist)
@@ -389,15 +390,21 @@ class Person(PrimaryObject):
         """Get all children of this person (as stored in the Family objects
         attached to it via the family m2m."""
 
-        children = OrderedDict()
+        children = []
         for fam in Family.objects.filter(father=self):
-            if fam.person_set.count():
-                children[fam.mother] =\
-                    fam.person_set.all().order_by('datebirth', 'handle')
+            children.append([
+                fam.mother,
+                fam.person_set.all().order_by('datebirth', 'handle'),
+                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED\
+                        else 'Familie mit'
+                ])
         for fam in Family.objects.filter(mother=self):
-            if fam.person_set.count():
-                children[fam.father] =\
-                    fam.person_set.all().order_by('datebirth', 'handle')
+            children.append([
+                fam.father,
+                fam.person_set.all().order_by('datebirth', 'handle'),
+                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED\
+                        else 'Familie mit'
+                ])
         return children
 
     def __unicode__(self):

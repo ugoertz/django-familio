@@ -22,16 +22,20 @@
 **Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.get_mother %}
 
 {% with allchildren=object.get_children %}
-{% if allchildren %}**Kinder:**
+{% for partner, children, txt in allchildren %}
 
-{% for partner, children in allchildren.items %}
+{{ txt }} {% include "genealogio/person_snippet.rst" with person=partner %}
 
-Mit {% include "genealogio/person_snippet.rst" with person=partner %}:
+{% if children %}
+.. class:: marginleft30
+
+    **Kinder:**
 
 {% for child in children %}
-* {% include "genealogio/person_snippet_full.rst" with person=child %}
+    * {% include "genealogio/person_snippet_full.rst" with person=child %}
 {% endfor %}
-{% endfor %}{% endif %}
+{% endif %}
+{% endfor %}
 {% endwith %}
 
 {% if object.comments %}{{ object.comments }}{% endif %}

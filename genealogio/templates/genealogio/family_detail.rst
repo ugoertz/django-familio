@@ -1,15 +1,15 @@
 {% load partialdate_tags %}
 {% load fb_versions %}
 
-.. role:: leftmargin30
-    :class: leftmargin30
+.. role:: marginleft30
+    :class: marginleft30
 
 ===============================================================================
 Familie {{ object }}
 ===============================================================================
 
 {% if object.start_date or object.end_date %}
-{{ object.start_date|partial_date:"d.m.Y" }} - {{ object.end_date|partial_date:"d.m.Y" }} :leftmargin30:`({{object.get_family_rel_type_display }})`
+{{ object.start_date|partial_date:"d.m.Y" }} - {{ object.end_date|partial_date:"d.m.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
 {% else %}
 ({{object.get_family_rel_type_display }})
 {% endif %}
