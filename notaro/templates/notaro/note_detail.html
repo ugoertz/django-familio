@@ -1,4 +1,5 @@
 {% extends "_layouts/base.html" %}
+{% load static %}
 {% load partialdate_tags %}
 {% load markup_tags %}
 {% load typogrify_tags %}
@@ -21,6 +22,13 @@ ul.simple li {
 </style>
 {% endblock css %}
 
+{% block js %}
+{{ block.super  }}
+{% if request.user.is_authenticated and request.user.is_staff %}
+<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
+{% endif %}
+{% endblock js %}
+
 
 {% block content %}
 <div class="container">
@@ -33,12 +41,13 @@ ul.simple li {
             <p style="margin-top:30px;">Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.all %}{{ u.get_full_name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
         </div>
         {% if user.is_authenticated and user.is_staff %}
-        <div class="col-md-2 col-md-offset-1">
-            <p>
-            <a style="font-family: Cabin, sans-serif; font-size: 80%;" href="/admin/notaro/note/{{ object.id }}/">Dokument editieren</a>
+        <div class="col-md-3 col-md-offset-1">
+            <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
+            <p style="margin-bottom: 30px;">
+            {% if object.published %}<span class="cabin">Veröffentlicht</span>{% else %}<span class="cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
             </p>
-            <p>
-            {% if object.published %}Veröffentlicht{% else %}<span class="cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
+            {% include "notaro/admin_links.html" with admin_edit_link="notaro/note" %}
+            </div>
         </div>
         {% endif %}
     </div>

@@ -1,4 +1,5 @@
 {% extends "_layouts/base_leaflet.html" %}
+{% load static %}
 {% load markup_tags %}
 {% load leaflet_tags %}
 
@@ -29,6 +30,10 @@ ul.simple li {
 
 {% block js %}
 {{block.super}}
+
+{% if request.user.is_authenticated and request.user.is_staff %}
+<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
+{% endif %}
 
 <script type="text/javascript">
 
@@ -71,12 +76,12 @@ $(window).on('map:init', function (e) {
             {% leaflet_map "places" %}
             {% endif %}
         </div>
-        <div class="col-md-2 col-md-offset-1">
-            <p style="margin-top:50px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
+        <div class="col-md-3 col-md-offset-1">
+            <p style="margin-top:50px; margin-bottom: 50px"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
         {% if user.is_authenticated and user.is_staff %}
-            <p style="margin-top:50px;">
-            <a style="font-family: Cabin, helvetica, sans-serif; font-size: 80%;" href="/admin/genealogio/person/{{ object.id }}/">Person editieren</a>
-            </p>
+            <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
+            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" %}
+            </div>
         {% endif %}
         </div>
     </div>
