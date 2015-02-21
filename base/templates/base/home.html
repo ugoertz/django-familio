@@ -76,7 +76,7 @@ $(window).on('map:init', function (e) {
             <h2>Geburts- und Todestage</h2>
             <ul class="list-group">
             {% for d, born, died in birthdeathdays %}
-            <li class="list-group-item"><p><b>{{ d|date:"j. F" }}</b></p>
+            <li class="list-group-item" {% ifequal today d %}style="background-color: lightblue;"{% endifequal %}><p><b>{{ d|date:"j. F" }}</b></p>
             <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}<br>
             {% endfor %}</p>
             <p>{% for person in died %}+ {% include "genealogio/person_snippet_full.html" %}<br>
