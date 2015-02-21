@@ -1,5 +1,16 @@
 {% extends "_layouts/base.html" %}
 {% load markup_tags %}
+{% load static%}
+
+{% block js %}
+{{block.super}}
+
+{% if request.user.is_authenticated and request.user.is_staff %}
+<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
+{% endif %}
+{% endblock js %}
+
+
 
 {% block content %}
 <div class="container">
@@ -9,11 +20,11 @@
             {% include "genealogio/event_detail.rst" %}
             {% endfilter %}
         </div>
-        <div class="col-md-2 col-md-offset-1">
+        <div class="col-md-3 col-md-offset-1" style="margin-top: 50px;">
         {% if user.is_authenticated and user.is_staff %}
-            <p style="margin-top:50px;">
-            <a style="font-family: Cabin, sans-serif; font-size: 80%;" href="/admin/genealogio/event/{{ object.id }}/">Event editieren</a>
-            </p>
+            <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
+                {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" %}
+            </div>
         {% endif %}
         </div>
     </div>
