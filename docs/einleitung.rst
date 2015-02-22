@@ -26,6 +26,8 @@ vernetzt sind, die "Familiendatenbank" und die "Texte/Notizen":
   * :ref:`ereignisse-chapter` (Zusatzinformationen: Ereignisse im engeren
     (Hochzeit, ...) und im weiteren (Beruf, ...) Sinne)
 
+.. _handle:
+
 Allen diese Objekten (Personen, Familien, Orten, Ereignissen) wird beim Anlegen
 ein *handle* zugeordnet, mit dem sie eindeutig identifiziert werden können. Zum
 Beispiel hat *Ulrich Görtz* auf ``www.goertz.unserefamilie.net`` das handle
@@ -49,5 +51,17 @@ Besucher der Webseite bekommt das handle nie zu Gesicht.
   * :ref:`texte-chapter`
   * :ref:`bilder-chapter`
 
+
+---------------
+Die Admin-Seite
+---------------
+
+Die Verwaltungsseite der Webseite, wo neue Objekte angelegt/Objekte geändert und
+gelöscht und Texte angelegt und redigiert werden können, erreicht man unter
+``http://...unserefamilie.net/admin/``.
+
+Bei existierenden Objekten befindet sich auch in der Box in der rechten Spalte
+(die nur für Redakteure angezeigt wird) ein Link, um direkt das enstprechende
+Objekt editieren zu können.
 
 
