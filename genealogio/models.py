@@ -5,8 +5,6 @@
 
 from __future__ import unicode_literals
 
-from collections import OrderedDict
-
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
@@ -395,15 +393,15 @@ class Person(PrimaryObject):
             children.append([
                 fam.mother,
                 fam.person_set.all().order_by('datebirth', 'handle'),
-                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED\
-                        else 'Familie mit'
+                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
+                else 'Familie mit'
                 ])
         for fam in Family.objects.filter(mother=self):
             children.append([
                 fam.father,
                 fam.person_set.all().order_by('datebirth', 'handle'),
-                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED\
-                        else 'Familie mit'
+                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
+                else 'Familie mit'
                 ])
         return children
 
