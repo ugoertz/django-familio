@@ -14,6 +14,7 @@ Inhalt
    einleitung
    personen
    familien
+   ereignisse
    orte
    texte
    bilder

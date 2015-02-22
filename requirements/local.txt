@@ -10,6 +10,7 @@ Fabric
 
 # Documentation
 Sphinx
+rstcheck
 
 # Testing
 nose

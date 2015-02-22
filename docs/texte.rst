@@ -1,3 +1,5 @@
+.. _texte-chapter:
+
 =====
 Texte
 =====
