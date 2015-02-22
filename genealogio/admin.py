@@ -92,6 +92,8 @@ class FamilyPInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     raw_id_fields = ('family', )
     autocomplete_lookup_fields = {'fk': ['family', ], }
     sortable_excludes = ('position', 'child_type', )
+    verbose_name = "Familie"
+    verbose_name_plural = "Familien"
 
 
 class PPlaceFormSet(BaseInlineFormSet):
@@ -405,6 +407,8 @@ class PersonFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ['person', ], }
     sortable_excludes = ('position', 'child_type', )
+    verbose_name = "Kind"
+    verbose_name_plural = "Kinder"
 
 
 class FamilyAdmin(reversion.VersionAdmin):
