@@ -7,3 +7,11 @@
 
    ========================================================================== */
 
+.adminbox {
+    margin-top: 50px;
+    padding-left: 10px;
+    padding-right: 30px;
+    padding-top: 10px; 
+    padding-bottom: 10px;
+    border: 1px solid lightgray;
+}

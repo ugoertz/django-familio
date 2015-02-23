@@ -1,0 +1,12 @@
+.blue {
+  color: blue;
+}
+
+ol.lowerroman {
+    list-style-type: lower-roman;
+}
+
+ol.loweralpha {
+    list-style-type: lower-latin;
+}
+

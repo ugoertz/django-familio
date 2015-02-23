@@ -152,9 +152,11 @@ class Family(PrimaryObject):
                        (CIVILUNION, 'Eingetragene Partnerschaft'), )
 
     father = models.ForeignKey('Person', related_name="father_ref",
-                               null=True, blank=True)
+                               null=True, blank=True,
+                               verbose_name='Vater')
     mother = models.ForeignKey('Person', related_name="mother_ref",
-                               null=True, blank=True)
+                               null=True, blank=True,
+                               verbose_name='Mutter')
     family_rel_type = models.IntegerField('FamilyRelType',
                                           choices=FAMILY_REL_TYPE, default=3)
 
@@ -162,8 +164,9 @@ class Family(PrimaryObject):
                             blank=True, null=True)
 
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
-    start_date = PartialDateField(blank=True, null=True)
-    end_date = PartialDateField(blank=True, null=True)
+    start_date = PartialDateField(blank=True, null=True,
+                                  verbose_name="Anfangsdatum")
+    end_date = PartialDateField(blank=True, null=True, verbose_name="Enddatum")
     source = models.ManyToManyField(Source, blank=True)
 
     @staticmethod

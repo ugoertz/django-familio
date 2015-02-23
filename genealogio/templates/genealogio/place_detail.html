@@ -62,8 +62,8 @@ $(window).on('map:init', function (e) {
         </div>
         <div class="col-md-3 col-md-offset-1">
         {% if user.is_authenticated and user.is_staff %}
-        <div style="margin-top: 50px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" %}
+        <div class="cabin adminbox">
+            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="orte.html" %}
         </div>
         {% endif %}
         </div>
