@@ -405,6 +405,8 @@ class PersonFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ['person', ], }
     sortable_excludes = ('position', 'child_type', )
+    verbose_name = 'Kind'
+    verbose_name_plural = 'Kinder'
 
 
 class FamilyAdmin(reversion.VersionAdmin):
