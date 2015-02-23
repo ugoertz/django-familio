@@ -1,10 +1,13 @@
-<p class="cabin" style="font-size: 85%;">
-{{ object.handle }}
+{% load base_tags %}
+
+<p style="font-size: 85%;">
+{% firstof object.handle object.id %}
 </p>
 <p>
-<a class="cabin btn btn-default" href="/admin/{{ admin_edit_link }}/{{ object.id }}/">Bearbeiten</a>
+<a class="btn btn-default" href="/admin/{{ admin_edit_link }}/{{ object.id }}/">Bearbeiten</a>
 </p>
-<div style="display: none;" class="btn btn-warning cabin" id="errormsg">
+<p style="font-size: 100%; margin-top: 20px;"><a href="{% settings_value "DOCUMENTATION_URL" %}{% firstof doc_link "index.html" %}">Dokumentation</a></p>
+<div style="display: none;" class="btn btn-warning" id="errormsg">
 </div>
 
 

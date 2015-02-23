@@ -84,10 +84,10 @@ $(window).on('map:init', function (e) {
             {% endif %}
         </div>
         <div class="col-md-3 col-md-offset-1">
-            <p style="margin-top:50px; margin-bottom: 50px"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
+            <p style="margin-top:50px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
         {% if user.is_authenticated and user.is_staff %}
-            <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" %}
+            <div class="cabin adminbox">
+            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="personen.html" %}
             </div>
         {% endif %}
         </div>

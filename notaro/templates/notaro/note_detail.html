@@ -42,11 +42,11 @@ ul.simple li {
         </div>
         {% if user.is_authenticated and user.is_staff %}
         <div class="col-md-3 col-md-offset-1">
-            <div style="padding-left: 10px; padding-top: 10px; padding-bottom: 10px; padding-right: 30px; border: 1px solid lightgray;">
+            <div class="cabin adminbox">
             <p style="margin-bottom: 30px;">
             {% if object.published %}<label class="label label-success cabin">Veröffentlicht</label>{% else %}<span class="label label-warning cabin" style="background-color: orange; padding:5px;">Unveröffentlicht</span>{% endif %}
             </p>
-            {% include "notaro/admin_links.html" with admin_edit_link="notaro/note" %}
+            {% include "notaro/admin_links.html" with admin_edit_link="notaro/note" doc_link="texte.html" %}
             </div>
         </div>
         {% endif %}
