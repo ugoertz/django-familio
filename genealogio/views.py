@@ -1,14 +1,18 @@
+# -*- coding: utf8 -*-
+
 from __future__ import unicode_literals
+from __future__ import division
 
 # import os
 # import os.path
 # import csv
 # import glob
-# import datetime
+import datetime
+import math
+import cairocffi as cairo
 import json
 
 # from django import forms
-# from django.http import HttpResponse, HttpResponseRedirect
 # from django.contrib.auth.models import User
 # from django.contrib.auth import authenticate, login, logout
 # from django.contrib.auth.decorators import login_required
@@ -22,6 +26,7 @@ import json
 # from django.core.serializers.json import DateTimeAwareJSONEncoder
 # from django.db.models.query import Q
 
+from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import render
@@ -139,3 +144,101 @@ class Pedigree(LoginRequiredMixin, View):
 
         return render(request, 'genealogio/pedigree.html',
                       {'person': person, 'data': json.dumps(data), })
+
+
+class Sparkline(LoginRequiredMixin, View):
+
+    """Sparkline view. """
+
+    @property
+    def width(self):
+        return 512
+
+    @property
+    def height(self):
+        return 64
+
+    timeline = [
+        ["Wiener Kongress",                      [1815, [0, 0, 0]]],
+        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 1, 0]]],
+        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]]],
+        ["Deutsch-Französishcer Krieg",          [1870, 1871, [1, 0, 0, 0.8]]],
+        ["Erfindung des Autos",                  [1886, [0, 0, 0]]],
+        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0, 0.8]]],
+        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]]],
+        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0, 0.8]]],
+        ["Gründung von BRD und DDR",             [1949, [0, 0, 0]]],
+        ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]]],
+        ["Mauerbau",                             [1961, [0, 1, 0]]],
+        ["Wiedervereinigung",                    [1990, [0, 0, 1]]],
+        ["Einführung des Euro",                  [2002, [0, 0, 1]]]
+    ]
+
+    def get(self, request, pk, fr=None, to=None):
+
+        # pylint: disable=no-member
+        person = Person.objects.get(pk=pk)
+        if not person.datebirth:
+            return HttpResponse()
+
+        BIRTH_YEAR = person.datebirth.year
+        DEATH_YEAR = person.datedeath.year if person.datedeath\
+            else datetime.date.today().year
+        if fr is None:
+            FROM_YEAR = person.datebirth.year - 10
+        else:
+            FROM_YEAR = int(fr)
+        if to is None:
+            TO_YEAR = (person.datedeath.year + 10) if person.datedeath\
+                      else FROM_YEAR + 100
+        else:
+            TO_YEAR = int(to)
+
+        def year_to_x(year):
+            r = self.width/self.height *\
+                (year - FROM_YEAR) / (TO_YEAR - FROM_YEAR)
+            return r
+
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                     self.width, self.height)
+
+        ctx = cairo.Context(surface)
+        ctx.scale(self.height/1.0, self.height/1.0)
+        for key, value in Sparkline.timeline:
+            ctx.move_to(year_to_x(value[0]), 0.5)
+            ctx.line_to(year_to_x(value[1] if len(value) > 2
+                        else value[0]+0.3), 0.5)
+            ctx.set_source_rgba(*value[-1])
+            ctx.set_line_width(0.3)
+            ctx.stroke()
+
+        ctx.set_line_width(0.02)
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.move_to(year_to_x(BIRTH_YEAR), 0.5)
+        ctx.line_to(year_to_x(DEATH_YEAR), 0.5)
+        ctx.close_path()
+        ctx.stroke()
+
+        for p, c, t in person.get_children():
+            for child in c:
+                if not child.datebirth:
+                    continue
+                ctx.set_source_rgb(0, 0, 0)
+                ctx.arc(year_to_x(child.datebirth.year),
+                        0.5, 0.1, 0, 2*math.pi)
+                ctx.fill()
+
+        qs = Family.objects.filter(father=person) |\
+            Family.objects.filter(mother=person)
+        for f in qs.exclude(start_date=''):
+            ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
+            ctx.set_source_rgb(1, 1, 1)
+            ctx.fill()
+            ctx.set_source_rgb(0, 0, 0)
+            ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
+            ctx.stroke()
+
+        response = HttpResponse(content_type="image/png")
+        surface.write_to_png(response)
+        return response
+
