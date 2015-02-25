@@ -82,7 +82,8 @@ node.append("svg:a")
     .attr("x", 8)
     .attr("y", -26)
     .append("xhtml:span")
-    .attr("class", "control glyphicon glyphicon-info-sign");
+    .attr("class", "control glyphicon glyphicon-info-sign")
+    .style("display", function(d) { return d.url == "" ? "none" : null; });
 
 node.append("text")
     .attr("x", 8)
