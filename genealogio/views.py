@@ -138,11 +138,11 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
 
         timeline = [x for x in Sparkline.timeline
                     if fr <= end(x) and start(x) <= to]
-        l = ['| |T%02d| | |Tmg%02d|                        |\n' % (i, i)
-             for i, x in enumerate(timeline)]
+        l = ['| |T%02d|_ | |Tmg%02d|                        |\n' % (i, i)
+             for i in range(len(timeline))]
         l.append('\n')
 
-        legend = '+-------+--------------------------------+\n'.join(l)
+        legend = '+--------+--------------------------------+\n'.join(l)
         legend += '\n'
 
         legend += '\n\n'.join(['.. |T%02d| replace::\n   :cabin:`%s`'
@@ -151,6 +151,10 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
         legend += '\n\n'
         legend += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
                                % (i, 100001 + i, fr, to)
+                               for i in range(len(timeline))])
+
+        legend += '\n\n'
+        legend += '\n\n'.join(['.. _T%02d: %s' % (i, x[2])
                                for i, x in enumerate(timeline)])
 
         context['sparkline_legend'] = legend
@@ -213,18 +217,30 @@ class Sparkline(LoginRequiredMixin, View):
         return 32
 
     timeline = [
-        ["Wiener Kongress",                      [1815, [0, 0, 0]]],
-        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 0, 1]]],
-        ["Deutsch-Französischer Krieg",          [1870, 1871, [1, 0, 0]]],
-        ["Erfindung des Autos",                  [1886, [0, 0, 0]]],
-        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0]]],
-        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]]],
-        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0]]],
-        ["Gründung von BRD und DDR",             [1949, [0, 0, 0]]],
-        ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]]],
-        ["Mauerbau",                             [1961, [0, 1, 0]]],
-        ["Wiedervereinigung",                    [1990, [0, 0, 1]]],
-        ["Einführung des Euro",                  [2002, [0, 0, 1]]]
+        ["Wiener Kongress",                      [1815, [0, 0, 0]],
+         'https://de.wikipedia.org/wiki/Wiener_Kongress'],
+        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 0, 1]],
+         'https://de.wikipedia.org/wiki/Deutsche_Revolution_1848/1849'],
+        ["Deutsch-Französischer Krieg",          [1870, 1871, [1, 0, 0]],
+         'https://de.wikipedia.org/wiki/Deutsch-Franz%C3%B6sischer_Krieg'],
+        ["Erfindung des Autos",                  [1886, [0, 0, 0]],
+         'https://de.wikipedia.org/wiki/Geschichte_des_Automobils'],
+        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0]],
+         'https://de.wikipedia.org/wiki/Erster_Weltkrieg'],
+        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]],
+         'https://de.wikipedia.org/wiki/Drittes_Reich'],
+        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0]],
+         'https://de.wikipedia.org/wiki/Zweiter_Weltkrieg'],
+        ["Gründung von BRD und DDR",             [1949, [0, 0, 0]],
+         'https://de.wikipedia.org/wiki/Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland'],
+        ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]],
+         'https://de.wikipedia.org/wiki/Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
+        ["Mauerbau",                             [1961, [0, 1, 0]],
+         'https://de.wikipedia.org/wiki/Berliner_Mauer'],
+        ["Wiedervereinigung",                    [1990, [0, 0, 1]],
+         'https://de.wikipedia.org/wiki/Deutsche_Wiedervereinigung'],
+        ["Einführung des Euro",                  [2002, [0, 0, 1]],
+         'https://de.wikipedia.org/wiki/Euro']
     ]
 
     def get(self, request, pk, fr=None, to=None):
@@ -279,7 +295,7 @@ class Sparkline(LoginRequiredMixin, View):
             ctx.stroke()
 
         if int(pk) <= 100000:
-            for key, value in Sparkline.timeline:
+            for key, value, _dummy in Sparkline.timeline:
                 draw_line(year_to_x(value[0]),
                           year_to_x(value[1] if len(value) > 2
                           else value[0]+0.3),

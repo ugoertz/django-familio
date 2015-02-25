@@ -62,15 +62,15 @@ Texte
 Zeitstrahl
 ----------
 
-+-------+--------------------------------+
-|       | {{ fr }} |img1| {{ to }}               |
-+=======+================================+
-| |PF|  | |imgPF|                        |
-+-------+--------------------------------+
-| |PM|  | |imgPM|                        |
-+-------+--------------------------------+
-{% for child in object.get_children %}| |P{{ forloop.counter0 }}|  | |imgP{{ forloop.counter0  }}|                        |
-+-------+--------------------------------+
++--------+--------------------------------+
+|        | {{ fr }} |img1| {{ to }}               |
++========+================================+
+| |PF|   | |imgPF|                        |
++--------+--------------------------------+
+| |PM|   | |imgPM|                        |
++--------+--------------------------------+
+{% for child in object.get_children %}| |P{{ forloop.counter0 }}|   | |imgP{{ forloop.counter0  }}|                        |
++--------+--------------------------------+
 {% endfor %}{{ sparkline_legend }}
 
 .. |img1| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
@@ -88,5 +88,6 @@ Zeitstrahl
 
 .. |imgP{{ forloop.counter0  }}| image:: /gen/sparkline/{{ child.id }}/{{ fr }}/{{ to }}/
 {% endfor %}
+
 
 {% endifnotequal %}
