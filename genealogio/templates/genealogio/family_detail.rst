@@ -54,6 +54,7 @@ Texte
 {% endfor %}
 {% endif %}
 
+{% ifnotequal fr 2100 %}
 ----------
 Zeitstrahl
 ----------
@@ -66,9 +67,9 @@ Zeitstrahl
 
 .. |PF| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.father %}
 
-.. |imgPF| image:: /gen/sparkline/{{ object.father.id }}/1900/2010/
+.. |imgPF| image:: /gen/sparkline/{{ object.father.id }}/{{ fr }}/{{ to }}/
 
 .. |PM| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.mother %}
 
-.. |imgPM| image:: /gen/sparkline/{{ object.mother.id }}/1900/2010/
-
+.. |imgPM| image:: /gen/sparkline/{{ object.mother.id }}/{{ fr }}/{{ to }}/
+{% endifnotequal %}

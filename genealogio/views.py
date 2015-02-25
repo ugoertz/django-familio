@@ -103,6 +103,33 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
 
     model = Family
 
+    def get_context_data(self, **kwargs):
+        context = super(FamilyDetail, self).get_context_data(**kwargs)
+        obj = self.get_object()
+        fr = 2100
+        to = fr + 100
+        try:
+            fr = min(fr, obj.father.datebirth.year)
+            to = max(to, obj.father.datedeath.year)
+        except:
+            pass
+        try:
+            fr = min(fr, obj.mother.datebirth.year)
+            to = max(to, obj.mother.datedeath.year)
+        except:
+            pass
+
+        for ch in obj.person_set.all():
+            try:
+                to = max(to, ch.datedeath.year)
+            except:
+                pass
+        context['fr'] = fr - 10
+        context['to'] = min(max(to, fr+100), datetime.date.today().year) + 10
+
+        print context
+        return context
+
 
 class PlaceDetail(LoginRequiredMixin, DetailView):
     """Display details for a person."""
@@ -179,7 +206,11 @@ class Sparkline(LoginRequiredMixin, View):
         # pylint: disable=no-member
         person = Person.objects.get(pk=pk)
         if not person.datebirth:
-            return HttpResponse()
+            surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                         self.width, self.height)
+            response = HttpResponse(content_type="image/png")
+            surface.write_to_png(response)
+            return response
 
         BIRTH_YEAR = person.datebirth.year
         DEATH_YEAR = person.datedeath.year if person.datedeath\
