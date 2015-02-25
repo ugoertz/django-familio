@@ -333,6 +333,13 @@ class Sparkline(LoginRequiredMixin, View):
             draw_line(year_to_x(BIRTH_YEAR),
                       year_to_x(DEATH_YEAR),
                       0.04)
+            draw_line(year_to_x(BIRTH_YEAR),
+                      year_to_x(BIRTH_YEAR)+0.04,
+                      0.4)
+            if person.datedeath:
+                draw_line(year_to_x(DEATH_YEAR),
+                          year_to_x(DEATH_YEAR)+0.04,
+                          0.4)
 
             for p, c, t in person.get_children():
                 for child in c:
