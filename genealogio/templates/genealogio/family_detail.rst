@@ -4,6 +4,9 @@
 .. role:: marginleft30
     :class: marginleft30
 
+.. role:: cabin
+    :class: cabin
+
 ===============================================================================
 Familie {{ object }}
 ===============================================================================
@@ -59,11 +62,18 @@ Texte
 Zeitstrahl
 ----------
 
-+-------+---------+
-| |PF|  | |imgPF| |
-+-------+---------+
-| |PM|  | |imgPM| |
-+-------+---------+
++-------+--------------------------------+
+|       | {{ fr }} |img1| {{ to }}               |
++=======+================================+
+| |PF|  | |imgPF|                        |
++-------+--------------------------------+
+| |PM|  | |imgPM|                        |
++-------+--------------------------------+
+{% for child in object.get_children %}| |P{{ forloop.counter0 }}|  | |imgP{{ forloop.counter0  }}|                        |
++-------+--------------------------------+
+{% endfor %}{{ sparkline_legend }}
+
+.. |img1| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
 
 .. |PF| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.father %}
 
@@ -72,4 +82,11 @@ Zeitstrahl
 .. |PM| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.mother %}
 
 .. |imgPM| image:: /gen/sparkline/{{ object.mother.id }}/{{ fr }}/{{ to }}/
+
+{% for child in object.get_children %}
+.. |P{{ forloop.counter0 }}| replace:: {% include "genealogio/person_snippet_full.rst" with person=child %}
+
+.. |imgP{{ forloop.counter0  }}| image:: /gen/sparkline/{{ child.id }}/{{ fr }}/{{ to }}/
+{% endfor %}
+
 {% endifnotequal %}

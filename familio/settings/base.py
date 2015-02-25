@@ -394,6 +394,7 @@ MARKUP_SETTINGS = {
         'settings_overrides': {
             'initial_header_level': 2,
             'doctitle_xform': False,
+            'table_style': 'booktabs',
             'footnote_references': 'superscript',
             'trim_footnote_reference_space': True,
             'default_reference_context': 'view',

@@ -107,7 +107,7 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
         context = super(FamilyDetail, self).get_context_data(**kwargs)
         obj = self.get_object()
         fr = 2100
-        to = fr + 100
+        to = 1200
         try:
             fr = min(fr, obj.father.datebirth.year)
             to = max(to, obj.father.datedeath.year)
@@ -124,10 +124,37 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
                 to = max(to, ch.datedeath.year)
             except:
                 pass
-        context['fr'] = fr - 10
-        context['to'] = min(max(to, fr+100), datetime.date.today().year) + 10
 
-        print context
+        fr = fr - 10
+        context['fr'] = fr
+        to = min(max(to + 5, fr+80), datetime.date.today().year + 2)
+        context['to'] = to
+
+        def start(x):
+            return x[1][0]
+
+        def end(x):
+            return x[1][0] if len(x[1]) == 2 else x[1][1]
+
+        timeline = [x for x in Sparkline.timeline
+                    if fr <= end(x) and start(x) <= to]
+        l = ['| |T%02d| | |Tmg%02d|                        |\n' % (i, i)
+             for i, x in enumerate(timeline)]
+        l.append('\n')
+
+        legend = '+-------+--------------------------------+\n'.join(l)
+        legend += '\n'
+
+        legend += '\n\n'.join(['.. |T%02d| replace::\n   :cabin:`%s`'
+                               % (i, x[0])
+                               for i, x in enumerate(timeline)])
+        legend += '\n\n'
+        legend += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
+                               % (i, 100001 + i, fr, to)
+                               for i, x in enumerate(timeline)])
+
+        context['sparkline_legend'] = legend
+
         return context
 
 
@@ -183,17 +210,16 @@ class Sparkline(LoginRequiredMixin, View):
 
     @property
     def height(self):
-        return 64
+        return 32
 
     timeline = [
         ["Wiener Kongress",                      [1815, [0, 0, 0]]],
-        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 1, 0]]],
-        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]]],
-        ["Deutsch-Französishcer Krieg",          [1870, 1871, [1, 0, 0, 0.8]]],
+        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 0, 1]]],
+        ["Deutsch-Französischer Krieg",          [1870, 1871, [1, 0, 0]]],
         ["Erfindung des Autos",                  [1886, [0, 0, 0]]],
-        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0, 0.8]]],
+        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0]]],
         ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]]],
-        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0, 0.8]]],
+        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0]]],
         ["Gründung von BRD und DDR",             [1949, [0, 0, 0]]],
         ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]]],
         ["Mauerbau",                             [1961, [0, 1, 0]]],
@@ -203,27 +229,36 @@ class Sparkline(LoginRequiredMixin, View):
 
     def get(self, request, pk, fr=None, to=None):
 
-        # pylint: disable=no-member
-        person = Person.objects.get(pk=pk)
-        if not person.datebirth:
-            surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                         self.width, self.height)
-            response = HttpResponse(content_type="image/png")
-            surface.write_to_png(response)
-            return response
+        if int(pk) < 100000:
+            # pylint: disable=no-member
+            person = Person.objects.get(pk=pk)
+            if not person.datebirth:
+                surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                             self.width, self.height)
+                response = HttpResponse(content_type="image/png")
+                surface.write_to_png(response)
+                return response
 
-        BIRTH_YEAR = person.datebirth.year
-        DEATH_YEAR = person.datedeath.year if person.datedeath\
-            else datetime.date.today().year
-        if fr is None:
+            BIRTH_YEAR = person.datebirth.year
+            DEATH_YEAR = person.datedeath.year if person.datedeath\
+                else datetime.date.today().year
+        else:
+            person = None
+
+        if fr is not None:
+            FROM_YEAR = int(fr)
+        elif person:
             FROM_YEAR = person.datebirth.year - 10
         else:
-            FROM_YEAR = int(fr)
-        if to is None:
-            TO_YEAR = (person.datedeath.year + 10) if person.datedeath\
-                      else FROM_YEAR + 100
-        else:
+            FROM_YEAR = 1900
+
+        if to is not None:
             TO_YEAR = int(to)
+        elif person:
+            TO_YEAR = (person.datedeath.year + 10) if person.datedeath\
+                    else FROM_YEAR + 100
+        else:
+            TO_YEAR = 2020
 
         def year_to_x(year):
             r = self.width/self.height *\
@@ -235,39 +270,73 @@ class Sparkline(LoginRequiredMixin, View):
 
         ctx = cairo.Context(surface)
         ctx.scale(self.height/1.0, self.height/1.0)
-        for key, value in Sparkline.timeline:
-            ctx.move_to(year_to_x(value[0]), 0.5)
-            ctx.line_to(year_to_x(value[1] if len(value) > 2
-                        else value[0]+0.3), 0.5)
-            ctx.set_source_rgba(*value[-1])
-            ctx.set_line_width(0.3)
+
+        def draw_line(f, t, width, rgba=(0, 0, 0)):
+            ctx.move_to(f, 0.5)
+            ctx.line_to(t, 0.5)
+            ctx.set_source_rgba(*rgba)
+            ctx.set_line_width(width)
             ctx.stroke()
 
-        ctx.set_line_width(0.02)
-        ctx.set_source_rgb(0, 0, 0)
-        ctx.move_to(year_to_x(BIRTH_YEAR), 0.5)
-        ctx.line_to(year_to_x(DEATH_YEAR), 0.5)
-        ctx.close_path()
-        ctx.stroke()
+        if int(pk) <= 100000:
+            for key, value in Sparkline.timeline:
+                draw_line(year_to_x(value[0]),
+                          year_to_x(value[1] if len(value) > 2
+                          else value[0]+0.3),
+                          0.3,
+                          value[-1][:3] + [0.2 if int(pk) < 100000 else 1, ])
 
-        for p, c, t in person.get_children():
-            for child in c:
-                if not child.datebirth:
-                    continue
-                ctx.set_source_rgb(0, 0, 0)
-                ctx.arc(year_to_x(child.datebirth.year),
-                        0.5, 0.1, 0, 2*math.pi)
+        if int(pk) >= 100000:
+            if int(pk) == 100000:
+                # header line
+                for i in range((FROM_YEAR-1)//10 + 1, TO_YEAR//10 + 1):
+                    draw_line(year_to_x(i*10),
+                              year_to_x(i*10)+0.02,
+                              0.2)
+                for i in range((FROM_YEAR-1)//100 + 1, TO_YEAR//100 + 1):
+                    draw_line(year_to_x(i*100),
+                              year_to_x(i*100)+0.06,
+                              0.6)
+            else:
+                def start(x):
+                    return x[1][0]
+
+                def end(x):
+                    return x[1][0] if len(x[1]) == 2 else x[1][1]
+
+                timeline = [x for x in Sparkline.timeline
+                            if FROM_YEAR <= end(x) and start(x) <= TO_YEAR]
+                value = timeline[int(pk)-100001][1]
+                draw_line(year_to_x(value[0]),
+                          year_to_x(value[1] if len(value) > 2
+                                    else value[0]+0.3),
+                          0.3,
+                          value[-1])
+
+        else:
+            draw_line(year_to_x(BIRTH_YEAR),
+                      year_to_x(DEATH_YEAR),
+                      0.04)
+
+            for p, c, t in person.get_children():
+                for child in c:
+                    if not child.datebirth:
+                        continue
+                    ctx.set_source_rgb(0, 0, 0)
+                    ctx.arc(year_to_x(child.datebirth.year),
+                            0.5, 0.1, 0, 2*math.pi)
+                    ctx.fill()
+
+            qs = Family.objects.filter(father=person) |\
+                Family.objects.filter(mother=person)
+            for f in qs.exclude(start_date='')\
+                       .exclude(start_date__isnull=True):
+                ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
+                ctx.set_source_rgb(1, 1, 1)
                 ctx.fill()
-
-        qs = Family.objects.filter(father=person) |\
-            Family.objects.filter(mother=person)
-        for f in qs.exclude(start_date=''):
-            ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
-            ctx.set_source_rgb(1, 1, 1)
-            ctx.fill()
-            ctx.set_source_rgb(0, 0, 0)
-            ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
-            ctx.stroke()
+                ctx.set_source_rgb(0, 0, 0)
+                ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
+                ctx.stroke()
 
         response = HttpResponse(content_type="image/png")
         surface.write_to_png(response)
