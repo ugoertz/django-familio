@@ -17,9 +17,18 @@
                 <li><a class="cabin" href="{% url 'note-list' %}">Texte</a></li>
                 {% endif %}
                 <li><a class="cabin" href="{% url 'impressum' %}">Impressum</a></li>
+                {% if request.user.is_authenticated %}
+                <li class="dropdown pull-right cabin">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name}} ({{ user.username }}) <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="/accounts/{{ user.username }}/">Profil</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/accounts/signout/">Abmelden</a></li>
+                </ul>
+                </li>
+                {% endif %}
             </ul>
             {% if request.user.is_authenticated %}
-            <p class="pull-right cabin navbar-text">{{ user.first_name}} {{ user.last_name }} ({{ user.username }})</p>
             <form class="navbar-form navbar-right" action="{% url "watson:search" %}">
                 <div class="form-group">
                     <input type="text" name="q" value="{{request.GET.q}}" placeholder="Suche" class="form-control">
