@@ -6,15 +6,15 @@
 {% block content %}
 <div class="container">
     <div class="row">
-<h2>{{ profile.user.username }} {% if profile.user.get_full_name %}({{ profile.user.get_full_name }}){% endif %}</h2>
+        <h2>{% if profile.user.get_full_name %}{{ profile.user.get_full_name }} {% endif %}({{ profile.user.username }})</h2>
   <div class="white-box">
     {% block profile_navigation %}
       {% comment %}Dirty hack. Will use django-guardian in the future.{% endcomment %}
       {% if user.username == profile.user.username %}
-        <ul class="list-group" id="box-nav">
+      <ul class="list-inline cabin" id="box-nav">
           {% block profile_navigation_items %}
             <li style="background-color: lightgray;" class="list-group-item"><a href="{% url 'userena_profile_detail' user.username %}">{% trans "Profil ansehen" %}</a></li>
-            <li class="list-group-item"><a href="{% url 'userena_profile_edit' user.username %}">{% trans "Details bearbeiten" %}</a></li>
+            <li class="list-group-item"><a href="{% url 'userena_profile_edit' user.username %}">{% trans "Profil bearbeiten" %}</a></li>
             <li class="list-group-item"><a href="{% url 'userena_password_change' user.username %}">{% trans "Passwort ändern" %}</a></li>
             <li class="list-group-item"><a href="{% url 'userena_email_change' user.username %}">{% trans "Email-Adresse ändern" %}</a></li>
           {% endblock %}
@@ -22,13 +22,13 @@
       {% endif %}
     {% endblock %}
 
-    <div id="details">
+    <div id="details" style="font-size: 120%;">
       {% block profile_details %}
         <img class="mugshot" src="{{ profile.get_mugshot_url }}" alt="{% trans "Dein Avatar" %}" />
-        <dl>
+        <dl style="margin-top: 30px;">
           {% block profile_definition_list %}
             {% if profile.user.get_full_name %}
-              <dt>{% trans "Name" %}</dt>
+              <dt>Name</dt>
               <dd>{{ profile.user.get_full_name }}</dd>
             {% endif %}
             {% if profile.user.email and not hide_email %}
