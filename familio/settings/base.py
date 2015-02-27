@@ -149,10 +149,10 @@ TIME_ZONE = 'Europe/Berlin'
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
+    'dajaxice.finders.DajaxiceFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
-    'dajaxice.finders.DajaxiceFinder',
 )
 
 MIDDLEWARE_CLASSES = [

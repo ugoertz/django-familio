@@ -4,6 +4,7 @@ import watson
 
 from .models import Person, Place, Event, Family, PersonPlace
 
+
 roleDict = {
     'p': Person,
     'e': Event,

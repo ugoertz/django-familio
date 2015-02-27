@@ -1,15 +1,56 @@
 {% extends 'umessages/base_message.html' %}
+{% load static %}
 {% load i18n %}
+{% load dajaxice_templatetags %}
 
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+{% endblock %}
+
+{% block jsnocompress %}
+{{ block.super }}
+{% dajaxice_js_import %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+$('select').selectize({
+    valueField: 'username',
+    searchField: ['label'],
+    render: {
+        option:
+        function (item, escape) {
+            return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+        },
+        item:
+        function (item, escape) {
+            return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+        }
+    },
+    create: false,
+    load: function(query, callback) {
+            if (!query.length) return callback();
+            Dajaxice.base.getuser(callback, {"query": query});
+    }
+});
+});
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-10 cabin">
+        <div class="col-md-8 cabin">
 <h2>{% trans "Nachricht schreiben" %}</h2>
 <form action="" method="post" class="form-group" id="compose_message_form">
   {% csrf_token %}
-    {{ form.as_p }}
+  <table class="table"><tr><td style="width: 100px; text-align: left;"><label for="id_to">An:</label></td><td style="width: 80%;"><select id="id_to" name="to" style="font-family: Cabin, cabin, helvetica, sans-serif;"></select></td></tr>
+      <tr><td style="text-align: left; vertical-align: top;"><label for="id_body">Nachricht:</label></td><td> <textarea class="message" cols="100" id="id_body" name="body" rows="10">
+  </textarea></td></tr></table>
   <input type="submit" name="send" class="btn btn-default" value="{% trans "Abschicken" %}" />
 </form>
 </div>

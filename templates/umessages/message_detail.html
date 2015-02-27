@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        <div class="col-md-10 cabin">
+        <div class="col-md-8 cabin">
             <h2>Konversation mit {{ recipient.get_full_name }} ({{ recipient.username }})</h2>
 
             <h3>{% trans "Antworten" %}</h3>
@@ -13,7 +13,8 @@
             <form action="/messages/compose/" method="post" class="form-group" id="compose_message_form">
                 {% csrf_token %}
                   <input id="id_to" name="to" type="hidden" value="{{ recipient }}" /></p>
-                      <p><label for="id_body">Nachricht:</label> <textarea class="message" cols="40" id="id_body" name="body" rows="10"> </textarea></p>
+                  <table class="table">
+                      <tr><td><label for="id_body">Nachricht:</label></td><td width="80%"> <textarea class="message" cols="100" id="id_body" name="body" rows="10"> </textarea></td></tr></table>
                         <input type="submit" name="send" class="btn btn-default" value="Abschicken" />
                     </form>
 
