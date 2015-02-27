@@ -1,0 +1,33 @@
+{% load comments_tags %}
+{% load humanize %}
+{% load markup_tags %}
+
+<div class="cabin">
+    {% get_comment_list for object as comment_tree %}
+    <ul class="list-group" id="commenters">
+        {% for c in comment_tree %}
+        <li id="{{c.id}}" class="list-group-item" style="margin-left:{{c.depth}}px;">
+        <div class="row">
+            <div class="col-md-2">
+                <img src="{{ request.user.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
+            </div>
+            <div class="cabin col-md-10">
+                <b>{{ c.author.get_full_name }}</b><br>{{c.date|naturaltime}}
+                <p style="margin-top: 20px;">{{c.content|apply_markup:"genrestructuredtext"}}</p>
+                <p style="float: right; font-size: 100%;"><a href="" class="reply">Antworten</a></p>
+            </div>
+        </li>
+        {% empty %}
+        <li class="list-group-item">Es gibt noch keine Kommentare. Schreibe den ersten!</li>
+        {% endfor %}
+    </ul>
+
+    {% get_comment_form for object as form %}
+    <form id="postcomment" method="post" action="/comments/post/">
+        {{form.as_p}}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <p><input type="submit" value="Abschicken" class="btn btn-default"/></p>
+        {% csrf_token %}
+    </form>
+
+</div>

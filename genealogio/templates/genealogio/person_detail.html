@@ -82,6 +82,9 @@ $(window).on('map:init', function (e) {
 
             {% leaflet_map "places" %}
             {% endif %}
+
+            <hr>
+            {% include "comments/comments.html" %}
         </div>
         <div class="col-md-3 col-md-offset-1">
             <p style="margin-top:50px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>

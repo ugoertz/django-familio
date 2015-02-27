@@ -164,20 +164,34 @@
         color: #666666;
     }
 
+    label {
+        vertical-align: top;
+    }
+
+    textarea {
+        font-size: 80%;
+    }
+
     /* Do not show restructuredtext error messages by default */
     .system-messages, .system-message {
         display: none;
     }
-
-
-/* Move down content because we have a fixed navbar that is 50px tall */
-body {
-    padding-top: 50px;
-    padding-bottom: 20px;
-}
+    /* Move down content because we have a fixed navbar that is 50px tall */
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
   </style>
   {% block css %}{% endblock %}
   {% endcompress %}
+
+    {% block cdn_js %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-2.1.1.min.js"><\/script>')</script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    {% endblock cdn_js %}
+
+
   <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
 
   <!-- All JavaScript at the bottom, except this Modernizr build.
@@ -218,13 +232,6 @@ body {
 
 
   <!-- JavaScript at the bottom for fast page loading -->
-
-  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
-  {% block cdn_js %}
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-2.1.1.min.js"><\/script>')</script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
-  {% endblock cdn_js %}
 
   {% block jsnocompress %}
   {% endblock jsnocompress %}

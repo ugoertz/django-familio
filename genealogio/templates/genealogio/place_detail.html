@@ -59,6 +59,8 @@ $(window).on('map:init', function (e) {
             </div>
 
             {% leaflet_map "place" %}
+            <hr>
+            {% include "comments/comments.html" %}
         </div>
         <div class="col-md-3 col-md-offset-1">
         {% if user.is_authenticated and user.is_staff %}

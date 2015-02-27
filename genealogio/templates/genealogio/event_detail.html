@@ -19,6 +19,8 @@
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "genealogio/event_detail.rst" %}
             {% endfilter %}
+            <hr>
+            {% include "comments/comments.html" %}
         </div>
         <div class="col-md-3 col-md-offset-1" style="margin-top: 50px;">
         {% if user.is_authenticated and user.is_staff %}

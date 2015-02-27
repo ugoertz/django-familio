@@ -73,6 +73,7 @@ INSTALLED_APPS = (
     # Application base, containing global templates.
     'base',
     'accounts',
+    'comments',
 
     # Local apps, referenced via appname
     'genealogio',

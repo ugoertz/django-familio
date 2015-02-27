@@ -54,3 +54,5 @@ git+https://github.com/etianen/django-watson.git@de5fcb3064a427b6dbdf04a233d2adc
 
 pillow
 cairocffi
+
+django-dbarray
