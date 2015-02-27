@@ -1,0 +1,32 @@
+{% extends 'umessages/base_message.html' %}
+{% load i18n umessages_tags %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row cabin">
+        <div class="col-md-10 cabin">
+<h2>{% trans "Nachrichten" %}</h2>
+{% get_unread_message_count_for user as unread_message_count %}
+{% blocktrans %}{{ unread_message_count }} neue Nachrichten.{% endblocktrans %}
+<a href="{% url 'userena_umessages_compose' %}" style="margin-left: 50px;" class="btn btn-default">{% trans "Nachricht schreiben" %}</a>
+<ul class="list-group" style="margin-top: 50px;">
+  {% for message in message_list %}
+  <li class="list-group-item">
+  <p>
+  {% if message.um_from_user == user %}
+  An <a href="{% url 'userena_umessages_detail' message.um_to_user.username %}">{{ message.um_to_user }}</a>:
+  {% get_unread_message_count_between user and message.um_to_user as unread_between_count %}
+  {% else %}
+  Von <a href="{% url 'userena_umessages_detail' message.um_from_user.username %}">{{ message.um_from_user }}</a>:
+  {% get_unread_message_count_between user and message.um_from_user as unread_between_count %}
+  {% endif %}
+  ({{ unread_between_count }} neue Nachrichten)  </p>
+  {% blocktrans with message.latest_message as latest_message %}{{ latest_message }}{% endblocktrans %}
+  </li>
+  {% endfor %}
+</ul>
+</div>
+</div>
+</div>
+{% endblock %}

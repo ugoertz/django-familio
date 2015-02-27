@@ -1,3 +1,5 @@
+{% load umessages_tags  %}
+
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
         <div class="navbar-header">
@@ -18,10 +20,12 @@
                 {% endif %}
                 <li><a class="cabin" href="{% url 'impressum' %}">Impressum</a></li>
                 {% if request.user.is_authenticated %}
+                {% get_unread_message_count_for request.user as message_count %}
                 <li class="dropdown pull-right cabin">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name}} ({{ user.username }}) <span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ user.first_name}} ({{ user.username }})  <span class="caret"></span> <span class="glyphicon glyphicon-envelope" style="padding-left: 10px; color: {% if message_count %}yellow{% else %}lightgray{% endif %};"></span></a>
                 <ul class="dropdown-menu">
                     <li><a href="/accounts/{{ user.username }}/">Profil</a></li>
+                    <li><a href="/messages/">Nachrichten</a></li>
                     <li class="divider"></li>
                     <li><a href="/accounts/signout/">Abmelden</a></li>
                 </ul>

@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'leaflet',
     'djgeojson',
     'userena',
+    'userena.contrib.umessages',
     'easy_thumbnails',
     'guardian',
 
