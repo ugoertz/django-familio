@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
@@ -7,6 +9,8 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import escape
+from django.core.mail import send_mail
+from django.contrib.sites.models import Site
 from braces.views import LoginRequiredMixin
 
 from .models import Comment
@@ -14,6 +18,21 @@ from .forms import CommentForm
 
 
 class PostComment(LoginRequiredMixin, View):
+
+    EMAIL_TEMPLATE = '''
+Hallo %s,
+
+%s hat Deinen Kommentar auf %s beantwortet.
+
+----------------------------------------------------------------------------------
+%s
+----------------------------------------------------------------------------------
+
+
+Viele Grüße,
+
+das %s-Team
+'''
 
     def post(self, request):
         data = request.POST.copy()
@@ -65,6 +84,22 @@ class PostComment(LoginRequiredMixin, View):
                 comment.path = [comment.id]
             else:
                 node = Comment.objects.get(id=parent)
+                # send notification email to author of parent comment
+                # (if desired)
+                if node.author.userprofile.email_on_comment_answer:
+                    site = Site.objects.get_current()
+                    send_mail('%s: Dein Kommentar wurde beantwortet'
+                              % site.domain,
+                              PostComment.EMAIL_TEMPLATE % (
+                                  node.author.first_name,
+                                  comment.author.get_full_name(),
+                                  request.META['HTTP_REFERER'],
+                                  comment.content,
+                                  site.domain),
+                              'ug@geometry.de',
+                              [node.author.email, ],
+                              fail_silently=True)
+
                 comment.path = node.path
                 comment.path.append(comment.id)
             comment.save()
