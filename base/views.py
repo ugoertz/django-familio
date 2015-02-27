@@ -6,6 +6,7 @@ from django.shortcuts import render
 # import watson
 from genealogio.models import Person
 from notaro.models import Note
+from comments.models import Comment
 
 
 def home(request):
@@ -28,6 +29,7 @@ def home(request):
     return render(
             request, 'base/home.html',
             {'personen': Person.objects.all().order_by('-date_added')[:5],
+             'comments': Comment.objects.all().order_by('-date')[:5],
              'birthdeathdays': birthdeathdays, 
              'today': datetime.date.today(),
              'notes': Note.objects.filter(published=True)
