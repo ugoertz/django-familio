@@ -215,6 +215,19 @@
   </header>
 
   <div role="main">
+      {% if messages %}
+      <div class="container">
+          <div class="row">
+              <div class="col-md-10 cabin"
+                  <ul class="list-group messages">
+                      {% for message in messages %}
+                      <li class="list-group-item"><div style="padding: 10px;" class="cabin {{ message.tags }}">{{ message  }}</div></li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </div>
+      </div>
+      {% endif %}
     {% block content %}{% endblock %}
   </div>
 

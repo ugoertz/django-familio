@@ -9,6 +9,7 @@ import logging
 # Normally you should not import ANYTHING from Django directly
 # into your settings, but ImproperlyConfigured is an exception.
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.messages import constants as messages
 
 
 def get_env_setting(setting):
@@ -414,4 +415,12 @@ LEAFLET_CONFIG = {
 
 NOTARO_SETTINGS = {
     'autocomplete_helper': ('js/genrst-hint.js', ),
+}
+
+MESSAGE_TAGS = {
+    messages.INFO: 'bg-info',
+    messages.SUCCESS: 'bg-success',
+    messages.DEBUG: 'bg-info',
+    messages.WARNING: 'bg-warning',
+    messages.ERROR: 'bg-danger',
 }
