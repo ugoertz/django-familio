@@ -2,6 +2,15 @@
 {% load i18n %}
 {% load url from future %}
 
+{% block css %}
+{{ block.super }}
+<style>
+td {
+    text-align: left;
+}
+</style>
+{% endblock %}
+
 
 {% block content %}
 <div class="container">
@@ -11,6 +20,7 @@
 
 <form action="" method="post">
     <div class="form-group">
+        <div class="col-md-10 cabin">
   <ul class="list-inline cabin" id="box-nav">
     <li class="list-group-item first"><a href="{% url 'userena_profile_detail' user.username %}"><span>{% trans 'Profil ansehen' %}</span></a></li>
     <li class="list-group-item"><a href="{% url 'userena_profile_edit' user.username %}">{% trans "Profil bearbeiten" %}</a></li>
@@ -18,13 +28,14 @@
     <li style="background-color: lightgray;"  class="list-group-item last selected"><a href="{% url 'userena_email_change' user.username %}">{% trans "Email-Adresse ändern" %}</a></li>
   </ul>
   {% csrf_token %}
-  <fieldset>
     <legend>{% trans "Email-Adresse ändern" %}</legend>
-    {{ form.as_p }}
-  </fieldset>
+    <table class="table">
+    {{ form.as_table }}
+  </table>
   <input type="submit" value="{% trans "Email-Adresse ändern" %}" class="btn btn-default" />
   </div>
 </form>
+  </div>
   </div>
   </div>
 {% endblock %}

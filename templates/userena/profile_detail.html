@@ -6,6 +6,7 @@
 {% block content %}
 <div class="container">
     <div class="row">
+        <div class="col-md-10 cabin">
         <h2>{% if profile.user.get_full_name %}{{ profile.user.get_full_name }} {% endif %}({{ profile.user.username }})</h2>
   <div class="white-box">
     {% block profile_navigation %}
@@ -22,7 +23,7 @@
       {% endif %}
     {% endblock %}
 
-    <div id="details" style="font-size: 120%;">
+    <div id="details" style="font-size: 120%;" class="cabin">
       {% block profile_details %}
         <img class="mugshot" src="{{ profile.get_mugshot_url }}" alt="{% trans "Dein Avatar" %}" />
         <dl style="margin-top: 30px;">
@@ -35,6 +36,10 @@
               <dt>{% trans "Email" %}</dt>
               <dd>{{ profile.user.email }}</dd>
             {% endif %}
+            <dt>Email-Benachrichtigung bei neuen Nachrichten</td>
+        <dd>{% if profile.email_on_message %}Ja{% else %}Nein{% endif %}</dd>
+            <dt>Email-Benachrichtigung bei Antwort auf meine Kommentare</td>
+        <dd>{% if profile.email_on_comment_answer %}Ja{% else %}Nein{% endif %}</dd>
             {% if profile.age %}
             <dt>{% trans "Alter" %}</dt>
               <dd>{{ profile.age }}</dd>
@@ -55,6 +60,7 @@
         </dl>
       {% endblock %}
     </div>
+  </div>
   </div>
   </div>
   </div>

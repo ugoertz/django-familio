@@ -4,6 +4,7 @@ from django.utils.translation import ugettext as _
 from django.contrib.sites.models import Site
 
 from userena.models import UserenaBaseProfile
+from genealogio.models import Person
 
 
 class UserSite(models.Model):
@@ -22,11 +23,26 @@ class UserSite(models.Model):
 
 
 class UserProfile(UserenaBaseProfile):
+    KEYMAP_CHOICES = ((0, 'default'),
+                      (1, 'vim'),
+                      (2, 'sublime'),
+                      )
+
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 unique=True,
                                 verbose_name=_('Benutzer'),
                                 related_name='userprofile')
     sites = models.ManyToManyField(Site, through=UserSite, blank=True)
+
+    person = models.ForeignKey(Person, blank=True, null=True)
+    email_on_message = models.BooleanField(
+            default=False,
+            verbose_name="Email-Benachrichtigung bei Nachrichten")
+    email_on_comment_answer = models.BooleanField(
+            default=False,
+            verbose_name="Email-Benachrichtigung bei Antwort" +
+                         " auf meine Kommentare")
+    codemirror_keymap = models.IntegerField(choices=KEYMAP_CHOICES, default=0)
 
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
@@ -43,5 +59,4 @@ class UserProfile(UserenaBaseProfile):
             us = UserSite(user=self, site=Site.objects.get_current(),
                           role=role)
             us.save()
-
 

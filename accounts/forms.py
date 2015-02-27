@@ -1,9 +1,9 @@
 from userena.forms import EditProfileForm
-from userena.utils import get_profile_model
+#  from userena.utils import get_profile_model
 
 
 class EditProfileFormExtra(EditProfileForm):
-    class Meta:
-        model = get_profile_model()
-        exclude = ['user', 'sites']
+    class Meta(EditProfileForm.Meta):
+        fields = ['privacy', 'mugshot',
+                  'email_on_message', 'email_on_comment_answer']
 
