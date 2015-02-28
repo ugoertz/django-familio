@@ -5,10 +5,23 @@
 
 {% block content %}
 <div class="container">
-    <h1>Impressum</h1>
 
     <div class="row">
         <div class="col-md-8">
+{% if request.user.is_authenticated %}
+<h1>Redakteure</h1>
+
+<div style="margin-bottom: 30px;" class="cabin">
+<ul class="list-group">
+{% for u in staff %}
+<li class="list-group-item">{{ u.get_full_name }} ({{ u.username }}), <a href="mailto:{{ u.email }}">{{ u.email }}</a> <a href="/messages/compose/{{ u.username }}/" style="margin-left: 30px;" class="btn btn-default">Nachricht schicken</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+</div>
+
+
+<h1>Impressum</h1>
             {% filter apply_markup:"genrestructuredtext" %}
 
 Dies ist eine nicht-kommerzielle Web-Seite, auf der Informationen zur Familiengeschichte der Familie Görtz unde verwandter Familien zusammengetragen sind.

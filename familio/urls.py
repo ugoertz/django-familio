@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from filebrowser.sites import site
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.views.generic import TemplateView
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
@@ -17,6 +18,16 @@ dajaxice_autodiscover()
 def bad(request):
     """ Simulates a server error """
     1 / 0
+
+
+class ImpressumView(TemplateView):
+    template_name = "impressum.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ImpressumView, self).get_context_data(**kwargs)
+        context['staff'] = get_user_model().objects.filter(is_staff=True)
+        return context
+
 
 urlpatterns = patterns('',
                        (r'^admin/filebrowser/', include(site.urls)),
@@ -36,8 +47,7 @@ urlpatterns = patterns('',
                             }),
                        url(r'^bad/$', bad),
                        url(r'impressum/$',
-                           TemplateView
-                           .as_view(template_name="impressum.html"),
+                           ImpressumView.as_view(),
                            name='impressum'),
                        url(r'robots\.txt$',
                            TemplateView.as_view(template_name="robots.txt",
