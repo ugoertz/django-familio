@@ -12,7 +12,7 @@
                 <img src="{{ request.user.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
             </div>
             <div class="cabin col-md-10">
-                <b>{{ c.author.get_full_name }}</b><br>{{c.date|naturaltime}}
+                <b>{% firstof c.author.get_full_name c.author.username %}</b><br>{{c.date|naturaltime}}
                 <p style="margin-top: 20px;">{{c.content|apply_markup:"genrestructuredtext"}}</p>
                 <p style="float: right; font-size: 100%;"><a href="" class="reply">Antworten</a></p>
             </div>
