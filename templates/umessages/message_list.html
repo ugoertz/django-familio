@@ -15,10 +15,10 @@
   <li class="list-group-item">
   <p>
   {% if message.um_from_user == user %}
-  An <a href="{% url 'userena_umessages_detail' message.um_to_user.username %}">{{ message.um_to_user }}</a>:
+  An <a href="{% url 'userena_umessages_detail' message.um_to_user.username %}">{{ message.um_to_user.get_full_name }} ({{ message.um_to_user }})</a>:
   {% get_unread_message_count_between user and message.um_to_user as unread_between_count %}
   {% else %}
-  Von <a href="{% url 'userena_umessages_detail' message.um_from_user.username %}">{{ message.um_from_user }}</a>:
+  Von <a href="{% url 'userena_umessages_detail' message.um_from_user.username %}">{{ message.um_from_user.get_full_name }} ({{ message.um_from_user }})</a>:
   {% get_unread_message_count_between user and message.um_from_user as unread_between_count %}
   {% endif %}
   ({{ unread_between_count }} neue Nachrichten)  </p>

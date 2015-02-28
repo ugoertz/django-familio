@@ -15,6 +15,7 @@
 
 {% block js %}
 {{ block.super }}
+{% if not recipients %}
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
@@ -39,6 +40,7 @@ $('select').selectize({
 });
 });
 </script>
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -46,11 +48,27 @@ $('select').selectize({
     <div class="row">
         <div class="col-md-8 cabin">
 <h2>{% trans "Nachricht schreiben" %}</h2>
+
 <form action="" method="post" class="form-group" id="compose_message_form">
   {% csrf_token %}
-  <table class="table"><tr><td style="width: 100px; text-align: left;"><label for="id_to">An:</label></td><td style="width: 80%;"><select id="id_to" name="to" style="font-family: Cabin, cabin, helvetica, sans-serif;"></select></td></tr>
-      <tr><td style="text-align: left; vertical-align: top;"><label for="id_body">Nachricht:</label></td><td> <textarea class="message" cols="100" id="id_body" name="body" rows="10">
-  </textarea></td></tr></table>
+  <table class="table">
+      <tr>
+          <td style="width: 100px; text-align: left;">
+              <label for="id_to">An:</label>
+          </td>
+          <td style="width: 80%; text-align: left;">
+              {% if recipients %}
+              <input id="id_to" name="to" style="width: 100%;" type="hidden" value="{{ recipients.0.username }}">
+              <span style="text-align: left;">{{ recipients.0.get_full_name }} ({{ recipients.0.username  }})</span>
+              {% else %}
+              <select id="id_to" name="to" style="font-family: Cabin, cabin, helvetica, sans-serif;">
+              </select>
+              {% endif %}
+          </td>
+      </tr>
+      <tr><td style="text-align: left; vertical-align: top;"><label for="id_body">Nachricht:</label></td><td>
+<textarea class="message" cols="100" id="id_body" name="body" rows="10"></textarea>
+      </td></tr></table>
   <input type="submit" name="send" class="btn btn-default" value="{% trans "Abschicken" %}" />
 </form>
 </div>

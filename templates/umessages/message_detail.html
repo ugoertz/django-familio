@@ -1,5 +1,6 @@
 {% extends 'umessages/base_message.html' %}
 {% load i18n %}
+{% load markup_tags %}
 
 
 {% block content %}
@@ -14,15 +15,15 @@
                 {% csrf_token %}
                   <input id="id_to" name="to" type="hidden" value="{{ recipient }}" /></p>
                   <table class="table">
-                      <tr><td><label for="id_body">Nachricht:</label></td><td width="80%"> <textarea class="message" cols="100" id="id_body" name="body" rows="10"> </textarea></td></tr></table>
+                      <tr><td><label for="id_body">Nachricht:</label></td><td width="80%"> <textarea class="message" cols="100" id="id_body" name="body" rows="10"></textarea></td></tr></table>
                         <input type="submit" name="send" class="btn btn-default" value="Abschicken" />
                     </form>
 
 <ul class="list-group">
 {% for message in message_list %}
-<li class="list-group-item">
-<p>{{ message }}</p>
-  <p style="font-size: 100%;">{% blocktrans with message.sent_at as sent_at %}Geschrieben am {{ sent_at }}{% endblocktrans %}</p>
+<li class="list-group-item" {% ifequal message.sender.username request.user.username %}style="background-color: #eeeeee;"{% endifequal %}>
+{{ message.body|apply_markup:"genrestructuredtext" }}
+<p style="font-size: 100%;">{% blocktrans with message.sent_at as sent_at %}Geschrieben am {{ sent_at }}{% endblocktrans %}</p>
 </li>
 {% endfor %}
 </ul>
