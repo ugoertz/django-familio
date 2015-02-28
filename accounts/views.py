@@ -110,8 +110,6 @@ class InviteView(LoginRequiredMixin, View):
                     send_email=False)
             new_user.first_name = form.cleaned_data['first_name']
             new_user.last_name = form.cleaned_data['last_name']
-            print form.cleaned_data['first_name']
-            print new_user.get_full_name()
             new_user.save()
 
             # send out invitation email
