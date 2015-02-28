@@ -1,15 +1,17 @@
 {% extends 'userena/base_userena.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Email verification failed." %}{% endblock %}
+{% block title %}{% trans "Überprüfung der Email-Adresse fehlgeschlagen." %}{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row">
-<h2>{% trans "Your email could not be verified..." %}</h2>
+        <div class="col-md-10 cabin">
+<h2>{% trans "Deine Email-Adresse konnte nicht verifiziert werden..." %}</h2>
 
-<p>{% trans "Your email could not be verified..." %}</p>
-<p>{% trans "You could try changing it again in your account settings." %}</p>
+<p>{% trans "Deine Email-Adresse konnte nicht verifiziert werden..." %}</p>
+<p>{% trans "Bitte versuche es gegebenenfalls erneut, die Email-Adresse zu ändern." %}</p>
+  </div>
   </div>
   </div>
 {% endblock %}

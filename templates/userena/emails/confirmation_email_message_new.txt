@@ -1,16 +1,16 @@
 {% load i18n %}{% autoescape off %}{% load url from future %}
-{% if not without_usernames %}{% blocktrans with user.username as username %}Dear {{ username }},{% endblocktrans %}
+{% if not without_usernames %}{% blocktrans with user.username as username %}Hallo {{ username }},{% endblocktrans %}
 {% endif %}
-{% blocktrans with site.name as site %}You requested a change of your email address at {{ site }}.{% endblocktrans %}
+{% blocktrans with site.name as site %}Du hast darum gebeten, Deine Email-Adresse bei {{ site }} zu ändern.{% endblocktrans %}
 
 
-{% trans "Please confirm this email address by clicking on the link below:" %}
+{% trans "Bitte bestätige die Änderung, indem Du den folgenden Link aufrufst:" %}
 
 {{ protocol }}://{{ site.domain }}{% url 'userena_email_confirm' confirmation_key %}
 
 
-{% trans "Thanks for using our site!" %}
+{% trans "Danke, dass Du unsere Seite benutzt!" %}
 
-{% trans "Sincerely" %},
+{% trans "Viele Grüße" %},
 {{ site.name }}
 {% endautoescape %}

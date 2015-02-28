@@ -1,3 +1,3 @@
 {% load i18n %}
-{% blocktrans with site.name as site %}Email verification for {{ site }}.{% endblocktrans %}
+{% blocktrans with site.name as site %}Überprüfung der Email-Adresse bei {{ site }}.{% endblocktrans %}
 

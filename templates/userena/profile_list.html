@@ -6,6 +6,7 @@
 {% block content %}
 <div class="container">
     <div class="row">
+        <div class="col-md-10 cabin">
 <h2>{% trans 'Profile' %}</h2>
 <ul class="list-group" id="profile_list">
   {% for profile in profile_list %}
@@ -36,6 +37,7 @@
   </span>
 </div>
 {% endif %}
+  </div>
   </div>
   </div>
 {% endblock %}

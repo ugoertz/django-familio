@@ -1,12 +1,12 @@
 {% load i18n %}{% autoescape off %}
-{% if not without_usernames %}{% blocktrans with user.username as username %}Dear {{ username }},{% endblocktrans %}
+{% if not without_usernames %}{% blocktrans with user.username as username %}Hallo {{ username }},{% endblocktrans %}
 {% endif %}
-{% blocktrans with site.name as site %}There was a request to change your email address at {{ site }}.{% endblocktrans %}
+{% blocktrans with site.name as site %}Wir haben eine Anfrage erhalten, die Email-Adresse zu Deinem Account bei  {{ site }} zu ändern.{% endblocktrans %}
 
-{% blocktrans %}An email has been send to {{ new_email }} which contains a verification link. Click on the link in this email to activate it.{% endblocktrans %}
+{% blocktrans %}Wir haben eine Email an {{ new_email }} geschickt. Bitte klicke den Link in dieser Email an, um Deine Adresse bei uns zu ändern. (Wenn Du Deine Adresse nicht ändern möchtest, dann brauchst Du nichts zu tun.{% endblocktrans %}
 
-{% trans "Thanks for using our site!" %}
+{% trans "Danke, dass Du unsere Seite benutzt." %}
 
-{% trans "Sincerely" %},
+{% trans "Viele Grüße" %},
 {{ site.name }}
 {% endautoescape %}

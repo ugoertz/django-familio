@@ -7,6 +7,7 @@
 {% block content %}
 <div class="container">
 <div class="row">
+    <div class="col-md-10 cabin">
 <form action="" method="post">
     <div class="form-group">
   {% csrf_token %}
@@ -33,6 +34,7 @@
   </div>
 </form>
 <p class="forgot-password"><a href="{% url 'userena_password_reset' %}" title="{% trans 'Passwort vergessen?' %}">{% trans "Passwort vergessen?" %}</a></p>
+  </div>
   </div>
   </div>
 {% endblock %}

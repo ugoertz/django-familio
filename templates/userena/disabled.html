@@ -1,13 +1,15 @@
 {% extends 'userena/base_userena.html' %}
 {% load i18n %}
 
-{% block title %}{% trans "Disabled account" %}{% endblock %}
+{% block title %}{% trans "Account gesperrt" %}{% endblock %}
 {% block content %}
 <div class="container">
     <div class="row">
-<h2>{% trans "Your account has been disabled" %}</h2>
-<p>{% trans "It seems your account has been disabled." %}</p>
-<p>{% trans "If you feel that injustice has been done to you, feel free to contact the administrators to find out why" %}</p>
+        <div class="col-md-10 cabin">
+<h2>{% trans "Dein Account wurde gesperrt" %}</h2>
+<p>{% trans "Anscheinend wurde Dein Account gesperrt." %}</p>
+<p>{% trans "Wenn Du denkst, dass das zu unrecht geschehen ist, nimm bitte Kontakt mit einem der Administratoren auf." %}</p>
+  </div>
   </div>
   </div>
 {% endblock %} 
