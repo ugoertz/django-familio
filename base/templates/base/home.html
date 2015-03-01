@@ -70,7 +70,7 @@ $(window).on('map:init', function (e) {
             <h2>Die neuesten Kommentare</h2>
             <ul class="list-group">
                 {% for c in comments %}
-                <li class="list-group-item"><a href="{{ c.content_object.get_absolute_url }}"><span style="margin-right: 10px; font-size: 90%;" class="cabin">Von {% firstof c.author.get_full_name c.author.username %} bei</span> <b>{% firstof c.content_object.get_primary_name c.content_object.title c.content_object.name c.content_object %}</b></a></li>
+                <li class="list-group-item"><a href="{{ c.content_object.get_absolute_url }}"><span style="margin-right: 10px; font-size: 100%;" class="cabin">Von {% firstof c.author.get_full_name c.author.username %} bei</span> <b>{% firstof c.content_object.get_primary_name c.content_object.title c.content_object.name c.content_object %}</b></a></li>
                 {% endfor %}
             </ul>
             {% endif %}
