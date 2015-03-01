@@ -357,6 +357,7 @@ class Sparkline(LoginRequiredMixin, View):
                 ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
                 ctx.set_source_rgb(1, 1, 1)
                 ctx.fill()
+                ctx.set_line_width(0.04)
                 ctx.set_source_rgb(0, 0, 0)
                 ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
                 ctx.stroke()
