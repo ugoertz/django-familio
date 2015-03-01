@@ -7,6 +7,10 @@
 .. role:: cabin
     :class: cabin
 
+.. |br| raw:: html
+
+   <br />
+
 ===============================================================================
 Familie {{ object }}
 ===============================================================================
@@ -63,30 +67,25 @@ Zeitstrahl
 ----------
 
 +--------+--------------------------------+
-|        | {{ fr }} |img1| {{ to }}               |
+|        | {{ fr }} |head| {{ to }}               |
 +========+================================+
 | |PF|   | |imgPF|                        |
 +--------+--------------------------------+
 | |PM|   | |imgPM|                        |
 +--------+--------------------------------+
-{% for child in object.get_children %}| |P{{ forloop.counter0 }}|   | |imgP{{ forloop.counter0  }}|                        |
+{% for child in object.get_children %}| |{{ forloop.counter0 }}|    | |img{{ forloop.counter0  }}|                         |
 +--------+--------------------------------+
 {% endfor %}{{ sparkline_legend }}
 
-.. |img1| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
+.. |head| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
 
-.. |PF| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.father %}
+{% include "genealogio/person_sparkline.rst" with person=object.father label="PF" %}
 
-.. |imgPF| image:: /gen/sparkline/{{ object.father.id }}/{{ fr }}/{{ to }}/
-
-.. |PM| replace:: {% include "genealogio/person_snippet_full.rst" with person=object.mother %}
-
-.. |imgPM| image:: /gen/sparkline/{{ object.mother.id }}/{{ fr }}/{{ to }}/
+{% include "genealogio/person_sparkline.rst" with person=object.mother label="PM" %}
 
 {% for child in object.get_children %}
-.. |P{{ forloop.counter0 }}| replace:: {% include "genealogio/person_snippet_full.rst" with person=child %}
+{% include "genealogio/person_sparkline.rst" with person=child label=forloop.counter0 %}
 
-.. |imgP{{ forloop.counter0  }}| image:: /gen/sparkline/{{ child.id }}/{{ fr }}/{{ to }}/
 {% endfor %}
 
 

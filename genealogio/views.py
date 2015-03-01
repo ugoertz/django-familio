@@ -20,12 +20,12 @@ import json
 # from django.template import Template, Context
 # from django.template.loader import get_template
 # from django.core.mail import send_mail, send_mass_mail
-# from django.core.exceptions import ObjectDoesNotExist
 # from django.conf import settings
 # from django.db.models import Sum
 # from django.core.serializers.json import DateTimeAwareJSONEncoder
 # from django.db.models.query import Q
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
@@ -138,15 +138,17 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
 
         timeline = [x for x in Sparkline.timeline
                     if fr <= end(x) and start(x) <= to]
-        l = ['| |T%02d|_ | |Tmg%02d|                        |\n' % (i, i)
+        l = ['||T%02d|_  | |Tmg%02d|                        |\n' % (i, i)
              for i in range(len(timeline))]
         l.append('\n')
 
         legend = '+--------+--------------------------------+\n'.join(l)
         legend += '\n'
 
-        legend += '\n\n'.join(['.. |T%02d| replace::\n   :cabin:`%s`'
-                               % (i, x[0])
+        legend += '\n\n'.join(['.. |T%02d| replace::\n' % i +
+                               '   :cabin:`%s` |br| :cabin:`%s`'
+                               % (x[0], str(x[1][0]) if len(x[1]) == 2
+                                  else '%s-%s' % tuple(x[1][:2]), )
                                for i, x in enumerate(timeline)])
         legend += '\n\n'
         legend += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
@@ -232,9 +234,11 @@ class Sparkline(LoginRequiredMixin, View):
         ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0]],
          'https://de.wikipedia.org/wiki/Zweiter_Weltkrieg'],
         ["Gründung von BRD und DDR",             [1949, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland'],
+         'https://de.wikipedia.org/wiki/' +
+         'Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland'],
         ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
+         'https://de.wikipedia.org/wiki/' +
+         'Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
         ["Mauerbau",                             [1961, [0, 1, 0]],
          'https://de.wikipedia.org/wiki/Berliner_Mauer'],
         ["Wiedervereinigung",                    [1990, [0, 0, 1]],
@@ -247,17 +251,20 @@ class Sparkline(LoginRequiredMixin, View):
 
         if int(pk) < 100000:
             # pylint: disable=no-member
-            person = Person.objects.get(pk=pk)
-            if not person.datebirth:
-                surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                             self.width, self.height)
-                response = HttpResponse(content_type="image/png")
-                surface.write_to_png(response)
-                return response
+            try:
+                person = Person.objects.get(pk=pk)
+                if not person.datebirth:
+                    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                                 self.width, self.height)
+                    response = HttpResponse(content_type="image/png")
+                    surface.write_to_png(response)
+                    return response
 
-            BIRTH_YEAR = person.datebirth.year
-            DEATH_YEAR = person.datedeath.year if person.datedeath\
-                else datetime.date.today().year
+                BIRTH_YEAR = person.datebirth.year
+                DEATH_YEAR = person.datedeath.year if person.datedeath\
+                    else datetime.date.today().year
+            except ObjectDoesNotExist:
+                person = None
         else:
             person = None
 
@@ -329,7 +336,7 @@ class Sparkline(LoginRequiredMixin, View):
                           0.3,
                           value[-1])
 
-        else:
+        elif person:
             draw_line(year_to_x(BIRTH_YEAR),
                       year_to_x(DEATH_YEAR),
                       0.04)

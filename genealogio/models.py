@@ -314,7 +314,7 @@ class Person(PrimaryObject):
         except:
             return
 
-    def get_last_name(self):
+    def get_last_name(self, separator=''):
         """Return the last name, from the related Name instances."""
 
         birthname = ''
@@ -330,7 +330,7 @@ class Person(PrimaryObject):
             pass
 
         if marriedname and birthname:
-            return '%s (geb. %s)' % (marriedname, birthname)
+            return '%s %s(geb. %s)' % (marriedname, separator, birthname)
         elif birthname:
             return '%s' % (birthname)
         elif marriedname:
@@ -372,6 +372,14 @@ class Person(PrimaryObject):
         """
 
         return '%s %s' % (self.first_name, self.get_last_name())
+
+    def get_primary_name_br(self):
+        """
+        Return the preferred name of a person.
+        """
+
+        return '%s %s' % (self.first_name,
+                          self.get_last_name(separator='|br| '))
 
     def get_father(self):
         try:

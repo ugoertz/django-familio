@@ -33,3 +33,7 @@ th, td {
     vertical-align: middle;
     text-align: center;
 }
+
+td p {
+    font-size: 10pt;
+}
