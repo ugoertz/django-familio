@@ -103,15 +103,6 @@ SESSION_COOKIE_HTTPONLY = True
 # Set this to true if you are using https
 SESSION_COOKIE_SECURE = False
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.example.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.example.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -164,6 +155,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'watson.middleware.SearchContextMiddleware',
     'notaro.middleware.NotaroMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -375,7 +367,6 @@ LOGGING = {
 
 DAJAXICE_XMLHTTPREQUEST_JS_IMPORT = False
 
-SITE_ID = 1
 
 ANONYMOUS_USER_ID = -1
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
@@ -388,7 +379,6 @@ USERENA_DISABLE_SIGNUP = True
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_USE_MESSAGES = False
 
-VERSIONS_BASEDIR = os.path.join(PROJECT_ROOT, 'media/_versions')
 
 GRAPPELLI_ADMIN_TITLE = '<a href="/">Unsere Familiengeschichte</a>'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 100
@@ -408,6 +398,9 @@ MARKUP_SETTINGS = {
 }
 
 
+TRANSFER_SERVER = 'apache'
+
+
 LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (51.5, 7.5),
     'DEFAULT_ZOOM': 7,
@@ -425,3 +418,7 @@ MESSAGE_TAGS = {
     messages.WARNING: 'bg-warning',
     messages.ERROR: 'bg-danger',
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media/')
+

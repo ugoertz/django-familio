@@ -56,9 +56,10 @@ urlpatterns = patterns('',
                        url(r'^gen/', include('genealogio.urls')),
                        url(r'^notes/', include('notaro.urls')),
                        url(dajaxice_config.dajaxice_url,
-                           include('dajaxice.urls')), )\
+                           include('dajaxice.urls')),
+                       url(r'^' + settings.MEDIA_URL[1:] + r'(?P<fname>.*)$',
+                           'base.views.download', name="download"), )\
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar

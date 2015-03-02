@@ -56,3 +56,5 @@ pillow
 cairocffi
 
 django-dbarray
+
+django-transfer
