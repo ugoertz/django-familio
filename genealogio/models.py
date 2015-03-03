@@ -2,13 +2,17 @@
 
 """The models of the genealogio app."""
 
-
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ObjectDoesNotExist
 from partialdate.fields import PartialDateField
+
+from .managers import CurrentSiteGeoManager
+
 from notaro.models import Source, Note, Picture
 
 
@@ -29,6 +33,9 @@ class PrimaryObject(models.Model):
     notes = models.ManyToManyField(Note, blank=True)
 
     sites = models.ManyToManyField(Site)
+    objects = CurrentSiteGeoManager()
+    all_objects = models.Manager()
+
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)
 
@@ -193,8 +200,14 @@ class Family(PrimaryObject):
         # pylint: disable=no-member
         if self.name:
             n += self.name
-        f = self.father.get_primary_name() if self.father else '?'
-        m = self.mother.get_primary_name() if self.mother else '?'
+        try:
+            f = self.father.get_primary_name()
+        except ObjectDoesNotExist:
+            f = '?'
+        try:
+            m = self.mother.get_primary_name()
+        except ObjectDoesNotExist:
+            m = '?'
         if n:
             n = "%s (%s und %s)" % (n, f, m)
         elif (f != '?' or m != '?'):
@@ -292,8 +305,6 @@ class Person(PrimaryObject):
                                     verbose_name='Familie(n)')
     source = models.ManyToManyField(Source, blank=True,
                                     verbose_name='Quelle')
-
-    objects = models.GeoManager()
 
     @staticmethod
     def autocomplete_search_fields():
@@ -399,17 +410,26 @@ class Person(PrimaryObject):
         """Get all children of this person (as stored in the Family objects
         attached to it via the family m2m."""
 
+        # pylint: disable=no-member
         children = []
         for fam in Family.objects.filter(father=self):
+            try:
+                m = fam.mother
+            except ObjectDoesNotExist:
+                m = None
             children.append([
-                fam.mother,
+                m,
                 fam.person_set.all().order_by('datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
                 else 'Familie mit'
                 ])
         for fam in Family.objects.filter(mother=self):
+            try:
+                f = fam.father
+            except ObjectDoesNotExist:
+                f = None
             children.append([
-                fam.father,
+                f,
                 fam.person_set.all().order_by('datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
                 else 'Familie mit'
@@ -557,8 +577,6 @@ class Event(PrimaryObject):
                               verbose_name='Ort')
     source = models.ManyToManyField(Source, blank=True,
                                     verbose_name='Quelle')
-
-    objects = models.GeoManager()
 
 #    references = generic.GenericRelation('EventRef', related_name="refs",
 #                                         content_type_field="object_type",

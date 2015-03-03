@@ -27,11 +27,15 @@ class NoteAdmin(reversion.VersionAdmin):
 
     fieldsets = (('', {'fields': ('title', 'link', 'text',
                                   'published', 'authors', ), }),
-                 ('Bilder', {'fields': ('pictures', ), }), )
-    raw_id_fields = ('authors', 'pictures', )
+                 ('Bilder', {'fields': ('pictures', ), }),
+                 ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                                     'fields': ('sites', ), }), )
+    raw_id_fields = ('authors', 'pictures', 'sites', )
     related_lookup_fields = {'m2m': ['authors', 'pictures', ], }
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
     inlines = [SourceNInline, ]
     list_display = ('link', 'title', 'view_on_site', )
+    list_filter = ('sites', )
     search_fields = ('title', 'text', )
 
     def save_related(self, request, form, formset, change):
@@ -79,7 +83,12 @@ admin.site.register(Source, SourceAdmin)
 class PictureAdmin(reversion.VersionAdmin):
     """Admin class for Picture model."""
 
-    fieldsets = (('', {'fields': ('caption', 'image', 'date', ), }), )
+    fieldsets = (('', {'fields': ('caption', 'image', 'date', ), }),
+                 ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                                     'fields': ('sites', ), }), )
+    raw_id_fields = ('sites', )
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
+    list_filter = ('sites', )
     search_fields = ('caption', )
 
     def image_thumbnail(self, obj):
@@ -93,6 +102,6 @@ class PictureAdmin(reversion.VersionAdmin):
     image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
-    list_display = ['caption', 'date', 'image_thumbnail', ]
+    list_display = ['id', 'caption', 'date', 'image_thumbnail', ]
 
 admin.site.register(Picture, PictureAdmin)

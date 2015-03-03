@@ -146,6 +146,8 @@ class PersonAdmin(reversion.VersionAdmin):
         ('Orte', {'classes': ('placeholder personplace_set-group', ),
                   'fields': ()}),
         ('Dokumente', {'fields': ('portrait', 'notes', 'comments', ), }),
+        ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                            'fields': ('sites', ), }),
         ('Verschiedenes', {'classes': ('grp-collapse grp-closed', ),
                            'fields': ('private', 'public', ),
                            }),
@@ -157,12 +159,12 @@ class PersonAdmin(reversion.VersionAdmin):
 
     inlines = [NameInline, FamilyPInline, EventInline,
                SourcePInline, PPlaceInline, ]
-    raw_id_fields = ('portrait', 'notes', )
+    raw_id_fields = ('portrait', 'notes', 'sites', )
     related_lookup_fields = {'fk': ['portrait', ], }
-    autocomplete_lookup_fields = {'m2m': ['notes', ], }
+    autocomplete_lookup_fields = {'m2m': ['notes', 'sites', ], }
     search_fields = ('handle', 'datebirth', 'datedeath',
                      'name__name', 'places__title',)
-    list_filter = ('gender_type', 'probably_alive', 'name__name', )
+    list_filter = ('gender_type', 'probably_alive', 'name__name', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
     def image_thumbnail(self, obj):
@@ -345,13 +347,16 @@ class EventAdmin(reversion.VersionAdmin):
     fieldsets = (
         ('', {'fields': ('title', 'event_type', 'date',
                          'description', 'place')}),
+        ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                            'fields': ('sites', ), }),
         )
     inlines = [EventPInline, EventFInline, SourceEInline, ]
-    raw_id_fields = ('place', )
-    autocomplete_lookup_fields = {'fk': ['place', ], }
+    raw_id_fields = ('place', 'sites', )
+    autocomplete_lookup_fields = {'fk': ['place', ],
+                                  'm2m': ['sites', ]}
     list_display = ('title', 'date', 'place', 'handle', )
     search_fields = ('title', 'description', )
-    list_filter = ('event_type', )
+    list_filter = ('event_type', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
     def save_model(self, request, obj, form, change):
@@ -418,12 +423,17 @@ class FamilyAdmin(reversion.VersionAdmin):
         ('', {'fields': ('name', 'father', 'mother', 'family_rel_type', )}),
         ('Daten', {'classes': ('grp-collapse grp-open', ),
                    'fields': ('start_date', 'end_date', )}),
+        ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                            'fields': ('sites', ), }),
         )
     inlines = [PersonFInline, EventFInline, SourceFInline, ]
-    raw_id_fields = ('father', 'mother', )
-    autocomplete_lookup_fields = {'fk': ['father', 'mother', ], }
+    raw_id_fields = ('father', 'mother', 'sites', )
+    autocomplete_lookup_fields = {
+            'fk': ['father', 'mother', ],
+            'm2m': ['sites', ], }
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
+    list_filter = ('sites', )
 
     def save_model(self, request, obj, form, change):
         """Create handle before saving Family instance."""

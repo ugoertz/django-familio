@@ -14,3 +14,8 @@ media/*
 static/*
 familio/wsgi.py
 backup-db
+
+familio/settings/*
+!familio/settings/__init__.py
+!familio/settings/base.py
+!familio/settings/test.py

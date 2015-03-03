@@ -3,6 +3,7 @@ from docutils import nodes
 from docutils.utils import new_document
 from docutils.frontend import OptionParser
 from docutils.parsers.rst import roles, Parser
+from django.core.exceptions import ObjectDoesNotExist
 from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
 from ..models import Person, Place, Event, Family
@@ -68,29 +69,38 @@ def get_text(name, rawtext, text, lineno, inliner,
                            'l': 'large', }[name[1]]
             else:
                 version = 'medium'
-            img = Picture.objects.get(id=int(text))
 
-            # strangely, this does not work
-            options['target'] = reverse('picture-detail',
-                                        kwargs={'pk': img.id, })
-            nodelist = [nodes.image(
-                            uri=img.image.version_generate(version).url,
-                            **options), ]
-            if img.caption:
-                settings = OptionParser(components=(Parser,))\
-                           .get_default_values()
-                parser = Parser()
-                document = new_document('caption', settings)
-                parser.parse(img.get_caption(), document)
-                nodelist[0].children.extend(document.children)
+            try:
+                img = Picture.objects.get(id=int(text))
+                # strangely, this does not work
+                options['target'] = reverse('picture-detail',
+                                            kwargs={'pk': img.id, })
+                nodelist = [nodes.image(
+                                uri=img.image.version_generate(version).url,
+                                **options), ]
+                if img.caption:
+                    settings = OptionParser(components=(Parser,))\
+                            .get_default_values()
+                    parser = Parser()
+                    document = new_document('caption', settings)
+                    parser.parse(img.get_caption(), document)
+                    nodelist[0].children.extend(document.children)
+            except ObjectDoesNotExist:
+                nodelist = []
         else:
             handle = text.split(' ')[-1]
-            p = model.objects.get(handle=handle)
-            for f in extra:
-                t += f(p)
-            nodelist = [nodes.reference(
-                            rawtext, t,
-                            refuri=p.get_absolute_url(), **options), ]
+            try:
+                p = model.objects.get(handle=handle)
+                for f in extra:
+                    t += f(p)
+                nodelist = [nodes.reference(
+                                rawtext, t,
+                                refuri=p.get_absolute_url(), **options), ]
+            except ObjectDoesNotExist:
+                # for now, assume that this is because that object exists only
+                # on another site; so fail silently
+                # FIXME: check that handle exists on some site
+                nodelist = nodes.inline(rawtext, t, **options)
     except:
         msg = inliner.reporter.error('Problem when evaluating handle',
                                      line=lineno)
