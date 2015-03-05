@@ -1,3 +1,4 @@
+{% if person.on_current_site %}
 .. |{{ label }}| replace::
     {% if person %}|{{ label }}link|_{% else %}*unbekannt*{% endif %}
 
@@ -9,5 +10,5 @@
 {% endif %}
 
 .. |img{{ label }}| image:: /gen/sparkline/{{ person.id }}/{{ fr }}/{{ to }}/
-
+{% endif %}
 

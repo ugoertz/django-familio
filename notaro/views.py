@@ -6,22 +6,25 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.core.exceptions import ObjectDoesNotExist
 from braces.views import LoginRequiredMixin
 
+from base.views import CurrentSiteMixin
+
 from .models import Note, Picture
 
 
-class PictureDetail(LoginRequiredMixin, DetailView):
+class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display a picture."""
 
     model = Picture
 
 
-class NoteDetail(LoginRequiredMixin, DetailView):
+class NoteDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display a note."""
 
     model = Note
 
 
-class NoteDetailVerboseLink(LoginRequiredMixin, TemplateView):
+class NoteDetailVerboseLink(LoginRequiredMixin,
+                            CurrentSiteMixin, TemplateView):
     """Display a note requested by the link in its link field."""
 
     template_name = 'notaro/note_detail.html'
@@ -30,6 +33,8 @@ class NoteDetailVerboseLink(LoginRequiredMixin, TemplateView):
         context = super(NoteDetailVerboseLink, self).get_context_data(**kwargs)
         if not self.request.path_info.startswith('/n/'):
             raise Http404
+
+        # pylint: disable=no-member
         link = self.request.path_info[2:]
         try:
             if self.request.user.is_staff:
@@ -41,7 +46,7 @@ class NoteDetailVerboseLink(LoginRequiredMixin, TemplateView):
         return context
 
 
-class NoteList(LoginRequiredMixin, ListView):
+class NoteList(LoginRequiredMixin, CurrentSiteMixin, ListView):
 
     """Display list of all notes."""
 
@@ -49,5 +54,6 @@ class NoteList(LoginRequiredMixin, ListView):
     paginate_by = 5
 
     def get_queryset(self):
+        # pylint: disable=no-member
         return Note.objects.filter(published=True)
 

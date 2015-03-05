@@ -378,10 +378,15 @@ USERENA_DISABLE_PROFILE_LIST = True
 USERENA_DISABLE_SIGNUP = True
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_USE_MESSAGES = False
-
+USERENA_REGISTER_PROFILE = False
 
 GRAPPELLI_ADMIN_TITLE = '<a href="/">Unsere Familiengeschichte</a>'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 100
+GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
+        "sites": {
+            "site": ("domain__icontains", "name__icontains",)
+            }
+        }
 
 MARKUP_SETTINGS = {
     'genrestructuredtext': {

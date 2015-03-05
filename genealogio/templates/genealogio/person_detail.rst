@@ -46,7 +46,7 @@
 Ereignisse
 ----------
 
-{% for event in object.events.all %}
+{% for event in object.events.on_site %}
 {% include "genealogio/event_snippet.rst" with person=object %}
 {% endfor %}
 {% endif %}
@@ -66,7 +66,7 @@ Orte
 Texte
 -----
 
-{% for note in object.notes.all %}
+{% for note in object.notes.on_site %}
 {% include "notaro/note_trailer.rst" %}
 {% endfor %}
 {% endif %}

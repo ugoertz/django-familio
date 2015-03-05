@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from partialdate.fields import PartialDateField
 
-from .managers import CurrentSiteGeoManager
+from .managers import CurrentSiteGeoManager, GenGeoManager
 
 from notaro.models import Source, Note, Picture
 
@@ -33,8 +33,8 @@ class PrimaryObject(models.Model):
     notes = models.ManyToManyField(Note, blank=True)
 
     sites = models.ManyToManyField(Site)
+    all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
-    all_objects = models.Manager()
 
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)
@@ -42,6 +42,9 @@ class PrimaryObject(models.Model):
     def __unicode__(self):
         return u"%s: %s" % (self.__class__.__name__,
                             self.handle)
+
+    def on_current_site(self):
+        return Site.objects.get_current() in self.sites.all()
 
     def get_absolute_url(self):
         """Return URL where this object can be viewed (using handle)."""
@@ -182,7 +185,7 @@ class Family(PrimaryObject):
         return ("id__iexact", "handle__icontains", )
 
     def get_children(self):
-        return self.person_set.all().order_by('datebirth')
+        return self.person_set(manager='objects').all().order_by('datebirth')
 
     def get_grandchildren(self):
         qslist = []
@@ -395,16 +398,22 @@ class Person(PrimaryObject):
     def get_father(self):
         try:
             # FIXME should be more careful here if several families exist
-            return self.family.all()[0].father
+            father = self.family.filter(
+                    sites=Site.objects.get_current())[0].father
+            if Site.objects.get_current() in father.sites.all():
+                return father
         except IndexError:
-            return None
+            pass
 
     def get_mother(self):
         try:
             # FIXME should be more careful here if several families exist
-            return self.family.all()[0].mother
+            mother = self.family.filter(
+                    sites=Site.objects.get_current())[0].mother
+            if Site.objects.get_current() in mother.sites.all():
+                return mother
         except IndexError:
-            return None
+            pass
 
     def get_children(self):
         """Get all children of this person (as stored in the Family objects
@@ -412,25 +421,29 @@ class Person(PrimaryObject):
 
         # pylint: disable=no-member
         children = []
-        for fam in Family.objects.filter(father=self):
+        for fam in Family.objects.filter(father=self,
+                                         sites=Site.objects.get_current()):
             try:
                 m = fam.mother
             except ObjectDoesNotExist:
                 m = None
             children.append([
                 m,
-                fam.person_set.all().order_by('datebirth', 'handle'),
+                fam.person_set(manager='objects').all().order_by(
+                    'datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
                 else 'Familie mit'
                 ])
-        for fam in Family.objects.filter(mother=self):
+        for fam in Family.objects.filter(mother=self,
+                                         sites=Site.objects.get_current()):
             try:
                 f = fam.father
             except ObjectDoesNotExist:
                 f = None
             children.append([
                 f,
-                fam.person_set.all().order_by('datebirth', 'handle'),
+                fam.person_set(manager='objects').all().order_by(
+                    'datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
                 else 'Familie mit'
                 ])

@@ -26,12 +26,15 @@ import json
 # from django.db.models.query import Q
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.sites.models import Site
 from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import render
 from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
+
+from base.views import CurrentSiteMixin
 
 from .models import Person, PersonPlace, Place, Event, Family
 
@@ -45,13 +48,15 @@ class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
     def get_queryset(self):
 
         # pylint: disable=no-member
-        p_birth = set(PersonPlace.objects.filter(typ=PersonPlace.BIRTH)
-                                         .values_list('place', flat=True))
+        p_birth = set(PersonPlace.objects.filter(
+            person__sites=Site.objects.get_current(), typ=PersonPlace.BIRTH)
+            .values_list('place', flat=True))
         qs_birth = Place.objects.filter(id__in=p_birth)
 
         # pylint: disable=no-member
-        p_death = set(PersonPlace.objects.filter(typ=PersonPlace.DEATH)
-                                 .values_list('place', flat=True))
+        p_death = set(PersonPlace.objects.filter(
+            person__sites=Site.objects.get_current(), typ=PersonPlace.DEATH)
+            .values_list('place', flat=True))
         qs_death = Place.objects.filter(id__in=p_death)
 
         qs = qs_birth | qs_death
@@ -78,27 +83,27 @@ class PPlacesGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
         return person.places.all().distinct()
 
 
-class PersonList(LoginRequiredMixin, ListView):
+class PersonList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     """Display list of all persons."""
 
     model = Person
     paginate_by = 12
 
 
-class FamilyList(LoginRequiredMixin, ListView):
+class FamilyList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     """Display list of all persons."""
 
     model = Family
     paginate_by = 12
 
 
-class PersonDetail(LoginRequiredMixin, DetailView):
+class PersonDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display details for a person."""
 
     model = Person
 
 
-class FamilyDetail(LoginRequiredMixin, DetailView):
+class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display details for a person."""
 
     model = Family
@@ -143,23 +148,25 @@ class FamilyDetail(LoginRequiredMixin, DetailView):
         l.append('\n')
 
         legend = '+--------+--------------------------------+\n'.join(l)
-        legend += '\n'
 
-        legend += '\n\n'.join(['.. |T%02d| replace::\n' % i +
+        legref = ''
+
+        legref += '\n\n'.join(['.. |T%02d| replace::\n' % i +
                                '   :cabin:`%s` |br| :cabin:`%s`'
                                % (x[0], str(x[1][0]) if len(x[1]) == 2
                                   else '%s-%s' % tuple(x[1][:2]), )
                                for i, x in enumerate(timeline)])
-        legend += '\n\n'
-        legend += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
+        legref += '\n\n'
+        legref += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
                                % (i, 100001 + i, fr, to)
                                for i in range(len(timeline))])
 
-        legend += '\n\n'
-        legend += '\n\n'.join(['.. _T%02d: %s' % (i, x[2])
+        legref += '\n\n'
+        legref += '\n\n'.join(['.. _T%02d: %s' % (i, x[2])
                                for i, x in enumerate(timeline)])
 
         context['sparkline_legend'] = legend
+        context['sparkline_legend_ref'] = legref
 
         return context
 
@@ -170,7 +177,7 @@ class PlaceDetail(LoginRequiredMixin, DetailView):
     model = Place
 
 
-class EventDetail(LoginRequiredMixin, DetailView):
+class EventDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display details for a person."""
 
     model = Event
@@ -357,6 +364,7 @@ class Sparkline(LoginRequiredMixin, View):
                             0.5, 0.1, 0, 2*math.pi)
                     ctx.fill()
 
+            # pylint: disable=no-member
             qs = Family.objects.filter(father=person) |\
                 Family.objects.filter(mother=person)
             for f in qs.exclude(start_date='')\

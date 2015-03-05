@@ -9,6 +9,7 @@ from django.contrib.auth import get_user_model
 from django.views.generic import TemplateView
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
+from base.views import CustomAutocompleteLookup
 from genealogio.models import Place
 
 admin.autodiscover()
@@ -30,6 +31,9 @@ class ImpressumView(TemplateView):
 
 
 urlpatterns = patterns('',
+                       url(r'^grappelli/lookup/autocomplete/$',
+                           CustomAutocompleteLookup.as_view(),
+                           name="grp_autocomplete_lookup"),
                        (r'^admin/filebrowser/', include(site.urls)),
                        (r'^grappelli/', include('grappelli.urls')),
                        url(r'^admin/', include(admin.site.urls)),

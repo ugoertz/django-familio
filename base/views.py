@@ -5,13 +5,26 @@ import os.path
 from django.shortcuts import render
 from django.http import HttpResponseForbidden
 from django.conf import settings
+from django.utils.translation import ungettext
+from django.contrib.sites.models import Site
 # from django.views.generic import View
 # import watson
 from django_transfer import TransferHttpResponse
 
+from grappelli.views.related import (AutocompleteLookup, get_label,
+                                     ajax_response, never_cache, )
+from grappelli.settings import AUTOCOMPLETE_LIMIT
+
+from accounts.models import UserSite
 from genealogio.models import Person
 from notaro.models import Note, Picture, Document
 from comments.models import Comment
+
+
+class CurrentSiteMixin(object):
+    def get_queryset(self):
+        qs = super(CurrentSiteMixin, self).get_queryset()
+        return qs.filter(sites=self.request.site)
 
 
 def home(request):
@@ -61,6 +74,8 @@ def download(request, fname):
                 for v in ['_admin_thumbnail.', '_thumbnail.', '_small.',
                           '_medium.', '_big.', '_large.']:
                     fn = fn.replace(v, '.')
+
+            # pylint: disable=no-member
             ps = model.objects.filter(**{field+'__startswith': fn, })
             for p in ps:
                 if fname == getattr(p, field).path or\
@@ -74,6 +89,41 @@ def download(request, fname):
 
     return HttpResponseForbidden()
 
+
+class CustomAutocompleteLookup(AutocompleteLookup):
+    """ patch grappelli's autocomplete to let us control the queryset 
+    by creating a autocomplete_queryset function on the model """
+
+    def get_queryset(self, request=None):
+        if self.model == Site and request and\
+                not request.user.is_superuser:
+            qs = request.user.userprofile.sites.filter(
+                    usersite__role__in=[UserSite.STAFF,
+                                        UserSite.SUPERUSER, ])
+        else:
+            qs = self.model._default_manager.all()
+        qs = self.get_filtered_queryset(qs)
+        qs = self.get_searched_queryset(qs)
+        return qs.distinct()
+
+    def get_data(self, request=None):
+        return [{"value": f.pk, "label": get_label(f)}
+                for f in self.get_queryset(request)[:AUTOCOMPLETE_LIMIT]]
+
+    @never_cache
+    def get(self, request, *args, **kwargs):
+        self.check_user_permission()
+        self.GET = self.request.GET
+        if self.request_is_valid():
+            self.get_model()
+            data = self.get_data(request)
+            if data:
+                return ajax_response(data)
+        # overcomplicated label translation
+        label = ungettext('%(counter)s result',
+                          '%(counter)s results', 0) % {'counter': 0}
+        data = [{"value": None, "label": label}]
+        return ajax_response(data)
 
 # class SearchView(View):
 

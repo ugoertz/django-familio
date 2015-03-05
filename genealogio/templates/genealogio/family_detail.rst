@@ -1,5 +1,6 @@
 {% load partialdate_tags %}
 {% load fb_versions %}
+{% load base_tags %}
 
 .. role:: marginleft30
     :class: marginleft30
@@ -46,7 +47,7 @@ Familie {{ object }}
 Ereignisse
 ----------
 
-{% for event in object.events.all %}
+{% for event in object.events.on_site %}
 {% include "genealogio/event_snippet.rst" with person=object %}
 {% endfor %}
 {% endif %}
@@ -56,7 +57,7 @@ Ereignisse
 Texte
 -----
 
-{% for note in object.notes.all %}
+{% for note in object.notes.on_site %}
 {% include "notaro/note_trailer.rst" %}
 {% endfor %}
 {% endif %}
@@ -66,16 +67,21 @@ Texte
 Zeitstrahl
 ----------
 
+{% gapless %}
 +--------+--------------------------------+
 |        | {{ fr }} |head| {{ to }}               |
 +========+================================+
-| |PF|   | |imgPF|                        |
-+--------+--------------------------------+
-| |PM|   | |imgPM|                        |
-+--------+--------------------------------+
-{% for child in object.get_children %}| |{{ forloop.counter0 }}|    | |img{{ forloop.counter0  }}|                         |
-+--------+--------------------------------+
-{% endfor %}{{ sparkline_legend }}
+{% if object.father.on_current_site %}| |PF|   | |imgPF|                        |
++--------+--------------------------------+{% endif %}
+{% if object.mother.on_current_site %}| |PM|   | |imgPM|                        |
++--------+--------------------------------+{% endif %}
+{% for child in object.get_children %}{% if child.on_current_site %}| |{{ forloop.counter0 }}|    | |img{{ forloop.counter0  }}|                         |
++--------+--------------------------------+{% endif %}
+{% endfor %}
+{{ sparkline_legend }}
+{% endgapless %}
+
+{{ sparkline_legend_ref }}
 
 .. |head| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
 

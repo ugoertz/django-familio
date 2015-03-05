@@ -6,6 +6,8 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from dbarray import IntegerArrayField
 
+from genealogio.managers import CurrentSiteGeoManager
+
 
 class Comment(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -24,6 +26,8 @@ class Comment(models.Model):
                          fk_field="object_pk")
 
     site = models.ForeignKey(Site)
+    all_objects = models.Manager()
+    objects = CurrentSiteGeoManager()
 
     def depth(self):
         return 30 * (len(self.path) - 1)

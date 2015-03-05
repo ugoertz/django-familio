@@ -9,11 +9,13 @@ from datetime import datetime
 from django.contrib.gis import admin
 from django.forms.models import BaseInlineFormSet
 from django.conf import settings
+# from django.core.exceptions import ObjectDoesNotExist
 # from django.utils.functional import curry
 import reversion
 from filebrowser.settings import ADMIN_THUMBNAIL
 from grappelli.forms import GrappelliSortableHiddenMixin
 
+from accounts.models import UserSite
 from .models import Person, Place, Event, Family, Name, PersonEvent
 from .models import PersonFamily, FamilyEvent, PlaceUrl, Url
 from .models import PersonPlace
@@ -167,6 +169,12 @@ class PersonAdmin(reversion.VersionAdmin):
     list_filter = ('gender_type', 'probably_alive', 'name__name', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
+    def get_queryset(self, request):
+        qs = super(PersonAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(sites=request.site)
+
     def image_thumbnail(self, obj):
         """Method to put thumbnail of portrait into list_display."""
 
@@ -178,6 +186,34 @@ class PersonAdmin(reversion.VersionAdmin):
             return ""
     image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Portrait"
+
+    def get_changeform_initial_data(self, request):
+        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None or request.user.is_superuser:
+            return self.readonly_fields
+        else:
+            return ('sites',) + self.readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def get_actions(self, request):
+        actions = super(PersonAdmin, self).get_actions(request)
+        if not request.user.is_superuser:
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == "sites" and not request.user.is_superuser:
+            kwargs["queryset"] = request.user.userprofile.sites.filter(
+                    usersite__role__in=[UserSite.STAFF, UserSite.SUPERUSER, ])
+        return super(PersonAdmin, self).formfield_for_manytomany(
+                db_field, request, **kwargs)
 
     def view_on_site(self, obj):
         '''Put link to person's detail view into changelist.'''
@@ -227,7 +263,7 @@ class PersonAdmin(reversion.VersionAdmin):
         obj.save()
 
     class Media:
-        css = {'all': ('css/person_admin.css', 
+        css = {'all': ('css/person_admin.css',
                        'codemirror/codemirror.css',
                        'codemirror/show-hint.css',
                        'codemirror/custom.css', ), }
@@ -287,6 +323,18 @@ class PlaceAdmin(admin.OSMGeoAdmin):
 
     first_url.allow_tags = True
     first_url.short_description = "URL"
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def get_actions(self, request):
+        actions = super(PlaceAdmin, self).get_actions(request)
+        if not request.user.is_superuser:
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
 
     def save_model(self, request, obj, form, change):
         if not obj.location and not obj.handle:
@@ -359,6 +407,33 @@ class EventAdmin(reversion.VersionAdmin):
     list_filter = ('event_type', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
+    def get_queryset(self, request):
+        qs = super(EventAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(sites=request.site)
+
+    def get_changeform_initial_data(self, request):
+        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None or request.user.is_superuser:
+            return self.readonly_fields
+        else:
+            return ('sites',) + self.readonly_fields
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def get_actions(self, request):
+        actions = super(EventAdmin, self).get_actions(request)
+        if not request.user.is_superuser:
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
     def save_model(self, request, obj, form, change):
         if not obj.handle:
             obj.handle = 'E_'
@@ -420,7 +495,10 @@ class FamilyAdmin(reversion.VersionAdmin):
     """The FamilyAdmin class."""
 
     fieldsets = (
-        ('', {'fields': ('name', 'father', 'mother', 'family_rel_type', )}),
+        ('', {'fields': ('name',
+                         'father',
+                         'mother',
+                         'family_rel_type', )}),
         ('Daten', {'classes': ('grp-collapse grp-open', ),
                    'fields': ('start_date', 'end_date', )}),
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
@@ -434,6 +512,33 @@ class FamilyAdmin(reversion.VersionAdmin):
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
     list_filter = ('sites', )
+
+    def get_queryset(self, request):
+        qs = super(FamilyAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(sites=request.site)
+
+    def get_changeform_initial_data(self, request):
+        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def get_actions(self, request):
+        actions = super(FamilyAdmin, self).get_actions(request)
+        if not request.user.is_superuser:
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None or request.user.is_superuser:
+            return self.readonly_fields
+        else:
+            return ('sites',) + self.readonly_fields
 
     def save_model(self, request, obj, form, change):
         """Create handle before saving Family instance."""

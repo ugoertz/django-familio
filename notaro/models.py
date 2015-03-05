@@ -11,6 +11,8 @@ from django.contrib.sites.managers import CurrentSiteManager
 from filebrowser.fields import FileBrowseField
 from filebrowser.settings import ADMIN_THUMBNAIL
 
+from .managers import GenManager
+
 
 class Source(models.Model):
     UNKNOWN = 0
@@ -65,8 +67,8 @@ class Source(models.Model):
     documents = models.ManyToManyField('Document')
 
     sites = models.ManyToManyField(Site)
+    all_objects = GenManager()
     objects = CurrentSiteManager()
-    all_objects = models.Manager()
 
     class Meta:
         ordering = ('name', )
@@ -81,8 +83,8 @@ class Picture(models.Model):
     caption = models.TextField(blank=True, verbose_name='Beschreibung')
     date = models.DateField(blank=True, null=True, verbose_name='Datum')
     sites = models.ManyToManyField(Site)
+    all_objects = GenManager()
     objects = CurrentSiteManager()
-    all_objects = models.Manager()
 
     def __unicode__(self):
         # pylint: disable=no-member
@@ -117,8 +119,13 @@ class Document(models.Model):
     description = models.TextField(blank=True)
     date = models.DateField(blank=True, null=True)
     sites = models.ManyToManyField(Site)
+    all_objects = GenManager()
     objects = CurrentSiteManager()
-    all_objects = models.Manager()
+
+    @staticmethod
+    def autocomplete_search_fields():
+        """Used by grappelli."""
+        return ("description__icontains", )
 
     class Meta:
         ordering = ('date', )
@@ -144,8 +151,13 @@ class Note(models.Model):
     source = models.ManyToManyField('Source', blank=True)
 
     sites = models.ManyToManyField(Site)
+    all_objects = GenManager()
     objects = CurrentSiteManager()
-    all_objects = models.Manager()
+
+    @staticmethod
+    def autocomplete_search_fields():
+        """Used by grappelli."""
+        return ("title__icontains", "link__icontains", )
 
     def get_trailer(self):
         """Return the 'first section' of self.text. This means either
