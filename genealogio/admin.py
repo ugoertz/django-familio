@@ -23,6 +23,23 @@ from .models import PersonFamily, FamilyEvent, PlaceUrl, Url
 from .models import PersonPlace
 
 
+class OSitesMixin(object):
+    def get_readonly_fields(self, request, obj=None):
+        return ('osites', ) +\
+               super(OSitesMixin, self).get_readonly_fields(request, obj)
+
+    def osites(self, obj):
+        sitelist = ', '.join([s.siteprofile.short_name
+                              for s in self.osite_field(obj).sites.exclude(
+                                  id=Site.objects.get_current().id)])
+        if not Site.objects.get_current() in self.osite_field(obj).sites.all():
+            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist
+        return sitelist or '-'
+    osites.allow_tags = True
+    osites.short_description = 'Andere Familienbäume'
+
+
 def cleanname(name):
     """Replace umlauts (ä by ae, etc.) and then remove all non-ASCII letters
     from string."""
@@ -79,7 +96,7 @@ class SourcePInline(admin.TabularInline):
     extra = 0
 
 
-class EventInline(admin.TabularInline):
+class EventInline(OSitesMixin, admin.TabularInline):
     """Event Inline class used by PersonAdmin."""
 
     model = PersonEvent
@@ -87,8 +104,12 @@ class EventInline(admin.TabularInline):
     raw_id_fields = ('event', )
     autocomplete_lookup_fields = {'fk': ['event', ], }
 
+    def osite_field(self, obj):
+        return obj.event
 
-class FamilyPInline(GrappelliSortableHiddenMixin, admin.TabularInline):
+
+class FamilyPInline(GrappelliSortableHiddenMixin,
+                    OSitesMixin, admin.TabularInline):
     """Family Inline class used by PersonAdmin."""
 
     model = PersonFamily
@@ -98,6 +119,9 @@ class FamilyPInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     sortable_excludes = ('position', 'child_type', )
     verbose_name = "Familie"
     verbose_name_plural = "Familien"
+
+    def osite_field(self, obj):
+        return obj.family
 
 
 class PPlaceFormSet(BaseInlineFormSet):
@@ -191,6 +215,16 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
     view_on_site.allow_tags = True
     view_on_site.short_description = 'Link'
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return super(PersonAdmin, self).get_readonly_fields(request, obj)
+
+        rof = ()
+        if obj.portrait and request.site not in obj.portrait.sites.all():
+            rof += ('portrait', )
+
+        return rof + super(PersonAdmin, self).get_readonly_fields(request, obj)
 
     def save_model(self, request, obj, form, change):
         if not obj.handle:
@@ -429,27 +463,26 @@ class SourceFInline(admin.TabularInline):
     extra = 0
 
 
-class PersonFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
+class PersonFInline(GrappelliSortableHiddenMixin,
+                    OSitesMixin, admin.TabularInline):
     """Person Inline class used by FamilyAdmin."""
 
     model = PersonFamily
     extra = 0
-    fields = ('person', 'child_type', 'osites', 'position', )
+    fieldsets = (('', {'fields': ('person', 'child_type',
+                                  'osites', 'position', ), }), )
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ['person', ], }
     sortable_excludes = ('position', 'child_type', )
     verbose_name = "Kind"
     verbose_name_plural = "Kinder"
-    readonly_fields = ('osites', )
 
-    def osites(self, obj):
-        return ', '.join([s.siteprofile.short_name
-                          for s in obj.person.sites.exclude(
-                              id=Site.objects.get_current().id)])
-    osites.short_description = 'Andere Familienbäume'
+    def osite_field(self, obj):
+        return obj.person
 
 
-class EventFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
+class EventFInline(GrappelliSortableHiddenMixin,
+                   OSitesMixin, admin.TabularInline):
     """The EventFInline class (Events-inline in FamilyAdmin)."""
 
     model = FamilyEvent
@@ -457,6 +490,9 @@ class EventFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     raw_id_fields = ('event', )
     autocomplete_lookup_fields = {'fk': ['event', ]}
     sortable_excludes = ('position', )
+
+    def osite_field(self, obj):
+        return obj.event
 
 
 class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
