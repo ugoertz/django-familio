@@ -16,7 +16,7 @@ roleDict = {
 @dajaxice_register(method="GET")
 def autocomplete(request, q, role):
     if role and role[0] in roleDict.keys():
-        results = watson.filter(roleDict[role[0]], q)
+        results = watson.filter(roleDict[role[0]].objects.all(), q)
 
         # does the search string contain the beginning of a handle?
         handleStart = q.find(role[0].upper()+'_')

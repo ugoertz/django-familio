@@ -8,7 +8,7 @@ class GenealogioConfig(AppConfig):
 
     def ready(self):
         PersonModel = self.get_model("Person")
-        watson.register(PersonModel,
+        watson.register(PersonModel.objects.all(),
                         fields=('first_name', 'last_name',
                                 'name_set__name', 'places', 'handle',
                                 'datebirth', 'datedeath',
@@ -16,10 +16,10 @@ class GenealogioConfig(AppConfig):
                         store=('get_primary_name', 'handle', ))
 
         FamilyModel = self.get_model("Family")
-        watson.register(FamilyModel, store=('handle', 'name', ))
+        watson.register(FamilyModel.objects.all(), store=('handle', 'name', ))
 
         EventModel = self.get_model("Event")
-        watson.register(EventModel, store=('handle', ))
+        watson.register(EventModel.objects.all(), store=('handle', ))
 
         PlaceModel = self.get_model("Place")
         watson.register(PlaceModel, store=('handle', ))
