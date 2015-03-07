@@ -7,14 +7,42 @@ from __future__ import absolute_import
 
 from django.contrib import admin
 from django.conf import settings
+from django.contrib.admin.helpers import ActionForm
+from django.contrib.sites.models import Site
+from django import forms
 import reversion
 from filebrowser.settings import ADMIN_THUMBNAIL
 # from grappelli.forms import GrappelliSortableHiddenMixin
 
+from base.models import SiteProfile
+from accounts.models import UserSite
 from .models import Note, Picture, Source
 
 
+class UpdateActionForm(ActionForm):
+    site = forms.ModelChoiceField(queryset=SiteProfile.objects.all(),
+                                  empty_label="(Keine Auswahl)",
+                                  required=False)
+
+
 class CurrentSiteAdmin(object):
+
+    action_form = UpdateActionForm
+
+    def ositelist(self, obj):
+        sitelist = ', '.join([s.siteprofile.short_name
+                              for s in obj.sites.exclude(
+                                  id=Site.objects.get_current().id)])
+        if not Site.objects.get_current() in obj.sites.all():
+            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist
+        return sitelist or '-'
+    ositelist.allow_tags = True
+    ositelist.short_description = 'Andere Familienbäume'
+
+    def get_list_display(self, request):
+        # pylint: disable=no-member
+        return self.list_display + ('ositelist', )
 
     def get_queryset(self, request):
         qs = super(CurrentSiteAdmin, self).get_queryset(request)
@@ -31,11 +59,64 @@ class CurrentSiteAdmin(object):
             return True
         return False
 
+    def addsite_selected(self, request, queryset):
+        # pylint: disable=no-member
+        siteprofile_id = request.POST['site']
+        try:
+            site = Site.objects.get(siteprofile=siteprofile_id)
+        except:
+            self.message_user(
+                    request,
+                    "Kein Familienbaum ausgewählt.")
+            return
+
+        if not request.user.is_superuser and\
+            not UserSite.objects.filter(
+                user=request.user.userprofile,
+                site=site,
+                role__in=[UserSite.STAFF, UserSite.SUPERUSER]).count():
+            self.message_user(
+                    request,
+                    "Diese Aktion erfordert Redakteursstatus "
+                    "für den Familienbaum %s." % site.siteprofile.short_name)
+            return
+
+        for object in queryset:
+            object.sites.add(site)
+
+        # pylint: disable=no-member
+        self.message_user(
+                request,
+                "%d Objekte dem Familienbaum %s hinzugefügt."
+                % (queryset.count(), site.siteprofile.short_name))
+
+    addsite_selected.short_description =\
+        'Ausgewählte Objekte dem ausgewählten Familienbaum hinzufügen'
+
+    def remove_selected(self, request, queryset):
+        for object in queryset:
+            object.sites.remove(request.site)
+            print object, request.site
+
+        # pylint: disable=no-member
+        self.message_user(request, "%d Objekte entfernt." % queryset.count())
+
+    remove_selected.short_description =\
+        'Ausgewählte Objekte aus diesem Familienbaum entfernen'
+
     def get_actions(self, request):
         actions = super(CurrentSiteAdmin, self).get_actions(request)
         if not request.user.is_superuser:
             if 'delete_selected' in actions:
                 del actions['delete_selected']
+        actions['addsite_selected'] = (
+                CurrentSiteAdmin.addsite_selected,
+                'addsite_selected',
+                CurrentSiteAdmin.addsite_selected.short_description)
+        actions['remove_selected'] = (
+                CurrentSiteAdmin.remove_selected,
+                'remove_selected',
+                CurrentSiteAdmin.remove_selected.short_description)
         return actions
 
     def get_readonly_fields(self, request, obj=None):
@@ -90,7 +171,9 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
               'codemirror/stex.js',
               'codemirror/overlay.js',
               'codemirror/rst.js',
-              'dajaxice/dajaxice.core.js', )
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js'
+              )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
@@ -107,7 +190,10 @@ admin.site.register(Note, NoteAdmin)
 
 class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Source model."""
-    pass
+
+    class Media:
+        js = ('js/adminactions.js', )
+
 
 admin.site.register(Source, SourceAdmin)
 
@@ -135,5 +221,9 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     image_thumbnail.short_description = "Thumbnail"
 
     list_display = ['id', 'caption', 'date', 'image_thumbnail', ]
+
+    class Media:
+        js = ('js/adminactions.js', )
+
 
 admin.site.register(Picture, PictureAdmin)

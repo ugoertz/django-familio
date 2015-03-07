@@ -313,7 +313,8 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
               'codemirror/stex.js',
               'codemirror/overlay.js',
               'codemirror/rst.js',
-              'dajaxice/dajaxice.core.js', )
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js', )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
@@ -501,7 +502,8 @@ class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
               'codemirror/stex.js',
               'codemirror/overlay.js',
               'codemirror/rst.js',
-              'dajaxice/dajaxice.core.js', )
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js', )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
@@ -654,6 +656,7 @@ class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     class Media:
         css = {'all': ('css/family_admin.css', ), }
+        js = ('js/adminactions.js', )
 
 
 admin.site.register(Family, FamilyAdmin)
