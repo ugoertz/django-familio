@@ -351,6 +351,8 @@ class FamilyEInline(admin.TabularInline):
     extra = 0
     raw_id_fields = ('family', )
     autocomplete_lookup_fields = {'fk': ['family', ]}
+    verbose_name = "Beteiligte Familie"
+    verbose_name_plural = "Beteiligte Familien"
 
 
 class EventPInline(admin.TabularInline):
@@ -361,6 +363,8 @@ class EventPInline(admin.TabularInline):
     sortable_excludes = ('role', )
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ['person', ], }
+    verbose_name = "Beteiligte Person"
+    verbose_name_plural = "Beteiligte Personen"
 
 
 class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
