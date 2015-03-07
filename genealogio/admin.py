@@ -18,9 +18,10 @@ from grappelli.forms import GrappelliSortableHiddenMixin
 
 from accounts.models import UserSite
 from notaro.admin import CurrentSiteAdmin
-from .models import Person, Place, Event, Family, Name, PersonEvent
-from .models import PersonFamily, FamilyEvent, PlaceUrl, Url
-from .models import PersonPlace
+from .models import (Person, Place, Event, Family, Name, PersonEvent,
+                     PersonFamily, FamilyEvent, PlaceUrl, Url,
+                     PersonPlace, PersonNote, FamilyNote, EventNote,
+                     PlaceNote, )
 
 
 class OSitesMixin(object):
@@ -29,6 +30,8 @@ class OSitesMixin(object):
                super(OSitesMixin, self).get_readonly_fields(request, obj)
 
     def osites(self, obj):
+        if obj is None:
+            return '-'
         sitelist = ', '.join([s.siteprofile.short_name
                               for s in self.osite_field(obj).sites.exclude(
                                   id=Site.objects.get_current().id)])
@@ -124,6 +127,20 @@ class FamilyPInline(GrappelliSortableHiddenMixin,
         return obj.family
 
 
+class NotePInline(GrappelliSortableHiddenMixin,
+                  OSitesMixin, admin.TabularInline):
+    """Note Inline class used by PersonAdmin."""
+
+    model = PersonNote
+    extra = 1
+    raw_id_fields = ('note', )
+    autocomplete_lookup_fields = {'fk': ['note', ], }
+    sortable_excludes = ('position', )
+
+    def osite_field(self, obj):
+        return obj.note
+
+
 class PPlaceFormSet(BaseInlineFormSet):
     """FormSet for the different Places of a Person.
     """
@@ -172,7 +189,14 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                          ('gender_type', 'probably_alive', ), ), }),
         ('Orte', {'classes': ('placeholder personplace_set-group', ),
                   'fields': ()}),
-        ('Dokumente', {'fields': ('portrait', 'notes', 'comments', ), }),
+        ('Weitere Informationen', {'fields': (('portrait', 'portrait_os'),
+                                              'comments', ), }),
+        ('Familien', {'classes': ('placeholder personfamily_set-group', ),
+                      'fields': ()}),
+        ('Texte', {'classes': ('placeholder personnote_set-group', ),
+                   'fields': ()}),
+        ('Ereignisse', {'classes': ('placeholder personevent_set-group', ),
+                        'fields': ()}),
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )
@@ -181,11 +205,11 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                     'datedeath', 'placedeath', 'image_thumbnail', 'handle',
                     'view_on_site', )
 
-    inlines = [NameInline, FamilyPInline, EventInline,
+    inlines = [NameInline, FamilyPInline, EventInline, NotePInline,
                SourcePInline, PPlaceInline, ]
-    raw_id_fields = ('portrait', 'notes', 'sites', )
+    raw_id_fields = ('portrait', 'sites', )
     related_lookup_fields = {'fk': ['portrait', ], }
-    autocomplete_lookup_fields = {'m2m': ['notes', 'sites', ], }
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
     search_fields = ('handle', 'datebirth', 'datedeath',
                      'name__name', 'places__title',)
     list_filter = ('gender_type', 'probably_alive', 'name__name', 'sites', )
@@ -209,6 +233,17 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                     usersite__role__in=[UserSite.STAFF, UserSite.SUPERUSER, ])
         return super(PersonAdmin, self).formfield_for_manytomany(
                 db_field, request, **kwargs)
+
+    def portrait_os(self, obj):
+        sitelist = ', '.join([s.siteprofile.short_name
+                              for s in obj.portrait.sites.exclude(
+                                  id=Site.objects.get_current().id)])
+        if not Site.objects.get_current() in obj.portrait.sites.all():
+            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist
+        return sitelist or '-'
+    portrait_os.allow_tags = True
+    portrait_os.short_description = 'Andere Familienbäume'
 
     def view_on_site(self, obj):
         '''Put link to person's detail view into changelist.'''
@@ -304,6 +339,20 @@ class UrlInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     related_lookup_fields = {'fk': ['url', ], }
 
 
+class NotePlaceInline(GrappelliSortableHiddenMixin,
+                      OSitesMixin, admin.TabularInline):
+    """Note Inline class used by PlaceAdmin."""
+
+    model = PlaceNote
+    extra = 1
+    raw_id_fields = ('note', )
+    autocomplete_lookup_fields = {'fk': ['note', ], }
+    sortable_excludes = ('position', )
+
+    def osite_field(self, obj):
+        return obj.note
+
+
 class PlaceAdmin(admin.OSMGeoAdmin):
     """The PlaceAdmin class."""
 
@@ -314,7 +363,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
 
     list_display = ('title', 'first_url', 'handle', )
     search_fields = ('title', )
-    inlines = [UrlInline, ]
+    inlines = [UrlInline, NotePlaceInline, ]
 
     def first_url(self, obj):
         """Method to put thumbnail of portrait into list_display."""
@@ -401,6 +450,20 @@ class EventPInline(admin.TabularInline):
     verbose_name_plural = "Beteiligte Personen"
 
 
+class NoteEInline(GrappelliSortableHiddenMixin,
+                  OSitesMixin, admin.TabularInline):
+    """Note Inline class used by EventAdmin."""
+
+    model = EventNote
+    extra = 1
+    raw_id_fields = ('note', )
+    autocomplete_lookup_fields = {'fk': ['note', ], }
+    sortable_excludes = ('position', )
+
+    def osite_field(self, obj):
+        return obj.note
+
+
 class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """The EventAdmin class."""
 
@@ -410,7 +473,7 @@ class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )
-    inlines = [EventPInline, FamilyEInline, SourceEInline, ]
+    inlines = [EventPInline, FamilyEInline, NoteEInline, SourceEInline, ]
     raw_id_fields = ('place', 'sites', )
     autocomplete_lookup_fields = {'fk': ['place', ],
                                   'm2m': ['sites', ]}
@@ -495,6 +558,20 @@ class EventFInline(GrappelliSortableHiddenMixin,
         return obj.event
 
 
+class NoteFInline(GrappelliSortableHiddenMixin,
+                  OSitesMixin, admin.TabularInline):
+    """Note Inline class used by EventAdmin."""
+
+    model = FamilyNote
+    extra = 1
+    raw_id_fields = ('note', )
+    autocomplete_lookup_fields = {'fk': ['note', ], }
+    sortable_excludes = ('position', )
+
+    def osite_field(self, obj):
+        return obj.note
+
+
 class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """The FamilyAdmin class."""
 
@@ -508,7 +585,7 @@ class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )
-    inlines = [PersonFInline, EventFInline, SourceFInline, ]
+    inlines = [PersonFInline, EventFInline, NoteFInline, SourceFInline, ]
     raw_id_fields = ('father', 'mother', 'sites', )
     autocomplete_lookup_fields = {
             'fk': ['father', 'mother', ],
@@ -554,15 +631,25 @@ class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         super(FamilyAdmin, self).save_model(request, obj, form, change)
 
     def father_os(self, obj):
-        return ', '.join([s.siteprofile.short_name
-                          for s in obj.father.sites.exclude(
-                              id=Site.objects.get_current().id)])
+        sitelist = ', '.join([s.siteprofile.short_name
+                              for s in obj.father.sites.exclude(
+                                  id=Site.objects.get_current().id)])
+        if not Site.objects.get_current() in obj.father.sites.all():
+            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist
+        return sitelist or '-'
+    father_os.allow_tags = True
     father_os.short_description = 'Andere Familienbäume'
 
     def mother_os(self, obj):
-        return ', '.join([s.siteprofile.short_name
-                          for s in obj.mother.sites.exclude(
-                              id=Site.objects.get_current().id)])
+        sitelist = ', '.join([s.siteprofile.short_name
+                              for s in obj.mother.sites.exclude(
+                                  id=Site.objects.get_current().id)])
+        if not Site.objects.get_current() in obj.mother.sites.all():
+            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist
+        return sitelist or '-'
+    mother_os.allow_tags = True
     mother_os.short_description = 'Andere Familienbäume'
 
     class Media:

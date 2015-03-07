@@ -24,3 +24,6 @@
 {% include "genealogio/person_snippet.rst" with person=pe.person %}
 
 {% endfor %}
+
+{% include "genealogio/notes.rst" %}
+

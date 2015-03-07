@@ -30,8 +30,6 @@ class PrimaryObject(models.Model):
     private = models.BooleanField('private', default=False)
     public = models.BooleanField('public', default=False)
 
-    notes = models.ManyToManyField(Note, blank=True)
-
     sites = models.ManyToManyField(Site)
     all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
@@ -87,12 +85,24 @@ class PlaceUrl(models.Model):
         verbose_name_plural = 'URLs zum Ort'
 
 
+class PlaceNote(models.Model):
+    place = models.ForeignKey('Place')
+    note = models.ForeignKey(Note)
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Text zu Ort'
+        verbose_name_plural = 'Texte zu Ort'
+
+
 class Place(PrimaryObject):
     title = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(blank=True)
 
     urls = models.ManyToManyField(Url, through=PlaceUrl, blank=True)
     location = models.PointField(blank=True, null=True)
+
+    notes = models.ManyToManyField(Note, blank=True, through=PlaceNote)
 
     objects = models.GeoManager()
 
@@ -160,6 +170,16 @@ class Name(models.Model):
         verbose_name_plural = 'Namen'
 
 
+class FamilyNote(models.Model):
+    family = models.ForeignKey('Family')
+    note = models.ForeignKey(Note)
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Text zu Familie'
+        verbose_name_plural = 'Texte zu Familie'
+
+
 class Family(PrimaryObject):
     """The Family class, which models Father-Mother-Child relationships."""
 
@@ -188,6 +208,7 @@ class Family(PrimaryObject):
     name = models.CharField(verbose_name='Familienname', max_length=200,
                             blank=True, null=True)
 
+    notes = models.ManyToManyField(Note, blank=True, through=FamilyNote)
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
     start_date = PartialDateField(blank=True, null=True,
                                   verbose_name="Anfangsdatum")
@@ -284,6 +305,16 @@ class PersonPlace(models.Model):
         verbose_name_plural = 'Zugeordnete Orte'
 
 
+class PersonNote(models.Model):
+    person = models.ForeignKey('Person')
+    note = models.ForeignKey(Note)
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Text zu Person'
+        verbose_name_plural = 'Texte zu Person'
+
+
 class Person(PrimaryObject):
     """The Person class."""
 
@@ -318,6 +349,7 @@ class Person(PrimaryObject):
     portrait = models.ForeignKey(Picture, blank=True, null=True,
                                  verbose_name='Portrait')
 
+    notes = models.ManyToManyField(Note, blank=True, through=PersonNote)
     family = models.ManyToManyField(Family, through="PersonFamily",
                                     verbose_name='Familie(n)')
     source = models.ManyToManyField(Source, blank=True,
@@ -552,6 +584,16 @@ class FamilyEvent(models.Model):
         verbose_name_plural = 'Ereignisse zu Familie'
 
 
+class EventNote(models.Model):
+    event = models.ForeignKey('Event')
+    note = models.ForeignKey(Note)
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Text zu Ereignis'
+        verbose_name_plural = 'Texte zu Ereignis'
+
+
 class Event(PrimaryObject):
     BIRTH = 20
     ADOPTED = 30
@@ -599,6 +641,7 @@ class Event(PrimaryObject):
                               verbose_name='Ort')
     source = models.ManyToManyField(Source, blank=True,
                                     verbose_name='Quelle')
+    notes = models.ManyToManyField(Note, blank=True, through=EventNote)
 
 #    references = generic.GenericRelation('EventRef', related_name="refs",
 #                                         content_type_field="object_type",

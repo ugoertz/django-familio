@@ -41,15 +41,7 @@
 {% if object.comments %}{{ object.comments }}{% endif %}
 
 
-{% if object.events.count %}
-----------
-Ereignisse
-----------
-
-{% for event in object.events.on_site %}
-{% include "genealogio/event_snippet.rst" with person=object %}
-{% endfor %}
-{% endif %}
+{% include "genealogio/events.rst" %}
 
 {% if object.personplace_set.count %}
 ----
@@ -61,13 +53,5 @@ Orte
 {% endfor %}
 {% endif %}
 
-{% if object.notes.count %}
------
-Texte
------
-
-{% for note in object.notes.on_site %}
-{% include "notaro/note_trailer.rst" %}
-{% endfor %}
-{% endif %}
+{% include "genealogio/notes.rst" %}
 

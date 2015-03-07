@@ -48,25 +48,9 @@ Familie {{ object }}
 {% endif %}
 {% endwith %}
 
-{% if object.events.count %}
-----------
-Ereignisse
-----------
+{% include "genealogio/events.rst" %}
 
-{% for event in object.events.on_site %}
-{% include "genealogio/event_snippet.rst" with person=object %}
-{% endfor %}
-{% endif %}
-
-{% if object.notes.count %}
------
-Texte
------
-
-{% for note in object.notes.on_site %}
-{% include "notaro/note_trailer.rst" %}
-{% endfor %}
-{% endif %}
+{% include "genealogio/notes.rst" %}
 
 {% ifnotequal fr 2100 %}
 ----------
