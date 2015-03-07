@@ -39,6 +39,17 @@ class PrimaryObject(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)
 
+    @staticmethod
+    def autocomplete_search_fields():
+        """Used by grappelli."""
+        return ("id__iexact", "handle__icontains", )
+
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
+
     def __unicode__(self):
         return u"%s: %s" % (self.__class__.__name__,
                             self.handle)
@@ -167,8 +178,9 @@ class Family(PrimaryObject):
     mother = models.ForeignKey('Person', related_name="mother_ref",
                                null=True, blank=True,
                                verbose_name='Mutter')
-    family_rel_type = models.IntegerField('FamilyRelType',
-                                          choices=FAMILY_REL_TYPE, default=3)
+    family_rel_type = models.IntegerField(choices=FAMILY_REL_TYPE,
+                                          default=3,
+                                          verbose_name="Art der Beziehung")
 
     name = models.CharField(verbose_name='Familienname', max_length=200,
                             blank=True, null=True)
@@ -178,11 +190,6 @@ class Family(PrimaryObject):
                                   verbose_name="Anfangsdatum")
     end_date = PartialDateField(blank=True, null=True, verbose_name="Enddatum")
     source = models.ManyToManyField(Source, blank=True)
-
-    @staticmethod
-    def autocomplete_search_fields():
-        """Used by grappelli."""
-        return ("id__iexact", "handle__icontains", )
 
     def get_children(self):
         return self.person_set(manager='objects').all().order_by('datebirth')
@@ -205,11 +212,11 @@ class Family(PrimaryObject):
             n += self.name
         try:
             f = self.father.get_primary_name()
-        except ObjectDoesNotExist:
+        except AttributeError:
             f = '?'
         try:
             m = self.mother.get_primary_name()
-        except ObjectDoesNotExist:
+        except AttributeError:
             m = '?'
         if n:
             n = "%s (%s und %s)" % (n, f, m)
@@ -308,11 +315,6 @@ class Person(PrimaryObject):
                                     verbose_name='Familie(n)')
     source = models.ManyToManyField(Source, blank=True,
                                     verbose_name='Quelle')
-
-    @staticmethod
-    def autocomplete_search_fields():
-        """Used by grappelli."""
-        return ("id__iexact", "handle__icontains", )
 
     @property
     def placebirth(self):
@@ -450,7 +452,7 @@ class Person(PrimaryObject):
         return children
 
     def __unicode__(self):
-        return u"(%s [%s])" % (self.get_primary_name(), self.handle)
+        return u"%s %s" % (self.get_primary_name(), self.handle)
 
     # def get_selection_string(self):
     #     return self.name_set.get(preferred=True).get_selection_string()

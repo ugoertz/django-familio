@@ -70,6 +70,15 @@ class Source(models.Model):
     all_objects = GenManager()
     objects = CurrentSiteManager()
 
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
+
+    def __unicode__(self):
+        return self.name
+
     class Meta:
         ordering = ('name', )
         verbose_name = 'Quelle'
@@ -99,6 +108,12 @@ class Picture(models.Model):
         return ("id__iexact", "caption__icontains",
                 "image__icontains", )
 
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
+
     def get_absolute_url(self):
         return reverse('picture-detail', kwargs={'pk': self.id, })
 
@@ -126,6 +141,16 @@ class Document(models.Model):
     def autocomplete_search_fields():
         """Used by grappelli."""
         return ("description__icontains", )
+
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
+
+    def __unicode__(self):
+        # pylint: disable=no-member
+        return self.doc.__unicode__()
 
     class Meta:
         ordering = ('date', )
@@ -188,6 +213,12 @@ class Note(models.Model):
             return '/n' + self.link
         else:
             return reverse('note-detail', kwargs={'pk': self.id, })
+
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
 
     def __unicode__(self):
         return self.title

@@ -14,6 +14,38 @@ from filebrowser.settings import ADMIN_THUMBNAIL
 from .models import Note, Picture, Source
 
 
+class CurrentSiteAdmin(object):
+
+    def get_queryset(self, request):
+        qs = super(CurrentSiteAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(sites=request.site)
+
+    def get_changeform_initial_data(self, request):
+        return {'sites': [request.site, ] +
+                list(request.site.siteprofile.neighbor_sites.all()), }
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.is_superuser:
+            return True
+        return False
+
+    def get_actions(self, request):
+        actions = super(CurrentSiteAdmin, self).get_actions(request)
+        if not request.user.is_superuser:
+            if 'delete_selected' in actions:
+                del actions['delete_selected']
+        return actions
+
+    def get_readonly_fields(self, request, obj=None):
+        # pylint: disable=no-member
+        if obj is None or request.user.is_superuser:
+            return self.readonly_fields
+        else:
+            return ('sites',) + self.readonly_fields
+
+
 class SourceNInline(admin.TabularInline):
     """Inline class to put Note-Source into Note's detail page."""
 
@@ -22,7 +54,7 @@ class SourceNInline(admin.TabularInline):
     extra = 0
 
 
-class NoteAdmin(reversion.VersionAdmin):
+class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Note model."""
 
     fieldsets = (('', {'fields': ('title', 'link', 'text',
@@ -37,33 +69,6 @@ class NoteAdmin(reversion.VersionAdmin):
     list_display = ('link', 'title', 'view_on_site', )
     list_filter = ('sites', )
     search_fields = ('title', 'text', )
-
-    def get_queryset(self, request):
-        qs = super(NoteAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(sites=request.site)
-
-    def get_changeform_initial_data(self, request):
-        return {'sites': [request.site, ], }
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj is None or request.user.is_superuser:
-            return self.readonly_fields
-        else:
-            return ('sites',) + self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        if request.user.is_superuser:
-            return True
-        return False
-
-    def get_actions(self, request):
-        actions = super(NoteAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
 
     def save_related(self, request, form, formset, change):
         super(NoteAdmin, self).save_related(request, form, formset, change)
@@ -100,14 +105,14 @@ class NoteAdmin(reversion.VersionAdmin):
 admin.site.register(Note, NoteAdmin)
 
 
-class SourceAdmin(reversion.VersionAdmin):
+class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Source model."""
     pass
 
 admin.site.register(Source, SourceAdmin)
 
 
-class PictureAdmin(reversion.VersionAdmin):
+class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Picture model."""
 
     fieldsets = (('', {'fields': ('caption', 'image', 'date', ), }),
@@ -117,33 +122,6 @@ class PictureAdmin(reversion.VersionAdmin):
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     list_filter = ('sites', )
     search_fields = ('caption', )
-
-    def get_queryset(self, request):
-        qs = super(PictureAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(sites=request.site)
-
-    def get_changeform_initial_data(self, request):
-        return {'sites': [request.site, ], }
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj is None or request.user.is_superuser:
-            return self.readonly_fields
-        else:
-            return ('sites',) + self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        if request.user.is_superuser:
-            return True
-        return False
-
-    def get_actions(self, request):
-        actions = super(PictureAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
 
     def image_thumbnail(self, obj):
         """Display thumbnail, to be used in django admin list_display."""

@@ -4,9 +4,10 @@ from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.sites.managers import CurrentSiteManager
 from dbarray import IntegerArrayField
 
-from genealogio.managers import CurrentSiteGeoManager
+from notaro.managers import GenManager
 
 
 class Comment(models.Model):
@@ -26,8 +27,8 @@ class Comment(models.Model):
                          fk_field="object_pk")
 
     site = models.ForeignKey(Site)
-    all_objects = models.Manager()
-    objects = CurrentSiteGeoManager()
+    all_objects = GenManager()
+    objects = CurrentSiteManager()
 
     def depth(self):
         return 30 * (len(self.path) - 1)

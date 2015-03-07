@@ -100,6 +100,11 @@ class CustomAutocompleteLookup(AutocompleteLookup):
             qs = request.user.userprofile.sites.filter(
                     usersite__role__in=[UserSite.STAFF,
                                         UserSite.SUPERUSER, ])
+        elif request and not request.user.is_superuser:
+            try:
+                qs = self.model._default_manager.on_site()
+            except:
+                qs = self.model._default_manager.all()
         else:
             qs = self.model._default_manager.all()
         qs = self.get_filtered_queryset(qs)

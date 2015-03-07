@@ -9,6 +9,7 @@ from datetime import datetime
 from django.contrib.gis import admin
 from django.forms.models import BaseInlineFormSet
 from django.conf import settings
+from django.contrib.sites.models import Site
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.utils.functional import curry
 import reversion
@@ -16,6 +17,7 @@ from filebrowser.settings import ADMIN_THUMBNAIL
 from grappelli.forms import GrappelliSortableHiddenMixin
 
 from accounts.models import UserSite
+from notaro.admin import CurrentSiteAdmin
 from .models import Person, Place, Event, Family, Name, PersonEvent
 from .models import PersonFamily, FamilyEvent, PlaceUrl, Url
 from .models import PersonPlace
@@ -137,7 +139,7 @@ class PPlaceInline(admin.TabularInline):
         return self.extra
 
 
-class PersonAdmin(reversion.VersionAdmin):
+class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """The PersonAdmin class."""
 
     fieldsets = (
@@ -169,12 +171,6 @@ class PersonAdmin(reversion.VersionAdmin):
     list_filter = ('gender_type', 'probably_alive', 'name__name', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
-    def get_queryset(self, request):
-        qs = super(PersonAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(sites=request.site)
-
     def image_thumbnail(self, obj):
         """Method to put thumbnail of portrait into list_display."""
 
@@ -186,27 +182,6 @@ class PersonAdmin(reversion.VersionAdmin):
             return ""
     image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Portrait"
-
-    def get_changeform_initial_data(self, request):
-        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj is None or request.user.is_superuser:
-            return self.readonly_fields
-        else:
-            return ('sites',) + self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        if request.user.is_superuser:
-            return True
-        return False
-
-    def get_actions(self, request):
-        actions = super(PersonAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "sites" and not request.user.is_superuser:
@@ -372,11 +347,14 @@ class SourceEInline(admin.TabularInline):
     extra = 0
 
 
-class EventFInline(admin.TabularInline):
-    """The EventFInline class."""
+class FamilyEInline(admin.TabularInline):
+    """The FamilyEInline class (Family-inline in EventAdmin)."""
 
+    fields = ('family', 'role', )
     model = FamilyEvent
     extra = 0
+    raw_id_fields = ('family', )
+    autocomplete_lookup_fields = {'fk': ['family', ]}
 
 
 class EventPInline(admin.TabularInline):
@@ -389,7 +367,7 @@ class EventPInline(admin.TabularInline):
     autocomplete_lookup_fields = {'fk': ['person', ], }
 
 
-class EventAdmin(reversion.VersionAdmin):
+class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """The EventAdmin class."""
 
     fieldsets = (
@@ -398,7 +376,7 @@ class EventAdmin(reversion.VersionAdmin):
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )
-    inlines = [EventPInline, EventFInline, SourceEInline, ]
+    inlines = [EventPInline, FamilyEInline, SourceEInline, ]
     raw_id_fields = ('place', 'sites', )
     autocomplete_lookup_fields = {'fk': ['place', ],
                                   'm2m': ['sites', ]}
@@ -406,33 +384,6 @@ class EventAdmin(reversion.VersionAdmin):
     search_fields = ('title', 'description', )
     list_filter = ('event_type', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
-
-    def get_queryset(self, request):
-        qs = super(EventAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(sites=request.site)
-
-    def get_changeform_initial_data(self, request):
-        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj is None or request.user.is_superuser:
-            return self.readonly_fields
-        else:
-            return ('sites',) + self.readonly_fields
-
-    def has_delete_permission(self, request, obj=None):
-        if request.user.is_superuser:
-            return True
-        return False
-
-    def get_actions(self, request):
-        actions = super(EventAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
 
     def save_model(self, request, obj, form, change):
         if not obj.handle:
@@ -483,24 +434,41 @@ class PersonFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
 
     model = PersonFamily
     extra = 0
-    fields = ('person', 'child_type', 'position', )
+    fields = ('person', 'child_type', 'osites', 'position', )
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ['person', ], }
     sortable_excludes = ('position', 'child_type', )
     verbose_name = "Kind"
     verbose_name_plural = "Kinder"
+    readonly_fields = ('osites', )
+
+    def osites(self, obj):
+        return ', '.join([s.siteprofile.short_name
+                          for s in obj.person.sites.exclude(
+                              id=Site.objects.get_current().id)])
+    osites.short_description = 'Andere Familienbäume'
 
 
-class FamilyAdmin(reversion.VersionAdmin):
+class EventFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
+    """The EventFInline class (Events-inline in FamilyAdmin)."""
+
+    model = FamilyEvent
+    extra = 0
+    raw_id_fields = ('event', )
+    autocomplete_lookup_fields = {'fk': ['event', ]}
+    sortable_excludes = ('position', )
+
+
+class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """The FamilyAdmin class."""
 
     fieldsets = (
         ('', {'fields': ('name',
-                         'father',
-                         'mother',
-                         'family_rel_type', )}),
+                         ('father', 'father_os', ),
+                         ('mother', 'mother_os', ), )}),
         ('Daten', {'classes': ('grp-collapse grp-open', ),
-                   'fields': ('start_date', 'end_date', )}),
+                   'fields': (('family_rel_type',
+                               'start_date', 'end_date', ), )}),
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )
@@ -512,33 +480,19 @@ class FamilyAdmin(reversion.VersionAdmin):
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
     list_filter = ('sites', )
-
-    def get_queryset(self, request):
-        qs = super(FamilyAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
-            return qs
-        return qs.filter(sites=request.site)
-
-    def get_changeform_initial_data(self, request):
-        return {'sites': request.site.siteprofile.neighbor_sites.all(), }
-
-    def has_delete_permission(self, request, obj=None):
-        if request.user.is_superuser:
-            return True
-        return False
-
-    def get_actions(self, request):
-        actions = super(FamilyAdmin, self).get_actions(request)
-        if not request.user.is_superuser:
-            if 'delete_selected' in actions:
-                del actions['delete_selected']
-        return actions
+    readonly_fields = ('father_os', 'mother_os', )
 
     def get_readonly_fields(self, request, obj=None):
-        if obj is None or request.user.is_superuser:
-            return self.readonly_fields
-        else:
-            return ('sites',) + self.readonly_fields
+        if obj is None:
+            return super(FamilyAdmin, self).get_readonly_fields(request, obj)
+
+        rof = ()
+        if obj.father and request.site not in obj.father.sites.all():
+            rof += ('father', )
+        if obj.mother and request.site not in obj.mother.sites.all():
+            rof += ('mother', )
+
+        return rof + super(FamilyAdmin, self).get_readonly_fields(request, obj)
 
     def save_model(self, request, obj, form, change):
         """Create handle before saving Family instance."""
@@ -562,6 +516,18 @@ class FamilyAdmin(reversion.VersionAdmin):
                          unicode(datetime.now().microsecond)[:5])
 
         super(FamilyAdmin, self).save_model(request, obj, form, change)
+
+    def father_os(self, obj):
+        return ', '.join([s.siteprofile.short_name
+                          for s in obj.father.sites.exclude(
+                              id=Site.objects.get_current().id)])
+    father_os.short_description = 'Andere Familienbäume'
+
+    def mother_os(self, obj):
+        return ', '.join([s.siteprofile.short_name
+                          for s in obj.mother.sites.exclude(
+                              id=Site.objects.get_current().id)])
+    mother_os.short_description = 'Andere Familienbäume'
 
     class Media:
         css = {'all': ('css/family_admin.css', ), }
