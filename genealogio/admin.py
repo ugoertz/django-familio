@@ -118,13 +118,13 @@ class PPlaceFormSet(BaseInlineFormSet):
                             {'typ': PersonPlace.DEATH, }, ]
 
 
-class PPlaceInline(admin.TabularInline):
+class PPlaceInline(admin.StackedInline):
     """Inline class for PersonPlace used by PersonAdmin."""
 
     formset = PPlaceFormSet
     model = PersonPlace
     extra = 2
-    fields = ('place', 'typ', 'start', 'end', 'comment', )
+    fields = (('place', 'typ', ), ('start', 'end', ), 'comment', )
     raw_id_fields = ('place', )
     autocomplete_lookup_fields = {'fk': ['place', ], }
     sortable_excludes = ('typ', )
@@ -144,17 +144,13 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     fieldsets = (
         ('Name', {'classes': ('placeholder name_set-group', ), 'fields': ()}),
-        ('', {'fields': ('gender_type', 'probably_alive', ), }),
-        ('Daten', {'fields': ('datebirth',
-                              'datedeath', ), }),
+        ('', {'fields': (('datebirth', 'datedeath', ),
+                         ('gender_type', 'probably_alive', ), ), }),
         ('Orte', {'classes': ('placeholder personplace_set-group', ),
                   'fields': ()}),
         ('Dokumente', {'fields': ('portrait', 'notes', 'comments', ), }),
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
-        ('Verschiedenes', {'classes': ('grp-collapse grp-closed', ),
-                           'fields': ('private', 'public', ),
-                           }),
         )
 
     list_display = ('last_name', 'first_name', 'datebirth', 'placebirth',
@@ -467,8 +463,8 @@ class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                          ('father', 'father_os', ),
                          ('mother', 'mother_os', ), )}),
         ('Daten', {'classes': ('grp-collapse grp-open', ),
-                   'fields': (('family_rel_type',
-                               'start_date', 'end_date', ), )}),
+                   'fields': ('family_rel_type',
+                              ('start_date', 'end_date', ), )}),
         ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                             'fields': ('sites', ), }),
         )

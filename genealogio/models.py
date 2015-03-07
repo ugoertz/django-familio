@@ -113,6 +113,9 @@ class Place(PrimaryObject):
     def __unicode__(self):
         return self.title
 
+    def related_label(self):
+        return self.__unicode__()
+
     @staticmethod
     def autocomplete_search_fields():
         return ("title__startswith",)
@@ -270,6 +273,10 @@ class PersonPlace(models.Model):
                 not self.start and self.person.datedeath:
             self.start = self.person.datedeath
         super(PersonPlace, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        # pylint: disable=no-member
+        return '%s: %s' % (self.get_typ_display(), self.place.__unicode__())
 
     class Meta:
         ordering = ['start', ]

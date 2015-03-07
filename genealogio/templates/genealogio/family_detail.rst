@@ -8,6 +8,12 @@
 .. role:: cabin
     :class: cabin
 
+.. role:: alignleft
+    :class: alignleft
+
+.. role:: alignright
+    :class: alignright
+
 .. |br| raw:: html
 
    <br />
@@ -69,7 +75,7 @@ Zeitstrahl
 
 {% gapless %}
 +--------+--------------------------------+
-|        | {{ fr }} |head| {{ to }}               |
+|        | |fr| |head| |to|               |
 +========+================================+
 {% if object.father.on_current_site %}| |PF|   | |imgPF|                        |
 +--------+--------------------------------+{% endif %}
@@ -84,6 +90,12 @@ Zeitstrahl
 {{ sparkline_legend_ref }}
 
 .. |head| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
+
+.. |fr| replace::
+    :alignleft:`{{ fr }}`
+
+.. |to| replace::
+    :alignright:`{{ to }}`
 
 {% include "genealogio/person_sparkline.rst" with person=object.father label="PF" %}
 
