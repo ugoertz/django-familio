@@ -40,7 +40,7 @@ ul.simple li {
             <hr>
             <p style="margin-top:30px; margin-bottom: 30px;">Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.all %}{{ u.get_full_name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
 
-                {% for pic in object.pictures.on_site %}
+                {% for pic in object.get_pictures %}
                 <div>
                     <a href="{{ pic.get_absolute_url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
 

@@ -158,6 +158,15 @@ class Document(models.Model):
         verbose_name_plural = 'Dokumente'
 
 
+class PictureNote(models.Model):
+    note = models.ForeignKey('Note', verbose_name="Text")
+    picture = models.ForeignKey(Picture, verbose_name="Bild")
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ('position', )
+
+
 class Note(models.Model):
 
     title = models.CharField(max_length=200, verbose_name='Titel')
@@ -172,6 +181,7 @@ class Note(models.Model):
                                      verbose_name='Autoren')
 
     pictures = models.ManyToManyField('Picture', blank=True,
+                                      through=PictureNote,
                                       verbose_name='Bilder')
     source = models.ManyToManyField('Source', blank=True)
 
@@ -183,6 +193,13 @@ class Note(models.Model):
     def autocomplete_search_fields():
         """Used by grappelli."""
         return ("title__icontains", "link__icontains", )
+
+    def get_pictures(self):
+        """Return all pictures attached to note which are available on current
+        site, ordered by PictureNote.position."""
+
+        # pylint: disable=no-member
+        return self.pictures.on_site().order_by('picturenote__position')
 
     def get_trailer(self):
         """Return the 'first section' of self.text. This means either

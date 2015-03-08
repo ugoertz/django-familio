@@ -15,11 +15,11 @@ from django.http import HttpResponseRedirect
 from django import forms
 import reversion
 from filebrowser.settings import ADMIN_THUMBNAIL
-# from grappelli.forms import GrappelliSortableHiddenMixin
+from grappelli.forms import GrappelliSortableHiddenMixin
 
 from base.models import SiteProfile
 from accounts.models import UserSite
-from .models import Note, Picture, Source
+from .models import Note, Picture, Source, PictureNote
 
 
 class UpdateActionForm(ActionForm):
@@ -157,18 +157,33 @@ class SourceNInline(admin.TabularInline):
     extra = 0
 
 
+class PictureNInline(GrappelliSortableHiddenMixin,
+                     admin.TabularInline):
+    """Inline class to put Note-Source into Note's detail page."""
+
+    # pylint: disable=no-member
+    model = PictureNote
+    sortable_excludes = ('position', )
+    raw_id_fields = ('picture', )
+    related_lookup_fields = {'fk': ['picture', ], }
+    extra = 1
+
+    class Meta:
+        verbose_name = 'Bild'
+        verbose_name_plural = 'Bilder'
+
+
 class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Note model."""
 
     fieldsets = (('', {'fields': ('title', 'link', 'text',
                                   'published', 'authors', ), }),
-                 ('Bilder', {'fields': ('pictures', ), }),
                  ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                                      'fields': ('sites', ), }), )
     raw_id_fields = ('authors', 'pictures', 'sites', )
     related_lookup_fields = {'m2m': ['authors', 'pictures', ], }
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
-    inlines = [SourceNInline, ]
+    inlines = [PictureNInline, SourceNInline, ]
     list_display = ('link', 'title', 'view_on_site', )
     list_filter = ('sites', )
     search_fields = ('title', 'text', )
@@ -242,7 +257,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
-    list_display = ['id', 'caption', 'date', 'image_thumbnail', ]
+    list_display = ('id', 'caption', 'date', 'image_thumbnail', )
 
     class Media:
         js = ('js/adminactions.js', )
