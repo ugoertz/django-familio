@@ -5,10 +5,13 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
-from django.contrib import admin
 from django.conf import settings
+from django.conf.urls import url
+from django.contrib import admin
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django import forms
 import reversion
 from filebrowser.settings import ADMIN_THUMBNAIL
@@ -28,6 +31,25 @@ class UpdateActionForm(ActionForm):
 class CurrentSiteAdmin(object):
 
     action_form = UpdateActionForm
+    change_form_template = "customadmin/change_form.html"
+
+    def get_urls(self):
+        # pylint: disable=no-member
+        urls = super(CurrentSiteAdmin, self).get_urls()
+        return [url(r'^(?P<pk>\d+)/remove/$',
+                    self.admin_site.admin_view(self.remove_object)),
+                ] + urls
+
+    def remove_object(self, request, pk):
+        # pylint: disable=no-member
+        obj = self.model.objects.get(pk=pk)
+        obj.sites.remove(request.site)
+        self.message_user(request,
+                          'Der Eintrag wurde aus diesem '
+                          'Familienbaum entfernt.')
+        return HttpResponseRedirect(reverse(
+            'admin:%s_%s_changelist' %
+            (self.model._meta.app_label, self.model._meta.model_name)))
 
     def ositelist(self, obj):
         sitelist = ', '.join([s.siteprofile.short_name
