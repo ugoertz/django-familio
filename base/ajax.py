@@ -10,7 +10,9 @@ def getuser(request, query):
     qs = User.objects.filter(username__icontains=query) |\
         User.objects.filter(first_name__icontains=query) |\
         User.objects.filter(last_name__icontains=query)
-    qs = qs.exclude(id=request.user.id).exclude(id=-1)
+    qs = qs.filter(userprofile__sites=request.site)\
+           .filter(is_active=True)\
+           .exclude(id=request.user.id).exclude(id=-1)
 
     result = [
         {'username': u.username,
