@@ -214,6 +214,7 @@ class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                      'name__name', 'places__title',)
     list_filter = ('gender_type', 'probably_alive', 'name__name', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
+    readonly_fields = ('portrait_os', )
 
     def image_thumbnail(self, obj):
         """Method to put thumbnail of portrait into list_display."""
