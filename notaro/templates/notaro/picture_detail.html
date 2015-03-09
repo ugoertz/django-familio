@@ -7,7 +7,7 @@
 
 {% block js %}
 {{ block.super  }}
-{% if request.user.is_authenticated and request.user.is_staff %}
+{% if user.is_authenticated and user.userprofile.is_staff_for_site %}
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 {% endif %}
 {% endblock js %}
@@ -25,7 +25,7 @@
 
             {% if object.date %}<p>{{ object.date }}</p>{% endif %}
         </div>
-        {% if user.is_authenticated and user.is_staff %}
+        {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
         <div class="col-md-3 col-md-offset-1">
             <div class="cabin adminbox">
                 {% include "notaro/admin_links.html" with admin_edit_link="notaro/picture" doc_link="bilder.html" %}

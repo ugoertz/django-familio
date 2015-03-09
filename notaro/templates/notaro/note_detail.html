@@ -24,7 +24,7 @@ ul.simple li {
 
 {% block js %}
 {{ block.super  }}
-{% if request.user.is_authenticated and request.user.is_staff %}
+{% if user.is_authenticated and user.userprofile.is_staff_for_site %}
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 {% endif %}
 {% endblock js %}
@@ -50,7 +50,7 @@ ul.simple li {
             <hr>
             {% include "comments/comments.html" %}
         </div>
-        {% if user.is_authenticated and user.is_staff %}
+        {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
         <div class="col-md-3 col-md-offset-1">
             <div class="cabin adminbox">
             <p style="margin-bottom: 30px;">

@@ -44,6 +44,12 @@ class UserProfile(UserenaBaseProfile):
                          " auf meine Kommentare")
     codemirror_keymap = models.IntegerField(choices=KEYMAP_CHOICES, default=0)
 
+    @property
+    def is_staff_for_site(self):
+        return (Site.objects.get_current()
+                in self.sites.filter(
+                    usersite__role__in=[UserSite.STAFF, UserSite.SUPERUSER]))
+
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
 
