@@ -46,8 +46,8 @@ $(window).on('map:init', function (e) {
 
     <div class="jumbotron">
       <div class="container">
-        <h1>{{ "Die Familiengeschichte der Familie Görtz"|typogrify }}</h1>
-        <p>Auf dieser Webseite sind Informationen rund um die Familie Görtz und ihre Vorfahren gesammelt.</p>
+          <h1>Die Familiengeschichte der Familie {{ request.site.siteprofile.short_name }}</h1>
+          <p>Auf dieser Webseite sind Informationen rund um die Familie {{ request.site.siteprofile.short_name }} und ihre Vorfahren gesammelt.</p>
       </div>
     </div>
 
