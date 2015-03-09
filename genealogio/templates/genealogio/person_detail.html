@@ -40,6 +40,10 @@ ul.simple li {
 {% endif %}
 
 <script type="text/javascript">
+$("img").error(function () {
+    $(this).hide();
+});
+
 
 $(window).on('map:init', function (e) {
     var redMarker = L.AwesomeMarkers.icon({ icon: 'plus', markerColor: 'brown' });

@@ -2,13 +2,12 @@
 
 import datetime
 import os.path
+import re
 from django.shortcuts import render
-from django.http import HttpResponseForbidden
+from django.http import Http404
 from django.conf import settings
 from django.utils.translation import ungettext
 from django.contrib.sites.models import Site
-# from django.views.generic import View
-# import watson
 from django_transfer import TransferHttpResponse
 
 from grappelli.views.related import (AutocompleteLookup, get_label,
@@ -53,41 +52,56 @@ def home(request):
              'notes': Note.objects.filter(published=True)
                           .order_by('date_added')[:5], })
 
+protected_path = re.compile('\d+_')
+
 
 def download(request, fname):
     # check permissions
 
-    if fname.startswith(str(settings.SITE_ID)):
-        # this is the easy case
+    # for files within a filebrowser-versions directory, check permissions
+    # based on the relative path
+    if fname.startswith('%d_versions/' % settings.SITE_ID):
+        fn = fname[len('%d_versions/' % settings.SITE_ID):]
+    else:
+        fn = fname
+
+    if protected_path.match(fn) is None:
+        # this subdirectory is available without restriction
+        # (versions for uploads to current site, and non-protected directories)
         return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
 
-    # if object does not belong to current site,
-    # we have to check where this file belongs
+    if fn.startswith('%d_uploads/' % settings.SITE_ID):
+        # the upload directory for the current site;
+        # available without restrictions
+        return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
 
+    # in remaining cases, we have to find object corresponding to this file in
+    # the database, and check its sites field
+
+    # currently, this concerns filebrowser files attached to Picture or
+    # Document objects
     for model, field, path in [(Picture, 'image', 'images'),
                                (Document, 'doc', 'documents')]:
-        if fname[fname.find('_'):].startswith('_versions/%s/' % path) or\
-                fname[fname.find('_'):].startswith('_uploads/%s/' % path):
+        if fname[fname.find('_'):].startswith('_versions/'):
+            # if the file sits in a versions directory, remove the version
+            # suffix
+            for v in ['_admin_thumbnail.', '_thumbnail.', '_small.',
+                      '_medium.', '_big.', '_large.']:
+                fn = fn.replace(v, '.')
 
-            fn = ('%d_uploads' % settings.SITE_ID) + fname[fname.find('/'):]
-            if fname[fname.find('_'):].startswith('_versions/'):
-                for v in ['_admin_thumbnail.', '_thumbnail.', '_small.',
-                          '_medium.', '_big.', '_large.']:
-                    fn = fn.replace(v, '.')
+        # pylint: disable=no-member
+        ps = model.objects.filter(**{field+'__startswith': fn, })
+        for p in ps:
+            if fname == getattr(p, field).path or\
+                    fname in getattr(p, field).versions():
+                # found the right object
+                if request.site in p.sites.all():
+                    return TransferHttpResponse(
+                            os.path.join(settings.MEDIA_ROOT, fname))
+                else:
+                    break
 
-            # pylint: disable=no-member
-            ps = model.objects.filter(**{field+'__startswith': fn, })
-            for p in ps:
-                if fname == getattr(p, field).path or\
-                        fname in getattr(p, field).versions():
-                    # found the right object
-                    if request.site in p.sites.all():
-                        return TransferHttpResponse(
-                                os.path.join(settings.MEDIA_ROOT, fname))
-                    else:
-                        break
-
-    return HttpResponseForbidden()
+    raise Http404
 
 
 class CustomAutocompleteLookup(AutocompleteLookup):
