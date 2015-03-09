@@ -3,16 +3,15 @@
 from django.conf.urls import include, patterns, url
 from django.conf.urls.static import static
 from django.conf import settings
-from filebrowser.sites import site
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.views.generic import TemplateView
+from filebrowser.sites import site
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
 from base.views import CustomAutocompleteLookup
 from genealogio.models import Place
 
-admin.autodiscover()
 dajaxice_autodiscover()
 
 
