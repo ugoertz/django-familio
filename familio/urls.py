@@ -5,11 +5,13 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.views.generic import TemplateView
 from filebrowser.sites import site
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
 from base.views import CustomAutocompleteLookup
+from accounts.models import UserSite
 from genealogio.models import Place
 
 dajaxice_autodiscover()
@@ -25,7 +27,11 @@ class ImpressumView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ImpressumView, self).get_context_data(**kwargs)
-        context['staff'] = get_user_model().objects.filter(is_staff=True)
+        context['staff'] = get_user_model().objects.filter(
+            userprofile__usersite__site=Site.objects.get_current(),
+            userprofile__usersite__role__in=[UserSite.STAFF,
+                                             UserSite.SUPERUSER])\
+            .order_by('last_name', 'first_name').distinct()
         return context
 
 
