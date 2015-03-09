@@ -230,9 +230,9 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 # AUTH_USER_MODEL = 'accounts.MyUser'
 
 AUTHENTICATION_BACKENDS = {
-    'userena.backends.UserenaAuthenticationBackend',
+    'base.auth_backend.SiteBackend',
     'guardian.backends.ObjectPermissionBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    #  'django.contrib.auth.backends.ModelBackend',
 }
 
 FILE_UPLOAD_PERMISSIONS = 0o0664
