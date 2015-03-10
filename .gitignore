@@ -12,7 +12,7 @@ tmp/*
 *.db
 media/*
 static/*
-familio/wsgi.py
+familio/wsgi*.py
 backup-db
 
 familio/settings/*
