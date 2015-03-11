@@ -111,28 +111,51 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(FamilyDetail, self).get_context_data(**kwargs)
         obj = self.get_object()
-        fr = 2100
+
+        # NOTE: The 2110 is hard-coded in the template: below, 10 is subtracted
+        # from fr, and the resulting value passed to the template. If in the
+        # template, the value of fr is 2100, then no time line is displayed.
+        fr = 2110
         to = 1200
         try:
+            if obj.father and not obj.father.datedeath\
+                    and obj.father.probably_alive:
+                to = datetime.date.today().year + 2
+            else:
+                to = max(to, obj.father.datedeath.year)
+        except:
+            pass
+        try:
             fr = min(fr, obj.father.datebirth.year)
-            to = max(to, obj.father.datedeath.year)
+            to = max(to, fr + 80)
+        except:
+            pass
+        try:
+            if obj.mother and not obj.mother.datedeath\
+                    and obj.mother.probably_alive:
+                to = datetime.date.today().year + 2
+            else:
+                to = max(to, obj.mother.datedeath.year)
         except:
             pass
         try:
             fr = min(fr, obj.mother.datebirth.year)
-            to = max(to, obj.mother.datedeath.year)
+            to = max(to, fr + 80)
         except:
             pass
 
         for ch in obj.person_set.all():
             try:
-                to = max(to, ch.datedeath.year)
+                if not ch.datedeath and ch.probably_alive:
+                    to = datetime.date.today().year + 2
+                else:
+                    to = max(to, ch.datedeath.year)
             except:
                 pass
 
         fr = fr - 10
         context['fr'] = fr
-        to = min(max(to + 5, fr+80), datetime.date.today().year + 2)
+        to = min(max(to + 5, fr + 80), datetime.date.today().year + 2)
         context['to'] = to
 
         def start(x):
@@ -257,10 +280,13 @@ class Sparkline(LoginRequiredMixin, View):
     def get(self, request, pk, fr=None, to=None):
 
         if int(pk) < 100000:
+            # pk is the id of a Person object
+
             # pylint: disable=no-member
             try:
                 person = Person.objects.get(pk=pk)
                 if not person.datebirth:
+                    # no date of birth known, so just display empty sparkline
                     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                                  self.width, self.height)
                     response = HttpResponse(content_type="image/png")
@@ -268,8 +294,17 @@ class Sparkline(LoginRequiredMixin, View):
                     return response
 
                 BIRTH_YEAR = person.datebirth.year
-                DEATH_YEAR = person.datedeath.year if person.datedeath\
-                    else datetime.date.today().year
+                if person.datedeath:
+                    DEATH_YEAR = person.datedeath.year
+                else:
+                    DEATH_YEAR = min(BIRTH_YEAR+120,
+                                     datetime.date.today().year)
+                # if we do not have a deathdate, check whether it is plausible
+                # that this person is still alive
+                guess_dead = (
+                        not person.datedeath
+                        and (not person.probably_alive
+                             or BIRTH_YEAR + 120 < datetime.date.today().year))
             except ObjectDoesNotExist:
                 person = None
         else:
@@ -344,9 +379,19 @@ class Sparkline(LoginRequiredMixin, View):
                           value[-1])
 
         elif person:
-            draw_line(year_to_x(BIRTH_YEAR),
-                      year_to_x(DEATH_YEAR),
-                      0.04)
+            if not guess_dead:
+                draw_line(year_to_x(BIRTH_YEAR),
+                          year_to_x(DEATH_YEAR),
+                          0.04)
+            else:
+                draw_line(year_to_x(BIRTH_YEAR),
+                          year_to_x(DEATH_YEAR-20),
+                          0.04)
+                ctx.set_dash([0.08, 0.14], 0.04)
+                draw_line(year_to_x(DEATH_YEAR-20),
+                          year_to_x(DEATH_YEAR),
+                          0.04)
+                ctx.set_dash([])
             draw_line(year_to_x(BIRTH_YEAR),
                       year_to_x(BIRTH_YEAR)+0.04,
                       0.4)
