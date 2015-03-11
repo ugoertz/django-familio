@@ -5,8 +5,7 @@ from .views import NoteDetailVerboseLink
 
 class NotaroMiddleware(object):
     def process_response(self, request, response):
-        if response.status_code != 404:
-            # Pass anything but a 404 straight through.
+        if response.status_code != 404 or not request.user.is_authenticated():
             return response
 
         try:
