@@ -217,7 +217,8 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         except ImportError:
             pass
         js += ('codemirror/codemirror_conf.js', )
-        css = {'all': ('codemirror/codemirror.css',
+        css = {'all': ('css/note_admin.css',
+                       'codemirror/codemirror.css',
                        # 'codemirror/docs.css',
                        'codemirror/show-hint.css',
                        'codemirror/custom.css', ), }
@@ -261,6 +262,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     class Media:
         js = ('js/adminactions.js', )
+        css = {'all': ('css/picture_admin.css', ), }
 
 
 admin.site.register(Picture, PictureAdmin)
