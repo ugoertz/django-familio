@@ -65,7 +65,7 @@ $(window).on('map:init', function (e) {
         <div class="col-md-3 col-md-offset-1">
         {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
         <div class="cabin adminbox">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="orte.html" %}
+            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/place" doc_link="orte.html" %}
         </div>
         {% endif %}
         </div>
