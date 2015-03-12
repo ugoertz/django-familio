@@ -39,6 +39,14 @@ ermitteln; das funktioniert wahrscheinlich nur bei größeren Städten verlässl
 und sollte dann nachträglich kontrolliert werden.)
 
 
+--------------------
+Andere Familienbäume
+--------------------
+
+Alle Orte stehen automatisch in allen Familienbäumen zur Verfügung.
+
+
+
 ------------------------
 Technische Informationen
 ------------------------

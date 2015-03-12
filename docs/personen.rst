@@ -143,11 +143,11 @@ benannt werden. Dies wird im Moment aber nur rudimentär unterstützt und noch
 nicht auf der Webseite selbst abgebildet.
 
 
-....
-TODO
-....
+--------------------
+Andere Familienbäume
+--------------------
 
-* Personen, die zu verschiedenen Familienbäumen gehören.
+Siehe :ref:`familienbaeume-chapter`\ .
 
 
 

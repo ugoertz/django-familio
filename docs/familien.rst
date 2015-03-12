@@ -19,3 +19,10 @@ Familien
 
 :Quellen: (noch nicht wirklich unterstützt)
 
+--------------------
+Andere Familienbäume
+--------------------
+
+Siehe :ref:`familienbaeume-chapter`\ .
+
+

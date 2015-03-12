@@ -51,3 +51,11 @@ Um ein Bildobjekt hinzuzufügen,
    gestartet ist (zum Beispiel Porträt einer Person).
 
 
+--------------------
+Andere Familienbäume
+--------------------
+
+Siehe :ref:`familienbaeume-chapter`\ .
+
+
+

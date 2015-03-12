@@ -168,8 +168,10 @@ Satzzeichen). Am Schluss muss das entsprechende handle angegeben werden. Der
 Link verweist dann auf die zugehörige Seite.
 
 Mit ``:p:`` wird ein Link auf eine Personenseite angelegt, mit ``:f:`` auf eine
-Familienseite, mit ``l`` auf eine Ortsseite (``l`` für *location*), mit ``e``
-auf eine Ereignisseite.
+Familienseite, mit ``:l:`` auf eine Ortsseite (``l`` für *location*), mit ``:e:``
+auf eine Ereignisseite. Für Personen gibt es zusätzlich zu ``:p:`` noch die
+Variante ``:pd:``, mit der nach dem angegebenen Text in Klammern das Geburts-
+und Sterbejahr der Person angefügt werden.
 
 Um das handle des entsprechenden Objekts herauszufinden, kann man entweder auf
 der Seite dieser Person etc. schauen - in der Box in der rechten Spalte wird das
@@ -237,4 +239,11 @@ autocomplete-Funktion. Dafür gibt man den ersten Teil des Links ein, zum
 Beispiel ``:p:\`Ulrich`` und drückt dann ``Ctrl-Space``. Es wird dann eine Liste
 von passenden Objekten angezeigt, und durch Klick wird das entsprechende handle
 am Ende eingefügt.
+
+--------------------
+Andere Familienbäume
+--------------------
+
+Siehe :ref:`familienbaeume-chapter`\ .
+
 

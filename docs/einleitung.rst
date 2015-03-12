@@ -58,7 +58,8 @@ Die Admin-Seite
 
 Die Verwaltungsseite der Webseite, wo neue Objekte angelegt/Objekte geändert und
 gelöscht und Texte angelegt und redigiert werden können, erreicht man unter
-``http://...unserefamilie.net/admin/``.
+``http://...unserefamilie.net/admin/``. Um sich dort anzumelden, benötigt man
+den *Status als Redakteur* (der von einem *Superuser* freigeschaltet werden kann).
 
 Bei existierenden Objekten befindet sich auch in der Box in der rechten Spalte
 (die nur für Redakteure angezeigt wird) ein Link, um direkt das enstprechende
