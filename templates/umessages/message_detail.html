@@ -7,7 +7,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 cabin">
-            <h2>Konversation mit {{ recipient.get_full_name }} ({{ recipient.username }})</h2>
+            <h2>Konversation mit {{ recipient.get_full_name }} ({{ recipient.username }})
+                <img style="margin-left: 50px;" src="{{ recipient.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
+            </h2>
 
             <h3>{% trans "Antworten" %}</h3>
 

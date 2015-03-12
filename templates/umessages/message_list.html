@@ -11,20 +11,33 @@
 {% blocktrans %}{{ unread_message_count }} neue Nachrichten.{% endblocktrans %}
 <a href="{% url 'userena_umessages_compose' %}" style="margin-left: 50px;" class="btn btn-default">{% trans "Nachricht schreiben" %}</a>
 <ul class="list-group" style="margin-top: 50px;">
-  {% for message in message_list %}
-  <li class="list-group-item">
-  <p>
-  {% if message.um_from_user == user %}
-  An <a href="{% url 'userena_umessages_detail' message.um_to_user.username %}">{{ message.um_to_user.get_full_name }} ({{ message.um_to_user }})</a>:
-  {% get_unread_message_count_between user and message.um_to_user as unread_between_count %}
-  {% else %}
-  Von <a href="{% url 'userena_umessages_detail' message.um_from_user.username %}">{{ message.um_from_user.get_full_name }} ({{ message.um_from_user }})</a>:
-  {% get_unread_message_count_between user and message.um_from_user as unread_between_count %}
-  {% endif %}
-  ({{ unread_between_count }} neue Nachrichten)  </p>
-  {% blocktrans with message.latest_message as latest_message %}{{ latest_message }}{% endblocktrans %}
-  </li>
-  {% endfor %}
+{% for message in message_list %}
+<li class="list-group-item">
+<div class="row">
+      {% if message.um_from_user == user %}
+      <div class="col-md-2">
+          <img src="{{ message.um_to_user.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
+      </div>
+      <div class="col-md-8">
+          An <a href="{% url 'userena_umessages_detail' message.um_to_user.username %}">{{ message.um_to_user.get_full_name }} ({{ message.um_to_user }})</a>:
+          {% get_unread_message_count_between user and message.um_to_user as unread_between_count %}
+      {% else %}
+      <div class="col-md-2">
+          <img src="{{ message.um_from_user.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
+      </div>
+      <div class="col-md-8">
+          Von <a href="{% url 'userena_umessages_detail' message.um_from_user.username %}">{{ message.um_from_user.get_full_name }} ({{ message.um_from_user }})</a>:
+          {% get_unread_message_count_between user and message.um_from_user as unread_between_count %}
+      {% endif %}
+      ({{ unread_between_count }} neue Nachrichten) 
+
+      <div class="cabin" style="margin-top: 20px;">
+      {% blocktrans with message.latest_message as latest_message %}{{ latest_message }}{% endblocktrans %}
+      </div>
+      </div>
+  </div>
+</li>
+{% endfor %}
 </ul>
 </div>
 </div>
