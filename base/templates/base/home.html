@@ -60,7 +60,8 @@ $(window).on('map:init', function (e) {
             <ul class="list-group">
                 {% for d, born, died in birthdeathdays %}
                 <li class="list-group-item" {% ifequal today d %}style="background-color: lightblue;"{% endifequal %}><p><b>{{ d|date:"j. F" }}</b></p>
-                <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}<br>
+                <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}
+                {% if person.userprofile_set.count %}<a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" style="font-size: 85%; float: right" class="cabin">Gratulieren</a>{% endif %}<br>
                 {% endfor %}</p>
                 <p>{% for person in died %}+ {% include "genealogio/person_snippet_full.html" %}<br>
                 {% endfor %}</p>
