@@ -64,7 +64,7 @@ class NameFormSet(BaseInlineFormSet):
         super(NameFormSet, self).__init__(*args, **kwargs)
 
         # Check that the data doesn't already exist
-        if not kwargs['instance'].name_set.count():
+        if not kwargs['instance'].name_set.exists():
             self.initial = [{'typ': Name.FIRSTNAME, },
                             {'typ': Name.BIRTHNAME, },
                             {'typ': Name.MARRIEDNAME, }, ]
@@ -150,7 +150,7 @@ class PPlaceFormSet(BaseInlineFormSet):
 
         try:
             # Check that the data doesn't already exist
-            if not kwargs['instance'].places.count():
+            if not kwargs['instance'].places.exists():
                 self.initial = [{'typ': PersonPlace.BIRTH, },
                                 {'typ': PersonPlace.DEATH, }, ]
         except ValueError:
@@ -174,7 +174,7 @@ class PPlaceInline(admin.StackedInline):
         """Dynamically sets the number of extra forms, depending on whether the
         related object already exists or the extra configuration otherwise."""
 
-        if obj and obj.places.count():
+        if obj and obj.places.exists():
             # Add no extra forms if the related object already exists.
             return 0
         return self.extra

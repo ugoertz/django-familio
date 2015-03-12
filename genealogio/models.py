@@ -226,7 +226,7 @@ class Family(PrimaryObject):
         qslist = []
         for c in self.get_children():
             qslist.extend([v for _k, v, _t, _f in c.get_children()
-                           if v.count()])
+                           if v.exists()])
         if not qslist:
             return
         qs = reduce(lambda x, y: x | y, qslist)

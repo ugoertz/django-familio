@@ -55,7 +55,7 @@ class UserProfile(UserenaBaseProfile):
 
         # register user for the "current" site if no sites are registered
         # so far
-        if not self.sites.count():
+        if not self.sites.exists():
             if self.user.is_superuser:
                 role = UserSite.SUPERUSER
             elif self.user.is_staff:

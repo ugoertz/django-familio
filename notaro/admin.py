@@ -96,7 +96,7 @@ class CurrentSiteAdmin(object):
             not UserSite.objects.filter(
                 user=request.user.userprofile,
                 site=site,
-                role__in=[UserSite.STAFF, UserSite.SUPERUSER]).count():
+                role__in=[UserSite.STAFF, UserSite.SUPERUSER]).exists():
             self.message_user(
                     request,
                     "Diese Aktion erfordert Redakteursstatus "
@@ -191,7 +191,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     def save_related(self, request, form, formset, change):
         super(NoteAdmin, self).save_related(request, form, formset, change)
         obj = form.instance
-        if not obj.authors.count():
+        if not obj.authors.exists():
             # no authors yet, so save current user as author
             obj.authors.add(request.user)
 
