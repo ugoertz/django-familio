@@ -221,7 +221,7 @@ class Family(PrimaryObject):
     def get_grandchildren(self):
         qslist = []
         for c in self.get_children():
-            qslist.extend([v for k, v, t in c.get_children()
+            qslist.extend([v for _k, v, _t, _f in c.get_children()
                            if v.count()])
         if not qslist:
             return
@@ -473,7 +473,8 @@ class Person(PrimaryObject):
                 fam.person_set(manager='objects').all().order_by(
                     'datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
-                else 'Familie mit'
+                else 'Familie mit',
+                fam
                 ])
         for fam in Family.objects.filter(mother=self,
                                          sites=Site.objects.get_current()):
@@ -486,7 +487,8 @@ class Person(PrimaryObject):
                 fam.person_set(manager='objects').all().order_by(
                     'datebirth', 'handle'),
                 'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
-                else 'Familie mit'
+                else 'Familie mit',
+                fam
                 ])
         return children
 

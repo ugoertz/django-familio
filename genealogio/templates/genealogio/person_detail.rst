@@ -22,9 +22,9 @@
 **Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.get_mother %}
 
 {% with allchildren=object.get_children %}
-{% for partner, children, txt in allchildren %}
+{% for partner, children, txt, family in allchildren %}
 
-{{ txt }} {% include "genealogio/person_snippet.rst" with person=partner %}
+`{{ txt }} <{{ family.get_absolute_url }}>`__ {% include "genealogio/person_snippet.rst" with person=partner %}
 
 {% if children %}
 .. class:: marginleft30

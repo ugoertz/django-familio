@@ -400,7 +400,7 @@ class Sparkline(LoginRequiredMixin, View):
                           year_to_x(DEATH_YEAR)+0.04,
                           0.4)
 
-            for p, c, t in person.get_children():
+            for p, c, _t, _f in person.get_children():
                 for child in c:
                     if not child.datebirth:
                         continue
