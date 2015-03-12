@@ -19,21 +19,81 @@
 <script type="text/javascript">
 
 $(window).on('map:init', function (e) {
-    var redMarker = L.AwesomeMarkers.icon({
+    var birthMarker = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'orange' });
+    var birthMarker3 = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'red' });
+    var birthMarker6 = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'darkred' });
+    var birthMarker9 = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'purple' });
+
+    var diedMarker = L.AwesomeMarkers.icon({
         icon: 'plus',
-        markerColor: 'brown' });
+        markerColor: 'orange' });
+    var diedMarker3 = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'red' });
+    var diedMarker6 = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'darkred' });
+    var diedMarker9 = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'purple' });
+
+    var bdMarker = L.AwesomeMarkers.icon({
+        icon: 'asterisk',
+        markerColor: 'orange' });
+    var bdMarker3 = L.AwesomeMarkers.icon({
+        icon: 'asterisk',
+        markerColor: 'red' });
+    var bdMarker6 = L.AwesomeMarkers.icon({
+        icon: 'asterisk',
+        markerColor: 'darkred' });
+    var bdMarker9 = L.AwesomeMarkers.icon({
+        icon: 'asterisk',
+        markerColor: 'purple' });
+
 
     var layer = L.geoJson([], { pointToLayer: function (feature, latlng) {
         if (feature.properties.typ=="death")
-            return L.marker(latlng).bindPopup(feature.properties.title);
-        else
-            return L.marker(latlng, {icon: redMarker }).bindPopup(feature.properties.title);
+            return L.marker(latlng, {icon: diedMarker }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="death3")
+            return L.marker(latlng, {icon: diedMarker3 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="death6")
+            return L.marker(latlng, {icon: diedMarker6 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="death9")
+            return L.marker(latlng, {icon: diedMarker9 }).bindPopup(feature.properties.title);
+
+        if (feature.properties.typ=="birthdeath")
+            return L.marker(latlng, {icon: bdMarker }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birthdeath3")
+            return L.marker(latlng, {icon: bdMarker3 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birthdeath6")
+            return L.marker(latlng, {icon: bdMarker6 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birthdeath9")
+            return L.marker(latlng, {icon: bdMarker9 }).bindPopup(feature.properties.title);
+
+        if (feature.properties.typ=="birth")
+            return L.marker(latlng, {icon: birthMarker }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birth3")
+            return L.marker(latlng, {icon: birthMarker3 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birth6")
+            return L.marker(latlng, {icon: birthMarker6 }).bindPopup(feature.properties.title);
+        if (feature.properties.typ=="birth9")
+            return L.marker(latlng, {icon: birthMarker9 }).bindPopup(feature.properties.title);
+
+        return L.marker(latlng, {icon: bornMarker }).bindPopup(feature.properties.title);
     }});
     var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
     detail.map.addLayer(layer);
     $.getJSON("{% url 'data' %}", function (data) {
       layer.addData(data);
-      if (data.features.length > 1) detail.map.fitBounds(layer.getBounds());
+      if (data.features.length > 3) detail.map.fitBounds(layer.getBounds());
       else detail.map.setView([52.3, 7.8], 7);
     });
 });

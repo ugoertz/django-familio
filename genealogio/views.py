@@ -27,6 +27,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
+from django.db.models import Count
 from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
@@ -51,21 +52,34 @@ class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
         p_birth = set(PersonPlace.objects.filter(
             person__sites=Site.objects.get_current(), typ=PersonPlace.BIRTH)
             .values_list('place', flat=True))
-        qs_birth = Place.objects.filter(id__in=p_birth)
-
         # pylint: disable=no-member
         p_death = set(PersonPlace.objects.filter(
             person__sites=Site.objects.get_current(), typ=PersonPlace.DEATH)
             .values_list('place', flat=True))
-        qs_death = Place.objects.filter(id__in=p_death)
 
-        qs = qs_birth | qs_death
+        p_combined = p_birth | p_death
+
+        qs = Place.objects.filter(id__in=p_combined)\
+            .filter(personplace__typ__in=[PersonPlace.BIRTH,
+                                          PersonPlace.DEATH])\
+            .annotate(num=Count('personplace'))
+
+        def get_t(n):
+            if n >= 9:
+                return '9'
+            elif n >= 6:
+                return '6'
+            elif n >= 3:
+                return '3'
+            return ''
 
         for p in qs:
-            if p.id in p_birth:
-                p.typ = 'birth'
-            if p.id in p_death:
-                p.typ = 'death'
+            if p.id in p_birth and p.id in p_death:
+                p.typ = 'birthdeath' + get_t(p.num)
+            elif p.id in p_death:
+                p.typ = 'death' + get_t(p.num)
+            else:
+                p.typ = 'birth' + get_t(p.num)
 
         return qs
 
