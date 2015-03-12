@@ -210,9 +210,13 @@ class Family(PrimaryObject):
 
     notes = models.ManyToManyField(Note, blank=True, through=FamilyNote)
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
-    start_date = PartialDateField(blank=True, null=True,
-                                  verbose_name="Anfangsdatum")
-    end_date = PartialDateField(blank=True, null=True, verbose_name="Enddatum")
+    start_date = PartialDateField(
+            blank=True, null=True,
+            verbose_name="Anfangsdatum",
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
+    end_date = PartialDateField(
+            blank=True, null=True, verbose_name="Enddatum",
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     source = models.ManyToManyField(Source, blank=True)
 
     def get_children(self):
@@ -279,8 +283,12 @@ class PersonPlace(models.Model):
 
     person = models.ForeignKey('Person')
     place = models.ForeignKey('Place', verbose_name='Ort')
-    start = PartialDateField(blank=True, null=True, verbose_name='Beginn')
-    end = PartialDateField(blank=True, null=True, verbose_name='Ende')
+    start = PartialDateField(
+            blank=True, null=True, verbose_name='Beginn',
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
+    end = PartialDateField(
+            blank=True, null=True, verbose_name='Ende',
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     typ = models.IntegerField(choices=PP_TYPE, default=OTHER)
     comment = models.CharField(max_length=500, blank=True, default='',
                                verbose_name='Kommentar')
@@ -341,8 +349,12 @@ class Person(PrimaryObject):
     events = models.ManyToManyField('Event', through="PersonEvent", blank=True,
                                     verbose_name="Ereignisse")
 
-    datebirth = PartialDateField("Geburtsdatum", blank=True, null=True)
-    datedeath = PartialDateField("Todesdatum", blank=True, null=True)
+    datebirth = PartialDateField(
+            "Geburtsdatum", blank=True, null=True,
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
+    datedeath = PartialDateField(
+            "Todesdatum", blank=True, null=True,
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
 
     places = models.ManyToManyField(Place, blank=True, through=PersonPlace,
                                     verbose_name='Orte')
@@ -636,7 +648,9 @@ class Event(PrimaryObject):
     event_type = models.IntegerField(choices=EVENT_TYPE,
                                      verbose_name='Typ')
     title = models.CharField(max_length=200, verbose_name='Titel')
-    date = PartialDateField(blank=True, null=True, verbose_name='Datum')
+    date = PartialDateField(
+            blank=True, null=True, verbose_name='Datum',
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     description = models.TextField(blank=True,
                                    verbose_name='Beschreibung')
     place = models.ForeignKey('Place', null=True, blank=True,

@@ -88,7 +88,8 @@ class Source(models.Model):
 class Picture(models.Model):
     image = FileBrowseField("Bilddatei", max_length=200, directory="images/",
                             extensions=[".jpg", ".png", ],
-                            blank=True, null=True)
+                            blank=True, null=True,
+                            help_text="Bilddatei im jpg- oder png-Format")
     caption = models.TextField(blank=True, verbose_name='Beschreibung')
     date = models.DateField(blank=True, null=True, verbose_name='Datum')
     sites = models.ManyToManyField(Site)
@@ -130,7 +131,8 @@ class Document(models.Model):
     doc = FileBrowseField("Document", max_length=200, directory="documents/",
                           extensions=[".pdf", ".doc", ".rtf", ".jpg",
                                       ".tif", ".mp3", ".mp4", ],
-                          blank=True, null=True)
+                          blank=True, null=True,
+                          help_text=".pdf, .doc, .rtf, .jpg, .tif, .mp3, .mp4")
     description = models.TextField(blank=True)
     date = models.DateField(blank=True, null=True)
     sites = models.ManyToManyField(Site)
