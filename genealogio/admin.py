@@ -593,10 +593,17 @@ class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     autocomplete_lookup_fields = {
             'fk': ['father', 'mother', ],
             'm2m': ['sites', ], }
+    list_display = ('__unicode__', 'handle', 'view_on_site')
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
     list_filter = ('sites', )
     readonly_fields = ('father_os', 'mother_os', )
+
+    def view_on_site(self, obj):
+        '''Put link to family's detail view into changelist.'''
+        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'Link'
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
