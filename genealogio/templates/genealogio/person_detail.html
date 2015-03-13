@@ -46,12 +46,49 @@ $("img").error(function () {
 
 
 $(window).on('map:init', function (e) {
-    var redMarker = L.AwesomeMarkers.icon({ icon: 'plus', markerColor: 'brown' });
+    var birthdeathMarker = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'red' });
+    var birthMarker = L.AwesomeMarkers.icon({
+        icon: 'user',
+        markerColor: 'green' });
+    var diedMarker = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'red' });
+    var studyMarker = L.AwesomeMarkers.icon({
+        icon: 'book',
+        markerColor: 'blue' });
+    var otherMarker = L.AwesomeMarkers.icon({
+        icon: 'home',
+        markerColor: 'blue' });
+    var childMarker = L.AwesomeMarkers.icon({
+        icon: 'leaf',
+        markerColor: 'blue' });
+    var retireMarker = L.AwesomeMarkers.icon({
+        icon: 'home',
+        markerColor: 'purple' });
+    var burialMarker = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'orange' });
 
     var layer = L.geoJson([], { pointToLayer: function (feature, latlng) {
+      if (feature.properties.typ=="birthdeath")
+        return L.marker(latlng, {icon: birthdeathMarker }).bindPopup(feature.properties.title);
       if (feature.properties.typ=="birth")
-        return L.marker(latlng, {icon: redMarker }).bindPopup(feature.properties.title);
-      else
+        return L.marker(latlng, {icon: birthMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ=="death")
+        return L.marker(latlng, {icon: diedMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ==5)  // studies
+        return L.marker(latlng, {icon: studyMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ==1)  // other
+        return L.marker(latlng, {icon: otherMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ==4)  // childhood
+        return L.marker(latlng, {icon: childMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ==6)  // retirement
+        return L.marker(latlng, {icon: retireMarker }).bindPopup(feature.properties.title);
+      if (feature.properties.typ==7)  // burial
+        return L.marker(latlng, {icon: burialMarker }).bindPopup(feature.properties.title);
+      else // unknown
         return L.marker(latlng).bindPopup(feature.properties.title);
     }});
     var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
@@ -59,7 +96,6 @@ $(window).on('map:init', function (e) {
     detail.map.addLayer(layer);
     $.getJSON("{% url 'personplaces-data' %}", {person_id: {{ person.id }} }, function (data) {
         layer.addData(data);
-        console.log(data);
         if (data.features.length > 1) detail.map.fitBounds(layer.getBounds());
         else if (data.features.length) detail.map.setView([data.features[0].geometry.coordinates[1], data.features[0].geometry.coordinates[0]], 10);
     });

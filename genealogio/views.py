@@ -94,7 +94,24 @@ class PPlacesGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
         # pylint: disable=no-member
         person = Person.objects.get(id=self.request.GET['person_id'])
 
-        return person.places.all().distinct()
+        qs = person.places.all().distinct()
+        for p in qs:
+            if p.personplace_set.filter(
+                    person=person, typ=PersonPlace.BIRTH).exists():
+                if p.personplace_set.filter(
+                        person=person, typ=PersonPlace.DEATH).exists():
+                    p.typ = 'birthdeath'
+                else:
+                    p.typ = 'birth'
+            elif p.personplace_set.filter(
+                    person=person, typ=PersonPlace.DEATH).exists():
+                p.typ = 'death'
+            else:
+                # for other places choose the type according to order
+                # specified in model definition (i.e., by start date)
+                p.typ = p.personplace_set.filter(
+                        person=person)[0].typ
+        return qs
 
 
 class PersonList(LoginRequiredMixin, CurrentSiteMixin, ListView):
