@@ -8,3 +8,20 @@
     {{ block.super }}
 {% endblock %}
 
+
+{% block extrahead %}
+{{ block.super }}
+
+{% if request.user.userprofile.codemirror_keymap == 1 %}
+<script type="text/javascript">
+(function($) {
+ $(document).ready(function() {
+    if ("editor" in window) {
+        window.editor.setOption("vimMode", true);
+    }
+});
+
+})(django.jQuery);
+</script>
+{% endif %}
+{% endblock %}

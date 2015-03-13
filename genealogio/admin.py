@@ -20,7 +20,7 @@ from filebrowser.settings import ADMIN_THUMBNAIL
 from grappelli.forms import GrappelliSortableHiddenMixin
 
 from accounts.models import UserSite
-from notaro.admin import CurrentSiteAdmin
+from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Person, Place, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent, PlaceUrl, Url,
                      PersonPlace, PersonNote, FamilyNote, EventNote,
@@ -322,16 +322,8 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         obj.save()
 
     class Media:
-        css = {'all': ('css/person_admin.css',
-                       'codemirror/codemirror.css',
-                       'codemirror/show-hint.css',
-                       'codemirror/custom.css', ), }
-        js = ('codemirror/codemirror.js',
-              'codemirror/show-hint.js',
-              'codemirror/python.js',
-              'codemirror/stex.js',
-              'codemirror/overlay.js',
-              'codemirror/rst.js',
+        css = {'all': ('css/person_admin.css', ) + CODEMIRROR_CSS, }
+        js = ('codemirror/codemirror-compressed.js',
               'dajaxice/dajaxice.core.js',
               'js/adminactions.js', )
 
@@ -515,12 +507,7 @@ class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         super(EventAdmin, self).save_model(request, obj, form, change)
 
     class Media:
-        js = ('codemirror/codemirror.js',
-              'codemirror/show-hint.js',
-              'codemirror/python.js',
-              'codemirror/stex.js',
-              'codemirror/overlay.js',
-              'codemirror/rst.js',
+        js = ('codemirror/codemirror-compressed.js',
               'dajaxice/dajaxice.core.js',
               'js/adminactions.js', )
 
@@ -529,11 +516,7 @@ class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         except:
             pass
         js += ('codemirror/codemirror_conf_event.js', )
-        css = {'all': ('css/event_admin.css',
-                       'codemirror/codemirror.css',
-                       # 'codemirror/docs.css',
-                       'codemirror/show-hint.css',
-                       'codemirror/custom.css', ), }
+        css = {'all': ('css/event_admin.css', ) + CODEMIRROR_CSS, }
 
 
 admin.site.register(Event, EventAdmin)

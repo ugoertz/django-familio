@@ -1,6 +1,12 @@
 .CodeMirror {
     line-height: 1.5 !important;
     width: 60% !important;
+    height: auto;
+}
+
+.CodeMirror-scroll {
+    min-height: 300px;
+    max-height: 600px;
 }
 
 .CodeMirror-measure {

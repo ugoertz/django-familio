@@ -22,6 +22,13 @@ from accounts.models import UserSite
 from .models import Note, Picture, Source, PictureNote
 
 
+CODEMIRROR_CSS = (
+        'codemirror/codemirror.css',
+        'codemirror/show-hint.css',
+        'codemirror/dialog.css',
+        'codemirror/custom.css', )
+
+
 class UpdateActionForm(ActionForm):
     site = forms.ModelChoiceField(queryset=SiteProfile.objects.all(),
                                   empty_label="(Keine Auswahl)",
@@ -202,14 +209,9 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     view_on_site.short_description = 'Link'
 
     class Media:
-        js = ('codemirror/codemirror.js',
-              'codemirror/show-hint.js',
-              'codemirror/python.js',
-              'codemirror/stex.js',
-              'codemirror/overlay.js',
-              'codemirror/rst.js',
+        js = ('codemirror/codemirror-compressed.js',
               'dajaxice/dajaxice.core.js',
-              'js/adminactions.js'
+              'js/adminactions.js',
               )
 
         try:
@@ -217,11 +219,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         except ImportError:
             pass
         js += ('codemirror/codemirror_conf.js', )
-        css = {'all': ('css/note_admin.css',
-                       'codemirror/codemirror.css',
-                       # 'codemirror/docs.css',
-                       'codemirror/show-hint.css',
-                       'codemirror/custom.css', ), }
+        css = {'all': ('css/note_admin.css', ) + CODEMIRROR_CSS, }
 
 admin.site.register(Note, NoteAdmin)
 

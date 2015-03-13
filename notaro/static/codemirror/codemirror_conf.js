@@ -1,6 +1,6 @@
 (function($) {
 $(document).ready(function() {
-    if ($("#id_description").size()) {
+    if ($("#id_text").size()) {
         CodeMirror.commands.autocomplete = function(cm) {
             cm.showHint({hint: CodeMirror.hint.genrst });
         }
@@ -8,7 +8,7 @@ $(document).ready(function() {
             { width: "600px", height: "500px", lineWrapping: true, mode: 'rst',
             extraKeys: {"Ctrl-Space": "autocomplete"}, });
 
-        // $("textarea#id_text + iframe").css("border", "1px solid rgb(204, 204, 204)");
+        window.editor = editor;
     }
 });
 })(django.jQuery);

@@ -8,7 +8,7 @@ $(document).ready(function() {
             { width: "600px", height: "500px", lineWrapping: true, mode: 'rst',
             extraKeys: {"Ctrl-Space": "autocomplete"}, });
 
-        // $("textarea#id_text + iframe").css("border", "1px solid rgb(204, 204, 204)");
+        window.editor = editor;
     }
 });
 })(django.jQuery);
