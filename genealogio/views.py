@@ -60,7 +60,8 @@ class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
         p_combined = p_birth | p_death
 
         qs = Place.objects.filter(id__in=p_combined)\
-            .filter(personplace__typ__in=[PersonPlace.BIRTH,
+            .filter(personplace__person__sites=Site.objects.get_current(),
+                    personplace__typ__in=[PersonPlace.BIRTH,
                                           PersonPlace.DEATH])\
             .annotate(num=Count('personplace'))
 
