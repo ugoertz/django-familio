@@ -16,6 +16,19 @@ from .managers import CurrentSiteGeoManager, GenGeoManager
 from notaro.models import Source, Note, Picture
 
 
+def cleanname(name):
+    """Replace umlauts (ä by ae, etc.) and then remove all non-ASCII letters
+    from string."""
+
+    for umlaut, expansion in [('Ä', 'Ae'), ('Ö', 'Oe'), ('Ü', 'Ue'),
+                              ('ä', 'ae'), ('ö', 'oe'), ('ü', 'ue'),
+                              ('ß', 'ss'), ]:
+        name = name.replace(umlaut, expansion)
+    return u''.join([c for c in name
+                     if c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+                     'abcdefghijklmnopqrstuvwxyz'])
+
+
 class PrimaryObject(models.Model):
     """An abstract base class for several kinds of objects.
 
@@ -119,6 +132,21 @@ class Place(PrimaryObject):
     def events_here(self):
         # pylint: disable=no-member
         return Event.objects.filter(place=self)
+
+    def reset_handle(self):
+        """Recompute handle for a Place object which already has an id."""
+
+        self.handle = 'L_'
+        if self.title:
+            self.handle += cleanname(self.title)[:20]
+        if self.location:
+            # pylint: disable=no-member
+            self.handle += str(self.location.x)[:10] + '_'
+            self.handle += str(self.location.y)[:10]
+
+        self.handle += '-' + unicode(self.id)
+        self.handle = self.handle[:49]
+        self.save()
 
     def __unicode__(self):
         return self.title
@@ -231,6 +259,29 @@ class Family(PrimaryObject):
             return
         qs = reduce(lambda x, y: x | y, qslist)
         return qs.distinct().order_by('datebirth')
+
+    def reset_handle(self):
+        """Recompute handle for a Family object which already has an id."""
+
+        self.handle = 'F_'
+
+        # pylint: disable=no-member
+        try:
+            self.handle += cleanname(self.father.last_name)
+            if self.father.datebirth:
+                self.handle += unicode(self.father.datebirth.year)
+        except:
+            pass
+        try:
+            self.handle += cleanname(self.mother.last_name)
+            if self.mother.datebirth:
+                self.handle += unicode(self.mother.datebirth.year)
+        except:
+            pass
+
+        self.handle += '-' + unicode(self.id)
+        self.handle = self.handle[:49]
+        self.save()
 
     def __unicode__(self):
         n = ''
@@ -504,6 +555,32 @@ class Person(PrimaryObject):
                 ])
         return children
 
+    def reset_handle(self):
+        """Recompute handle for a Person object which already has an id."""
+        self.handle = 'P_'
+        try:
+            self.handle += cleanname(self.last_name)[:20]
+        except KeyError:
+            pass
+        try:
+            marriedname = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
+            self.handle += cleanname(marriedname)[:20]
+        except IndexError, KeyError:
+            pass
+        try:
+            self.handle += cleanname(self.first_name)[:20]
+        except KeyError:
+            pass
+
+        # pylint: disable=no-member
+        if self.datebirth:
+            self.handle += unicode(self.datebirth.year)
+        if self.datedeath:
+            self.handle += unicode(self.datedeath.year)
+        self.handle += '-' + unicode(self.id)
+        self.handle = self.handle[:49]
+        self.save()
+
     def __unicode__(self):
         return u"%s %s" % (self.get_primary_name(), self.handle)
 
@@ -667,6 +744,22 @@ class Event(PrimaryObject):
     def autocomplete_search_fields():
         """Used by grappelli."""
         return ("id__iexact", "title__icontains", "handle__icontains", )
+
+    def reset_handle(self):
+        """Recompute handle for a Event object which already has an id."""
+
+        self.handle = 'E_'
+        self.handle += cleanname(self.title)[:20]
+
+        # pylint: disable=no-member
+        if self.date:
+            self.handle += unicode(self.date.year)
+        if self.place:
+            self.handle += cleanname(self.place.title)[:20]
+
+        self.handle += '-' + unicode(self.id)
+        self.handle = self.handle[:49]
+        self.save()
 
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.get_event_type_display())

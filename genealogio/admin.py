@@ -6,10 +6,13 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 from datetime import datetime
 
-from django.contrib.gis import admin
-from django.forms.models import BaseInlineFormSet
 from django.conf import settings
+from django.conf.urls import url
+from django.contrib.gis import admin
 from django.contrib.sites.models import Site
+from django.forms.models import BaseInlineFormSet
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.utils.functional import curry
 import reversion
@@ -21,7 +24,35 @@ from notaro.admin import CurrentSiteAdmin
 from .models import (Person, Place, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent, PlaceUrl, Url,
                      PersonPlace, PersonNote, FamilyNote, EventNote,
-                     PlaceNote, )
+                     PlaceNote, cleanname)
+
+
+class CurrentSiteGenAdmin(CurrentSiteAdmin):
+
+    def reset_handle(self, request, pk):
+        # pylint: disable=no-member
+        obj = self.model.objects.get(pk=pk)
+
+        if request.user.is_superuser:
+            try:
+                obj.reset_handle()
+                self.message_user(request, 'Neues handle: %s' % obj.handle)
+            except:
+                self.message_user(request, 'Es ist ein Fehler aufgetreten.')
+        else:
+            self.message_user(request,
+                              'Diese Aktion darf nur ein superuser ausführen')
+        return HttpResponseRedirect(reverse(
+            'admin:%s_%s_change' %
+            (self.model._meta.app_label, self.model._meta.model_name),
+            args=[obj.pk, ]))
+
+    def get_urls(self):
+        # pylint: disable=no-member
+        urls = super(CurrentSiteGenAdmin, self).get_urls()
+        return [url(r'^(?P<pk>\d+)/resethandle/$',
+                    self.admin_site.admin_view(self.reset_handle)),
+                ] + urls
 
 
 class OSitesMixin(object):
@@ -41,19 +72,6 @@ class OSitesMixin(object):
         return sitelist or '-'
     osites.allow_tags = True
     osites.short_description = 'Andere Familienbäume'
-
-
-def cleanname(name):
-    """Replace umlauts (ä by ae, etc.) and then remove all non-ASCII letters
-    from string."""
-
-    for umlaut, expansion in [('Ä', 'Ae'), ('Ö', 'Oe'), ('Ü', 'Ue'),
-                              ('ä', 'ae'), ('ö', 'oe'), ('ü', 'ue'),
-                              ('ß', 'ss'), ]:
-        name = name.replace(umlaut, expansion)
-    return u''.join([c for c in name
-                     if c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
-                     'abcdefghijklmnopqrstuvwxyz'])
 
 
 class NameFormSet(BaseInlineFormSet):
@@ -180,7 +198,7 @@ class PPlaceInline(admin.StackedInline):
         return self.extra
 
 
-class PersonAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
     """The PersonAdmin class."""
 
     fieldsets = (
@@ -466,7 +484,7 @@ class NoteEInline(GrappelliSortableHiddenMixin,
         return obj.note
 
 
-class EventAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
     """The EventAdmin class."""
 
     fieldsets = (
@@ -575,7 +593,7 @@ class NoteFInline(GrappelliSortableHiddenMixin,
         return obj.note
 
 
-class FamilyAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
     """The FamilyAdmin class."""
 
     fieldsets = (
