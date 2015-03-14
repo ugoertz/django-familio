@@ -1,0 +1,158 @@
+
+{% extends "_layouts/base.html" %}
+
+{% block css %}
+<style>
+.name {
+    font-weight: bold;
+    fill: #666666;
+}
+
+.name2 {
+    font-weight: 500;
+    fill: #666666;
+}
+
+.about {
+    fill: #777;
+}
+
+.link {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.control.glyphicon {
+    position: static;
+    cursor: pointer;
+    color: green;
+}
+</style>
+{% endblock css %}
+
+{% block jsnocompress %}
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script>
+
+var margin = {top: 0, right: 320, bottom: 0, left: 0},
+    width = 1260 - margin.left - margin.right,
+    height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
+
+var tree = d3.layout.tree()
+    .separation(function(a, b) { return a.parent === b.parent ? 0.9 : 1; })
+    .children(function(d) { return d.parents; })
+    .size([height, width]);
+
+var svg = d3.select("#descendants").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+json = {{ data|safe }}
+
+var nodes = tree.nodes(json);
+nodes.shift();
+nodes.forEach(function(d) { d.y -= 280;  });
+
+var link = svg.selectAll(".link")
+    .data(tree.links(nodes))
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d", elbow);
+
+var node = svg.selectAll(".node")
+    .data(nodes)
+    .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+
+node.append("svg:a")
+    .filter(function(d) { return d.urlp1 != null; })
+    .attr("xlink:href", function(d) { return d.urlp1; })
+    .append("text")
+    .attr("class", "name")
+    .attr("x", 28)
+    .attr("y", -6)
+    .attr("dy", "-1.5em")
+    .text(function(d) { return d.name1; });
+
+node.append("text")
+    .filter(function(d) { return d.urlp1 == null; })
+    .attr("class", "name")
+    .attr("x", 28)
+    .attr("y", -6)
+    .attr("dy", "-1.5em")
+    .text(function(d) { return d.name1; });
+
+
+node.append("svg:a")
+    .attr("xlink:href", function(d) { return d.url1;  })
+    .append("svg:foreignObject")
+    .attr("width", 25)
+    .attr("height", 25)
+    .attr("x", 10)
+    .attr("y", -40)
+    .append("xhtml:span")
+    .attr("class", "control glyphicon glyphicon-info-sign")
+    .style("display", function(d) { return d.url1 == "" ? "none" : null; });
+
+
+node.append("text")
+    .attr("x", 8)
+    .attr("y", 8)
+    .attr("dx", "1.21em")
+    .attr("dy", "1.8em")
+    .attr("class", "about lifespan")
+    .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
+
+node.append("svg:a")
+    .attr("xlink:href", function(d) { return d.urlp2; })
+    .append("text")
+    .attr("class", "name2")
+    .attr("x", 28)
+    .attr("y", -6)
+    .attr("dx", "1.21em")
+    .attr("dy", "1.51em")
+    .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
+
+node.append("svg:a")
+    .attr("xlink:href", function(d) { return d.url2;  })
+    .append("svg:foreignObject")
+    .attr("width", 25)
+    .attr("height", 25)
+    .attr("x", 27)
+    .attr("y", 3)
+    .append("xhtml:span")
+    .attr("class", "control glyphicon glyphicon-info-sign")
+    .style("display", function(d) { return (!("url2" in d) || d.url2 == "") ? "none" : null; });
+
+node.append("text")
+    .attr("x", 8)
+    .attr("y", 8)
+    .attr("dy", "-1.25em")
+    .attr("class", "about lifespan")
+    .text(function(d) { if (d.name1 != "..." && (d.born1 || d.died1)) return d.born1 + "–" + d.died1; else return ""; });
+
+function elbow(d, i) {
+    return "M" + (d.source.name1=="..." ? d.source.y+15 : d.source.y) + "," + d.source.x
+        + "H" + d.target.y + "V" + d.target.x
+        + (d.target.children ? "" : "h" + 0.7*margin.right);
+}
+
+</script>
+{% endblock js %}
+
+{% block content %}
+<div class="container">
+    <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
+    <div id="descendants">
+    </div>
+</div>
+{% endblock %}
+

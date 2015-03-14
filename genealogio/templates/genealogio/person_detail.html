@@ -128,6 +128,9 @@ $(window).on('map:init', function (e) {
         </div>
         <div class="col-md-3 col-md-offset-1">
             <p style="margin-top:50px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
+            {% if person.get_children %}
+            <p style="margin-top:50px;"><a href="{% url "descendants" object.id %}">Nachkommen</a></p>
+            {% endif %}
         {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
             <div class="cabin adminbox">
             {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="personen.html" %}

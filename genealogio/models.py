@@ -525,8 +525,9 @@ class Person(PrimaryObject):
 
         # pylint: disable=no-member
         children = []
-        for fam in Family.objects.filter(father=self,
-                                         sites=Site.objects.get_current()):
+        for fam in Family.objects.filter(
+                father=self,
+                sites=Site.objects.get_current()).order_by('start_date'):
             try:
                 m = fam.mother
             except ObjectDoesNotExist:
@@ -539,8 +540,9 @@ class Person(PrimaryObject):
                 else 'Familie mit',
                 fam
                 ])
-        for fam in Family.objects.filter(mother=self,
-                                         sites=Site.objects.get_current()):
+        for fam in Family.objects.filter(
+                mother=self,
+                sites=Site.objects.get_current()).order_by('start_date'):
             try:
                 f = fam.father
             except ObjectDoesNotExist:

@@ -268,6 +268,95 @@ class Pedigree(LoginRequiredMixin, View):
                       {'person': person, 'data': json.dumps(data), })
 
 
+class Descendants(LoginRequiredMixin, View):
+    """Display descendants of a person."""
+
+    def get(self, request, pk):
+        # pylint: disable=no-member
+        person = Person.objects.get(pk=pk)
+        height = 0
+
+        def p_dict(person, suffix):
+            try:
+                return {
+                    'name' + suffix: person.get_primary_name(),
+                    'born' + suffix:
+                    person.datebirth.year if person.datebirth else '',
+                    'died' + suffix:
+                    person.datedeath.year if person.datedeath else '',
+                    'url' + suffix: person.get_absolute_url(),
+                    'urlp' + suffix:
+                    reverse("descendants", kwargs={"pk": person.id, }),
+                    }
+            except:
+                pass
+            return {
+                'name' + suffix: person or '',
+                'born' + suffix: '',
+                'died' + suffix: '',
+                'url' + suffix: '',
+                'urlp' + suffix: None
+                }
+
+        def get_dict(p, level=0):
+            """Returns a list of dictionaries, one for each family where p is
+            father or mother."""
+
+            if level < 0:
+                return 1, None
+            if p is None:
+                return 0, {}
+
+            data = [p_dict(p, '1')]
+            fams = p.get_children()
+            height = 0
+
+            def add_family(data, family):
+                height = 0
+                partner, children, _text, _family = family
+                data[-1].update(p_dict(partner, '2'))
+                if not children:
+                    data[-1]['urlp1'] = None
+                    data[-1]['urlp2'] = None
+
+                if level > 0:
+                    data[-1]['parents'] = []
+                    for ch in children:
+                        h, d = get_dict(ch, level-1)
+                        height += h
+                        data[-1]['parents'].extend(d)
+                    else:
+                        height += 1
+                return height
+
+            if fams:
+                height += add_family(data, fams[0])
+            else:
+                # no children, so delete link to descendants view for
+                # this person
+                data[-1]['urlp1'] = None
+            for family in fams[1:]:
+                # Now handle other families
+                # Here, replace name of p by '...'
+                data.append(p_dict('...', '1'))
+                height += add_family(data, family)
+
+            return height+2, data
+
+        if person.get_children():
+            height, d = get_dict(person, level=2)
+            data = {'parents': d, }
+        else:
+            height = 0
+            data = []
+        # print json.dumps(data, indent=4)
+
+        return render(request, 'genealogio/descendants.html',
+                      {'person': person,
+                       'height': height * 30,
+                       'data': json.dumps(data), })
+
+
 class Sparkline(LoginRequiredMixin, View):
 
     """Sparkline view. """
