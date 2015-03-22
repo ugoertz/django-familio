@@ -56,5 +56,6 @@ Nun kann mit (gegebenenfalls mehrfachen) Ausführen von::
 
     xelatex chronicle.tex
 
-die gewünschte pdf-Datei erstellt werden.
+die gewünschte pdf-Datei erstellt werden. (Es müssen XeLaTeX und die
+Vollkorn-Schrift installiert sein; Ubuntu-Paket ``fonts-vollkorn``.)
 
