@@ -20,3 +20,7 @@ familio/settings/*
 !familio/settings/__init__.py
 !familio/settings/base.py
 !familio/settings/test.py
+
+pdfexport/*.rst
+pdfexport/_build
+
