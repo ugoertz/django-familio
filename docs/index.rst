@@ -21,6 +21,7 @@ Inhalt
    bilder
    familienbaeume
    admin
+   pdfexport
 
 
 Indizes und Tabellen

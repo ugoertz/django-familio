@@ -3,9 +3,8 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-# import os
-# import os.path
-# import csv
+import os
+import os.path
 # import glob
 import datetime
 import math
@@ -20,11 +19,11 @@ import json
 # from django.template import Template, Context
 # from django.template.loader import get_template
 # from django.core.mail import send_mail, send_mass_mail
-# from django.conf import settings
 # from django.db.models import Sum
 # from django.core.serializers.json import DateTimeAwareJSONEncoder
 # from django.db.models.query import Q
 
+# from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.sites.models import Site
 from django.db.models import Count
@@ -32,11 +31,13 @@ from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin
 
+from notaro.models import Note
 from .models import Person, PersonPlace, Place, Event, Family
 
 
@@ -547,3 +548,123 @@ class Sparkline(LoginRequiredMixin, View):
         surface.write_to_png(response)
         return response
 
+
+def booktemplate():
+    '''Returns a list of items of the following form:
+
+    - headers: starts with 1_, 2_, 3_, ..., followed by the text of the header.
+    - notes: note_%d % note.id
+    - persons, families, events: handle
+    '''
+
+    # pylint: disable=no-member
+    texts = ['note_%d' % n.id for n in Note.objects.all()]
+    persons = [p.handle for p in Person.objects.all()]
+    families = [f.handle for f in Family.objects.all()]
+    events = [e.handle for e in Event.objects.all()]
+
+    return (['1_Texte', ] + texts +
+            ['1_Personen', ] + persons +
+            ['1_Familien', ] + families +
+            ['1_Ereignisse', ] + events
+            )
+
+
+INDEX_TEMPLATE_HEADER = '''
+=========================
+Unsere Familiengeschichte
+=========================
+
+.. toctree::
+    :maxdepth: 1
+
+'''
+
+
+INDEX_TEMPLATE_FOOTER = '\n'
+
+
+def create_rst(btemplate=None):
+    if btemplate is None:
+        btemplate = booktemplate()
+    if len(btemplate) == 0:
+        return
+
+    # TODO
+    # use fabric here? -- ultimately want to run this in a different virtualenv
+    # ...
+
+    # TODO get some tmpdir where we put our sphinx project
+    directory = 'pdfexport'
+    chapters = []
+    index = open(os.path.join(directory, 'index.rst'), 'w')
+    index.write(INDEX_TEMPLATE_HEADER)
+
+    def start_new_chapter():
+        if chapters:
+            chapters[-1].close()
+        index.write('    chapter_%d\n' % len(chapters))
+        chapters.append(open(os.path.join(directory,
+                                          'chapter_%d.rst' % len(chapters)),
+                             'w'))
+
+    if not btemplate[0][:2] == '1_':
+        # add first chapter here if the template does not start with a level-1
+        # header
+        start_new_chapter()
+
+    for item in btemplate:
+        # pylint: disable=no-member
+        if item.startswith('note_'):
+            obj = Note.objects.get(id=int(item[5:]))
+            chapters[-1].write(render_to_string('notaro/note_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('P_'):
+            obj = Person.objects.get(handle=item)
+            chapters[-1].write(render_to_string(
+                'genealogio/person_detail.rst', {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('F_'):
+            obj = Family.objects.get(handle=item)
+            chapters[-1].write(render_to_string('genealogio/family_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('E_'):
+            obj = Event.objects.get(handle=item)
+            chapters[-1].write(render_to_string('genealogio/event_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item[:2] == '1_':
+            start_new_chapter()
+            chapters[-1].write('\n\n')
+            chapters[-1].write('=' * len(item[2:]))
+            chapters[-1].write('\n%s\n' % item[2:])
+            chapters[-1].write('=' * len(item[2:]))
+            chapters[-1].write('\n\n')
+        elif item[:2] in ['1_', '2_', '3_', '4_', '5_']:
+            c = '=-^".:'[int(item[0])]
+            chapters[-1].write('\n\n%s\n' % item[2:])
+            chapters[-1].write(c * len(item[2:]))
+            chapters[-1].write('\n\n')
+        else:
+            # unknown item - raise an exception?
+            pass
+
+    chapters[-1].close()
+    index.write(INDEX_TEMPLATE_FOOTER)
+    index.close()
+    return directory
+
+
+def create_pdf(directory):
+    '''In directory, run sphinx to create latex files, and then run xelatex.'''
+    pass

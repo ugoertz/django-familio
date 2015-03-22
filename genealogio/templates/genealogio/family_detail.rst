@@ -18,7 +18,7 @@
 
    <br />
 
-===============================================================================
+
 Familie {{ object }}
 ===============================================================================
 
@@ -52,8 +52,9 @@ Familie {{ object }}
 
 {% include "genealogio/notes.rst" %}
 
+{% if not latexmode %}
 {% ifnotequal fr 2100 %}
-----------
+
 Zeitstrahl
 ----------
 
@@ -92,3 +93,4 @@ Zeitstrahl
 
 
 {% endifnotequal %}
+{% endif %}

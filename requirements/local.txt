@@ -9,7 +9,6 @@ pip-tools
 Fabric
 
 # Documentation
-Sphinx
 rstcheck
 
 # Testing

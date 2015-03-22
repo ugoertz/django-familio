@@ -119,8 +119,9 @@ class Picture(models.Model):
         return reverse('picture-detail', kwargs={'pk': self.id, })
 
     def get_caption(self):
-        return '\n'.join(['.. class:: cabin\n\n'] +
-                         ['    '+l for l in self.caption.splitlines()])
+        return self.caption
+        # return '\n'.join(['.. class:: cabin\n\n'] +
+        #                  ['    '+l for l in self.caption.splitlines()])
 
     class Meta:
         verbose_name = 'Bild'

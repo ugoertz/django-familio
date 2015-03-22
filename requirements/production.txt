@@ -58,3 +58,5 @@ cairocffi
 django-dbarray
 
 django-transfer
+
+Sphinx

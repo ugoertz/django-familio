@@ -4,15 +4,18 @@
 .. role:: underline
     :class: underline
 
-===============================================================================
 {{ object.get_full_name }}
 ===============================================================================
 
 {% if object.portrait.image %}
+{% if latexmode %}
+.. raw:: latex
 
+    \begin{minipage}[t]{11cm}\vspace{0pt}
+{% else %}
 .. image:: {% version object.portrait.image 'small' %}
     :class: pull-right
-
+{% endif %}
 {% endif %}
 
 {% if object.datebirth or object.placebirth %}geboren {{ object.datebirth|partial_date:"d.m.Y" }}{% if object.placebirth %} in `{{ object.placebirth }} <{% url "place-detail" object.placebirth.id %}>`__ {% endif %}{% endif %}{% if object.datedeath or object.placedeath %} - gestorben {{ object.datedeath|partial_date:"d.m.Y" }}{% if object.placedeath %} in `{{ object.placedeath }} <{% url "place-detail" object.placedeath.id %}>`__ {% endif %}{% endif %}
@@ -27,7 +30,7 @@
 `{{ txt }} <{{ family.get_absolute_url }}>`__ {% include "genealogio/person_snippet.rst" with person=partner %}
 
 {% if children %}
-.. class:: marginleft30
+.. container:: marginleft30
 
     **Kinder:**
 
@@ -38,13 +41,27 @@
 {% endfor %}
 {% endwith %}
 
-{% if object.comments %}{{ object.comments }}{% endif %}
+{% if latexmode and object.portrait.image %}
+.. raw:: latex
+
+    \end{minipage}\hfill
+    \begin{minipage}[t]{4cm}\vspace{0pt}
+
+.. image:: /../media/{{ object.portrait.image }}
+    :width: 4cm
+
+.. raw:: latex
+
+    \end{minipage}
+{% endif %}
+
+{{ object.comments|safe }}
 
 
 {% include "genealogio/events.rst" %}
 
 {% if object.personplace_set.count %}
-----
+
 Orte
 ----
 
