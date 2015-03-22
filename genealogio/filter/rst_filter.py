@@ -100,7 +100,7 @@ def get_text(name, rawtext, text, lineno, inliner,
                 # for now, assume that this is because that object exists only
                 # on another site; so fail silently
                 # FIXME: check that handle exists on some site
-                nodelist = nodes.inline(rawtext, t, **options)
+                nodelist = [nodes.inline(rawtext, t, **options), ]
     except:
         msg = inliner.reporter.error('Problem when evaluating handle',
                                      line=lineno)
