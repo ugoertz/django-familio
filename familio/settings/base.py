@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     # Third-party apps, patches, fixes
     # 'djcelery',
     'reversion',
-    # 'debug_toolbar.apps.DebugToolbarConfig',
+    'debug_toolbar',
     'compressor',
     'django_extensions',
     'braces',
@@ -158,8 +158,8 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'watson.middleware.SearchContextMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'notaro.middleware.NotaroMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 TEMPLATE_CONTEXT_PROCESSORS = [
@@ -191,27 +191,19 @@ TEMPLATE_LOADERS = (
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
+DEBUG_TOOLBAR_PATCH_SETTINGS = True
 
-# def custom_show_toolbar(request):
-#     """ Only show the debug toolbar to users with the superuser flag. """
-#     return request.user.is_superuser
+def custom_show_toolbar(request):
+    """ Only show the debug toolbar to users with the superuser flag. """
+    return request.user.is_superuser
 
-# DEBUG_TOOLBAR_CONFIG = {
-#     'INTERCEPT_REDIRECTS': False,
-#     'SHOW_TOOLBAR_CALLBACK': 'familio.settings.base.custom_show_toolbar',
-#     'HIDE_DJANGO_SQL': True,
-#     'TAG': 'body',
-#     'SHOW_TEMPLATE_CONTEXT': True,
-#     'ENABLE_STACKTRACES': True,
-# }
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': 'familio.settings.base.custom_show_toolbar',
+    'SHOW_COLLAPSED': True,
+    'SHOW_TEMPLATE_CONTEXT': True,
+    'ENABLE_STACKTRACES': True,
+}
 
-# Uncomment the following setting if you get an ImportError such as:
-#   ImproperlyConfigured: The included urlconf projectname.urls doesn't
-#   have any patterns in it
-# See:
-# http://stackoverflow.com/questions/20963856/improperlyconfigured-the-included-urlconf-project-urls-doesnt-have-any-patte/21005346#21005346
-# http://django-debug-toolbar.readthedocs.org/en/1.0/installation.html#explicit-setup
-# DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
 # DEBUG_TOOLBAR_PANELS = (
 #     #'debug_toolbar_user_panel.panels.UserPanel',
