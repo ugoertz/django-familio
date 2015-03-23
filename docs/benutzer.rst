@@ -8,6 +8,37 @@ Die Bedienung der Webseite ist für den Benutzer (hoffentlich) größtenteils
 selbsterklärend. Hier sind einige Funktionen aufgelistet und erklärt, die man
 nicht direkt sieht.
 
+
+----------------------------
+Die Karte auf der Hauptseite
+----------------------------
+
+Die Markierungen auf der Karte haben die folgenden Bedeutungen:
+
++------------------+--------------------------+
+| |img_m_person|   |  Geburtsort              |
++------------------+--------------------------+
+| |img_m_plus|     |  Sterbeort               | 
++------------------+--------------------------+
+| |img_m_asterisk| |  Geburts- und Sterbeort  |
++------------------+--------------------------+
+
+
+.. |img_m_person| image:: /images/marker_person.png
+
+.. |img_m_plus| image:: /images/marker_plus.png
+
+.. |img_m_asterisk| image:: /images/marker_asterisk.png
+
+
+Die Farben bedeuten dabei
+
+* orange: zwischen 1 und 2 Personen,
+* rot: zwischen 3 und 5 Personen,
+* dunkelrot: zwischen 6 und 8 Personen,
+* violett: 9 oder mehr Personen.
+
+
 -----
 Suche
 -----
