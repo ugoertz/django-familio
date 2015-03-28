@@ -12,15 +12,39 @@ Einrichtung neuer Familienbäume.
 Anforderungen an den Webserver
 ------------------------------
 
+* Database (requires Postgres, Postgis)::
+
+    root@x1n:~# aptitude install postgresql postgresql-server-dev-9.4 postgis
+    root@x1n:~# aptitude install binutils libproj-dev gdal-bin
+    root@x1n:~# su - postgres
+    postgres@x1n:~$ createdb djfdb
+    postgres@x1n:~$ createuser -P djfu
+
+    postgres@x1n:~$ psql
+    psql (9.4.1)
+    Type "help" for help.
+
+    postgres=# grant all on database djfdb to djfu;
+    GRANT
+
+    postgres@x1n:~$ psql djfdb
+    psql (9.4.1)
+    Type "help" for help.
+
+    djfdb=# CREATE EXTENSION postgis;
+    CREATE EXTENSION
+    djfdb=# CREATE EXTENSION postgis_topology;
+    CREATE EXTENSION
+
+* pip, virtualenv
+* ``aptitude install python-dev libffi-dev``
+* ``pip install -r requirements/production.txt``
+* latex: ``aptitude install texlive-full``
+
 * Apache (o.ä.)
 * XSendFile-Modul (für django-transfer)
   Das Modul muss in der VirtualHost-Konfiguration eingeschaltet werden, und es
   muss ein entsprechender Pfad gesetzt werden.
-* Postgres, Postgis
-* pip, virtualenv
-* cairo
-* latex
-
 
 
 -------------------------------------

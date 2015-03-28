@@ -79,9 +79,11 @@ Dokumente
 .........
 
 Der Person können ein
+
 * Porträt
 * Texte
 * ein Kommentar
+
 zugeordnet werden.
 
 Das **Porträt** ist ein Bild, das auf der Seite der Person und (verkleinert) in

@@ -3,11 +3,6 @@ Dokumentation zur unserefamilie.net-Webseite
 ==============================================
 
 
-
-
-Inhalt
---------
-
 .. toctree::
    :maxdepth: 1
 
