@@ -59,3 +59,9 @@ Nun kann mit (gegebenenfalls mehrfachen) Ausführen von::
 die gewünschte pdf-Datei erstellt werden. (Es müssen XeLaTeX und die
 Vollkorn-Schrift installiert sein; Ubuntu-Paket ``fonts-vollkorn``.)
 
+
+Die pdf-Datei kann man, wenn gewünscht, mit den folgenden Kommandos (unter Linux) noch verkleinern::
+
+    pdftops chronicle.pdf c.ps
+    ps2pdf -dPDFSETTINGS=/screen -dDownsampleColorImages=true -dColorImageResolution=300 -dColorImageDownsampleType=/Bicubic c.ps chronicle_small.pdf
+
