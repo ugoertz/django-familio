@@ -134,8 +134,41 @@ Um Zitate zu setzen, werden die entsprechenden Texte einfach eingerückt:
 
 -----------------------------------------------------------------------
 
-**Überschriften**
+.. _gliederung:
 
+**Gliederung**
+
+Der Text kann in Abschnitte gegliedert werden, die jeweils eine Überschrift
+haben. Jeder Abschnitt kann in Unterabschnitte gegliedert werden (auch jeweils
+mit einer eigenen Überschrift, die dann etwas kleiner gesetzt wird als die
+Abschnittsüberschrift). Unterabschnitte können dann noch weiter in
+Unterunterabschnitte unterteilt werden, usw.
+
+Der Beginn eines Abschnitts (Unterabschnitts, ...) wird einfach durch seine
+Überschrift gekennzeichnet. Die Überschriften von Abschnitten (Unterabschnitten,
+etc.) werden "unterstrichen"::
+
+  Dies ist ein neuer Abschnitt
+  ----------------------------
+
+Die Unterstreichung muss mindestens ebenso lang sein, wie die Überschrift. Je
+nachdem, ob es sich um eine Abschnittsüberschrift, Unterabschnittsüberschrift,
+..., handelt, wird ein unterschiedliches Symbol zum Unterstreichen verwendet.
+Damit die Texte auch direkt für den pdf-Export verwendet werden können, müssen
+für die einzelnen Gliederungsschritte die folgenden Symbole (in derselben
+Reihenfolge) verwendet werden::
+
+  Abschnittsüberschrift
+  ---------------------
+
+  Unterabschnittsüberschrift
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unterunterabschnittsüberschrift
+  ```````````````````````````````
+
+Gegebenenfalls können noch feinere Unterteilungen benutzt werden; die als
+nächstes zu verwendenden Symbole zum Unterstreichen wären dann ``.`` und ``:``.
 
 Weitere Informationen:
 

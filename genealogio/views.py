@@ -651,7 +651,7 @@ def create_rst(btemplate=None):
             chapters[-1].write('=' * len(item[2:]))
             chapters[-1].write('\n\n')
         elif item[:2] in ['1_', '2_', '3_', '4_', '5_']:
-            c = '=-^".:'[int(item[0])]
+            c = '=-~`.:'[int(item[0])]
             chapters[-1].write('\n\n%s\n' % item[2:])
             chapters[-1].write(c * len(item[2:]))
             chapters[-1].write('\n\n')
