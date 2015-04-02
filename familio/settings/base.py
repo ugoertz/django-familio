@@ -37,6 +37,7 @@ ROOT_URLCONF = 'familio.urls'
 INSTALLED_APPS = (
     # place grappelli and filebrowser first because they need to override admin
     # templates
+    'grappelli.dashboard',
     'grappelli',
     'filebrowser',
 
@@ -380,6 +381,8 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
             "site": ("domain__icontains", "name__icontains",)
             }
         }
+
+GRAPPELLI_INDEX_DASHBOARD = 'familio.dashboard.CustomIndexDashboard'
 
 MARKUP_SETTINGS = {
     'genrestructuredtext': {
