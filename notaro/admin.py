@@ -5,6 +5,10 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import os
+import os.path
+import tempfile
+
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
@@ -12,6 +16,8 @@ from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.http import urlquote
 from django import forms
 import reversion
 from filebrowser.settings import ADMIN_THUMBNAIL
@@ -180,6 +186,17 @@ class PictureNInline(GrappelliSortableHiddenMixin,
         verbose_name_plural = 'Bilder'
 
 
+class UploadFileForm(forms.Form):
+    title = forms.CharField(max_length=200,
+                            label="Titel",
+                            widget=forms.TextInput(
+                                attrs={'style': 'width: 100%;', }))
+    datei = forms.FileField()
+    fmt = forms.ChoiceField(label="Format",
+            choices=(('docx', 'Microsoft Word docx'),
+                     ('html', 'HTML'),))
+
+
 class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Note model."""
 
@@ -207,6 +224,51 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
     view_on_site.allow_tags = True
     view_on_site.short_description = 'Link'
+
+    def get_urls(self):
+        # pylint: disable=no-member
+        urls = super(NoteAdmin, self).get_urls()
+        return [url(r'^import/$',
+                    self.admin_site.admin_view(self.import_object),
+                    name="importnote"),
+                ] + urls
+
+    def import_object(self, request):
+        if request.method == 'POST':
+            form = UploadFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                path = tempfile.mkdtemp(
+                        dir=os.path.join(settings.PROJECT_ROOT, 'tmp'))
+                f = request.FILES['datei']
+                with open(os.path.join(path,
+                    'original.%s' % form.cleaned_data['fmt']), 'wb')\
+                            as destination:
+                    for chunk in f.chunks():
+                        destination.write(chunk)
+
+                title = form.cleaned_data['title']
+                rstfile = os.path.join(path, 'result.rst')
+                os.system(
+                    'cd %s && pandoc -f %s -t rst original.%s > result.rst' %
+                    (path, form.cleaned_data['fmt'], form.cleaned_data['fmt'], ))
+                return HttpResponseRedirect(reverse(
+                    'admin:%s_%s_add' %
+                    (self.model._meta.app_label, self.model._meta.model_name)) +
+                    '?title=%s&rstfile=%s' %
+                    (urlquote(title), os.path.join(path, rstfile)))
+        else:
+            form = UploadFileForm()
+        return render(request, 'customadmin/import.html',
+                {'form': form, 'title': 'Text importieren'})
+
+    def get_changeform_initial_data(self, request):
+        initial = super(NoteAdmin, self).get_changeform_initial_data(request)
+        if 'rstfile' in request.GET:
+            with open(request.GET['rstfile']) as f:
+                rst = f.read()
+                initial.update({'text': rst, 'published': False })
+        initial.update({'title': request.GET.get('title', ''), })
+        return initial
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',

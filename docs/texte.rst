@@ -39,6 +39,10 @@ Wenn ein Text hinzugefügt wird, können die folgenden Felder ausgefüllt werden
 * (Quellen): Quellen für diesen Text; bisher nicht wirklich unterstützt.
 
 
+Es können auch Microsoft-Word-Dateien (im **docx**-Format) und HTML-Dateien
+importiert werden: :ref:`Dateien importieren <text_importieren>`
+
+
 .. _editor:
 
 ----------
@@ -272,6 +276,37 @@ autocomplete-Funktion. Dafür gibt man den ersten Teil des Links ein, zum
 Beispiel ``:p:\`Ulrich`` und drückt dann ``Ctrl-Space``. Es wird dann eine Liste
 von passenden Objekten angezeigt, und durch Klick wird das entsprechende handle
 am Ende eingefügt.
+
+
+.. _text_importieren:
+
+-----------------
+Texte importieren
+-----------------
+
+Für das Neuerstellen eines Textes kann man eine Datei im docx- (etwa aus
+Microsoft Word oder OpenOffice/LibreOffice) oder im HTML-Format importieren.
+*Achtung:* Das doc-Format kann nicht verarbeitet werden!
+
+Dazu ruft man die Seite::
+
+  http://www.....unserefamilie.net/admin/notaro/note/import/
+
+auf, gibt den Titel des zu erstellenden Textes und das Format ein, und lädt die
+entsprechende Datei vom eigenen Rechner hoch.
+
+In aller Regel wird es notwendig sein, den Text noch einmal durchzuschauen und
+nachzubearbeiten, *insbesondere was die* :ref:`Gliederung <gliederung>` *angeht*.
+
+Damit nicht versehentlich eine unfertige Version auf der Webseite erscheint, ist
+das *Veröffentlicht?*-Kästchen nach dem Import zunächst einmal nicht angekreuzt.
+Wenn man sich sicher ist, dass alles stimmt, kann/muss man das natürlich
+ankreuzen und (erneut) abspeichern. (Als Redakteur kann man aber auch
+abgespeicherte Texte schon einmal anschauen, wenn die *Veröffentlicht?*-Option
+nicht ausgewählt ist. Dazu verwendet man den Link *Auf der Webseite anschauen*
+oben rechts. Das kann man sozusagen als Voranschau nutzen, um zu überprüfen, ob
+alles richtig formatiert ist.)
+
 
 --------------------
 Andere Familienbäume

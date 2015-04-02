@@ -40,6 +40,8 @@ Anforderungen an den Webserver
 * ``aptitude install python-dev libffi-dev``
 * ``pip install -r requirements/production.txt``
 * latex: ``aptitude install texlive-full``
+* pandoc (zum Importieren von docx/html-Dateien), aktuelle Ubuntu-Pakete auf
+  https://github.com/jgm/pandoc/releases
 
 * Apache (o.ä.)
 * XSendFile-Modul (für django-transfer)
@@ -55,7 +57,17 @@ Einrichtung eines neuen Familienbaums
 * wsgi-Datei in ``familio/`` anlegen
 * ``SECRET_KEY`` in ``secrets.json`` hinzufügen
 * Apache VirtualHost einrichten; ggfs. CORS-Header anpassen
-* Unterverzeichnisse in ``media/`` anlegen, chown www-data
+* Unterverzeichnisse in ``media/`` anlegen (hier ist ``%d`` durch die
+  ``SITE_ID`` zu ersetzen)
+
+  * ``%d_uploads/images``
+  * ``%d_uploads/documents``
+  * ``%d_versions``
+
+  Dann::
+
+    chown -R www-data:www-data media
+
 * Site- und SiteProfile-Objekte anlegen; ggfs. andere SiteProfile-Objekte
   anpassen
 * Redakteur(e) anlegen
