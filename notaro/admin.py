@@ -209,9 +209,10 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     related_lookup_fields = {'m2m': ['authors', 'pictures', ], }
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     inlines = [PictureNInline, SourceNInline, ]
-    list_display = ('link', 'title', 'view_on_site', )
-    list_filter = ('sites', )
+    list_display = ('link', 'title', 'published', 'view_on_site', )
+    list_filter = ('published', 'sites', )
     search_fields = ('title', 'text', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
 
     def save_related(self, request, form, formset, change):
         super(NoteAdmin, self).save_related(request, form, formset, change)
