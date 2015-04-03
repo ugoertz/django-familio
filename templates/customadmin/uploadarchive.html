@@ -1,0 +1,20 @@
+
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div style="margin-bottom: 20px; max-width: 400px;">
+    <p>Mit dem Formular unten kann eine Zip-Datei hochgeladen, die im Bilder- oder Dokumenten-Ordner entpackt wird.</p>
+
+    <p><span style="font-weight: bold;">Achtung:</span> Bilddateien mit demselben Dateinamen werden gegebenenfalls überschrieben! Aus diesem Grund empfiehlt es sich, das Archiv in ein Unterverzeichnis entpacken zu lassen, indem ein <i>Pfad</i> angegeben wird.</p>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<table style="width: 100%; background-color: #eeeeee; margin-bottom: 20px;">
+{{ form }}
+</table>
+<input value="{% trans "Abschicken" %}" type="submit">
+</form>
+{% endblock %}

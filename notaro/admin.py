@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import os
 import os.path
 import tempfile
+import zipfile
 
 from django.conf import settings
 from django.conf.urls import url
@@ -296,6 +297,21 @@ class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 admin.site.register(Source, SourceAdmin)
 
 
+class UploadZipFileForm(forms.Form):
+    path = forms.CharField(
+            max_length=50,
+            required=False,
+            label="Pfad",
+            help_text="Wenn ein Pfad angegeben wird, werden die"
+                      " Bilder in einem eigenen Unterverzeichnis gespeichert.",
+            widget=forms.TextInput(attrs={'style': 'width: 100%;', }))
+    archive = forms.FileField(label="Archiv-Datei (.zip)")
+    target = forms.ChoiceField(
+            label="Inhalt der zip-Datei",
+            choices=(('images', 'Bilddateien'),
+                     ('documents', 'Dokumente')))
+
+
 class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Picture model."""
 
@@ -319,6 +335,37 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     image_thumbnail.short_description = "Thumbnail"
 
     list_display = ('id', 'caption', 'date', 'image_thumbnail', )
+
+    def get_urls(self):
+        # pylint: disable=no-member
+        urls = super(PictureAdmin, self).get_urls()
+        return [url(r'^uploadarchive/$',
+                    self.admin_site.admin_view(self.upload_archive),
+                    name="uploadarchive"),
+                ] + urls
+
+    def upload_archive(self, request):
+        if request.method == 'POST':
+            form = UploadZipFileForm(request.POST, request.FILES)
+            if form.is_valid():
+                path = form.cleaned_data.get('path', '')
+                zipf = zipfile.ZipFile(request.FILES['archive'], 'r')
+                print zipf.namelist()
+                target_path = os.path.join(settings.MEDIA_ROOT,
+                                           settings.FILEBROWSER_DIRECTORY,
+                                           form.cleaned_data['target'],
+                                           path)
+                print 'extract to', target_path
+                zipf.extractall(target_path)
+                zipf.close()
+
+                return HttpResponseRedirect(
+                            '/admin/filebrowser/browse/?&dir=' +
+                            os.path.join(form.cleaned_data['target'], path))
+        else:
+            form = UploadZipFileForm()
+        return render(request, 'customadmin/uploadarchive.html',
+                {'form': form, 'title': 'Zip-Archiv importieren'})
 
     class Media:
         js = ('js/adminactions.js', )

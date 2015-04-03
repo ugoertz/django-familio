@@ -1,3 +1,6 @@
+# -*- coding: utf8 -*-
+
+from __future__ import unicode_literals
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -11,7 +14,6 @@ class CustomIndexDashboard(Dashboard):
     """
     Custom index dashboard for www.
     """
-
 
     def init_with_context(self, context):
 
@@ -38,7 +40,7 @@ class CustomIndexDashboard(Dashboard):
 
         # append another link list module for "support".
         self.children.append(modules.LinkList(
-            _('Links'),
+            _('Nützliche Links'),
             column=2,
             children=[
                 {
@@ -46,27 +48,29 @@ class CustomIndexDashboard(Dashboard):
                     'url': '/admin/notaro/note/import/',
                     'external': False,
                 },
-            ]
-        ))
-
-
-        # append another link list module for "support".
-        self.children.append(modules.LinkList(
-            _('Hochgeladene Bilder/Dokumente'),
-            column=2,
-            children=[
                 {
-                    'title': _('FileBrowser'),
-                    'url': '/admin/filebrowser/browse/',
+                    'title': _('Hochgeladene Bilder'),
+                    'url': '/admin/filebrowser/browse/?&dir=images',
+                    'external': False,
+                },
+                {
+                    'title': _('Hochgeladene Dokumente'),
+                    'url': '/admin/filebrowser/browse/?&dir=documents',
+                    'external': False,
+                },
+                {
+                    'title': _('Zip-Archiv mit Bildern/Dokumenten hochladen'),
+                    'url': '/admin/notaro/picture/uploadarchive',
                     'external': False,
                 },
             ]
         ))
 
+
         # append another link list module for "support".
         self.children.append(modules.LinkList(
             _('Support'),
-            column=2,
+            column=3,
             children=[
                 {
                     'title': _('unserefamilie.net Dokumentation'),
@@ -104,7 +108,7 @@ class CustomIndexDashboard(Dashboard):
             _('Recent Actions'),
             limit=5,
             collapsible=False,
-            column=3,
+            column=1,
         ))
 
 

@@ -51,6 +51,23 @@ Um ein Bildobjekt hinzuzufügen,
    gestartet ist (zum Beispiel Porträt einer Person).
 
 
+-------------------------------------
+Zip-Archiv von Bilddateien hinzufügen
+-------------------------------------
+
+Wenn viele neue Bilder eingepflegt werden sollen, kann man die zugehörigen
+Bilddateien als ein zip-Archiv hochladen unter::
+
+  http://www.....unserefamilie.net/admin/notaro/picture/uploadarchive/
+
+Wenn gewünscht, werden alle Dateien aus der Archiv-Datei in einen eigenen Ordner
+geschrieben - damit kann man etwas leichter Ordnung in dem Bilderordner halten.
+
+*Achtung:* Bilddateien mit demselben Dateinamen werden gegebenenfalls
+überschrieben! Auch aus diesem Grund empfiehlt es sich, das Archiv in ein
+Unterverzeichnis entpacken zu lassen.
+
+
 --------------------
 Andere Familienbäume
 --------------------
