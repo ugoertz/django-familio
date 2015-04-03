@@ -50,7 +50,7 @@ django-taggit
 django-dajaxice
 
 git+https://github.com/bread-and-pepper/django-userena.git@5bbf2749b8c9f3bc38206de11ed2fc507b9bb089
-git+https://github.com/etianen/django-watson.git@de5fcb3064a427b6dbdf04a233d2adc6748104f9
+django-watson
 
 pillow
 cairocffi
