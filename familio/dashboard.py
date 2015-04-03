@@ -19,7 +19,7 @@ class CustomIndexDashboard(Dashboard):
 
         # append a group for "Administration" & "Applications"
         self.children.append(modules.Group(
-            _('Verwaltung der Webseite'),
+            _('Verwaltung der Datenbank'),
             column=1,
             collapsible=True,
             children = [
@@ -69,27 +69,17 @@ class CustomIndexDashboard(Dashboard):
 
         # append another link list module for "support".
         self.children.append(modules.LinkList(
-            _('Support'),
+            _('Dokumentation'),
             column=3,
             children=[
                 {
                     'title': _('unserefamilie.net Dokumentation'),
                     'url': settings.DOCUMENTATION_URL,
-                    'external': True,
+                    'external': False,
                 },
                 {
-                    'title': _('Django Documentation'),
-                    'url': 'http://docs.djangoproject.com/',
-                    'external': True,
-                },
-                {
-                    'title': _('Grappelli Documentation'),
-                    'url': 'http://packages.python.org/django-grappelli/',
-                    'external': True,
-                },
-                {
-                    'title': _('Grappelli Google-Code'),
-                    'url': 'http://code.google.com/p/django-grappelli/',
+                    'title': _('ReStructuredText Dokumentation'),
+                    'url': 'http://sphinx-doc.org/rest.html',
                     'external': True,
                 },
             ]
