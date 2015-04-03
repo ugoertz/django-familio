@@ -192,7 +192,7 @@ class UploadFileForm(forms.Form):
                             label="Titel",
                             widget=forms.TextInput(
                                 attrs={'style': 'width: 100%;', }))
-    datei = forms.FileField()
+    upfile = forms.FileField(label="Datei")
     fmt = forms.ChoiceField(label="Format",
             choices=(('docx', 'Microsoft Word docx'),
                      ('html', 'HTML'),))
@@ -240,7 +240,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
             if form.is_valid():
                 path = tempfile.mkdtemp(
                         dir=os.path.join(settings.PROJECT_ROOT, 'tmp'))
-                f = request.FILES['datei']
+                f = request.FILES['upfile']
                 with open(os.path.join(path,
                     'original.%s' % form.cleaned_data['fmt']), 'wb')\
                             as destination:
