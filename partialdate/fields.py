@@ -71,7 +71,7 @@ class PartialDate(object):
     def weekday(self):
         """The weekday of the PartialDate.  May be None."""
         if self.month is not None and self.day is not None:
-            return self.todate().weekday
+            return self.todate().weekday()
         else:
             return None
 
