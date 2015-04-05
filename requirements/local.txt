@@ -20,4 +20,5 @@ pep8
 pylint
 pylint-django
 flake8
+selenium
 
