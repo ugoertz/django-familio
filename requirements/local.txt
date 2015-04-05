@@ -21,4 +21,5 @@ pylint
 pylint-django
 flake8
 selenium
+factory_boy
 
