@@ -4,7 +4,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from django.contrib.sites.models import Site
-from django.test import Client, TestCase
+from django.test import TestCase
 import factory
 
 from accounts.tests import UserProfileFactory, UserFactory
