@@ -1,6 +1,5 @@
-# Choose your databases adapter
-psycopg2
-#MySQL-python
+# Database adapter (PostgreSQL)
+psycopg2==2.6
 
 # for bcrypt passwords
-bcrypt
+bcrypt==1.1.1
