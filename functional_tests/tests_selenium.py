@@ -10,26 +10,8 @@ from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
 import factory
 
 from accounts.models import UserProfile
-
-
-class UserProfileFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = UserProfile
-
-
-class UserFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = User
-        django_get_or_create = ('username',)
-
-    first_name = factory.Sequence(lambda n: "First%s" % n)
-    last_name = factory.Sequence(lambda n: "Last%s" % n)
-    email = factory.Sequence(lambda n: "email%s@example.com" % n)
-    username = factory.Sequence(lambda n: "john%s" % n)
-    password = make_password("password")
-    is_staff = False
-
-    profile = factory.RelatedFactory(UserProfileFactory, 'user')
+from accounts.tests import UserProfileFactory, UserFactory
+from notaro.tests import NoteFactory, RST_WITH_ERRORS
 
 
 class LoginTest(StaticLiveServerTestCase):
@@ -41,11 +23,27 @@ class LoginTest(StaticLiveServerTestCase):
         profile = FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'de')
         cls.selenium = WebDriver(profile)
+        cls.selenium.implicitly_wait(3)
+
+    def setUp(self):
+        # TODO: In Django 1.8, will be able to use setUpTestData
+        self.user = UserFactory()
+        self.admin = UserFactory(is_superuser=True)
 
     @classmethod
     def tearDownClass(cls):
         cls.selenium.quit()
         super(LoginTest, cls).tearDownClass()
+
+    def login(self, u):
+        self.selenium.get('%s%s' % (self.live_server_url, '/'))
+        self.assertIn('Familiengeschichte', self.selenium.title)
+
+        username_input = self.selenium.find_element_by_id("id_identification")
+        username_input.send_keys(u.username)
+        password_input = self.selenium.find_element_by_id("id_password")
+        password_input.send_keys('password')
+        self.selenium.find_element_by_id('id_submitbutton').click()
 
     def test_failed_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/'))
@@ -60,15 +58,46 @@ class LoginTest(StaticLiveServerTestCase):
         self.assertIn('korrekten Benutzername', self.selenium.page_source)
 
     def test_successful_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/'))
-        self.assertIn('Familiengeschichte', self.selenium.title)
-
-        u = UserFactory()
-        username_input = self.selenium.find_element_by_id("id_identification")
-        username_input.send_keys(u.username)
-        password_input = self.selenium.find_element_by_id("id_password")
-        password_input.send_keys('password')
-        self.selenium.find_element_by_id('id_submitbutton').click()
+        self.login(self.user)
         self.assertNotIn('korrekten Benutzername', self.selenium.page_source)
-        self.assertIn(u.username, self.selenium.page_source)
+        self.assertIn(self.user.username, self.selenium.page_source)
+
+    def test_note_with_rst_errors_user(self):
+        self.note2 = NoteFactory(text=RST_WITH_ERRORS)
+        self.login(self.user)
+        body = self.selenium.find_element_by_tag_name('body').text
+        self.assertIn('Alle Texte', body)
+        self.assertIn(self.note2.title, body)
+
+        self.selenium.get('%s%s' % (self.live_server_url, '/notes/all'))
+        body = self.selenium.find_element_by_tag_name('body').text
+        self.assertIn(self.note2.title, body)
+
+        self.selenium.get('%s/n%s'
+                % (self.live_server_url, self.note2.link))
+
+        # pylint: disable=no-member
+        self.selenium.get('%s/notes/note-view/%d'
+                % (self.live_server_url, self.note2.id))
+
+        body = self.selenium.find_element_by_tag_name('body').text
+        self.assertIn('continuation of the', body)
+        self.assertNotIn('System Message: WARNING', body)
+
+    def test_note_with_rst_errors_staff(self):
+        self.login(self.admin)
+        self.note2 = NoteFactory(text=RST_WITH_ERRORS)
+        # pylint: disable=no-member
+        self.selenium.get('%s/notes/note-view/%d'
+                % (self.live_server_url, self.note2.id))
+
+        self.selenium.get('%s/n%s'
+                % (self.live_server_url, self.note2.link))
+        body = self.selenium.find_element_by_tag_name('body').text
+        self.assertIn('continuation of the', body)
+        self.assertNotIn('System Message: WARNING', body)
+
+        self.selenium.find_element_by_id('errormsg').click()
+        body = self.selenium.find_element_by_tag_name('body').text
+        self.assertIn('System Message: WARNING', body)
 
