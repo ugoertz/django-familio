@@ -14,7 +14,7 @@ django-extensions==1.5.2
 django-markup==0.4
 django-reversion==1.8.5
 django-taggit==0.13.0
-django-transfer==0.2.post2
+django-transfer==0.2-2
 
 django-guardian==1.2.5
 django-userena==1.4.0
