@@ -90,6 +90,8 @@ def build_doc():
     with virtualenv(env.virtualenv):
         with cd('%s/docs' % env.code_dir):
             run_venv("make html")
+            run_venv("make latexpdf")
+            run("cp _build/latex/project.pdf ../base/static/dokumentation.pdf")
 
 
 def restart():
@@ -170,6 +172,7 @@ def deploy():
     pull_sources()
     install_dependencies()
     update_database()
+    build_doc() # must be run before build_static to ensure
+                # pdf documentation is updated
     build_static()
     webserver_restart()
-    build_doc()

@@ -78,6 +78,11 @@ class CustomIndexDashboard(Dashboard):
                     'external': False,
                 },
                 {
+                    'title': _('unserefamilie.net Dokumentation (pdf)'),
+                    'url': settings.STATIC_URL + 'dokumentation.pdf',
+                    'external': False,
+                },
+                {
                     'title': _('ReStructuredText Dokumentation'),
                     'url': 'http://sphinx-doc.org/rest.html',
                     'external': True,
