@@ -178,7 +178,7 @@ latex_font_size = '11pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'project.tex', u'project Documentation',
+  ('index', 'project.tex', u'unserefamilie.net Dokumentation',
    u'Ulrich Görtz', 'manual'),
 ]
 
