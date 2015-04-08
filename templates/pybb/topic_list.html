@@ -23,7 +23,7 @@
             <td class="topic-name{% if topic.unread %} topic-unread{% endif %}">
                 <div class="state-indicator"></div>
                 <a href="{{ topic.get_absolute_url }}">{{ topic.name|truncatewords:10 }}</a>
-                <a href="{{ topic.get_absolute_url }}?first-unread=1" style="margin-left: 8px;" class="first-unread-post-link" title="{% trans 'Go to first unread post' %}"><span class="glyphicon glyphicon-forward"></span></a>
+                <a href="{{ topic.get_absolute_url }}?first-unread=1" style="margin-left: 8px;" class="first-unread-post-link" title="{% trans 'Go to first unread post' %}">{% if topic.unread %}<span class="glyphicon glyphicon-forward">{% else %}<span class="glyphicon glyphicon-step-forward">{% endif %}</span></a>
                 {% if topic.sticky %} <span class="glyphicon glyphicon-pushpin"></span> {% endif %}
                 {% if topic.closed %} &nbsp;[{% trans "Closed" %}] {% endif %}
                 {% with topic|pybb_topic_inline_pagination as pages %}
