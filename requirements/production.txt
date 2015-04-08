@@ -61,6 +61,9 @@ alabaster==0.7.3
 sphinx-rtd-theme==0.1.7
 Pygments==2.0.2
 
+pybbm==0.16.1
+django-annoying==0.8.1
+
 MarkupSafe==0.23
 Jinja2==2.7.3
 pycparser==2.10

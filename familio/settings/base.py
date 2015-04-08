@@ -72,6 +72,7 @@ INSTALLED_APPS = (
     'userena.contrib.umessages',
     'easy_thumbnails',
     'guardian',
+    'pybb',
 
     # Application base, containing global templates.
     'base',
@@ -158,6 +159,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'pybb.middleware.PybbMiddleware',
     'watson.middleware.SearchContextMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'notaro.middleware.NotaroMiddleware',
@@ -173,6 +175,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.csrf',
     'django.core.context_processors.tz',
     'django.contrib.messages.context_processors.messages',
+    'pybb.context_processors.processor',
 ]
 
 TEMPLATE_DIRS = (
@@ -370,7 +373,6 @@ LOGOUT_URL = '/accounts/signout/'
 USERENA_DEFAULT_PRIVACY = 'closed'
 USERENA_DISABLE_PROFILE_LIST = True
 USERENA_DISABLE_SIGNUP = True
-USERENA_DISABLE_PROFILE_LIST = True
 USERENA_USE_MESSAGES = False
 USERENA_REGISTER_PROFILE = False
 
@@ -406,6 +408,16 @@ LEAFLET_CONFIG = {
     'DEFAULT_CENTER': (51.5, 7.5),
     'DEFAULT_ZOOM': 7,
 }
+
+PYBB_MARKUP = 'markdown'
+PYBB_PROFILE_RELATED_NAME = 'userprofile'
+PYBB_TEMPLATE = '_layouts/base.html'
+PYBB_SMILES = {}
+PYBB_DISABLE_SUBSCRIPTIONS = True
+PYBB_DISABLE_NOTIFICATIONS = True
+PYBB_DEFAULT_TIMEZONE = 1
+PYBB_ATTACHMENT_ENABLE = True
+PYBB_PERMISSION_HANDLER = 'accounts.permissions.CustomPermissionHandler'
 
 
 NOTARO_SETTINGS = {

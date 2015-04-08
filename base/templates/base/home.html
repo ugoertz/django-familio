@@ -2,6 +2,7 @@
 {% load static %}
 {% load typogrify_tags %}
 {% load leaflet_tags %}
+{% load pybb_tags %}
 
 {% block css %}
 {{block.super}}
@@ -159,6 +160,15 @@ $(window).on('map:init', function (e) {
         <div class="col-md-6">
             <h2>Geburts- und Sterbeorte</h2>
             {% leaflet_map "recentplaces" %}
+            <div class="cabin" style="color: gray; margin-top: 50px;">
+                <h2><a href="/forum/">Aktuelle Beiträge im Forum</a></h2>
+                {% pybb_get_latest_topics cnt=5 as topics %}
+                <ul class="list-group">
+                {% for t in topics %}
+                <li class="list-group-item"><a href="{{ t.get_absolute_url }}">{{ t.user.get_full_name }}: {{ t }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
         </div>
     {% else %}
     <div class="col-md-6">

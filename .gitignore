@@ -26,3 +26,5 @@ pdfexport/*.rst
 pdfexport/_build
 
 htmlcov/*
+
+node_modules/*

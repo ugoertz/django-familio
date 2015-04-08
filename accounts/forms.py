@@ -9,8 +9,14 @@ from userena.forms import EditProfileForm
 
 class EditProfileFormExtra(EditProfileForm):
     class Meta(EditProfileForm.Meta):
-        fields = ['privacy', 'mugshot',
-                  'email_on_message', 'email_on_comment_answer']
+        fields = ['mugshot',
+                  'email_on_message',
+                  'email_on_comment_answer',
+                  'autosubscribe',
+                  'signature',
+                  'show_signatures',
+                  'time_zone',
+                  ]
 
 
 class InviteForm(forms.Form):

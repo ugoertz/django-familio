@@ -36,10 +36,12 @@
               <dt>{% trans "Email" %}</dt>
               <dd>{{ profile.user.email }}</dd>
             {% endif %}
+            {% if user.username == profile.user.username %}
             <dt>Email-Benachrichtigung bei neuen Nachrichten</td>
         <dd>{% if profile.email_on_message %}Ja{% else %}Nein{% endif %}</dd>
             <dt>Email-Benachrichtigung bei Antwort auf meine Kommentare</td>
         <dd>{% if profile.email_on_comment_answer %}Ja{% else %}Nein{% endif %}</dd>
+            {% endif %}
             {% if profile.age %}
             <dt>{% trans "Alter" %}</dt>
               <dd>{{ profile.age }}</dd>

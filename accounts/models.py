@@ -1,7 +1,9 @@
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.contrib.sites.models import Site
+from pybb.profiles import PybbProfile
 
 from userena.models import UserenaBaseProfile
 from genealogio.models import Person
@@ -22,7 +24,7 @@ class UserSite(models.Model):
     role = models.IntegerField(choices=ROLE_TYPE, default=0)
 
 
-class UserProfile(UserenaBaseProfile):
+class UserProfile(UserenaBaseProfile, PybbProfile):
     KEYMAP_CHOICES = ((0, 'default'),
                       (1, 'vim'),
                       (2, 'sublime'),
@@ -50,6 +52,11 @@ class UserProfile(UserenaBaseProfile):
                 in self.sites.filter(
                     usersite__role__in=[UserSite.STAFF, UserSite.SUPERUSER]))
 
+    @property
+    def avatar_url(self):
+        """Overwrite this Pybb method in order to use userena avatars"""
+        return self.get_mugshot_url()
+
     def save(self, *args, **kwargs):
         super(UserProfile, self).save(*args, **kwargs)
 
@@ -66,3 +73,6 @@ class UserProfile(UserenaBaseProfile):
                           role=role)
             us.save()
 
+    def get_absolute_url(self):
+        return reverse('pybb:user',
+                       kwargs={'username': self.user.username})

@@ -1,0 +1,19 @@
+{% load pybb_tags %}
+{% load i18n %}
+
+
+{% if request.user|pybb_may_attach_files %}
+    <div class="attachments-form" style="margin-top: 20px;">
+        <a class="attachment-link btn btn-default" onclick="$('div.attachments-form table').toggle();return false;" href="#">{% trans "Anhänge hinzufügen/bearbeiten" %}</a>
+        {{ aformset.management_form }}
+            <table class="table" style="display:none;">
+            {% for form in aformset %}
+                <tr>
+                    <td style="text-align: left;">{{ form.id }} {{ form.file }}</td>
+                    {% if form.file.value and form.file.value.url|endswith:".jpg" %}<td><img src="{{ form.file.value.url }}" width=100></td>{% endif %}
+                    <td>{% if form.instance.pk %}{{ form.DELETE }} {% trans "delete" %}{% endif %}</td>
+                </tr>
+            {% endfor %}
+            </table>
+    </div>
+{% endif %}
