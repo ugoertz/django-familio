@@ -45,6 +45,8 @@ text-align: left;
             <a href="{% url 'pybb:delete_subscription' sub.id %}">{% trans "delete" %}</a>
         </strong>
     </li>
+    {% empty %}
+    <li class="list-group-item">Keine </li>
     {% endfor %}
 </ul>
 

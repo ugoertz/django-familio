@@ -16,6 +16,10 @@
         <div class="col-md-10 cabin">
             {% if user.is_authenticated %}
     {% if categories %}
+
+    <div class="row">
+        <p>Im Forum können alle Themen rund um unsere Familiengeschichte und diese Webseite diskutiert werden. Insbesondere natürlich Fragen und Änderungswünsche an die Webseite ... Aber auch inhaltliche Fragen könnten hier angesprochen werden, zum Beispiel, wenn jemand nicht direkt die Hauptseite verändern möchte, oder noch nicht als Redakteur eingetragen ist.</p>
+    </div>
         {% for category in categories %}
             {% include 'pybb/category.html' %}
         {% endfor %}
