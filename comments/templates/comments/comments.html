@@ -9,7 +9,7 @@
         <li id="{{c.id}}" class="list-group-item" style="margin-left:{{c.depth}}px;">
         <div class="row">
             <div class="col-md-2">
-                <img src="{{ request.user.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
+                <img src="{{ c.author.userprofile.get_mugshot_url }}" class="avatar" alt="avatar">
             </div>
             <div class="cabin col-md-10">
                 <b>{% firstof c.author.get_full_name c.author.username %}</b><br>{{c.date|naturaltime}}
