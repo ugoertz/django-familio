@@ -1,5 +1,6 @@
 {% extends 'userena/base_userena.html' %}
 {% load i18n %}
+{% load pybb_tags %}
 
 {% block css %}
 {{ block.super }}
@@ -32,7 +33,23 @@ text-align: left;
     {{ form.as_table }}
 </table>
   <input type="submit" value="{% trans "Speichern" %}" class="btn btn-default" />
-</form></div>
+</form>
+
+<h2>{% trans "Subscriptions on topics" %}</h2>
+<ul class="list-group">
+    {% for sub in user.subscriptions.all %}
+    <li class="list-group-item">
+        {% pybb_link sub %}
+        &mdash;
+        <strong>
+            <a href="{% url 'pybb:delete_subscription' sub.id %}">{% trans "delete" %}</a>
+        </strong>
+    </li>
+    {% endfor %}
+</ul>
+
+
+        </div>
   </div>
   </div>
 {% endblock %}

@@ -24,6 +24,9 @@
   {% block meta %}
   {% endblock %}
 
+  {% block extra_head %}
+  {% endblock %}
+
   {# use the CDN to get bootstrap css. can not be inside compress css block #}
   {% block cdn_css %}
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css">
@@ -232,6 +235,7 @@
           </div>
       </div>
       {% endif %}
+      <div class="container"><div class="row cabin">{% block breadcrumb %}{% endblock %}</div></div>
     {% block content %}{% endblock %}
   </div>
 

@@ -1,0 +1,36 @@
+{% extends PYBB_TEMPLATE|default:"base.html" %}
+
+{% load url from future %}
+
+{% load i18n pybb_tags static %}
+
+{%block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
+
+{% block extra_head %}
+    {{ block.super }}
+    <!-- Feeds -->
+    <link rel="alternate" type="application/atom+xml" href="{% url 'pybb:feed_posts' %}" title="{% trans "Latest posts on forum" %}" >
+    <link rel="alternate" type="application/atom+xml" href="{% url 'pybb:feed_topics' %}" title="{% trans "Latest topics on forum" %}" >
+{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static "css/pybb.css" %}">
+<link rel="stylesheet" href="{% static "markitup/sets/markdown/style.css" %}">
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static "markitup/ajax_csrf.js" %}"></script>
+<script type="text/javascript" src="{% static "markitup/jquery.markitup.js" %}"></script>
+<script type="text/javascript" src="{% static "pybb/js/jquery.formset.min.js" %}"></script>
+<script type="text/javascript" src="{% static "pybb/js/pybbjs.js" %}"></script>
+<script type="text/javascript" src="{% static "pybb/js/markitup.js" %}"></script>
+{% endblock %}
+
+{% block breadcrumb %}
+    {% include "pybb/breadcrumb.html" %}
+{% endblock %}
+
+{% block content %}{% endblock content %}
+
