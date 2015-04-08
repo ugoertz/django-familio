@@ -502,22 +502,32 @@ class Sparkline(LoginRequiredMixin, View):
 
         elif person:
             if not guess_dead:
+                # death date is known, or person is alive
+                # draw solid life line
                 draw_line(year_to_x(BIRTH_YEAR),
                           year_to_x(DEATH_YEAR),
                           0.04)
             else:
+                # person is probably dead, but we do not have date of death
+                # draw last part of corresponding line dashed
+                # LIMIT determines where to switch from solid to dashed
+                LIMIT = max(DEATH_YEAR - 20, (BIRTH_YEAR + DEATH_YEAR)/2)
+
                 draw_line(year_to_x(BIRTH_YEAR),
-                          year_to_x(DEATH_YEAR-20),
+                          year_to_x(LIMIT),
                           0.04)
                 ctx.set_dash([0.08, 0.14], 0.04)
-                draw_line(year_to_x(DEATH_YEAR-20),
+                draw_line(year_to_x(LIMIT),
                           year_to_x(DEATH_YEAR),
                           0.04)
                 ctx.set_dash([])
+
+            # draw limiter at birth year
             draw_line(year_to_x(BIRTH_YEAR),
                       year_to_x(BIRTH_YEAR)+0.04,
                       0.4)
             if person.datedeath:
+                # draw limiter at death year
                 draw_line(year_to_x(DEATH_YEAR),
                           year_to_x(DEATH_YEAR)+0.04,
                           0.4)
