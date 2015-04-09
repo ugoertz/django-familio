@@ -28,6 +28,7 @@ class ImpressumView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ImpressumView, self).get_context_data(**kwargs)
         context['staff'] = get_user_model().objects.filter(
+            is_active=True,
             userprofile__usersite__site=Site.objects.get_current(),
             userprofile__usersite__role__in=[UserSite.STAFF,
                                              UserSite.SUPERUSER])\
