@@ -4,6 +4,11 @@
 
 {% load i18n %}
 
+{% block extra_head %}
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/forum/feeds/posts/" />
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/forum/feeds/topics/" />
+{% endblock %}
+
 {% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
 
 {% block breadcrumb %}
@@ -13,8 +18,8 @@
 {% block content %}
 <div class="container">
     <div class="row">
+        {% if user.is_authenticated %}
         <div class="col-md-10 cabin">
-            {% if user.is_authenticated %}
     {% if categories %}
 
     <div class="row">
@@ -36,11 +41,16 @@
                 {% trans "Alle Beiträge als gelesen markieren" %}
             </a>
         </div>
+        </div>
+        <div class="col-md-1 col-md-offset-1 cabin">
+            <div style="margin-top: 50px;" class="small">
+                RSS feeds:<br/> <a href="/forum/feeds/posts/">Beiträge</a><br/> <a href="/forum/feeds/topics/">Themen</a>
+            </div>
+        </div>
         {% endif %}
         {% else %}
         Bitte <a href="/">einloggen</a>, um diese Seite zu sehen.
     {% endif %}
-        </div>
     </div>
 </div>
 {% endblock content %}
