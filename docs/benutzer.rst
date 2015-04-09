@@ -63,6 +63,46 @@ werden möchte, wenn einer seiner Kommentare beantwortet wurde.
 
 Links zu den Objekten mit neuen Kommentaren werden auf der Hauptseite angezeigt.
 
+
+-----
+Forum
+-----
+
+Das Diskussionforum soll dazu dienen, alle möglichen Fragen zu "besprechen", sei
+es zur Familiengeschichte, sei es rund um die Webseite (Probleme,
+Änderungswünsche, ...). Das Forum erreicht man vom Benutzer-Menü in der
+Kopfleiste, mit dem Link auf der Hauptseite, oder direkt unter::
+
+    ...unserefamilie.net/forum/
+
+..................
+Beiträge erstellen
+..................
+
+Mit dem **Neuer Beitrag** Button kann man ein neues Thema erstellen (innerhalb
+der einzelnen Rubriken *Familiengeschichte*, *Verschiedenes*, ...). Der Text
+kann mit der "Sprache" `Markdown <http://de.wikipedia.org/wiki/Markdown>`__
+formatiert werden. Dies wird durch die Buttons in der Leiste über dem
+Editor-Fenster unterstützt. Mit dem gründen Haken ganz rechts wird eine Vorschau
+geöffnet.
+
+Mit dem **Anhänge hinzufügen/bearbeiten** Button kann man eine Datei anhängen
+(zum Beispiel ein Foto). Im Moment kann beim Erstellen der Nachricht nur ein
+einziger Anhang hochgeladen werden. Das Anhängen meherer Dateien ist im Moment
+etwas kompliziert, aber möglich wie folgt: Man kann die Nachricht nach dem
+Abschicken *bearbeiten* und gegebenenfalls einen weiteren Anhang hinzufügen (und
+das auf Wunsch wiederholen).
+
+Wenn gewünscht, kann man anstelle einer Nachricht eine *Umfrage* erstellen. Man
+kann wählen, ob die anderen Benutzer aus den Antworten nur eine einzige oder
+mehrere auswählen dürfen. Nach Auswahl der entsprechenden Option erscheinen
+weitere Eingabefelder auf der Seite, mit denen die Frage und die
+Antwortmöglichkeiten eingegeben werden können.
+
+*Bemerkung* Der **Abonnieren** Button bei den einzelnen Themen hat im Moment
+noch keine Wirkung. Kommt demnächst ...
+
+
 -----------
 Nachrichten
 -----------
@@ -79,7 +119,6 @@ seine Nachrichten aufrufen kann.
 Im :ref:`Profil` kann jeder Benutzer einstellen, ob er per Email benachrichtigt
 werden möchte, wenn er eine Nachricht erhalten hat.
 
-
 .. _profil:
 
 ------
@@ -94,6 +133,8 @@ Im *Benutzerprofil* sind die folgenden Informationen gespeichert:
   ein "Zufallsmuster" angezeigt, an dem man den Benutzer wiedererkennen kann.
 * Die Einstellungen, ob man bei neuen Nachrichten und/oder Antworten auf seine
   Kommentare per Email benachrichtigt werden möchte.
+* Die Signatur, die unter den Nachrichten, die man im Forum schreibt, angehängt
+  wird.
 
 Klickt man in der Titelleiste auf seinen Namen und wählt *Profil* im Menü, kann
 man diese Einstellungen ändern (bzw. ein Bild hochladen). Außerdem kann man dort
