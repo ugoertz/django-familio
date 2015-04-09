@@ -17,24 +17,14 @@
 <li class="list-group-item">{{ u.get_full_name }} ({{ u.username }}), <a href="mailto:{{ u.email }}">{{ u.email }}</a> <a href="/messages/compose/{{ u.username }}/" style="margin-left: 30px;" class="btn btn-default">Nachricht schicken</a></li>
 {% endfor %}
 </ul>
-{% endif %}
 </div>
+{% endif %}
 
 
 <h1>Impressum</h1>
 {% filter apply_markup:"genrestructuredtext" %}
 
-Dies ist eine nicht-kommerzielle Web-Seite, auf der Informationen zur Familiengeschichte der Familie {{ request.site.siteprofile.short_name }} und verwandter Familien zusammengetragen sind.
-
-Verantwortlich:
-
-::
-
-  Ulrich Görtz
-  Ardeystr. 5
-  45134 Essen
-  ug@geometry.de
-
+{% include "custom_impressum.html" %}
 
 -------------------
 Verwendete Software

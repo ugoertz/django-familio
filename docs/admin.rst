@@ -48,6 +48,9 @@ Anforderungen an den Webserver
   Das Modul muss in der VirtualHost-Konfiguration eingeschaltet werden, und es
   muss ein entsprechender Pfad gesetzt werden.
 
+* Dateien ``base/templates/custom_impressum.html``,
+  ``base/templates/base/piwik.html`` (web analytics) mit entsprechend
+  individualisierten Informationen
 
 -------------------------------------
 Einrichtung eines neuen Familienbaums

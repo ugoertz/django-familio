@@ -16,6 +16,8 @@ familio/wsgi*.py
 backup-db
 
 base/static/dokumentation.pdf
+base/templates/base/piwik.html
+base/templates/custom_impressum.html
 
 familio/settings/*
 !familio/settings/__init__.py
