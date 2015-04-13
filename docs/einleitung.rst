@@ -66,3 +66,13 @@ Bei existierenden Objekten befindet sich auch in der Box in der rechten Spalte
 Objekt editieren zu können.
 
 
+----------------------
+Quelltext der Webseite
+----------------------
+
+Das zugrundeliegende "Programm" der Webseite wird mit dem
+Versionsverwaltungsprogramm Git verwaltet, es kann unter
+http://github.com/ugoertz/django-familio/ eingesehen werden (und natürlich
+sind auch konkrete Code-Änderungen von Python- und/oder Webentwicklungskundigen
+willkommen). Das Programm steht unter einer open-source-Lizenz.
+
