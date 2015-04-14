@@ -16,9 +16,6 @@ django-reversion==1.8.5
 django-taggit==0.13.0
 django-transfer==0.2-2
 
-django-guardian==1.2.5
-django-userena==1.4.0
-
 django-watson==1.1.7
 
 django-filebrowser==3.5.7
@@ -48,7 +45,7 @@ django-geojson==2.7.0
 Werkzeug==0.10.4
 ipython==3.1.0
 
-git+https://github.com/bread-and-pepper/django-userena.git@5bbf2749b8c9f3bc38206de11ed2fc507b9bb089
+git+https://github.com/ugoertz/django-userena.git
 
 Pillow==2.8.1
 cairocffi==0.6
@@ -61,7 +58,7 @@ alabaster==0.7.3
 sphinx-rtd-theme==0.1.7
 Pygments==2.0.2
 
-pybbm==0.16.1
+git+https://github.com/ugoertz/pybbm.git
 django-annoying==0.8.1
 
 MarkupSafe==0.23
