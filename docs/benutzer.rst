@@ -99,9 +99,12 @@ mehrere auswählen dürfen. Nach Auswahl der entsprechenden Option erscheinen
 weitere Eingabefelder auf der Seite, mit denen die Frage und die
 Antwortmöglichkeiten eingegeben werden können.
 
-*Bemerkung* Der **Abonnieren** Button bei den einzelnen Themen hat im Moment
-noch keine Wirkung. Kommt demnächst ...
+Wenn man ein Thema *abonniert* hat, bekommt man jedesmal eine :ref:`Nachricht
+<nachrichten>`, wenn jemand anderes dazu einen Beitrag schreibt. (Im
+:ref:`Profil <profil>` kann man einstellen, ob man per Email benachrichtigt
+werden soll, wenn man neue Nachrichten erhält.)
 
+.. _nachrichten:
 
 -----------
 Nachrichten
