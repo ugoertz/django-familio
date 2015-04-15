@@ -71,7 +71,6 @@ INSTALLED_APPS = (
     'userena',
     'userena.contrib.umessages',
     'easy_thumbnails',
-    'guardian',
     'pybb',
 
     # Application base, containing global templates.
@@ -227,7 +226,6 @@ DEBUG_TOOLBAR_CONFIG = {
 
 AUTHENTICATION_BACKENDS = {
     'base.auth_backend.SiteBackend',
-    'guardian.backends.ObjectPermissionBackend',
     #  'django.contrib.auth.backends.ModelBackend',
 }
 
