@@ -383,6 +383,7 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
         }
 
 GRAPPELLI_INDEX_DASHBOARD = 'familio.dashboard.CustomIndexDashboard'
+GRAPPELLI_SWITCH_USER = True
 
 MARKUP_SETTINGS = {
     'genrestructuredtext': {
