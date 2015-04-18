@@ -19,6 +19,19 @@ class UserProfileAdmin(admin.ModelAdmin):
     inlines = [SiteInline, ]
     raw_id_fields = ('person', )
     autocomplete_lookup_fields = {'fk': ('person', ), }
+    list_display = ('user', 'is_active_user', 'person', 'sites_staff', 'sites_user')
+
+    def sites_staff(self, obj):
+        return ', '.join([s.siteprofile.short_name for s in obj.sites.filter(
+            usersite__role__in=[UserSite.STAFF, UserSite.SUPERUSER])])
+
+    def sites_user(self, obj):
+        return ', '.join([s.siteprofile.short_name for s in 
+            obj.sites.filter(usersite__role=UserSite.USER)])
+
+    def is_active_user(self, obj):
+        return obj.user.is_active
+    is_active_user.boolean = True
 
 
 admin.site.register(UserProfile, UserProfileAdmin)
