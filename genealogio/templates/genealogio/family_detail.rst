@@ -8,19 +8,15 @@
 .. role:: cabin
     :class: cabin
 
-.. role:: alignleft
-    :class: alignleft
-
-.. role:: alignright
-    :class: alignright
-
+{% if not latexmode %}
 .. |br| raw:: html
 
    <br />
+{% endif %}
 
 
 Familie {{ object }}
-===============================================================================
+=================================================================================================================================
 
 {% if object.start_date or object.end_date %}
 {{ object.start_date|partial_date:"d.m.Y" }} - {{ object.end_date|partial_date:"d.m.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
@@ -52,45 +48,39 @@ Familie {{ object }}
 
 {% include "genealogio/notes.rst" %}
 
-{% if not latexmode %}
 {% ifnotequal fr 2100 %}
 
 Zeitstrahl
 ----------
 
 {% gapless %}
-+--------+--------------------------------+
-|        | |fr| |head| |to|               |
-+========+================================+
-{% if object.father.on_current_site %}| |PF|   | |imgPF|                        |
-+--------+--------------------------------+{% endif %}
-{% if object.mother.on_current_site %}| |PM|   | |imgPM|                        |
-+--------+--------------------------------+{% endif %}
-{% for child in object.get_children %}{% if child.on_current_site %}| |{{ forloop.counter0 }}|    | |img{{ forloop.counter0  }}|                         |
-+--------+--------------------------------+{% endif %}
++---------------+--------------------------------+
+| |frto-{{ object.id|stringformat:"04d" }}|   |      |head-{{ object.id|stringformat:"04d"  }}|               |
++===============+================================+
+{% if object.father.on_current_site %}| |PF-{{ object.id|stringformat:"04d" }}|     | |imgPF-{{ object.id|stringformat:"04d"  }}|                   |
++---------------+--------------------------------+{% endif %}
+{% if object.mother.on_current_site %}| |PM-{{ object.id|stringformat:"04d" }}|     | |imgPM-{{ object.id|stringformat:"04d" }}|                   |
++---------------+--------------------------------+{% endif %}
+{% for child in object.get_children %}{% if child.on_current_site %}| |{{ forloop.counter0|stringformat:"02d" }}-{{ object.id|stringformat:"04d"  }}|     | |img{{ forloop.counter0|stringformat:"02d" }}-{{ object.id|stringformat:"04d" }}|                   |
++---------------+--------------------------------+{% endif %}
 {% endfor %}
 {{ sparkline_legend }}
 {% endgapless %}
 
 {{ sparkline_legend_ref }}
 
-.. |head| image:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
+.. |frto-{{ object.id|stringformat:"04d" }}| replace:: {{ fr }} - {{ to }}
 
-.. |fr| replace::
-    :alignleft:`{{ fr }}`
-
-.. |to| replace::
-    :alignright:`{{ to }}`
+.. |head-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
 
 {% include "genealogio/person_sparkline.rst" with person=object.father label="PF" %}
 
 {% include "genealogio/person_sparkline.rst" with person=object.mother label="PM" %}
 
 {% for child in object.get_children %}
-{% include "genealogio/person_sparkline.rst" with person=child label=forloop.counter0 %}
+{% include "genealogio/person_sparkline.rst" with person=child label=forloop.counter0|stringformat:"02d" %}
 
 {% endfor %}
 
 
 {% endifnotequal %}
-{% endif %}

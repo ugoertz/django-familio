@@ -137,13 +137,13 @@ class PersonDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
 
 
 class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
-    """Display details for a person."""
+    """Display details for a family."""
 
     model = Family
 
-    def get_context_data(self, **kwargs):
-        context = super(FamilyDetail, self).get_context_data(**kwargs)
-        obj = self.get_object()
+    @staticmethod
+    def get_context_data_for_object(obj, latex=False):
+        context = {}
 
         # NOTE: The 2110 is hard-coded in the template: below, 10 is subtracted
         # from fr, and the resulting value passed to the template. If in the
@@ -191,38 +191,26 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         to = min(max(to + 5, fr + 80), datetime.date.today().year + 2)
         context['to'] = to
 
-        def start(x):
-            return x[1][0]
-
-        def end(x):
-            return x[1][0] if len(x[1]) == 2 else x[1][1]
-
         timeline = [x for x in Sparkline.timeline
-                    if fr <= end(x) and start(x) <= to]
-        l = ['||T%02d|_  | |Tmg%02d|                        |\n' % (i, i)
-             for i in range(len(timeline))]
+                if fr <= x.get('end', x['start']) and x['start'] <= to]
+        l = ['| |T%02d%04d|_    | |Tmg%02d%04d|                    |\n'
+                % (x['id'], obj.id, x['id'], obj.id) for x in timeline]
         l.append('\n')
 
-        legend = '+--------+--------------------------------+\n'.join(l)
-
-        legref = ''
-
-        legref += '\n\n'.join(['.. |T%02d| replace::\n' % i +
-                               '   :cabin:`%s` |br| :cabin:`%s`'
-                               % (x[0], str(x[1][0]) if len(x[1]) == 2
-                                  else '%s-%s' % tuple(x[1][:2]), )
-                               for i, x in enumerate(timeline)])
-        legref += '\n\n'
-        legref += '\n\n'.join(['.. |Tmg%02d| image:: /gen/sparkline/%d/%d/%d/'
-                               % (i, 100001 + i, fr, to)
-                               for i in range(len(timeline))])
-
-        legref += '\n\n'
-        legref += '\n\n'.join(['.. _T%02d: %s' % (i, x[2])
-                               for i, x in enumerate(timeline)])
+        legend = '+---------------+--------------------------------+\n'.join(l)
 
         context['sparkline_legend'] = legend
-        context['sparkline_legend_ref'] = legref
+        context['sparkline_legend_ref'] = Sparkline.get_legref(
+                fr=fr, to=to,
+                latex=latex,
+                label='%04d' % obj.id)
+
+        return context
+
+    def get_context_data(self, **kwargs):
+        context = super(FamilyDetail, self).get_context_data(**kwargs)
+        obj = self.get_object()
+        context.update(self.get_context_data_for_object(obj))
 
         return context
 
@@ -362,44 +350,106 @@ class Sparkline(LoginRequiredMixin, View):
 
     """Sparkline view. """
 
-    @property
-    def width(self):
-        return 512
-
-    @property
-    def height(self):
-        return 32
+    width =  512
+    height = 32
 
     timeline = [
-        ["Wiener Kongress",                      [1815, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/Wiener_Kongress'],
-        ["Deutsche Revolution 1848/49",          [1848, 1849, [1, 0, 1]],
-         'https://de.wikipedia.org/wiki/Deutsche_Revolution_1848/1849'],
-        ["Deutsch-Französischer Krieg",          [1870, 1871, [1, 0, 0]],
-         'https://de.wikipedia.org/wiki/Deutsch-Franz%C3%B6sischer_Krieg'],
-        ["Erfindung des Autos",                  [1886, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/Geschichte_des_Automobils'],
-        ["Erster Weltkrieg",                     [1914, 1918, [1, 0, 0]],
-         'https://de.wikipedia.org/wiki/Erster_Weltkrieg'],
-        ["Drittes Reich",                        [1933, 1945, [1, 0.5, 0]],
-         'https://de.wikipedia.org/wiki/Drittes_Reich'],
-        ["Zweiter Weltkrieg",                    [1939, 1945, [1, 0, 0]],
-         'https://de.wikipedia.org/wiki/Zweiter_Weltkrieg'],
-        ["Gründung von BRD und DDR",             [1949, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/' +
-         'Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland'],
-        ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]],
-         'https://de.wikipedia.org/wiki/' +
-         'Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
-        ["Mauerbau",                             [1961, [0, 1, 0]],
-         'https://de.wikipedia.org/wiki/Berliner_Mauer'],
-        ["Wiedervereinigung",                    [1990, [0, 0, 1]],
-         'https://de.wikipedia.org/wiki/Deutsche_Wiedervereinigung'],
-        ["Einführung des Euro",                  [2002, [0, 0, 1]],
-         'https://de.wikipedia.org/wiki/Euro']
+            {   'id': 0,
+                'title': "Deutsche Revolution 1848/49",
+                'start': 1848,
+                'end': 1849,
+                'color': [1, 0, 1],
+                'url': 'https://de.wikipedia.org/wiki/Deutsche_Revolution_1848/1849',
+                },
+            {   'id': 1,
+                'title': "Deutsch-Französischer Krieg",
+                'start': 1870,
+                'end': 1871,
+                'color': [1, 0, 0],
+                'url': 'https://de.wikipedia.org/wiki/Deutsch-Franz%C3%B6sischer_Krieg',
+                },
+            {   'id': 2,
+                'title': "Erster Weltkrieg",
+                'start': 1914,
+                'end': 1918,
+                'color': [1, 0, 0],
+                'url': 'https://de.wikipedia.org/wiki/Erster_Weltkrieg',
+                },
+            {   'id': 3,
+                'title': "Drittes Reich",
+                'start': 1933,
+                'end': 1945,
+                'color': [1, 0.5, 0],
+                'url': 'https://de.wikipedia.org/wiki/Drittes_Reich',
+                },
+            {   'id': 4,
+                'title': "Zweiter Weltkrieg",
+                'start': 1939,
+                'end': 1945,
+                'color': [1, 0, 0],
+                'url': 'https://de.wikipedia.org/wiki/Zweiter_Weltkrieg',
+                },
+            {   'id': 5,
+                'title': "Gründung von BRD und DDR",
+                'start': 1949,
+                'color': [0, 0, 0],
+                'url': 'https://de.wikipedia.org/wiki/'
+                       'Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland',
+                },
+        # ["Wiener Kongress",                      [1815, [0, 0, 0]],
+        #  'https://de.wikipedia.org/wiki/Wiener_Kongress'],
+        # ["Erfindung des Autos",                  [1886, [0, 0, 0]],
+        #  'https://de.wikipedia.org/wiki/Geschichte_des_Automobils'],
+        # ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]],
+        #  'https://de.wikipedia.org/wiki/' +
+        #  'Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
+        # ["Mauerbau",                             [1961, [0, 1, 0]],
+        #  'https://de.wikipedia.org/wiki/Berliner_Mauer'],
+        # ["Wiedervereinigung",                    [1990, [0, 0, 1]],
+        #  'https://de.wikipedia.org/wiki/Deutsche_Wiedervereinigung'],
+        # ["Einführung des Euro",                  [2002, [0, 0, 1]],
+        #  'https://de.wikipedia.org/wiki/Euro']
     ]
 
     def get(self, request, pk, fr=None, to=None):
+        response = HttpResponse(content_type="image/png")
+        surface = self.get_image(pk, fr, to)
+        surface.write_to_png(response)
+        return response
+
+    @classmethod
+    def get_legref(cls, fr=0, to=3000, latex=False, label=''):
+        image_directive = 'sparklineimg' if latex else 'image'
+
+        timeline = [x for x in cls.timeline
+                if fr <= x.get('end', x['start']) and x['start'] <= to]
+        legref = ''
+
+        legref += '\n\n'.join(['.. |T%02d%s| replace::\n' % (x['id'], label) +
+                               '   :cabin:`%s` |br| :cabin:`%s`'
+                               % (x['title'], str(x['start']) if 'end' not in x
+                                  else '%s-%s' % (x['start'], x['end']), )
+                               for x in timeline])
+        legref += '\n\n'
+        legref += '\n\n'.join(['.. |Tmg%02d%s| %s:: /gen/sparkline/%d/%d/%d/'
+                               % (x['id'], label, image_directive, 100001 + x['id'], fr, to)
+                               for x in timeline])
+
+        legref += '\n\n'
+        legref += '\n\n'.join(['.. _T%02d%s: %s' % (x['id'], label, x['url'])
+                               for x in timeline])
+        legref += '\n\n'
+
+        return legref
+
+    @classmethod
+    def get_image(cls,pk, fr=None, to=None, width=None, height=None):
+
+        width = width or cls.width
+        height = height or cls.height
+
+        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
+                                     width, height)
 
         if int(pk) < 100000:
             # pk is the id of a Person object
@@ -409,11 +459,7 @@ class Sparkline(LoginRequiredMixin, View):
                 person = Person.objects.get(pk=pk)
                 if not person.datebirth:
                     # no date of birth known, so just display empty sparkline
-                    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                 self.width, self.height)
-                    response = HttpResponse(content_type="image/png")
-                    surface.write_to_png(response)
-                    return response
+                    return surface
 
                 BIRTH_YEAR = person.datebirth.year
                 if person.datedeath:
@@ -448,15 +494,12 @@ class Sparkline(LoginRequiredMixin, View):
             TO_YEAR = 2020
 
         def year_to_x(year):
-            r = self.width/self.height *\
+            r = width/height *\
                 (year - FROM_YEAR) / (TO_YEAR - FROM_YEAR)
             return r
 
-        surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                     self.width, self.height)
-
         ctx = cairo.Context(surface)
-        ctx.scale(self.height/1.0, self.height/1.0)
+        ctx.scale(height/1.0, height/1.0)
 
         def draw_line(f, t, width, rgba=(0, 0, 0)):
             ctx.move_to(f, 0.5)
@@ -466,12 +509,11 @@ class Sparkline(LoginRequiredMixin, View):
             ctx.stroke()
 
         if int(pk) <= 100000:
-            for key, value, _dummy in Sparkline.timeline:
-                draw_line(year_to_x(value[0]),
-                          year_to_x(value[1] if len(value) > 2
-                          else value[0]+0.3),
+            for x in Sparkline.timeline:
+                draw_line(year_to_x(x['start']),
+                          year_to_x(x.get('end', x['start']+0.3)),
                           0.3,
-                          value[-1][:3] + [0.2 if int(pk) < 100000 else 1, ])
+                          x['color'][:3] + [0.2 if int(pk) < 100000 else 1, ])
 
         if int(pk) >= 100000:
             if int(pk) == 100000:
@@ -485,20 +527,12 @@ class Sparkline(LoginRequiredMixin, View):
                               year_to_x(i*100)+0.06,
                               0.6)
             else:
-                def start(x):
-                    return x[1][0]
-
-                def end(x):
-                    return x[1][0] if len(x[1]) == 2 else x[1][1]
-
-                timeline = [x for x in Sparkline.timeline
-                            if FROM_YEAR <= end(x) and start(x) <= TO_YEAR]
-                value = timeline[int(pk)-100001][1]
-                draw_line(year_to_x(value[0]),
-                          year_to_x(value[1] if len(value) > 2
-                                    else value[0]+0.3),
+                tl_id = int(pk)-100001
+                x = [z for z in Sparkline.timeline if z['id'] == tl_id][0]
+                draw_line(year_to_x(x['start']),
+                          year_to_x(x.get('end', x['start']+0.3)),
                           0.3,
-                          value[-1])
+                          x['color'])
 
         elif person:
             if not guess_dead:
@@ -554,9 +588,7 @@ class Sparkline(LoginRequiredMixin, View):
                 ctx.rectangle(year_to_x(f.start_date.year)-0.1, 0.4, 0.2, 0.2)
                 ctx.stroke()
 
-        response = HttpResponse(content_type="image/png")
-        surface.write_to_png(response)
-        return response
+        return surface
 
 
 def booktemplate():
@@ -610,10 +642,18 @@ def create_rst(btemplate=None):
     index = open(os.path.join(directory, 'index.rst'), 'w')
     index.write(INDEX_TEMPLATE_HEADER)
 
+    has_families = False
+
+    def close_chapter():
+        if has_families:
+            chapters[-1].write('\n\n.. |br| raw:: html\n\n  <br />\n\n')
+        chapters[-1].close()
+
     def start_new_chapter():
         if chapters:
-            chapters[-1].close()
+            close_chapter()
         index.write('    chapter_%d\n' % len(chapters))
+        has_families = False
         chapters.append(open(os.path.join(directory,
                                           'chapter_%d.rst' % len(chapters)),
                              'w'))
@@ -641,10 +681,12 @@ def create_rst(btemplate=None):
             chapters[-1].write('\n\n')
         elif item.startswith('F_'):
             obj = Family.objects.get(handle=item)
+            context = {'object': obj, 'latexmode': True, }
+            context.update(
+                    FamilyDetail.get_context_data_for_object(obj, latex=True))
+            has_families = True
             chapters[-1].write(render_to_string('genealogio/family_detail.rst',
-                                                {'object': obj,
-                                                 'latexmode': True, }
-                                                ).encode('utf8'))
+                                                context).encode('utf8'))
             chapters[-1].write('\n\n')
         elif item.startswith('E_'):
             obj = Event.objects.get(handle=item)
@@ -669,7 +711,7 @@ def create_rst(btemplate=None):
             # unknown item - raise an exception?
             pass
 
-    chapters[-1].close()
+    close_chapter()
     index.write(INDEX_TEMPLATE_FOOTER)
     index.close()
     return directory

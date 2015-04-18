@@ -5,11 +5,20 @@ from docutils import nodes
 from docutils.utils import new_document
 from docutils.frontend import OptionParser
 from docutils.parsers.rst import roles, Parser
+from docutils.parsers.rst.directives.images import Image
+import os
+import os.path
+import tempfile
+import urllib
+
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 # from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
 
+# pylint: disable=import-error
 from genealogio.models import Person, Place, Event, Family
+from genealogio.views import Sparkline
 from notaro.models import Picture
 
 
@@ -90,10 +99,24 @@ def get_text(name, rawtext, text, lineno, inliner,
     return nodelist, []
 
 
-def p_role(name, rawtext, text, lineno, inliner,
-           options={}, content=[]):
-    return get_text(name, rawtext, text, lineno, inliner,
-                    options={}, content=[])
+class SparklineImg(Image):
+
+    required_arguments = 1
+
+    def run(self):
+        lateximagedir = os.path.join(settings.MEDIA_ROOT, 'latex')
+
+        # fetch png from specified url and save in temporary file
+        _, _, _, pk, fr, to, _ = self.arguments[0].split('/')
+        filename = 'img-%s-%s-%s.png' % (pk, fr, to)
+        if not os.path.exists(os.path.join(lateximagedir, filename)):
+            surface = Sparkline.get_image(pk, fr, to, width=5120, height=320)
+            surface.write_to_png(os.path.join(lateximagedir, filename))
+
+        # change argument so as to point to our temporary file
+        self.arguments[0] = '/../media/latex/%s' % filename
+
+        return super(SparklineImg, self).run()
 
 
 # pylint: disable=no-member
@@ -102,4 +125,5 @@ def setup(app):
         app.add_role(role, partial(get_text,
                                    model=genrst_roles[role]['model'],
                                    extra=genrst_roles[role].get('extra', '')))
+    app.add_directive('sparklineimg', SparklineImg)
 

@@ -1,14 +1,14 @@
 {% if person.on_current_site %}
-.. |{{ label }}| replace::
-    {% if person %}|{{ label }}link|_{% else %}*unbekannt*{% endif %}
+.. |{{ label }}-{{ object.id|stringformat:"04d" }}| replace::
+    {% if person %}|{{ label }}-{{ object.id|stringformat:"04d"  }}link|_{% else %}*unbekannt*{% endif %}
 
 {% if person %}
-.. |{{ label }}link| replace::
+.. |{{ label }}-{{ object.id|stringformat:"04d"  }}link| replace::
     {{ person.get_primary_name_br }} |br| ({{ person.datebirth.year }} - {{ person.datedeath.year }})
 
-.. _{{ label }}link: {{ person.get_absolute_url }}
+.. _{{ label }}-{{ object.id|stringformat:"04d"  }}link: {% if latexmode %}http://localhost:8000{% endif %}{{ person.get_absolute_url }}
 {% endif %}
 
-.. |img{{ label }}| image:: /gen/sparkline/{{ person.id }}/{{ fr }}/{{ to }}/
+.. |img{{ label }}-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: /gen/sparkline/{{ person.id }}/{{ fr }}/{{ to }}/
 {% endif %}
 

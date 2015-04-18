@@ -25,6 +25,9 @@ Die Funktion muss im Moment in einer Shell (``./manage.py shell --settings=...``
 Erstellen der LateX-Dateien
 ---------------------------
 
+Als erstes sollten gegebenenfalls die png-Dateien vom vorherigen Durchlauf in
+``media/latex/`` gelöscht werden.
+
 Zum Einbinden der Bilddateien benötigt Sphinx Zugriff auf die Django-Datenbank.
 Die entsprechende Settings-Datei muss in der Shell (oder durch Eintrag in der
 Datei ``pdfexport/conf.py``) angegeben werden::
