@@ -32,6 +32,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     def is_active_user(self, obj):
         return obj.user.is_active
     is_active_user.boolean = True
+    is_active_user.short_description = 'Aktiviert?'
 
 
 admin.site.register(UserProfile, UserProfileAdmin)
