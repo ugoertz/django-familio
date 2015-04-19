@@ -496,7 +496,7 @@ class Sparkline(LoginRequiredMixin, View):
             else:
                 # single timeline item
 
-                # pylint: disable=no-member
+                # pylint: disable=all
                 x = TimelineItem.objects.get(id=int(tlid))
 
                 draw_line(year_to_x(x.start-0.2),
