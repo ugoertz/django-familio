@@ -107,10 +107,26 @@ class SparklineImg(Image):
         lateximagedir = os.path.join(settings.MEDIA_ROOT, 'latex')
 
         # fetch png from specified url and save in temporary file
-        _, _, _, pk, fr, to, _ = self.arguments[0].split('/')
-        filename = 'img-%s-%s-%s.png' % (pk, fr, to)
+        url = self.arguments[0]
+
+        if url.find('sparkline-person') != -1:
+            _, _, _, pk, fampk, fr, to, _ = url.split('/')
+            filename = 'img-%s-%s-%s-%s.png' % (pk, fampk, fr, to)
+            kwargs = {'pk': pk, 'fampk': fampk, 'fr': fr, 'to': to, }
+        elif url.find('sparkline-head') != -1:
+            _, _, _, fampk, fr, to, _ = url.split('/')
+            filename = 'img-head-%s-%s-%s.png' % (fampk, fr, to)
+            kwargs = {'fampk': fampk, 'fr': fr, 'to': to, }
+        elif url.find('sparkline-tlitem') != -1:
+            _, _, _, tlid, fr, to, _ = url.split('/')
+            filename = 'img-tlid-%s-%s-%s.png' % (tlid, fr, to)
+            kwargs = {'tlid': tlid, 'fr': fr, 'to': to, }
+        else:
+            return []
+
         if not os.path.exists(os.path.join(lateximagedir, filename)):
-            surface = Sparkline.get_image(pk, fr, to, width=5120, height=320)
+            kwargs.update({'width': 5120, 'height': 320, })
+            surface = Sparkline.get_image(**kwargs)
             surface.write_to_png(os.path.join(lateximagedir, filename))
 
         # change argument so as to point to our temporary file
