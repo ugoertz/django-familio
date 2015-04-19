@@ -477,8 +477,8 @@ class Sparkline(LoginRequiredMixin, View):
         if fampk is not None:
             # head or person
             for x in FamilyDetail.get_timeline_items(fampk, FROM_YEAR, TO_YEAR):
-                draw_line(year_to_x(x.start),
-                          year_to_x(x.end if x.end > x.start else x.start+0.3),
+                draw_line(year_to_x(x.start-0.2),
+                          year_to_x(x.end if x.end > x.start else x.start+0.2),
                           0.3,
                           x.color[:3] + [0.2 if pk is not None else 1, ])
 
