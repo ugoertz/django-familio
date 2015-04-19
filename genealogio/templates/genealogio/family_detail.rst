@@ -71,7 +71,7 @@ Zeitstrahl
 
 .. |frto-{{ object.id|stringformat:"04d" }}| replace:: {{ fr }} - {{ to }}
 
-.. |head-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: /gen/sparkline/100000/{{ fr  }}/{{ to  }}/
+.. |head-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: {% url 'sparkline-head' fampk=object.id fr=fr to=to %}
 
 {% include "genealogio/person_sparkline.rst" with person=object.father label="PF" %}
 

@@ -30,11 +30,19 @@ urlpatterns = patterns('genealogio.views',
                        url(r'^descendants/(?P<pk>\d+)/$',
                            Descendants.as_view(),
                            name='descendants'),
-                       url(r'^sparkline/(?P<pk>\d+)/$', Sparkline.as_view(),
-                           name='sparkline'),
-                       url(r'^sparkline/' +
-                           r'(?P<pk>\d+)/' +
+                       url(r'^sparkline-person/' +
+                           r'(?P<pk>\d+)/(?P<fampk>\d+)/' +
                            r'(?P<fr>\d\d\d\d)/(?P<to>\d\d\d\d)/$',
                            Sparkline.as_view(),
-                           name='sparkline'), )
+                           name='sparkline-person'),
+                       url(r'^sparkline-head/' +
+                           r'(?P<fampk>\d+)/' +
+                           r'(?P<fr>\d\d\d\d)/(?P<to>\d\d\d\d)/$',
+                           Sparkline.as_view(),
+                           name='sparkline-head'),
+                       url(r'^sparkline-tlitem/' +
+                           r'(?P<tlid>\d+)/' +
+                           r'(?P<fr>\d\d\d\d)/(?P<to>\d\d\d\d)/$',
+                           Sparkline.as_view(),
+                           name='sparkline-tlitem'), )
 

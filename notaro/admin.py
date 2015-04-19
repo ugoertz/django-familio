@@ -43,6 +43,18 @@ class UpdateActionForm(ActionForm):
 
 
 class CurrentSiteAdmin(object):
+    """
+    A mixin for modeladmin classes which
+
+    - sets reasonable default for sites field when new instances are created,
+      and makes the field readonly on edits
+    - removes the delete action
+    - adds a "remove object" action (which removes the object from the current
+      site),
+    - add a "add to other site" action (for users which also have staff status
+      at the other site)
+    - displays list of all sites where this object lives in changelist
+    """
 
     action_form = UpdateActionForm
     change_form_template = "customadmin/change_form.html"

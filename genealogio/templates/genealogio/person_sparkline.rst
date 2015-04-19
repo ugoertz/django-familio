@@ -9,6 +9,6 @@
 .. _{{ label }}-{{ object.id|stringformat:"04d"  }}link: {% if latexmode %}http://localhost:8000{% endif %}{{ person.get_absolute_url }}
 {% endif %}
 
-.. |img{{ label }}-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: /gen/sparkline/{{ person.id }}/{{ fr }}/{{ to }}/
+.. |img{{ label }}-{{ object.id|stringformat:"04d" }}| {% if latexmode %}sparklineimg{% else %}image{% endif %}:: {% url 'sparkline-person' pk=person.id fampk=object.id fr=fr to=to %}
 {% endif %}
 

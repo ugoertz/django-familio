@@ -6,11 +6,13 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from django.contrib.gis.db import models
+from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from partialdate.fields import PartialDateField
 
+from notaro.managers import GenManager
 from .managers import CurrentSiteGeoManager, GenGeoManager
 
 from notaro.models import Source, Note, Picture
@@ -770,3 +772,106 @@ class Event(PrimaryObject):
         ordering = ('event_type', )
         verbose_name = 'Ereignis'
         verbose_name_plural = 'Ereignisse'
+
+
+class TimelineItem(models.Model):
+
+    OTHER = 1
+    WAR = 2
+    INVENTION = 3
+    POLITICAL_EVENT = 4
+    ECONOMIC_EVENT = 5
+    CRISIS = 6
+    REVOLUTION = 7
+    OTHER_BLUE = 8
+    OTHER_GREEN = 9
+    OTHER_GRAY = 10
+
+    TYPE_CHOICES = (
+            (OTHER, 'Anderes Ereignis'),
+            (WAR, 'Krieg'),
+            (INVENTION, 'Erfindung'),
+            (POLITICAL_EVENT, 'Politisches Ereignis'),
+            (ECONOMIC_EVENT, 'Wirtschaftliches Ereignis'),
+            (CRISIS, 'Krisenzeit'),
+            (REVOLUTION, 'Umsturz, Revolution'),
+            (OTHER_BLUE, 'Anderes Ereignis (blau)'),
+            (OTHER_GREEN, 'Anderes Ereignis (grün)'),
+            (OTHER_GRAY, 'Anderes Ereignis (grau)'),
+            )
+
+    COLORS = {
+            OTHER: [0, 0, 0],                # black
+            WAR: [1, 0, 0],                  # red
+            INVENTION: [1, 0, 1],            # magenta
+            POLITICAL_EVENT: [0, 0, 0.5],    # navy
+            ECONOMIC_EVENT: [0.5, 0.5, 0],   # olive
+            CRISIS: [1, 0.5, 0],             # orange
+            REVOLUTION: [0.9, 0.1, 0.2],     # crimson
+            OTHER_BLUE: [0, 0, 1],           # blue
+            OTHER_GREEN: [0, 1, 0],          # green (lime)
+            OTHER_GRAY: [0.3, 0.3, 0.3],     # gray
+            }
+
+    title = models.CharField(max_length=200, verbose_name='Titel')
+    url = models.CharField(max_length=200, verbose_name='URL',
+                           blank=True)
+    start_date = PartialDateField(
+            verbose_name='Startdatum',
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
+    end_date = PartialDateField(
+            blank=True, null=True,
+            verbose_name='Enddatum',
+            help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich); "
+                      "kann freibleiben"
+            )
+    description = models.TextField(
+            blank=True, null=True,
+            verbose_name="Beschreibung",
+            help_text="Wird beim pdf-Export verwendet, kann als ReST "
+                      "formattiert werden, mit Links auf Objekte der "
+                      "Datenbank (siehe Dokumentation).")
+    typ = models.IntegerField(choices=TYPE_CHOICES,
+                              verbose_name="Art des Ereignisses")
+
+    sites = models.ManyToManyField(Site)
+    families = models.ManyToManyField(Family, blank=True,
+            verbose_name="Familien",
+            help_text="Sind hier Familien ausgewählt, so wird der Eintrag nur"
+                      "bei den ausgewählten Familien angezeigt, sonst bei allen"
+                      "Familien"
+            )
+
+    all_objects = GenManager()
+    objects = CurrentSiteManager()
+
+    @property
+    def start(self):
+        # pylint: disable=no-member
+        return self.start_date.year
+
+    @property
+    def end(self):
+        # pylint: disable=no-member
+        if self.end_date:
+            return self.end_date.year
+        else:
+            return self.start_date.year
+
+    @property
+    def period(self):
+        return '%s-%s' % (self.start, self.end) if self.end_date\
+               else str(self.start)
+
+    @property
+    def color(self):
+        return self.COLORS[self.typ]
+
+    def __unicode__(self):
+        return '%s (%s)' % (self.title, self.period)
+
+    class Meta:
+        ordering = ('start_date', 'end_date', 'title' )
+        verbose_name = 'Ereignis im Zeitstrahl'
+        verbose_name_plural = 'Ereignisse im Zeitstrahl'
+
