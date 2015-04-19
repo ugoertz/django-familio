@@ -131,6 +131,10 @@ $(window).on('map:init', function (e) {
             {% if person.get_children %}
             <p style="margin-top:50px;"><a href="{% url "descendants" object.id %}">Nachkommen</a></p>
             {% endif %}
+            {% if person.userprofile_set.exists %}
+            <p style="margin-top:50px; font-size: 80%;" class="cabin">{{ person.first_name }} benutzt auch diese Webseite.</p>
+            <p><a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" class="btn-sm btn btn-default cabin">Nachricht schreiben</a></p>
+            {% endif %}
         {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
             <div class="cabin adminbox">
             {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="personen.html" %}
