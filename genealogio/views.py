@@ -567,6 +567,7 @@ def booktemplate():
     - headers: starts with 1_, 2_, 3_, ..., followed by the text of the header.
     - notes: note_%d % note.id
     - persons, families, events: handle
+    - timeline items: tlitem_%d % tlitem.id
     '''
 
     # pylint: disable=no-member
@@ -574,11 +575,13 @@ def booktemplate():
     persons = [p.handle for p in Person.objects.all()]
     families = [f.handle for f in Family.objects.all()]
     events = [e.handle for e in Event.objects.all()]
+    tlitems = ['tlitem_%d' % tlitem.id for tlitem in TimelineItem.objects.all()]
 
     return (['1_Texte', ] + texts +
             ['1_Personen', ] + persons +
             ['1_Familien', ] + families +
-            ['1_Ereignisse', ] + events
+            ['1_Ereignisse', ] + events +
+            ['1_Anhang', '2_Ereignisse in den Zeitstrahlen', ] + tlitems
             )
 
 
@@ -638,6 +641,13 @@ def create_rst(btemplate=None):
         if item.startswith('note_'):
             obj = Note.objects.get(id=int(item[5:]))
             chapters[-1].write(render_to_string('notaro/note_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('tlitem_'):
+            obj = TimelineItem.objects.get(id=int(item[7:]))
+            chapters[-1].write(render_to_string('genealogio/tlitem_detail.rst',
                                                 {'object': obj,
                                                  'latexmode': True, }
                                                 ).encode('utf8'))
