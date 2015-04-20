@@ -67,10 +67,15 @@ So könnte eine ReStructuredText-formatierte Datei aussehen:
 
 .. code::
 
-  Der Fließtext wird als einfacher Text geschrieben. Einzelne (oder mehrere)
-  Worte können *kursiv* oder **fett** gesetzt werden [#f1]_, oder ``in einer
-  nicht-proportionalen Schrift`` (in erster Linie Befehle einer
-  Programmiersprache).
+  Der Fließtext wird als einfacher Text geschrieben. Absätze
+  werden durch Leerzeilen voneinander getrennt. Aufgepasst:
+  Zeilen sollten nicht eingerückt werden. (Dies hat eine
+  Sonderbedeutung: Mit dem Einrücken kennzeichnet man Zitate;
+  ist das gewünscht, so sollte man natürlich Einrücken.)
+
+  Einzelne (oder mehrere) Worte können *kursiv* oder **fett**
+  gesetzt werden [#f1]_, oder ``in einer nicht-proportionalen
+  Schrift`` (in erster Linie Befehle einer Programmiersprache).
 
   .. [#f1] Dies ist eine Fußnote.
 
@@ -89,10 +94,12 @@ So könnte eine ReStructuredText-formatierte Datei aussehen:
 
   .. note::
 
-    Eine Notiz, die besonders vom Text abgesetzt wird, leitet man mit ``..
-    note::`` ein. Der Text, der zur Notiz gehört, muss dann eingerückt werden.
+    Eine Notiz, die besonders vom Text abgesetzt wird, leitet
+    man mit ``..  note::`` ein. Der Text, der zur Notiz gehört,
+    muss dann eingerückt werden.
 
-  Um Zitate zu setzen, werden die entsprechenden Texte einfach eingerückt:
+  Um Zitate zu setzen, werden die entsprechenden Texte
+  einfach eingerückt:
 
     Dies ist ein Zitat.
 
@@ -105,10 +112,14 @@ Schriftart):
 
 -----------------------------------------------------------------------
 
-Der Fließtext wird als einfacher Text geschrieben. Einzelne (oder mehrere)
-Worte können *kursiv* oder **fett** gesetzt werden [#f1]_, oder ``in einer
-nicht-proportionalen Schrift`` (in erster Linie Befehle einer
-Programmiersprache).
+Der Fließtext wird als einfacher Text geschrieben. Absätze werden durch
+Leerzeilen voneinander getrennt. Aufgepasst: Zeilen sollten nicht eingerückt
+werden. (Dies hat eine Sonderbedeutung: Mit dem Einrücken kennzeichnet man
+Zitate; ist das gewünscht, so sollte man natürlich Einrücken.)
+
+Einzelne (oder mehrere) Worte können *kursiv* oder **fett** gesetzt werden
+[#f1]_, oder ``in einer nicht-proportionalen Schrift`` (in erster Linie
+Befehle einer Programmiersprache).
 
 .. [#f1] Dies ist eine Fußnote.
 
