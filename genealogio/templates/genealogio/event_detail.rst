@@ -1,6 +1,8 @@
 {% load partialdate_tags %}
 {% load fb_versions %}
 
+{% if latexmode %}.. _{{ object.handle }}:{% endif %}
+
 {{ object.title }}
 ===============================================================================
 

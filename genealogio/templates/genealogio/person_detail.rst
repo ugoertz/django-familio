@@ -4,6 +4,8 @@
 .. role:: underline
     :class: underline
 
+{% if latexmode %}.. _{{ object.handle }}:{% endif %}
+
 {{ object.get_full_name }}
 ===============================================================================
 
@@ -27,7 +29,7 @@
 {% with allchildren=object.get_children %}
 {% for partner, children, txt, family in allchildren %}
 
-`{{ txt }} <{{ family.get_absolute_url }}>`__ {% include "genealogio/person_snippet.rst" with person=partner %}
+{{ txt }} {% include "genealogio/person_snippet.rst" with person=partner %}{% if latexmode %}. :ref:`Familie {% firstof family.name family %} <{{family.handle}}>`{% else %}— `Familie {% firstof family.name family.father.last_name person.last_name %} <{{ family.get_absolute_url }}>`__{% endif %}
 
 {% if children %}
 .. container:: marginleft30
