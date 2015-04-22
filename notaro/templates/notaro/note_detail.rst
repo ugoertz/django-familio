@@ -1,6 +1,7 @@
 {% load partialdate_tags %}
 {% load fb_versions %}
 
+{% if latexmode %}.. _note-{{ object.id }}:{% endif %}
 
 {{ object.title|safe }}
 =============================================================================
