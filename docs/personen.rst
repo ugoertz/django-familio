@@ -28,8 +28,14 @@ Zeilen für Namen hinzugefügt werden.
 
 Die Kategorien, die zurzeit für Namen zur Verfügung stehen, sind *unbekannt*,
 *anderer*, *Geburtsname*, *Ehename*, *Angenommener Name*, *Vorname*, *Rufname*,
-*Spitzname*, *Pseudonym*, *Familienname*. Im Moment werden davon *Geburtsname*,
-*Ehename*, *Vorname*, *Rufname*, *Spitzname* auf der Webseite angezeigt.
+*Spitzname*, *Pseudonym*, *Familienname*, *Genanntname*, *Titel (vorangestellt)*, *Titel
+(nachgestellt)*. Im Moment werden davon *Geburtsname*, *Ehename*, *Vorname*,
+*Rufname*, *Spitzname* und die Titel auf der Webseite angezeigt.
+
+Bei den *Titeln* wird unterschieden zwischen Titeln, die vor dem Namen
+(*vorangestellt*) geführt werden (z.B. *Sir*, *Prof.*, *Dr.*), und solchen, die
+nach dem Namen geführt werden (z.B. *PhD*). Abgesehen von dieser Unterscheidung
+sollten alle Titel im selben Eintrag erfasst werden.
 
 Es lassen sich leicht weitere Kategorien hinzufügen, wenn sie benötigt werden.
 

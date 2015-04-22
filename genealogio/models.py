@@ -177,6 +177,9 @@ class Name(models.Model):
     NICKNAME = 6
     PSEUDONYM = 7
     FAMILYNAME = 8
+    TITLE_PRE = 9
+    TITLE_SUFF = 10
+    VULGO = 11
 
     NAME_TYPE = ((UNKNOWN, 'unbekannt'),
                  (OTHER, 'andere'),
@@ -187,7 +190,11 @@ class Name(models.Model):
                  (RUFNAME, 'Rufname'),
                  (NICKNAME, 'Spitzname'),
                  (PSEUDONYM, 'Pseudonym'),
-                 (FAMILYNAME, 'Familienname'), )
+                 (FAMILYNAME, 'Familienname'),
+                 (TITLE_PRE, 'Titel (vorangest.)'),
+                 (TITLE_SUFF, 'Titel (nachgest.)'),
+                 (VULGO, 'genannt'),
+                 )
 
     name = models.CharField(max_length=200)
     typ = models.IntegerField(choices=NAME_TYPE)
@@ -460,9 +467,12 @@ class Person(PrimaryObject):
 
     def get_full_name(self):
         """Return the full name information of the person:
+        - title (prefix)
         - the first name, with the Rufname underlined (ReST-formatted)
         - the nickname (if available), in parentheses
         - the last name (birthname or marriedname + birthname)
+        - title (suffix)
+        - vulgo
         """
 
         name = self.first_name
@@ -481,10 +491,27 @@ class Person(PrimaryObject):
         except IndexError:
             pass
 
-        return '%s %s' % (name, self.get_last_name())
+        name = '%s %s' % (name, self.get_last_name())
+
+        try:
+            name = self.name_set.filter(typ=Name.TITLE_PRE)[0].name + ' ' + name
+        except IndexError:
+            pass
+
+        try:
+            name = name + ' ' + self.name_set.filter(typ=Name.TITLE_SUFF)[0].name
+        except IndexError:
+            pass
+
+        try:
+            name = name + ', genannt ' + self.name_set.filter(typ=Name.VULGO)[0].name
+        except IndexError:
+            pass
 
         # FIXME: incorporate further names (other types + several names
         # of the same type)
+
+        return name
 
     def get_primary_name(self):
         """
