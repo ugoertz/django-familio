@@ -50,7 +50,7 @@ def home(request):
              'birthdeathdays': birthdeathdays,
              'today': datetime.date.today(),
              'notes': Note.objects.filter(published=True)
-                          .order_by('date_added')[:5], })
+                          .order_by('-date_added')[:5], })
 
 protected_path = re.compile('\d+_')
 

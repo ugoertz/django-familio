@@ -5,8 +5,9 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
+from django.contrib.sites.models import Site
+from django.test import TestCase
+
 import factory
 
 from .models import UserProfile
@@ -29,7 +30,19 @@ class UserFactory(factory.django.DjangoModelFactory):
     password = make_password("password")
     is_staff = False
 
-    profile = factory.RelatedFactory(UserProfileFactory, 'user')
 
+class UserProfileTest(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory()
+
+    def test_userprofile_created(self):
+        self.assertTrue(
+                self.client.login(username=self.user.username,
+                                  password='password'))
+
+        # pylint: disable=no-member
+        self.assertTrue(Site.objects.get_current()
+                in self.user.userprofile.sites.all())
 
 

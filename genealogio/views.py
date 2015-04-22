@@ -38,7 +38,7 @@ from djgeojson.views import GeoJSONLayerView
 from base.views import CurrentSiteMixin
 
 from notaro.models import Note
-from .models import Person, PersonPlace, Place, Event, Family
+from .models import Person, PersonPlace, Place, Event, Family, TimelineItem
 
 
 class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
@@ -142,7 +142,44 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     model = Family
 
     @staticmethod
-    def get_context_data_for_object(obj, latex=False):
+    def get_timeline_items(objid, fr, to):
+        # pylint: disable=no-member
+        timeline = TimelineItem.objects.filter(families__isnull=True) |\
+                   TimelineItem.objects.filter(families=objid)
+        timeline = timeline.order_by('start_date', 'end_date', 'title')
+
+        # not so beautiful, but we cannot filter on properties:
+        timeline = [ x for x in timeline if fr <= x.end and x.start <= to]
+        return timeline
+
+    @staticmethod
+    def get_legref(timeline, fr=0, to=3000, latex=False, label=''):
+        image_directive = 'sparklineimg' if latex else 'image'
+
+        legref = ''
+
+        # pylint: disable=no-member
+        legref += '\n\n'.join(['.. |T%02d%s| replace::\n' % (x.id, label) +
+                               '   :cabin:`%s` |br| :cabin:`%s`'
+                               % (x.title, x.period)
+                               for x in timeline])
+        legref += '\n\n'
+        legref += '\n\n'.join([
+            '.. |Tmg%02d%s| %s:: %s'
+            % (x.id, label, image_directive,
+               reverse('sparkline-tlitem', kwargs={'tlid': x.id, 'fr': fr, 'to': to, }))
+            for x in timeline])
+
+        legref += '\n\n'
+        legref += '\n\n'.join(['.. _T%02d%s: %s' % (x.id, label, x.url)
+                               for x in timeline if x.url])
+        legref += '\n\n'
+
+        return legref
+
+
+    @classmethod
+    def get_context_data_for_object(cls, obj, latex=False):
         context = {}
 
         # NOTE: The 2110 is hard-coded in the template: below, 10 is subtracted
@@ -191,16 +228,18 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         to = min(max(to + 5, fr + 80), datetime.date.today().year + 2)
         context['to'] = to
 
-        timeline = [x for x in Sparkline.timeline
-                if fr <= x.get('end', x['start']) and x['start'] <= to]
-        l = ['| |T%02d%04d|_    | |Tmg%02d%04d|                    |\n'
-                % (x['id'], obj.id, x['id'], obj.id) for x in timeline]
+        timeline = cls.get_timeline_items(obj.id, fr, to)
+
+        l = ['| |T%02d%04d|%s    | |Tmg%02d%04d|                    |\n'
+                % (x.id, obj.id, '_' if x.url else ' ', x.id, obj.id)
+                for x in timeline]
         l.append('\n')
 
         legend = '+---------------+--------------------------------+\n'.join(l)
 
         context['sparkline_legend'] = legend
-        context['sparkline_legend_ref'] = Sparkline.get_legref(
+        context['sparkline_legend_ref'] = cls.get_legref(
+                timeline,
                 fr=fr, to=to,
                 latex=latex,
                 label='%04d' % obj.id)
@@ -353,97 +392,24 @@ class Sparkline(LoginRequiredMixin, View):
     width =  512
     height = 32
 
-    timeline = [
-            {   'id': 0,
-                'title': "Deutsche Revolution 1848/49",
-                'start': 1848,
-                'end': 1849,
-                'color': [1, 0, 1],
-                'url': 'https://de.wikipedia.org/wiki/Deutsche_Revolution_1848/1849',
-                },
-            {   'id': 1,
-                'title': "Deutsch-Französischer Krieg",
-                'start': 1870,
-                'end': 1871,
-                'color': [1, 0, 0],
-                'url': 'https://de.wikipedia.org/wiki/Deutsch-Franz%C3%B6sischer_Krieg',
-                },
-            {   'id': 2,
-                'title': "Erster Weltkrieg",
-                'start': 1914,
-                'end': 1918,
-                'color': [1, 0, 0],
-                'url': 'https://de.wikipedia.org/wiki/Erster_Weltkrieg',
-                },
-            {   'id': 3,
-                'title': "Drittes Reich",
-                'start': 1933,
-                'end': 1945,
-                'color': [1, 0.5, 0],
-                'url': 'https://de.wikipedia.org/wiki/Drittes_Reich',
-                },
-            {   'id': 4,
-                'title': "Zweiter Weltkrieg",
-                'start': 1939,
-                'end': 1945,
-                'color': [1, 0, 0],
-                'url': 'https://de.wikipedia.org/wiki/Zweiter_Weltkrieg',
-                },
-            {   'id': 5,
-                'title': "Gründung von BRD und DDR",
-                'start': 1949,
-                'color': [0, 0, 0],
-                'url': 'https://de.wikipedia.org/wiki/'
-                       'Nachkriegszeit_nach_dem_Zweiten_Weltkrieg_in_Deutschland',
-                },
-        # ["Wiener Kongress",                      [1815, [0, 0, 0]],
-        #  'https://de.wikipedia.org/wiki/Wiener_Kongress'],
-        # ["Erfindung des Autos",                  [1886, [0, 0, 0]],
-        #  'https://de.wikipedia.org/wiki/Geschichte_des_Automobils'],
-        # ["Gründung der EGKS (Montanunion)",      [1951, [0, 0, 0]],
-        #  'https://de.wikipedia.org/wiki/' +
-        #  'Europ%C3%A4ische_Gemeinschaft_f%C3%BCr_Kohle_und_Stahl'],
-        # ["Mauerbau",                             [1961, [0, 1, 0]],
-        #  'https://de.wikipedia.org/wiki/Berliner_Mauer'],
-        # ["Wiedervereinigung",                    [1990, [0, 0, 1]],
-        #  'https://de.wikipedia.org/wiki/Deutsche_Wiedervereinigung'],
-        # ["Einführung des Euro",                  [2002, [0, 0, 1]],
-        #  'https://de.wikipedia.org/wiki/Euro']
-    ]
-
-    def get(self, request, pk, fr=None, to=None):
+    def get(self, request, fampk=None, pk=None, tlid=None, fr=None, to=None):
         response = HttpResponse(content_type="image/png")
-        surface = self.get_image(pk, fr, to)
+        surface = self.get_image(fampk=fampk, pk=pk, tlid=tlid, fr=fr, to=to)
         surface.write_to_png(response)
         return response
 
     @classmethod
-    def get_legref(cls, fr=0, to=3000, latex=False, label=''):
-        image_directive = 'sparklineimg' if latex else 'image'
+    def get_image(cls, fampk=None, pk=None, tlid=None,
+                  fr=None, to=None, width=None, height=None):
+        """
+        If pk (== person's id) and fampk (== family's id) are both not None, then
+        return sparkling image for that person/family.
 
-        timeline = [x for x in cls.timeline
-                if fr <= x.get('end', x['start']) and x['start'] <= to]
-        legref = ''
+        If pk is None but fampk is not None, then return the headline image for
+        that family.
 
-        legref += '\n\n'.join(['.. |T%02d%s| replace::\n' % (x['id'], label) +
-                               '   :cabin:`%s` |br| :cabin:`%s`'
-                               % (x['title'], str(x['start']) if 'end' not in x
-                                  else '%s-%s' % (x['start'], x['end']), )
-                               for x in timeline])
-        legref += '\n\n'
-        legref += '\n\n'.join(['.. |Tmg%02d%s| %s:: /gen/sparkline/%d/%d/%d/'
-                               % (x['id'], label, image_directive, 100001 + x['id'], fr, to)
-                               for x in timeline])
-
-        legref += '\n\n'
-        legref += '\n\n'.join(['.. _T%02d%s: %s' % (x['id'], label, x['url'])
-                               for x in timeline])
-        legref += '\n\n'
-
-        return legref
-
-    @classmethod
-    def get_image(cls,pk, fr=None, to=None, width=None, height=None):
+        If tlid is not None, then return image for the corresponding timeline item.
+        """
 
         width = width or cls.width
         height = height or cls.height
@@ -451,7 +417,7 @@ class Sparkline(LoginRequiredMixin, View):
         surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                      width, height)
 
-        if int(pk) < 100000:
+        if pk is not None and fampk is not None:
             # pk is the id of a Person object
 
             # pylint: disable=no-member
@@ -508,15 +474,16 @@ class Sparkline(LoginRequiredMixin, View):
             ctx.set_line_width(width)
             ctx.stroke()
 
-        if int(pk) <= 100000:
-            for x in Sparkline.timeline:
-                draw_line(year_to_x(x['start']),
-                          year_to_x(x.get('end', x['start']+0.3)),
+        if fampk is not None:
+            # head or person
+            for x in FamilyDetail.get_timeline_items(fampk, FROM_YEAR, TO_YEAR):
+                draw_line(year_to_x(x.start-0.2),
+                          year_to_x(x.end if x.end > x.start else x.start+0.2),
                           0.3,
-                          x['color'][:3] + [0.2 if int(pk) < 100000 else 1, ])
+                          x.color[:3] + [0.2 if pk is not None else 1, ])
 
-        if int(pk) >= 100000:
-            if int(pk) == 100000:
+        if pk is None:
+            if tlid is None:
                 # header line
                 for i in range((FROM_YEAR-1)//10 + 1, TO_YEAR//10 + 1):
                     draw_line(year_to_x(i*10),
@@ -527,12 +494,15 @@ class Sparkline(LoginRequiredMixin, View):
                               year_to_x(i*100)+0.06,
                               0.6)
             else:
-                tl_id = int(pk)-100001
-                x = [z for z in Sparkline.timeline if z['id'] == tl_id][0]
-                draw_line(year_to_x(x['start']),
-                          year_to_x(x.get('end', x['start']+0.3)),
+                # single timeline item
+
+                # pylint: disable=all
+                x = TimelineItem.objects.get(id=int(tlid))
+
+                draw_line(year_to_x(x.start-0.2),
+                          year_to_x(x.end if x.end > x.start else x.start+0.2),
                           0.3,
-                          x['color'])
+                          x.color)
 
         elif person:
             if not guess_dead:
@@ -597,6 +567,7 @@ def booktemplate():
     - headers: starts with 1_, 2_, 3_, ..., followed by the text of the header.
     - notes: note_%d % note.id
     - persons, families, events: handle
+    - timeline items: tlitem_%d % tlitem.id
     '''
 
     # pylint: disable=no-member
@@ -604,11 +575,13 @@ def booktemplate():
     persons = [p.handle for p in Person.objects.all()]
     families = [f.handle for f in Family.objects.all()]
     events = [e.handle for e in Event.objects.all()]
+    tlitems = ['tlitem_%d' % tlitem.id for tlitem in TimelineItem.objects.all()]
 
     return (['1_Texte', ] + texts +
             ['1_Personen', ] + persons +
             ['1_Familien', ] + families +
-            ['1_Ereignisse', ] + events
+            ['1_Ereignisse', ] + events +
+            ['1_Anhang', '2_Ereignisse in den Zeitstrahlen', ] + tlitems
             )
 
 
@@ -668,6 +641,13 @@ def create_rst(btemplate=None):
         if item.startswith('note_'):
             obj = Note.objects.get(id=int(item[5:]))
             chapters[-1].write(render_to_string('notaro/note_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('tlitem_'):
+            obj = TimelineItem.objects.get(id=int(item[7:]))
+            chapters[-1].write(render_to_string('genealogio/tlitem_detail.rst',
                                                 {'object': obj,
                                                  'latexmode': True, }
                                                 ).encode('utf8'))

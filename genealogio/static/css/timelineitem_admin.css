@@ -1,0 +1,11 @@
+@import url("font-awesome.min.css");
+
+div.family div.grp-autocomplete-wrapper-fk {
+    min-width: 600px !important;
+}
+
+div.family div.grp-autocomplete-wrapper-fk input.ui-autocomplete-input {
+    min-width: 100% !important;
+}
+
+.ui-autocomplete { height: 200px; overflow-y: scroll; overflow-x: hidden;}

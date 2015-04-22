@@ -24,7 +24,7 @@ from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Person, Place, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent, PlaceUrl, Url,
                      PersonPlace, PersonNote, FamilyNote, EventNote,
-                     PlaceNote, cleanname)
+                     PlaceNote, cleanname, TimelineItem)
 
 
 class CurrentSiteGenAdmin(CurrentSiteAdmin):
@@ -56,6 +56,12 @@ class CurrentSiteGenAdmin(CurrentSiteAdmin):
 
 
 class OSitesMixin(object):
+    """
+    Mixin used in the inline admin classes which refer to "site-dependent" models.
+
+    Provides a read only field showing on which sites the related objects exist.
+    """
+
     def get_readonly_fields(self, request, obj=None):
         return ('osites', ) +\
                super(OSitesMixin, self).get_readonly_fields(request, obj)
@@ -669,3 +675,35 @@ class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 
 
 admin.site.register(Family, FamilyAdmin)
+
+
+class TimelineItemAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+    fieldsets = (
+        ('', {'fields': ('title', ('typ', 'start_date', 'end_date'),
+                         'url', 'description', ), }),
+        ('Familienbäume, Familien', {'classes': ('grp-collapse grp-closed', ),
+                                     'fields': ('sites', 'families' ), }),
+        )
+    raw_id_fields = ('families', 'sites', )
+    autocomplete_lookup_fields = {'m2m': ['sites', 'families' ], }
+    list_display = ('__unicode__', 'show_families', )
+    search_fields = ('title', 'start_date', 'end_date', )
+
+    def show_families(self, obj):
+        return ', '.join([f.handle for f in obj.families.all()]) or '-'
+    show_families.short_description = 'Eingeschränkt auf'
+
+    class Media:
+        css = {'all': ('css/timelineitem_admin.css', ) + CODEMIRROR_CSS, }
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js', )
+
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except:
+            pass
+        js += ('codemirror/codemirror_conf_tlitem.js', )
+
+
+admin.site.register(TimelineItem, TimelineItemAdmin)

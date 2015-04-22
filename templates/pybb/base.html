@@ -4,7 +4,7 @@
 
 {% load i18n pybb_tags static %}
 
-{%block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}
+{% block page_title %}{{ block.super }} - {% block title %}{{ PYBB_DEFAULT_TITLE }}{% endblock title %}{% endblock %}
 
 {% block extra_head %}
     {{ block.super }}
