@@ -308,7 +308,7 @@ class Family(PrimaryObject):
         return self.handle
 
     class Meta:
-        ordering = ('name', )
+        ordering = ('name', 'start_date', )
         verbose_name = 'Familie'
         verbose_name_plural = 'Familien'
 
