@@ -48,9 +48,12 @@ Erstellen der pdf-Datei
 Bevor die LateX-Datei kompiliert werden kann, müssen noch die Bilddateien
 vorbereitet werden: Damit sie von xelatex korrekt skaliert werden, müssen mit::
 
-    mogrify -strip *.jpg
+    mogrify -strip -density 90 *.jpg
 
-die EXIF-Daten gelöscht werden (dafür muss ImageMagick installiert sein).
+die EXIF-Daten gelöscht werden (dafür muss ImageMagick installiert sein). *Warum
+das wirklich nötig ist, verstehe ich nicht ganz; sonst meckert XeLaTex aber bei
+einigen Bilddateien.*
+
 Außerdem benötigen wir eine modifizierte ``sphinx.sty`-Datei``::
 
     cp ../../sphinx.sty .

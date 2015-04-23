@@ -49,7 +49,7 @@
     \end{minipage}\hfill
     \begin{minipage}[t]{4cm}\vspace{0pt}
 
-.. image:: /../media/{{ object.portrait.image }}
+.. image:: /..{% version object.portrait.image 'medium' %}
     :width: 4cm
 
 .. raw:: latex
