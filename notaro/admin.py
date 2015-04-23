@@ -60,6 +60,18 @@ class CurrentSiteAdmin(object):
     action_form = UpdateActionForm
     change_form_template = "customadmin/change_form.html"
 
+    def view_on_site(self, obj):
+        try:
+            return obj.get_absolute_url()
+        except AttributeError:
+            return
+
+    def view_on_site_link(self, obj):
+        '''Put link to detail view into changelist.'''
+        return '<a href="%s">Seite ansehen</a>' % self.view_on_site(obj)
+    view_on_site_link.allow_tags = True
+    view_on_site_link.short_description = 'Link'
+
     def get_urls(self):
         # pylint: disable=no-member
         urls = super(CurrentSiteAdmin, self).get_urls()
@@ -226,7 +238,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     related_lookup_fields = {'m2m': ['authors', 'pictures', ], }
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     inlines = [PictureNInline, SourceNInline, ]
-    list_display = ('link', 'title', 'published', 'view_on_site', )
+    list_display = ('link', 'title', 'published', 'view_on_site_link', )
     list_filter = ('published', 'sites', )
     search_fields = ('title', 'text', )
     change_list_template = "admin/change_list_filter_sidebar.html"
@@ -237,12 +249,6 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         if not obj.authors.exists():
             # no authors yet, so save current user as author
             obj.authors.add(request.user)
-
-    def view_on_site(self, obj):
-        '''Put link to note's detail view into changelist.'''
-        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
-    view_on_site.allow_tags = True
-    view_on_site.short_description = 'Link'
 
     def get_urls(self):
         # pylint: disable=no-member
@@ -314,15 +320,9 @@ class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                                      'fields': ('sites', ), }), )
     raw_id_fields = ('documents', 'sites', )
     autocomplete_lookup_fields = {'m2m': ['documents', 'sites', ], }
-    list_display = ('name', 'confidence_level', 'view_on_site', )
+    list_display = ('name', 'confidence_level', 'view_on_site_link', )
     search_fields = ('name', 'description', )
     change_list_template = "admin/change_list_filter_sidebar.html"
-
-    def view_on_site(self, obj):
-        '''Put link to note's detail view into changelist.'''
-        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
-    view_on_site.allow_tags = True
-    view_on_site.short_description = 'Link'
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',

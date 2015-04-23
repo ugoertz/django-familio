@@ -232,7 +232,7 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 
     list_display = ('last_name', 'first_name', 'datebirth', 'placebirth',
                     'datedeath', 'placedeath', 'image_thumbnail', 'handle',
-                    'view_on_site', )
+                    'view_on_site_link', )
 
     inlines = [NameInline, FamilyPInline, EventInline, NotePInline,
                SourcePInline, PPlaceInline, ]
@@ -274,12 +274,6 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         return sitelist or '-'
     portrait_os.allow_tags = True
     portrait_os.short_description = 'Andere Familienbäume'
-
-    def view_on_site(self, obj):
-        '''Put link to person's detail view into changelist.'''
-        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
-    view_on_site.allow_tags = True
-    view_on_site.short_description = 'Link'
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
@@ -387,6 +381,9 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     list_display = ('title', 'first_url', 'handle', )
     search_fields = ('title', )
     inlines = [UrlInline, NotePlaceInline, ]
+
+    def view_on_site(self, obj):
+        return obj.get_absolute_url()
 
     def first_url(self, obj):
         """Method to put thumbnail of portrait into list_display."""
@@ -504,7 +501,7 @@ class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
     raw_id_fields = ('place', 'sites', )
     autocomplete_lookup_fields = {'fk': ['place', ],
                                   'm2m': ['sites', ]}
-    list_display = ('title', 'date', 'place', 'handle', )
+    list_display = ('title', 'date', 'place', 'handle', 'view_on_site_link', )
     search_fields = ('title', 'description', )
     list_filter = ('event_type', 'sites', )
     change_list_template = "admin/change_list_filter_sidebar.html"
@@ -613,17 +610,11 @@ class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
     autocomplete_lookup_fields = {
             'fk': ['father', 'mother', ],
             'm2m': ['sites', ], }
-    list_display = ('__unicode__', 'handle', 'view_on_site')
+    list_display = ('__unicode__', 'handle', 'view_on_site_link')
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
     list_filter = ('sites', )
     readonly_fields = ('father_os', 'mother_os', )
-
-    def view_on_site(self, obj):
-        '''Put link to family's detail view into changelist.'''
-        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
-    view_on_site.allow_tags = True
-    view_on_site.short_description = 'Link'
 
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
