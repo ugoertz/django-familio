@@ -57,6 +57,8 @@ protected_path = re.compile('\d+_')
 
 def download(request, fname):
     # check permissions
+    if not request.user.is_authenticated():
+        raise Http404
 
     # for files within a filebrowser-versions directory, check permissions
     # based on the relative path
