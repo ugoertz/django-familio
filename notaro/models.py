@@ -253,8 +253,8 @@ class Note(models.Model):
         if end_trailer == -1:
             end_trailer = self.text.find("\n\n", 50)
 
-        if end_trailer == -1:
-            return self.text
+        if end_trailer == -1 or end_trailer >= 700:
+            return self.text[:700]
         return self.text[:end_trailer].strip() +\
             (' ...' if end_trailer < len(self.text) else '')
 
