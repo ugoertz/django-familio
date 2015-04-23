@@ -20,3 +20,5 @@
 
 {% include "genealogio/notes.rst" %}
 
+{% include "notaro/sources.rst" with all_sources=object.eventsource_set.all %}
+

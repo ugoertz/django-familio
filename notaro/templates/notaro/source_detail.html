@@ -17,23 +17,16 @@
 
     <div class="row">
         <div class="col-md-8">
-            <a href="{{ object.image.url  }}">
-                <img src="{% version object.image  'large' %}" style="margin-top: 50px; margin-bottom: 20px;">
-            </a>
-
-            {{ object.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
-
-            {% if object.date %}<p>{{ object.date }}</p>{% endif %}
-
-
             {% filter apply_markup:"genrestructuredtext" %}
-            {% include "notaro/sources.rst" with all_sources=object.picturesource_set.all %}
+            {% include "notaro/source_detail.rst" %}
             {% endfilter %}
+            <hr>
+            {% include "comments/comments.html" %}
         </div>
         {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
         <div class="col-md-3 col-md-offset-1">
             <div class="cabin adminbox">
-                {% include "notaro/admin_links.html" with admin_edit_link="notaro/picture" doc_link="bilder.html" %}
+                {% include "notaro/admin_links.html" with admin_edit_link="notaro/source" doc_link="quellen.html" %}
             </div>
         </div>
         {% endif %}

@@ -24,7 +24,8 @@ from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Person, Place, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent, PlaceUrl, Url,
                      PersonPlace, PersonNote, FamilyNote, EventNote,
-                     PlaceNote, cleanname, TimelineItem)
+                     PlaceNote, cleanname, TimelineItem, FamilySource,
+                     PersonSource, EventSource)
 
 
 class CurrentSiteGenAdmin(CurrentSiteAdmin):
@@ -119,8 +120,12 @@ class SourcePInline(admin.TabularInline):
     """Inline class to put Person-Source into Person's detail page."""
 
     # pylint: disable=no-member
-    model = Person.source.through
+    model = PersonSource
     extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
 
 
 class EventInline(OSitesMixin, admin.TabularInline):
@@ -440,8 +445,12 @@ class SourceEInline(admin.TabularInline):
     """The SourceEInline class."""
 
     # pylint: disable=no-member
-    model = Event.source.through
+    model = EventSource
     extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
 
 
 class FamilyEInline(admin.TabularInline):
@@ -532,8 +541,12 @@ class SourceFInline(admin.TabularInline):
     """Inline class: Source for Family."""
 
     # pylint: disable=no-member
-    model = Family.source.through
+    model = FamilySource
     extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
 
 
 class PersonFInline(GrappelliSortableHiddenMixin,

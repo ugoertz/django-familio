@@ -85,3 +85,6 @@ Zeitstrahl
 
 
 {% endifnotequal %}
+
+{% include "notaro/sources.rst" with all_sources=object.familysource_set.all %}
+

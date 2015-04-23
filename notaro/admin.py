@@ -26,7 +26,8 @@ from grappelli.forms import GrappelliSortableHiddenMixin
 
 from base.models import SiteProfile
 from accounts.models import UserSite
-from .models import Note, Picture, Source, PictureNote
+from .models import (Note, Picture, Source, PictureNote, NoteSource,
+        PictureSource)
 
 
 CODEMIRROR_CSS = (
@@ -179,8 +180,12 @@ class SourceNInline(admin.TabularInline):
     """Inline class to put Note-Source into Note's detail page."""
 
     # pylint: disable=no-member
-    model = Note.source.through
+    model = NoteSource
     extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
 
 
 class PictureNInline(GrappelliSortableHiddenMixin,
@@ -303,8 +308,35 @@ admin.site.register(Note, NoteAdmin)
 class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Source model."""
 
+    fieldsets = (('', {'fields': ('name', 'description', 'confidence_level', ), }),
+                 ('Dokumente', {'fields': ('documents', )}),
+                 ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                                     'fields': ('sites', ), }), )
+    raw_id_fields = ('documents', 'sites', )
+    autocomplete_lookup_fields = {'m2m': ['documents', 'sites', ], }
+    list_display = ('name', 'confidence_level', 'view_on_site', )
+    search_fields = ('name', 'description', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
+
+    def view_on_site(self, obj):
+        '''Put link to note's detail view into changelist.'''
+        return '<a href="%s">Seite ansehen</a>' % obj.get_absolute_url()
+    view_on_site.allow_tags = True
+    view_on_site.short_description = 'Link'
+
     class Media:
-        js = ('js/adminactions.js', )
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js',
+              )
+
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except ImportError:
+            pass
+        js += ('codemirror/codemirror_conf_source.js', )
+        css = {'all': ('css/source_admin.css', ) + CODEMIRROR_CSS, }
+
 
 
 admin.site.register(Source, SourceAdmin)
@@ -325,6 +357,18 @@ class UploadZipFileForm(forms.Form):
                      ('documents', 'Dokumente')))
 
 
+class SourcePictureInline(admin.TabularInline):
+    """Inline class to put Picture-Source into Picture's detail page."""
+
+    # pylint: disable=no-member
+    model = PictureSource
+    extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
+
+
 class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Picture model."""
 
@@ -335,6 +379,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     list_filter = ('sites', )
     search_fields = ('caption', )
+    inlines = [SourcePictureInline, ]
 
     def image_thumbnail(self, obj):
         """Display thumbnail, to be used in django admin list_display."""

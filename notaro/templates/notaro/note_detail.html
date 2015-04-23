@@ -32,21 +32,12 @@ ul.simple li {
 
 {% block content %}
 <div class="container">
-    <h1>{{ object.title }}</h1>
-
     <div class="row">
         <div class="col-md-8">
-            {{ object.text|apply_markup:"genrestructuredtext"|typogrify }}
-            <hr>
-            <p style="margin-top:30px; margin-bottom: 30px;">Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.all %}{{ u.get_full_name }}{% if forloop.last %}.{% else %}, {% endif %}{% endfor %}
+            {% filter apply_markup:"genrestructuredtext" %}
+            {% include "notaro/note_detail.rst" %}
+            {% endfilter %}
 
-                {% for pic in object.get_pictures %}
-                <div>
-                    <a href="{{ pic.get_absolute_url }}"><img src="{% version pic.image 'medium' %}" /></a><br>
-
-                    {{ pic.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
-                </div>
-                {% endfor %}
             <hr>
             {% include "comments/comments.html" %}
         </div>

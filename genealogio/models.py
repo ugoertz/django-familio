@@ -217,6 +217,12 @@ class FamilyNote(models.Model):
         verbose_name_plural = 'Texte zu Familie'
 
 
+class FamilySource(models.Model):
+    family = models.ForeignKey('Family', verbose_name="Familie")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+
+
 class Family(PrimaryObject):
     """The Family class, which models Father-Mother-Child relationships."""
 
@@ -254,7 +260,9 @@ class Family(PrimaryObject):
     end_date = PartialDateField(
             blank=True, null=True, verbose_name="Enddatum",
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
-    source = models.ManyToManyField(Source, blank=True)
+    sources = models.ManyToManyField(Source, blank=True,
+                                     verbose_name="Quellen",
+                                     through=FamilySource)
 
     def get_children(self):
         return self.person_set(manager='objects').all().order_by('datebirth')
@@ -383,6 +391,12 @@ class PersonNote(models.Model):
         verbose_name_plural = 'Texte zu Person'
 
 
+class PersonSource(models.Model):
+    person = models.ForeignKey('Person', verbose_name="Person")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+
+
 class Person(PrimaryObject):
     """The Person class."""
 
@@ -424,8 +438,9 @@ class Person(PrimaryObject):
     notes = models.ManyToManyField(Note, blank=True, through=PersonNote)
     family = models.ManyToManyField(Family, through="PersonFamily",
                                     verbose_name='Familie(n)')
-    source = models.ManyToManyField(Source, blank=True,
-                                    verbose_name='Quelle')
+    sources = models.ManyToManyField(Source, blank=True,
+                                     through=PersonSource,
+                                     verbose_name='Quellen')
 
     @property
     def placebirth(self):
@@ -716,6 +731,12 @@ class EventNote(models.Model):
         verbose_name_plural = 'Texte zu Ereignis'
 
 
+class EventSource(models.Model):
+    person = models.ForeignKey('Event', verbose_name="Ereignis")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+
+
 class Event(PrimaryObject):
     BIRTH = 20
     ADOPTED = 30
@@ -763,8 +784,9 @@ class Event(PrimaryObject):
                                    verbose_name='Beschreibung')
     place = models.ForeignKey('Place', null=True, blank=True,
                               verbose_name='Ort')
-    source = models.ManyToManyField(Source, blank=True,
-                                    verbose_name='Quelle')
+    sources = models.ManyToManyField(Source, blank=True,
+                                     through=EventSource,
+                                     verbose_name='Quellen')
     notes = models.ManyToManyField(Note, blank=True, through=EventNote)
 
 #    references = generic.GenericRelation('EventRef', related_name="refs",

@@ -8,13 +8,19 @@ from braces.views import LoginRequiredMixin
 
 from base.views import CurrentSiteMixin
 
-from .models import Note, Picture
+from .models import Note, Picture, Source
 
 
 class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display a picture."""
 
     model = Picture
+
+
+class SourceDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
+    """Display a source."""
+
+    model = Source
 
 
 class NoteDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):

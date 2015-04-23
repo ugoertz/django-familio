@@ -27,54 +27,71 @@ class Source(models.Model):
                        (CERTAIN, 'sicher'),
                        (VERYCERTAIN, 'sehr sicher'), )
 
-    OTHER = 5
-    AUDIO = 6
-    BOOK = 7
-    CARD = 8
-    ELECTRONIC = 9
-    FICHE = 10
-    FILM = 11
-    MAGAZINE = 12
-    MANUSCRIPT = 13
-    MAP = 14
-    NEWSPAPER = 15
-    PHOTO = 16
-    TOMBSTONE = 17
-    VIDEO = 18
+    # OTHER = 5
+    # AUDIO = 6
+    # BOOK = 7
+    # CARD = 8
+    # ELECTRONIC = 9
+    # FICHE = 10
+    # FILM = 11
+    # MAGAZINE = 12
+    # MANUSCRIPT = 13
+    # MAP = 14
+    # NEWSPAPER = 15
+    # PHOTO = 16
+    # TOMBSTONE = 17
+    # VIDEO = 18
 
-    SOURCE_MEDIA_TYPE = ((UNKNOWN, 'Unknown'),
-                         (OTHER, 'Custom'),
-                         (AUDIO, 'Audio'),
-                         (BOOK, 'Book'),
-                         (CARD, 'Card'),
-                         (ELECTRONIC, 'Electronic'),
-                         (FICHE, 'Fiche'),
-                         (FILM, 'Film'),
-                         (MAGAZINE, 'Magazine'),
-                         (MANUSCRIPT, 'Manuscript'),
-                         (MAP, 'Map'),
-                         (NEWSPAPER, 'Newspaper'),
-                         (PHOTO, 'Photo'),
-                         (TOMBSTONE, 'Tombstone'),
-                         (VIDEO, 'Video'), )
+    # SOURCE_MEDIA_TYPE = ((UNKNOWN, 'Unknown'),
+    #                      (OTHER, 'Custom'),
+    #                      (AUDIO, 'Audio'),
+    #                      (BOOK, 'Book'),
+    #                      (CARD, 'Card'),
+    #                      (ELECTRONIC, 'Electronic'),
+    #                      (FICHE, 'Fiche'),
+    #                      (FILM, 'Film'),
+    #                      (MAGAZINE, 'Magazine'),
+    #                      (MANUSCRIPT, 'Manuscript'),
+    #                      (MAP, 'Map'),
+    #                      (NEWSPAPER, 'Newspaper'),
+    #                      (PHOTO, 'Photo'),
+    #                      (TOMBSTONE, 'Tombstone'),
+    #                      (VIDEO, 'Video'), )
 
     name = models.CharField(max_length=100)
-    decription = models.TextField()
+    description = models.TextField(blank=True, verbose_name="Beschreibung")
     confidence_level = models.IntegerField(choices=CONFIDENCE_TYPE,
-                                           default=UNKNOWN)
-    media_type = models.IntegerField(choices=SOURCE_MEDIA_TYPE,
-                                     default=UNKNOWN)
-    documents = models.ManyToManyField('Document')
+                                           default=UNKNOWN,
+                                           verbose_name="Zuverlässigkeit"
+                                           )
+    # media_type = models.IntegerField(choices=SOURCE_MEDIA_TYPE,
+    #                                  default=UNKNOWN)
+    documents = models.ManyToManyField(
+            'Document',
+            verbose_name="Dokumente",
+            blank=True
+            )
 
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()
     objects = CurrentSiteManager()
+
+    @staticmethod
+    def autocomplete_search_fields():
+        """Used by grappelli."""
+        return ("name__icontains", )
+
+    def on_current_site(self):
+        return Site.objects.get_current() in self.sites.all()
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
             return self.__unicode__()
         else:
             return '[[ %s ]]' % self.__unicode__()
+
+    def get_absolute_url(self):
+        return reverse('source-detail', kwargs={'pk': self.id, })
 
     def __unicode__(self):
         return self.name
@@ -85,6 +102,12 @@ class Source(models.Model):
         verbose_name_plural = 'Quellen'
 
 
+class PictureSource(models.Model):
+    picture = models.ForeignKey('Picture', verbose_name="Bild")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+
+
 class Picture(models.Model):
     image = FileBrowseField("Bilddatei", max_length=200, directory="images/",
                             extensions=[".jpg", ".png", ],
@@ -92,6 +115,10 @@ class Picture(models.Model):
                             help_text="Bilddatei im jpg- oder png-Format")
     caption = models.TextField(blank=True, verbose_name='Beschreibung')
     date = models.DateField(blank=True, null=True, verbose_name='Datum')
+    sources = models.ManyToManyField(Source, blank=True,
+                                     verbose_name="Quellen",
+                                     through=PictureSource)
+
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()
     objects = CurrentSiteManager()
@@ -170,6 +197,12 @@ class PictureNote(models.Model):
         ordering = ('position', )
 
 
+class NoteSource(models.Model):
+    note = models.ForeignKey('Note', verbose_name="Text")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+
+
 class Note(models.Model):
 
     title = models.CharField(max_length=200, verbose_name='Titel')
@@ -186,7 +219,9 @@ class Note(models.Model):
     pictures = models.ManyToManyField('Picture', blank=True,
                                       through=PictureNote,
                                       verbose_name='Bilder')
-    source = models.ManyToManyField('Source', blank=True)
+    sources = models.ManyToManyField(Source, blank=True,
+                                     verbose_name="Quellen",
+                                     through=NoteSource)
 
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()

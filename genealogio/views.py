@@ -37,7 +37,7 @@ from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin
 
-from notaro.models import Note
+from notaro.models import Note, Source
 from .models import Person, PersonPlace, Place, Event, Family, TimelineItem
 
 
@@ -567,6 +567,7 @@ def booktemplate():
     - headers: starts with 1_, 2_, 3_, ..., followed by the text of the header.
     - notes: note_%d % note.id
     - persons, families, events: handle
+    - source: source_%d % source.id
     - timeline items: tlitem_%d % tlitem.id
     '''
 
@@ -575,12 +576,14 @@ def booktemplate():
     persons = [p.handle for p in Person.objects.all()]
     families = [f.handle for f in Family.objects.all()]
     events = [e.handle for e in Event.objects.all()]
+    sources = ['source_%d' % s.id for s in Source.objects.all()]
     tlitems = ['tlitem_%d' % tlitem.id for tlitem in TimelineItem.objects.all()]
 
     return (['1_Texte', ] + texts +
             ['1_Personen', ] + persons +
             ['1_Familien', ] + families +
             ['1_Ereignisse', ] + events +
+            ((['1_Quellen', ] + sources) if sources else []) +
             ['1_Anhang', '2_Ereignisse in den Zeitstrahlen', ] + tlitems
             )
 
@@ -641,6 +644,13 @@ def create_rst(btemplate=None):
         if item.startswith('note_'):
             obj = Note.objects.get(id=int(item[5:]))
             chapters[-1].write(render_to_string('notaro/note_detail.rst',
+                                                {'object': obj,
+                                                 'latexmode': True, }
+                                                ).encode('utf8'))
+            chapters[-1].write('\n\n')
+        elif item.startswith('source_'):
+            obj = Source.objects.get(id=int(item[7:]))
+            chapters[-1].write(render_to_string('notaro/source_detail.rst',
                                                 {'object': obj,
                                                  'latexmode': True, }
                                                 ).encode('utf8'))

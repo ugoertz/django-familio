@@ -96,5 +96,5 @@ class NoteDetailViewTest(TestCase):
         response_link = self.client.get('/n%s' % self.note2.link)
         self.assertContains(response_link, 'continuation of the')
         self.assertContains(response_link,
-                'System Message: <span class="caps">WARNING</span>')
+                'System Message: WARNING')
 

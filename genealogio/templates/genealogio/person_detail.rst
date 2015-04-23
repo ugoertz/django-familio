@@ -74,3 +74,4 @@ Orte
 
 {% include "genealogio/notes.rst" %}
 
+{% include "notaro/sources.rst" with all_sources=object.personsource_set.all %}
