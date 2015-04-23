@@ -1,6 +1,7 @@
 {% extends "_layouts/base.html" %}
 {% load markup_tags %}
 {% load typogrify_tags %}
+{% load base_tags %}
 
 
 {% block content %}
@@ -24,7 +25,7 @@
 <h1>Impressum</h1>
 {% filter apply_markup:"genrestructuredtext" %}
 
-{% include "custom_impressum.html" %}
+{% include_if_exists "custom_impressum.html" %}
 
 -------------------
 Verwendete Software

@@ -4,6 +4,7 @@
 {% load leaflet_tags %}
 {% load umessages_tags %}
 {% load pybb_tags %}
+{% load base_tags %}
 
 {% block css %}
 {{block.super}}
@@ -171,6 +172,7 @@ $(window).on('map:init', function (e) {
             {% endif %}
         </div>
         <div class="col-md-6">
+            {% include_if_exists "home_custom.html" %}
             <h2>Geburts- und Sterbeorte</h2>
             {% leaflet_map "recentplaces" %}
             <div class="cabin" style="color: gray; margin-top: 50px;">

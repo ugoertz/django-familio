@@ -18,6 +18,7 @@ backup-db
 base/static/dokumentation.pdf
 base/templates/base/piwik.html
 base/templates/custom_impressum.html
+base/templates/home_custom.html
 
 familio/settings/*
 !familio/settings/__init__.py
