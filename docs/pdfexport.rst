@@ -20,6 +20,10 @@ Familienbaums verwendet.
 
 Die Funktion muss im Moment in einer Shell (``./manage.py shell --settings=...``) aufgerufen werden.
 
+Zu beachten ist: Wenn die entsprechenden "Versionen" der Bilddateien noch nicht
+existieren, braucht der Benutzer, der den create_rst Befehl aufruft,
+Schreibrechte für das entsprechende Versionsverzeichnis.
+
 
 ---------------------------
 Erstellen der LateX-Dateien
