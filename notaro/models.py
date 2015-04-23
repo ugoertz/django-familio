@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import re
+
 from django.db import models
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
@@ -255,8 +257,10 @@ class Note(models.Model):
 
         if end_trailer == -1 or end_trailer >= 700:
             return self.text[:700]
-        return self.text[:end_trailer].strip() +\
+        trailer = self.text[:end_trailer].strip() +\
             (' ...' if end_trailer < len(self.text) else '')
+        trailer = re.sub(r'-{4,}', lambda m: '`'*len(m.group(0)), trailer)
+        return trailer
 
     def save(self, *args, **kwargs):
         if not self.id:
