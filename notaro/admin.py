@@ -411,7 +411,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                                            settings.FILEBROWSER_DIRECTORY,
                                            form.cleaned_data['target'],
                                            path)
-                zipf.extractall(target_path)
+                zipf.extractall(target_path.encode('utf8'))
                 zipf.close()
 
                 return HttpResponseRedirect(
