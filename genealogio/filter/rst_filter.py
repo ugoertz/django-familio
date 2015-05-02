@@ -72,19 +72,22 @@ def get_text(name, rawtext, text, lineno, inliner,
 
             try:
                 img = Picture.objects.get(id=int(text))
-                # strangely, this does not work
-                options['target'] = reverse('picture-detail',
-                                            kwargs={'pk': img.id, })
-                nodelist = [nodes.image(
-                                uri=img.image.version_generate(version).url,
-                                **options), ]
+                reference = nodes.reference('', '')
+                reference['refuri'] = reverse(
+                        'picture-detail',
+                        kwargs={'pk': img.id, })
+                image_node = nodes.image(
+                    uri=img.image.version_generate(version).url,
+                    **options)
+                reference.append(image_node)
+                nodelist = [reference, ]
                 if img.caption:
                     settings = OptionParser(components=(Parser,))\
                             .get_default_values()
                     parser = Parser()
                     document = new_document('caption', settings)
                     parser.parse(img.get_caption(), document)
-                    nodelist[0].children.extend(document.children)
+                    nodelist.extend(document.children)
             except ObjectDoesNotExist:
                 nodelist = []
         else:
