@@ -1,4 +1,8 @@
 import json
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.template.loader import render_to_string
+
 from dajaxice.decorators import dajaxice_register
 import watson
 
@@ -11,6 +15,15 @@ roleDict = {
     'l': Place,
     'f': Family,
 }
+
+@dajaxice_register(method="GET")
+def person_mouseover(request, pk):
+    # pylint: disable=no-member
+    try:
+        p = Person.objects.get(pk=pk)
+    except ObjectDoesNotExist:
+        return "Unbekannt"
+    return render_to_string('genealogio/person_mouseover.html', {'person': p, })
 
 
 @dajaxice_register(method="GET")

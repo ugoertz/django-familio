@@ -283,6 +283,7 @@ class Pedigree(LoginRequiredMixin, View):
                     'died': p.datedeath.year if p.datedeath else '',
                     'url': p.get_absolute_url(),
                     'urlp': reverse("pedigree", kwargs={"pk": p.id, }),
+                    'pk': p.pk,
                     }
             if level > 0:
                 data['parents'] = [get_dict(p.get_father(), level-1),
@@ -315,6 +316,7 @@ class Descendants(LoginRequiredMixin, View):
                     'url' + suffix: person.get_absolute_url(),
                     'urlp' + suffix:
                     reverse("descendants", kwargs={"pk": person.id, }),
+                    'pk' + suffix: person.pk,
                     }
             except:
                 pass
@@ -323,7 +325,8 @@ class Descendants(LoginRequiredMixin, View):
                 'born' + suffix: '',
                 'died' + suffix: '',
                 'url' + suffix: '',
-                'urlp' + suffix: None
+                'urlp' + suffix: None,
+                'pk' + suffix: '',
                 }
 
         def get_dict(p, level=0):
@@ -359,10 +362,6 @@ class Descendants(LoginRequiredMixin, View):
 
             if fams:
                 height += add_family(data, fams[0])
-            else:
-                # no children, so delete link to descendants view for
-                # this person
-                data[-1]['urlp1'] = None
             for family in fams[1:]:
                 # Now handle other families
                 # Here, replace name of p by '...'

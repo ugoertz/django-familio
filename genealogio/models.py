@@ -10,6 +10,7 @@ from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.safestring import mark_safe
 from partialdate.fields import PartialDateField
 
 from notaro.managers import GenManager
@@ -480,10 +481,15 @@ class Person(PrimaryObject):
         else:
             return ''
 
-    def get_full_name(self):
+    def get_full_name_html(self):
+        return mark_safe(self.get_full_name(fmt="html"))
+
+    def get_full_name(self, fmt="rst"):
         """Return the full name information of the person:
         - title (prefix)
-        - the first name, with the Rufname underlined (ReST-formatted)
+        - the first name,
+          if fmt is "rst" (the default): with the Rufname underlined (ReST-formatted)
+          if fmt is "html": with the Rufname underlined (HTML-formatted)
         - the nickname (if available), in parentheses
         - the last name (birthname or marriedname + birthname)
         - title (suffix)
@@ -491,11 +497,21 @@ class Person(PrimaryObject):
         """
 
         name = self.first_name
-        try:
-            rufname = self.name_set.filter(typ=Name.RUFNAME)[0].name
-            name = name.replace(rufname, ':underline:`%s`' % rufname)
-        except IndexError:
-            pass
+
+        if fmt:
+            try:
+                rufname = self.name_set.filter(typ=Name.RUFNAME)[0].name
+                if fmt == "rst":
+                    name = name.replace(
+                            rufname,
+                            ':underline:`%s`' % rufname)
+                elif fmt == "html":
+                    name = name.replace(
+                            rufname,
+                            '<span style="text-decoration :underline;">'
+                            '%s</span>' % rufname)
+            except IndexError:
+                pass
 
         try:
             if name:

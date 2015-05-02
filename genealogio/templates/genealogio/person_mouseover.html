@@ -1,0 +1,35 @@
+{% load fb_versions %}
+{% load partialdate_tags %}
+
+<h4>
+{% if person.portrait %}<img style="margin-right: 10px;" src="{% version person.portrait.image 'thumbnail' %}">{% endif %}
+{{ person.get_full_name_html }}
+</h4>
+
+<p>{% if person.datebirth or person.placebirth %}geboren {{ person.datebirth|partial_date:"d.m.Y" }}{% if person.placebirth %} in {{ person.placebirth }} {% endif %}{% endif %}{% if person.datedeath or person.placedeath %} - gestorben {{ person.datedeath|partial_date:"d.m.Y" }}{% if person.placedeath %} in {{ person.placedeath }}{% endif %}{% endif %}</p>
+
+<p><b>Vater:</b> {% firstof person.get_father.get_primary_name "Unbekannt" %}</p>
+
+<p><b>Mutter:</b> {% firstof person.get_mother.get_primary_name "Unbekannt" %}</p>
+
+{% with allchildren=person.get_children %}
+{% for partner, children, txt, family in allchildren %}
+
+<p>{{ txt }} {{ partner.get_primary_name }} — Familie {% firstof family.name family.father.last_name person.last_name %}</p>
+
+{% if children %}
+<p><b>Kinder:</b></br>
+
+<ul>
+{% for child in children %}
+<li>{{ child.get_primary_name }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+</p>
+{% endfor %}
+{% endwith %}
+
+<p>{{ person.comments|safe }}</p>
+
+
