@@ -260,7 +260,7 @@ Bei Links auf externe Webseiten gibt man einfach die vollständige URL an:
 Bilder einbinden
 ................
 
-Bilder können folgendermaßen eingebunden werden: ``:i:\`id\```. Dabei ist ``id``
+Bilder können folgendermaßen eingebunden werden: ``:i:`id```. Dabei ist ``id``
 die Zahl, die dem Bild in der Datenbank zugeordnet ist. Dies ist die Zahl, die
 in der Liste der Bilder im Admin-Bereich in eckigen Klammern angezeigt wird. Die
 Zahl wird auch für die Bilder angezeigt, die einem Text zugeordnet sind (:ref:`siehe
