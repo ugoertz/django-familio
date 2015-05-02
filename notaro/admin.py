@@ -157,7 +157,6 @@ class CurrentSiteAdmin(object):
     def remove_selected(self, request, queryset):
         for object in queryset:
             object.sites.remove(request.site)
-            print object, request.site
 
         # pylint: disable=no-member
         self.message_user(request, "%d Objekte entfernt." % queryset.count())
@@ -408,12 +407,10 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
             if form.is_valid():
                 path = form.cleaned_data.get('path', '')
                 zipf = zipfile.ZipFile(request.FILES['archive'], 'r')
-                print zipf.namelist()
                 target_path = os.path.join(settings.MEDIA_ROOT,
                                            settings.FILEBROWSER_DIRECTORY,
                                            form.cleaned_data['target'],
                                            path)
-                print 'extract to', target_path
                 zipf.extractall(target_path)
                 zipf.close()
 
