@@ -26,7 +26,7 @@
 }
 
 p, li {
-    font-size: 100%;
+    font-size: 120%;
 }
 </style>
 {% endblock css %}
@@ -38,13 +38,6 @@ p, li {
 {% block js %}
 {{ block.super }}
 <script>
-var tooltip = d3.select("body").append("div")
-                .style("display", "none")
-                .style("border", "20px solid white")
-                .style("padding", "10px")
-                .style("position", "absolute")
-                .style("background-color", "#eeeeee");
-
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
     width = 960 - margin.left - margin.right,
     height = 650 - margin.top - margin.bottom;
@@ -77,24 +70,15 @@ var node = svg.selectAll(".node")
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
 node.append("svg:a")
+    .filter(function(d) { return "name" in d && "name" != ""; })
+    .attr("class", "popoverlink")
     .attr("xlink:href", function(d) { return d.urlp; })
     .append("text")
     .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-.5em")
-    .text(function(d) { return d.name; })
-    .on("mouseover", function (d) {
-        tooltip.style("left", (d3.event.pageX + 10) + "px")
-               .style("top", (d3.event.pageY - 120) + "px");
-        Dajaxice.genealogio.person_mouseover(function (data) {
-            tooltip.html(data)
-                   .style("display", "block");
-        }, {pk: d.pk});
-    })
-    .on("mouseout", function(d) {
-        tooltip.style("display", "none");
-    });
+    .text(function(d) { return d.name; });
 
 node.append("svg:a")
     .attr("xlink:href", function(d) { return d.url;  })
@@ -120,6 +104,7 @@ function elbow(d, i) {
         + (d.target.children ? "" : "h" + margin.right);
 }
 
+{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
 </script>
 {% endblock js %}
 

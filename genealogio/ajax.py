@@ -16,14 +16,26 @@ roleDict = {
     'f': Family,
 }
 
+
 @dajaxice_register(method="GET")
-def person_mouseover(request, pk):
+def popover_data(request, link):
     # pylint: disable=no-member
-    try:
-        p = Person.objects.get(pk=pk)
-    except ObjectDoesNotExist:
-        return "Unbekannt"
-    return render_to_string('genealogio/person_mouseover.html', {'person': p, })
+
+    for linktext, model, template in [
+            ('/gen/person-view/', Person, 'person_mouseover.html'),
+            ('/gen/pedigree/', Person, 'person_mouseover.html'),
+            ('/gen/descendants/', Person, 'person_mouseover.html'),
+            ]:
+        i = link.find(linktext)
+        if i != -1:
+            try:
+                pk = int(link[i+len(linktext):-1])
+                p = model.objects.get(pk=pk)
+            except ObjectDoesNotExist:
+                return "Unbekannt"
+            return render_to_string(
+                    'genealogio/%s' % template,
+                    {'person': p, })
 
 
 @dajaxice_register(method="GET")

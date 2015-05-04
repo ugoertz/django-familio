@@ -31,7 +31,7 @@
 }
 
 p, li {
-    font-size: 100%;
+    font-size: 120%;
 }
 </style>
 {% endblock css %}
@@ -43,14 +43,6 @@ p, li {
 {% block js %}
 {{ block.super }}
 <script>
-var tooltip = d3.select("body").append("div")
-                .style("display", "none")
-                .style("border", "20px solid white")
-                .style("padding", "10px")
-                .style("position", "absolute")
-                .style("background-color", "#eeeeee");
-
-
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
     width = 1260 - margin.left - margin.right,
     height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
@@ -86,24 +78,14 @@ var node = svg.selectAll(".node")
 
 node.append("svg:a")
     .filter(function(d) { return d.urlp1 != null; })
+    .attr("class", "popoverlink")
     .attr("xlink:href", function(d) { return d.urlp1; })
     .append("text")
     .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-1.5em")
-    .text(function(d) { return d.name1; })
-    .on("mouseover", function (d) {
-        tooltip.style("left", (d3.event.pageX + 10) + "px")
-            .style("top", (d3.event.pageY - 120) + "px");
-        Dajaxice.genealogio.person_mouseover(function (data) {
-            tooltip.html(data)
-                .style("display", "block");
-        }, {pk: d.pk1});
-    })
-   .on("mouseout", function(d) {
-        tooltip.style("display", "none");
-    });
+    .text(function(d) { return d.name1; });
 
 node.append("text")
     .filter(function(d) { return d.urlp1 == null; })
@@ -135,6 +117,8 @@ node.append("text")
     .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
 
 node.append("svg:a")
+    .filter(function(d) { return "name2" in d; })
+    .attr("class", "popoverlink")
     .attr("xlink:href", function(d) { return d.urlp2; })
     .append("text")
     .attr("class", "name2")
@@ -142,20 +126,7 @@ node.append("svg:a")
     .attr("y", -6)
     .attr("dx", "1.21em")
     .attr("dy", "1.51em")
-    .text(function(d) { if ("name2" in d) return d.name2; else return ""; })
-    .on("mouseover", function (d) {
-        if ("name2" in d) {
-            tooltip.style("left", (d3.event.pageX + 10) + "px")
-                   .style("top", (d3.event.pageY - 120) + "px");
-            Dajaxice.genealogio.person_mouseover(function (data) {
-                tooltip.html(data)
-                       .style("display", "block");
-            }, {pk: d.pk2});
-        }
-    })
-    .on("mouseout", function(d) {
-        tooltip.style("display", "none");
-    });
+    .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
 
 node.append("svg:a")
     .attr("xlink:href", function(d) { return d.url2;  })
@@ -181,6 +152,7 @@ function elbow(d, i) {
         + (d.target.children ? "" : "h" + 0.7*margin.right);
 }
 
+{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
 </script>
 {% endblock js %}
 

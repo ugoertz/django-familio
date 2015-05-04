@@ -1,6 +1,7 @@
 {% load fb_versions %}
 {% load partialdate_tags %}
 
+<div style="width: 400px;">
 <h4>
 {% if person.portrait %}<img style="margin-right: 10px;" src="{% version person.portrait.image 'thumbnail' %}">{% endif %}
 {{ person.get_full_name_html }}
@@ -31,5 +32,5 @@
 {% endwith %}
 
 <p>{{ person.comments|safe }}</p>
-
+</div>
 

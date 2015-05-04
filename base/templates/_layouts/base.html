@@ -185,6 +185,11 @@
         padding-top: 50px;
         padding-bottom: 20px;
     }
+
+    .popover{
+        max-width: 100%;
+        max-height: none;
+    }
   </style>
   {% block css %}{% endblock %}
   {% endcompress %}
@@ -203,6 +208,11 @@
   <script src="{% static 'js/libs/jquery.min.js' %}"></script>
   <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
   {% dajaxice_js_import %}
+  <script>
+  $(document).ready(function() {
+  {% include "base/popover.js" with selector='a[href*="/gen/person-view/"]' fct="Dajaxice.genealogio.popover_data" %}
+  });
+  </script>
   {% endcompress %}
 </head>
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}" {% block body_attributes %}{% endblock %}>
