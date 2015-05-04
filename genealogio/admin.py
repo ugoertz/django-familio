@@ -198,6 +198,7 @@ class PPlaceInline(admin.StackedInline):
     raw_id_fields = ('place', )
     autocomplete_lookup_fields = {'fk': ['place', ], }
     sortable_excludes = ('typ', )
+    inline_classes = ('collapse open',)
 
     def get_extra(self, request, obj=None, **kwargs):
         """Dynamically sets the number of extra forms, depending on whether the
@@ -216,7 +217,7 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         ('Name', {'classes': ('placeholder name_set-group', ), 'fields': ()}),
         ('', {'fields': (('datebirth', 'datedeath', ),
                          ('gender_type', 'probably_alive', ), ), }),
-        ('Orte', {'classes': ('placeholder personplace_set-group', ),
+        ('Orte', {'classes': ('placeholder grp-open personplace_set-group', ),
                   'fields': ()}),
         ('Weitere Informationen', {'fields': (('portrait', 'portrait_os'),
                                               'comments', ), }),
