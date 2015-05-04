@@ -111,6 +111,25 @@ function elbow(d, i) {
 {% block content %}
 <div class="container">
     <h2>Ahnentafel für {% include "genealogio/person_snippet_full.html" %}</h2>
+    {% with allchildren=person.get_children %}
+    <ul class="list-group">
+    {% for partner, children, txt, family in allchildren %}
+
+    <li class="list-group-item">
+        {{ txt }} {% include "genealogio/person_snippet.html" with person=partner %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
+
+    {% if children %}
+    </br><b>Kinder:</b>
+    {% for child in children %}
+    {% spaceless %}
+    {% include "genealogio/person_snippet.html" with person=child %}<span>{% if not forloop.last %},{% else %}.{% endif %}</span>
+    {% endspaceless %}
+    {% endfor %}
+    {% endif %}
+    </li>
+    {% endfor %}
+    {% endwith %}
+
     <div id="pedi">
     </div>
 </div>
