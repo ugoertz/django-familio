@@ -566,7 +566,7 @@ class Person(PrimaryObject):
                     sites=Site.objects.get_current())[0].father
             if Site.objects.get_current() in father.sites.all():
                 return father
-        except IndexError:
+        except (AttributeError, IndexError):
             pass
 
     def get_mother(self):
@@ -576,7 +576,7 @@ class Person(PrimaryObject):
                     sites=Site.objects.get_current())[0].mother
             if Site.objects.get_current() in mother.sites.all():
                 return mother
-        except IndexError:
+        except (AttributeError, IndexError):
             pass
 
     def get_children(self):
@@ -588,10 +588,7 @@ class Person(PrimaryObject):
         for fam in Family.objects.filter(
                 father=self,
                 sites=Site.objects.get_current()).order_by('start_date'):
-            try:
-                m = fam.mother
-            except ObjectDoesNotExist:
-                m = None
+            m = fam.mother
             children.append([
                 m,
                 fam.person_set(manager='objects').all().order_by(
@@ -603,10 +600,7 @@ class Person(PrimaryObject):
         for fam in Family.objects.filter(
                 mother=self,
                 sites=Site.objects.get_current()).order_by('start_date'):
-            try:
-                f = fam.father
-            except ObjectDoesNotExist:
-                f = None
+            f = fam.father
             children.append([
                 f,
                 fam.person_set(manager='objects').all().order_by(
@@ -620,19 +614,13 @@ class Person(PrimaryObject):
     def reset_handle(self):
         """Recompute handle for a Person object which already has an id."""
         self.handle = 'P_'
-        try:
-            self.handle += cleanname(self.last_name)[:20]
-        except KeyError:
-            pass
+        self.handle += cleanname(self.last_name)[:20]
         try:
             marriedname = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
             self.handle += cleanname(marriedname)[:20]
-        except IndexError, KeyError:
+        except IndexError:
             pass
-        try:
-            self.handle += cleanname(self.first_name)[:20]
-        except KeyError:
-            pass
+        self.handle += cleanname(self.first_name)[:20]
 
         # pylint: disable=no-member
         if self.datebirth:
