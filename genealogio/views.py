@@ -346,9 +346,6 @@ class Descendants(LoginRequiredMixin, View):
                 height = 0
                 partner, children, _text, _family = family
                 data[-1].update(p_dict(partner, '2'))
-                if not children:
-                    data[-1]['urlp1'] = None
-                    data[-1]['urlp2'] = None
 
                 if level > 0:
                     data[-1]['parents'] = []
