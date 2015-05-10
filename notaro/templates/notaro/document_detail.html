@@ -18,9 +18,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8">
-            <h1>{{ object.name }}</h1>
+            <h1>{{ object.name|safe }}</h1>
 {% filter apply_markup:"genrestructuredtext" %}
-{{ object.description }}
+{{ object.description|safe }}
 {% endfilter %}
 
 Download: <a href="{{ object.doc.url }}">{{ object.doc.extension|cut:"." }} ({{ object.doc.filesize|filesizeformat }})</a>
