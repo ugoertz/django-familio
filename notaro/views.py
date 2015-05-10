@@ -77,3 +77,12 @@ class DocumentList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     model = Document
     paginate_by = 15
 
+
+
+class SourceList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+
+    """Display list of all notes."""
+
+    model = Source
+    paginate_by = 15
+

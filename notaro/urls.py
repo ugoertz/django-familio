@@ -2,12 +2,14 @@ from django.conf.urls import patterns, url
 
 from .views import (
         NoteDetail, NoteList, PictureDetail, SourceDetail,
-        DocumentList, DocumentDetail)
+        DocumentList, DocumentDetail, SourceList)
 
 
 urlpatterns = patterns('notaro.views',
                        url(r'^all/$', NoteList.as_view(),
                            name='note-list'),
+                       url(r'^sources/$', SourceList.as_view(),
+                           name='source-list'),
                        url(r'^docs/$', DocumentList.as_view(),
                            name='document-list'),
                        url(r'^source-view/(?P<pk>\d+)/$',
