@@ -256,6 +256,16 @@ Bei Links auf externe Webseiten gibt man einfach die vollständige URL an:
 
 .. _bilder-einbinden:
 
+
+.................
+Quellen einbinden
+.................
+
+Quellen können mit ``:s: Verlinkter Text id``` eingebunden werden, wobei ``id``
+hier durch die Zahl zu ersetzen ist, die der Quelle in der Datenbank zugeordnet
+ist. :ref:`Autocomplete <autocomplete-editor>` anhand des zu verlinkenden Textes
+(meist vermutlich der Titel der Quelle) ist mit Ctrl-Leertaste möglich.
+
 ................
 Bilder einbinden
 ................
@@ -284,7 +294,7 @@ Autocomplete
 
 Für :ref:`Links zu Objekten der Familiendatenbank <links-personen>` gibt es eine
 autocomplete-Funktion. Dafür gibt man den ersten Teil des Links ein, zum
-Beispiel ``:p:\`Ulrich`` und drückt dann ``Ctrl-Space``. Es wird dann eine Liste
+Beispiel ``:p:\`Ulrich`` und drückt dann ``Ctrl-Leertaste``. Es wird dann eine Liste
 von passenden Objekten angezeigt, und durch Klick wird das entsprechende handle
 am Ende eingefügt.
 

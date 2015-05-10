@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
 from ..models import Person, Place, Event, Family
-from notaro.models import Picture
+from notaro.models import Picture, Source
 
 
 genrst_roles = {
@@ -20,6 +20,7 @@ genrst_roles = {
     'l': {'model': Place, },
     'e': {'model': Event, },
     'f': {'model': Family, },
+    's': {'model': Source, },
     'i': {'model': Picture, },
     'it': {'model': Picture, },
     'is': {'model': Picture, },
@@ -93,7 +94,12 @@ def get_text(name, rawtext, text, lineno, inliner,
         else:
             handle = text.split(' ')[-1]
             try:
-                p = model.objects.get(handle=handle)
+                if name.startswith('s'):
+                    # Look up Source object by id
+                    p = model.objects.get(pk=handle)
+                else:
+                    # Look up all other model instances by handle
+                    p = model.objects.get(handle=handle)
                 for f in extra:
                     t += f(p)
                 nodelist = [nodes.reference(

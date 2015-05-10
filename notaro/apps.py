@@ -9,3 +9,6 @@ class NotaroConfig(AppConfig):
     def ready(self):
         NoteModel = self.get_model("Note")
         watson.register(NoteModel.objects.filter(published=True))
+
+        SourceModel = self.get_model("Source")
+        watson.register(SourceModel.objects.all())

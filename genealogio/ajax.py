@@ -6,14 +6,15 @@ from django.template.loader import render_to_string
 from dajaxice.decorators import dajaxice_register
 import watson
 
+from notaro.models import Source
 from .models import Person, Place, Event, Family, PersonPlace
-
 
 roleDict = {
     'p': Person,
     'e': Event,
     'l': Place,
     'f': Family,
+    's': Source,
 }
 
 
@@ -46,13 +47,21 @@ def autocomplete(request, q, role):
         # does the search string contain the beginning of a handle?
         handleStart = q.find(role[0].upper()+'_')
         handlePart = '' if handleStart == -1 else q[handleStart:]
-        template = ':%s:`' + (q + ' %s`' if handleStart == -1
-                              else q[:handleStart] + '%s`')
 
-        return json.dumps([{'text': template % (role, x.handle),
-                            'displayText': str(x), }
-                           for x in results
-                           if x.handle.startswith(handlePart)])
+        if role[0] == 's':
+            # Looking up Source, so work with id instead of handle
+            template = ':%s:`' + q + ' %s`'
+            return json.dumps([{'text': template % (role, x.id),
+                                'displayText': str(x), }
+                                for x in results])
+        else:
+            # For all other models, work with handle
+            template = ':%s:`' + (q + ' %s`' if handleStart == -1
+                                  else q[:handleStart] + '%s`')
+            return json.dumps([{'text': template % (role, x.handle),
+                                'displayText': str(x), }
+                                for x in results
+                                if x.handle.startswith(handlePart)])
 
     return json.dumps([])
 
