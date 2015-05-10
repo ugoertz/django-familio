@@ -12,3 +12,6 @@ class NotaroConfig(AppConfig):
 
         SourceModel = self.get_model("Source")
         watson.register(SourceModel.objects.all())
+
+        DocumentModel = self.get_model("Document")
+        watson.register(DocumentModel.objects.all(), exclude=('doc'))

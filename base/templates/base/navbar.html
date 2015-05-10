@@ -16,8 +16,13 @@
             <ul class="nav navbar-nav">
                 {% if request.user.is_authenticated %}
                 <li><a class="cabin" href="{% url 'person-list' %}">Personen</a></li>
-                <li><a class="cabin" href="{% url 'family-list' %}">Familien</a></li>
                 <li><a class="cabin" href="{% url 'note-list' %}">Texte</a></li>
+                <li class="dropdown cabin">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Mehr ...<span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a class="cabin" href="{% url 'family-list' %}">Familien</a></li>
+                        <li><a class="cabin" href="{% url 'document-list' %}">Dokumente</a></li>
+                    </ul>
                 {% endif %}
                 <li><a class="cabin" href="{% url 'impressum' %}">Impressum</a></li>
                 {% if request.user.is_authenticated %}

@@ -8,7 +8,7 @@ from braces.views import LoginRequiredMixin
 
 from base.views import CurrentSiteMixin
 
-from .models import Note, Picture, Source
+from .models import Note, Picture, Source, Document
 
 
 class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
@@ -21,6 +21,12 @@ class SourceDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     """Display a source."""
 
     model = Source
+
+
+class DocumentDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
+    """Display a source."""
+
+    model = Document
 
 
 class NoteDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
@@ -62,4 +68,12 @@ class NoteList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     def get_queryset(self):
         # pylint: disable=no-member
         return Note.objects.filter(published=True)
+
+
+class DocumentList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+
+    """Display list of all notes."""
+
+    model = Document
+    paginate_by = 15
 

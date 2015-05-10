@@ -27,7 +27,7 @@ from grappelli.forms import GrappelliSortableHiddenMixin
 from base.models import SiteProfile
 from accounts.models import UserSite
 from .models import (Note, Picture, Source, PictureNote, NoteSource,
-        PictureSource)
+        PictureSource, Document)
 
 
 CODEMIRROR_CSS = (
@@ -428,3 +428,40 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
 
 admin.site.register(Picture, PictureAdmin)
+
+
+class DocumentAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+    """Admin class for Document model."""
+
+    fieldsets = (('', {'fields': ('name', 'description', 'doc', 'date', ), }),
+                 ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                                    'fields': ('sites', ), }), )
+    raw_id_fields = ('sites', )
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
+    list_filter = ('sites', )
+    search_fields = ('description', )
+    list_display = ('id', 'description_truncated', 'filename',
+                    'date', 'view_on_site_link')
+
+    def description_truncated(self, obj):
+        return obj.description[:50]
+
+    def filename(self, obj):
+        return obj.doc.filename
+
+
+    class Media:
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js',
+              )
+
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except ImportError:
+            pass
+        js += ('codemirror/codemirror_conf_document.js', )
+        css = {'all': ('css/document_admin.css', ) + CODEMIRROR_CSS, }
+
+
+admin.site.register(Document, DocumentAdmin)

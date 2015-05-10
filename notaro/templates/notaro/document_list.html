@@ -1,0 +1,21 @@
+
+{% extends "_layouts/base.html" %}
+{% load markup_tags %}
+
+
+{% block content %}
+<div class="container">
+    <div class="col-md-8">
+        <h1>Dokumente</h1>
+        <ul class="list-group">
+            {% for object in object_list %}
+            <li class="list-group-item"><a href="{{ object.get_absolute_url }}">{{ object.name }} ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})</a></li>
+        {% endfor %}
+        </ul>
+
+    {% include "notaro/pagination.html" %}
+</div>
+</div>
+{% endblock %}
+
+

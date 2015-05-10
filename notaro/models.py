@@ -163,8 +163,9 @@ class Document(models.Model):
                                       ".tif", ".mp3", ".mp4", ],
                           blank=True, null=True,
                           help_text=".pdf, .doc, .rtf, .jpg, .tif, .mp3, .mp4")
-    description = models.TextField(blank=True)
-    date = models.DateField(blank=True, null=True)
+    name = models.CharField(max_length=500, verbose_name="Name")
+    description = models.TextField(blank=True, verbose_name="Beschreibung")
+    date = models.DateField(blank=True, null=True, verbose_name="Datum")
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()
     objects = CurrentSiteManager()
@@ -172,7 +173,7 @@ class Document(models.Model):
     @staticmethod
     def autocomplete_search_fields():
         """Used by grappelli."""
-        return ("description__icontains", )
+        return ("name_icontains", "description__icontains", )
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
@@ -182,7 +183,10 @@ class Document(models.Model):
 
     def __unicode__(self):
         # pylint: disable=no-member
-        return self.doc.__unicode__()
+        return '%d: %s' % (self.id, self.name)
+
+    def get_absolute_url(self):
+        return reverse('document-detail', kwargs={'pk': self.pk, })
 
     class Meta:
         ordering = ('date', )

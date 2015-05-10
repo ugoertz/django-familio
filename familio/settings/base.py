@@ -387,6 +387,8 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
 GRAPPELLI_INDEX_DASHBOARD = 'familio.dashboard.CustomIndexDashboard'
 GRAPPELLI_SWITCH_USER = True
 
+FILEBROWSER_MAX_UPLOAD_SIZE = 100000000 # 100MB
+
 MARKUP_SETTINGS = {
     'genrestructuredtext': {
         'settings_overrides': {
