@@ -261,7 +261,7 @@ class Note(models.Model):
 
         if end_trailer == -1 or end_trailer >= 700:
             return self.text[:700]
-        trailer = self.text[:end_trailer].strip() +\
+        trailer = self.text[:end_trailer].rstrip() +\
             (' ...' if end_trailer < len(self.text) else '')
         trailer = re.sub(r'-{4,}', lambda m: '`'*len(m.group(0)), trailer)
         return trailer
