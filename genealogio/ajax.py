@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from dajaxice.decorators import dajaxice_register
 import watson
 
-from notaro.models import Source
+from notaro.models import Document, Source
 from .models import Person, Place, Event, Family, PersonPlace
 
 roleDict = {
@@ -15,6 +15,7 @@ roleDict = {
     'l': Place,
     'f': Family,
     's': Source,
+    'd': Document,
 }
 
 
@@ -48,8 +49,8 @@ def autocomplete(request, q, role):
         handleStart = q.find(role[0].upper()+'_')
         handlePart = '' if handleStart == -1 else q[handleStart:]
 
-        if role[0] == 's':
-            # Looking up Source, so work with id instead of handle
+        if role[0] in ['d', 's']:
+            # Looking up Document or Source, so work with id instead of handle
             template = ':%s:`' + q + ' %s`'
             return json.dumps([{'text': template % (role, x.id),
                                 'displayText': str(x), }

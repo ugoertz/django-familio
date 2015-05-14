@@ -36,7 +36,7 @@ Wenn ein Text hinzugefügt wird, können die folgenden Felder ausgefüllt werden
   Dieses Feld lässt sich auch verwenden, um die ID-Nummern von Bildern zu
   finden, die man in den Text selbst einbinden will; siehe
   :ref:`bilder-einbinden`.
-* (Quellen): Quellen für diesen Text; bisher nicht wirklich unterstützt.
+* Quellen: :ref:`Quellen <quellen-chapter>` für diesen Text
 
 
 Es können auch Microsoft-Word-Dateien (im **docx**-Format) und HTML-Dateien
@@ -257,9 +257,14 @@ Bei Links auf externe Webseiten gibt man einfach die vollständige URL an:
 .. _bilder-einbinden:
 
 
-.................
-Quellen einbinden
-.................
+.........................................
+Links auf Dokumente und Quellen einbinden
+.........................................
+
+Dokumente können mit ``:d: Verlinkter Text id``` eingebunden werden, wobei ``id``
+hier durch die Zahl zu ersetzen ist, die der Quelle in der Datenbank zugeordnet
+ist. :ref:`Autocomplete <autocomplete-editor>` anhand des zu verlinkenden Textes
+(meist vermutlich der Titel der Quelle) ist mit Ctrl-Leertaste möglich.
 
 Quellen können mit ``:s: Verlinkter Text id``` eingebunden werden, wobei ``id``
 hier durch die Zahl zu ersetzen ist, die der Quelle in der Datenbank zugeordnet

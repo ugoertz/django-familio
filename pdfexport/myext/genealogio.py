@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 # pylint: disable=import-error
 from genealogio.models import Person, Place, Event, Family
 from genealogio.views import Sparkline
-from notaro.models import Picture
+from notaro.models import Document, Picture, Source
 
 
 genrst_roles = {
@@ -32,6 +32,8 @@ genrst_roles = {
     'l': {'model': Place, },
     'e': {'model': Event, },
     'f': {'model': Family, },
+    'd': {'model': Document, },
+    's': {'model': Source, },
     'i': {'model': Picture, },
     'it': {'model': Picture, },
     'is': {'model': Picture, },
