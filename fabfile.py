@@ -74,6 +74,24 @@ def uname():
 
 
 @task
+def maintenance_on():
+    """
+    Switches to maintenance mode (invoking a shell script which
+    contains suitable a2dissite, a2ensite commands and restarts
+    apache).
+    """
+    run("sudo /root/uf-maintenance-on")
+
+
+@task
+def maintenance_off():
+    """
+    Switches maintenance mode off.
+    """
+    run("sudo /root/uf-maintenance-off")
+
+
+@task
 def webserver_restart():
     """
     Restarts the webserver that is running the Django instance
@@ -169,6 +187,7 @@ def deploy():
     """
     Deploy the project.
     """
+    maintenance_on()
     pull_sources()
     install_dependencies()
     update_database()
@@ -176,3 +195,4 @@ def deploy():
                 # pdf documentation is updated
     build_static()
     webserver_restart()
+    maintenance_off()
