@@ -53,8 +53,8 @@ $(window).on('map:init', function (e) {
     <div class="row">
         <div class="col-md-8">
             <div style="margin-bottom: 50px;">
-            {% filter apply_markup:"genrestructuredtext" %}
-            {% include "genealogio/place_detail.rst" %}
+            {% filter apply_markup:"restructuredtext" %}
+            {% include "maps/place_detail.rst" %}
             {% endfilter %}
             </div>
 
@@ -65,7 +65,7 @@ $(window).on('map:init', function (e) {
         <div class="col-md-3 col-md-offset-1">
         {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
         <div class="cabin adminbox">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/place" doc_link="orte.html" %}
+            {% include "notaro/admin_links.html" with admin_edit_link="maps/place" doc_link="orte.html" %}
         </div>
         {% endif %}
         </div>

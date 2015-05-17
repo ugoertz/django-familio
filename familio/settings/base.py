@@ -79,6 +79,7 @@ INSTALLED_APPS = (
     'comments',
 
     # Local apps, referenced via appname
+    'maps',
     'genealogio',
     'notaro',
     'partialdate',
@@ -390,6 +391,17 @@ GRAPPELLI_SWITCH_USER = True
 FILEBROWSER_MAX_UPLOAD_SIZE = 100000000 # 100MB
 
 MARKUP_SETTINGS = {
+    'restructuredtext': {
+        'settings_overrides': {
+            'initial_header_level': 2,
+            'doctitle_xform': False,
+            'table_style': 'booktabs',
+            'footnote_references': 'superscript',
+            'trim_footnote_reference_space': True,
+            'default_reference_context': 'view',
+            'link_base': ''
+        }
+    },
     'genrestructuredtext': {
         'settings_overrides': {
             'initial_header_level': 2,

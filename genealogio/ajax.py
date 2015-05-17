@@ -6,8 +6,9 @@ from django.template.loader import render_to_string
 from dajaxice.decorators import dajaxice_register
 import watson
 
+from maps.models import Place
 from notaro.models import Document, Source
-from .models import Person, Place, Event, Family, PersonPlace
+from .models import Person, Event, Family, PersonPlace
 
 roleDict = {
     'p': Person,

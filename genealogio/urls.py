@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 
 from .views import (
-        PersonList, PersonDetail, PlaceDetail, EventDetail, FamilyList,
+        PersonList, PersonDetail, EventDetail, FamilyList,
         Sparkline, Pedigree, HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
         Descendants)
 
@@ -15,8 +15,6 @@ urlpatterns = patterns('genealogio.views',
                            name='family-list'),
                        url(r'^family-view/(?P<pk>\d+)/$',
                            FamilyDetail.as_view(), name='family-detail'),
-                       url(r'^place-view/(?P<pk>\d+)/$',
-                           PlaceDetail.as_view(), name='place-detail'),
                        url(r'^event-view/(?P<pk>\d+)/$',
                            EventDetail.as_view(), name='event-detail'),
                        url(r'^pp-data.geojson$',
