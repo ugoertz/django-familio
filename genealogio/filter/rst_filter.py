@@ -1,13 +1,22 @@
+# -*- coding: utf8 -*-
+
+from __future__ import unicode_literals
+from __future__ import absolute_import
+
 from functools import partial
 from docutils import nodes
 from docutils.utils import new_document
 from docutils.frontend import OptionParser
 from docutils.parsers.rst import roles, Parser
+
 from django.core.exceptions import ObjectDoesNotExist
 from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
-from ..models import Person, Place, Event, Family
+
+from maps.models import Place
 from notaro.models import Picture, Source, Document
+
+from ..models import Person, Event, Family
 
 
 genrst_roles = {

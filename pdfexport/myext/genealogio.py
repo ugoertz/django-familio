@@ -17,7 +17,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 # pylint: disable=import-error
-from genealogio.models import Person, Place, Event, Family
+from maps.models import Place
+from genealogio.models import Person, Event, Family
 from genealogio.views import Sparkline
 from notaro.models import Document, Picture, Source
 

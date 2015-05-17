@@ -37,8 +37,9 @@ from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin
 
+from maps.models import Place
 from notaro.models import Note, Source
-from .models import Person, PersonPlace, Place, Event, Family, TimelineItem
+from .models import Person, PersonPlace, Event, Family, TimelineItem
 
 
 class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
@@ -252,12 +253,6 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         context.update(self.get_context_data_for_object(obj))
 
         return context
-
-
-class PlaceDetail(LoginRequiredMixin, DetailView):
-    """Display details for a person."""
-
-    model = Place
 
 
 class EventDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):

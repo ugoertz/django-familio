@@ -21,6 +21,3 @@ class GenealogioConfig(AppConfig):
         EventModel = self.get_model("Event")
         watson.register(EventModel.objects.all(), store=('handle', ))
 
-        PlaceModel = self.get_model("Place")
-        watson.register(PlaceModel, store=('handle', ))
-
