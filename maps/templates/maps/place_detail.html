@@ -45,6 +45,21 @@ $(window).on('map:init', function (e) {
         });
 </script>
 {% endlocalize %}
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('div#personen > h3').append('<span class="btn btn-default btn-xs pull-right" id="showhidebtn">Verbergen</span>')
+    $('#showhidebtn').click(function() {
+        $('div#personen > .row').toggle(500);
+        if ($('#showhidebtn').html() == 'Verbergen') {
+            $('#showhidebtn').html('Anzeigen')
+        } else {
+            $('#showhidebtn').html('Verbergen')
+        }
+    })
+});
+</script>
+
 {% endblock %}
 
 
