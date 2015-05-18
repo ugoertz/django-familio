@@ -261,6 +261,8 @@ class PersonPlace(models.Model):
     comment = models.CharField(max_length=500, blank=True, default='',
                                verbose_name='Kommentar')
 
+    objects = models.GeoManager()
+
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
         if self.typ == PersonPlace.BIRTH and\
