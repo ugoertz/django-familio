@@ -33,8 +33,6 @@ def related_people(place):
                 typ=typ,
                 place__location__distance_lte=(place.location, D(km=50))
                 ).select_related('place', 'person')
-        print pl_close_by.query
-        print len(pl_close_by)
 
         person_count = 0
         l = [(geopy_distance((ppl.place.location.y, ppl.place.location.x),
