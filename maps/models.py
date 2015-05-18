@@ -71,20 +71,6 @@ class Place(models.Model):
 
     objects = models.GeoManager()
 
-    # def born_here(self):
-    #     # pylint: disable=no-member
-    #     return Person.objects.filter(personplace__place=self.id,
-    #                                  personplace__typ=PersonPlace.BIRTH)
-
-    # def died_here(self):
-    #     # pylint: disable=no-member
-    #     return Person.objects.filter(personplace__place=self.id,
-    #                                  personplace__typ=PersonPlace.DEATH)
-
-    # def events_here(self):
-    #     # pylint: disable=no-member
-    #     return Event.objects.filter(place=self)
-
     def reset_handle(self):
         """Recompute handle for a Place object which already has an id."""
 
