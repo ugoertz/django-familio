@@ -1,0 +1,84 @@
+
+{% extends "_layouts/base_leaflet.html" %}
+{% load static %}
+{% load markup_tags %}
+{% load leaflet_tags %}
+{% load l10n %}
+
+{% block css %}
+{{block.super}}
+
+<style>
+#custommap {
+    width: 100%;
+    height: 600px;
+}
+
+ul.simple {
+    list-style: none;
+    padding-left: 1em;
+}
+
+ul.simple li {
+    padding-left: 3em;
+    font-size: 110%;
+}
+</style>
+{% endblock css %}
+
+
+{% block js %}
+{{block.super}}
+{% if user.is_authenticated and user.userprofile.is_staff_for_site %}
+<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
+{% endif %}
+
+{% localize off %}
+<script type="text/javascript">
+
+$(window).on('map:init', function (e) {
+        var redMarker = L.AwesomeMarkers.icon({
+            icon: 'plus',
+            markerColor: 'red' });
+
+        var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
+        console.log(detail.map._container.id);
+        {% with bbox=object.bbox.extent %}
+        detail.map.fitBounds([[{{ bbox.1 }}, {{ bbox.0 }}],
+                              [{{ bbox.3  }}, {{ bbox.2  }}]]);
+        {% endwith %}
+        {% for m in object.custommapmarker_set.all %}
+        L.marker([{{ m.place.location.y }} + {{ m.label_offset_y }},
+                  {{ m.place.location.x }} + {{ m.label_offset_x }}]).addTo(detail.map);
+        {% endfor %}
+        });
+</script>
+{% endlocalize %}
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ object.title }}</h1>
+            <div style="margin-bottom: 50px;">
+{% filter apply_markup:"genrestructuredtext" %}
+{{ object.description }}
+{% endfilter %}
+            </div>
+
+            {% leaflet_map "custommap" %}
+        </div>
+        <div class="col-md-3 col-md-offset-1">
+        {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
+        <div class="cabin adminbox">
+            {% include "notaro/admin_links.html" with admin_edit_link="maps/custommap" doc_link="karten.html" %}
+        </div>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -8,6 +8,8 @@ from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 
+from filebrowser.fields import FileBrowseField
+
 from notaro.models import Note
 
 from .managers import CurrentSiteGeoManager, GenGeoManager
@@ -99,7 +101,7 @@ class Place(models.Model):
     def get_absolute_url(self):
         """Return URL where this object can be viewed."""
 
-        return reverse('%s-detail' % self.__class__.__name__.lower(),
+        return reverse('place-detail',
                        kwargs={'pk':  self.id, })
 
     class Meta:
@@ -108,4 +110,45 @@ class Place(models.Model):
         verbose_name_plural = 'Orte'
 
 
+class CustomMapMarker(models.Model):
+    custommap = models.ForeignKey('CustomMap', verbose_name="Karte")
+    place = models.ForeignKey(Place, verbose_name="Ort")
+    label = models.CharField(max_length=30, blank=True)
+    description = models.CharField(max_length=200, blank="True",
+                                   verbose_name="Beschreibung")
+    label_offset_x = models.FloatField(
+            default=0,
+            verbose_name="Positionskorrektur Label X")
+    label_offset_y = models.FloatField(
+            default=0,
+            verbose_name="Positionskorrektur Label Y")
+    position = models.IntegerField(default=1)
 
+
+class CustomMap(models.Model):
+    title = models.CharField(max_length=200, blank=True, verbose_name="Titel")
+    description = models.TextField(blank=True, verbose_name="Beschreibung")
+
+    bbox = models.PolygonField(verbose_name="Begrenzung")
+    markers = models.ManyToManyField(
+            Place,
+            blank=True,
+            through=CustomMapMarker,
+            verbose_name="Markierungen")
+
+    rendered = FileBrowseField("Bilddatei", max_length=200, directory="maps/",
+                               extensions=[".png", ],
+                               blank=True, null=True,
+                               help_text="Gerenderte Karte im png-Format")
+
+    sites = models.ManyToManyField(Site)
+
+    all_objects = GenGeoManager()
+    objects = CurrentSiteGeoManager()
+
+    def __unicode__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse('custommap-detail',
+                       kwargs={'pk':  self.id, })
