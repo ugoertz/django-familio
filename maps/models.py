@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import json
+
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
@@ -122,10 +124,19 @@ class CustomMapMarker(models.Model):
     label_offset_y = models.FloatField(
             default=0,
             verbose_name="Positionskorrektur Label Y")
+    style = models.CharField(max_length=400, blank=True, null=True,
+            verbose_name="Stil")
     position = models.IntegerField(default=1)
 
 
 class CustomMap(models.Model):
+
+    # possible values of render_status
+    NOTRENDERED = "NOTRENDERED" # no rendering task has been started yet
+    RENDERED = "RENDERED"       # rendered map stored in rendered field
+    # if rendering task currently running, then store celery task id
+    # in this field
+
     title = models.CharField(max_length=200, blank=True, verbose_name="Titel")
     description = models.TextField(blank=True, verbose_name="Beschreibung")
 
@@ -136,6 +147,16 @@ class CustomMap(models.Model):
             through=CustomMapMarker,
             verbose_name="Markierungen")
 
+    map_style = models.CharField(
+            max_length=50, blank=True, null=True,
+            verbose_name="Kartenstil")
+
+    render_status = models.CharField(default=NOTRENDERED, max_length=800)
+
+    # Use refresh field to allow user in admin to explicitly trigger
+    # a new rendering task
+    refresh = models.BooleanField(default=False)
+
     rendered = FileBrowseField("Bilddatei", max_length=200, directory="maps/",
                                extensions=[".png", ],
                                blank=True, null=True,
@@ -145,6 +166,34 @@ class CustomMap(models.Model):
 
     all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
+
+    def geojson(self):
+        gj = {
+                "type": "FeatureCollection",
+                "features" :
+                [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [
+                                m.place.location.x,
+                                m.place.location.y]
+                            },
+                        "properties": {
+                            "label": m.label,
+                            "scale": 1.0,
+
+                            # the following settings have no effect so far; need
+                            # to wait for Mapnik 3.0
+                            "font": "Open Sans Bold",
+                            "font-size": 12.0,
+                            "image": "circle_black.svg"
+                            }
+                        }
+                    for m in self.custommapmarker_set.all()]
+                }
+        return json.dumps(gj)
 
     def __unicode__(self):
         return self.title
