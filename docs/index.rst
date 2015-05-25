@@ -16,6 +16,7 @@ Dokumentation zur unserefamilie.net-Webseite
    bilder
    quellen
    dokumente
+   karten
    familienbaeume
    admin
    pdfexport
