@@ -9,13 +9,15 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib.gis import admin
+from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 
 from grappelli.forms import GrappelliSortableHiddenMixin
 import reversion
 
 from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
-from .models import Place, Url, PlaceNote, PlaceUrl, cleanname
+from .models import (Place, Url, PlaceNote, PlaceUrl, cleanname, CustomMap,
+        CustomMapMarker, )
 
 
 class OSitesMixin(object):
@@ -139,4 +141,49 @@ class PlaceAdmin(admin.OSMGeoAdmin):
 admin.site.register(Place, PlaceAdmin)
 
 
+class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
+                            admin.TabularInline):
+    model = CustomMapMarker
+    extra = 2
+    raw_id_fields = ('place', )
+    autocomplete_lookup_fields = {'fk': ['place', ], }
+    sortable_excludes = ('position', 'label_offset_x', 'label_offset_y', )
+
+
+class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin):
+    """Admin class for CustomMap model."""
+
+    fieldsets = (
+            ('', {'fields': ('title', 'description', ), }),
+            ('Geo-Daten', {'fields': ('refresh', 'bbox', ), }),
+            ('Marker', {'classes': ('placeholder custommapmarker_set-group', ),
+                        'fields': ()}),
+            ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                               'fields': ('sites', ), }), )
+    inlines = [CustomMapMarkerInline, ]
+    raw_id_fields = ('sites', )
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
+    list_display = ('id', 'title', 'render_status', 'view_on_site_link', )
+    search_fields = ('title', 'description', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
+
+    pnt = Point(8, 50.5, srid=4326)
+    pnt.transform(3857)
+    default_lon, default_lat = pnt.coords
+    default_zoom = 5
+
+    class Media:
+        css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js',
+              )
+
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except ImportError:
+            pass
+        js += ('codemirror/codemirror_conf_custommap.js', )
+
+admin.site.register(CustomMap, CustomMapAdmin)
 

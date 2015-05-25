@@ -72,3 +72,7 @@ smartypants==1.8.6
 snowballstemmer==1.2.0
 sqlparse==0.1.14
 
+celery==3.1.18
+amqp==1.4.6
+
+pyinotify==0.9.5

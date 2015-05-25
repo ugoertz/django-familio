@@ -13,7 +13,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
 
-from maps.models import Place
+from maps.models import Place, CustomMap
 from notaro.models import Picture, Source, Document
 
 from ..models import Person, Event, Family
@@ -32,11 +32,28 @@ genrst_roles = {
     's': {'model': Source, },
     'd': {'model': Document, },
     'i': {'model': Picture, },
-    'it': {'model': Picture, },
+    'it': {'model': Picture, }, # second letter determines image size
     'is': {'model': Picture, },
     'im': {'model': Picture, },
     'ib': {'model': Picture, },
     'il': {'model': Picture, },
+    'm': {'model': CustomMap, },
+    'mt': {'model': CustomMap, },  # t: include title
+    'md': {'model': CustomMap, },  # d: include description
+    'ml': {'model': CustomMap, },  # l: include legend
+    'mdl': {'model': CustomMap, }, # dl, ld: include both, etc.
+    'mld': {'model': CustomMap, },
+    'mtd': {'model': CustomMap, },
+    'mdt': {'model': CustomMap, },
+    'mlt': {'model': CustomMap, },
+    'mtl': {'model': CustomMap, },
+    'mtld': {'model': CustomMap, },
+    'mtdl': {'model': CustomMap, },
+    'mtld': {'model': CustomMap, },
+    'mdlt': {'model': CustomMap, },
+    'mdtl': {'model': CustomMap, },
+    'mldt': {'model': CustomMap, },
+    'mltd': {'model': CustomMap, },
 }
 
 
@@ -99,6 +116,46 @@ def get_text(name, rawtext, text, lineno, inliner,
                     document = new_document('caption', settings)
                     parser.parse(img.get_caption(), document)
                     nodelist.extend(document.children)
+            except ObjectDoesNotExist:
+                nodelist = []
+        elif name.startswith('m'):
+            # include custom map
+            include_title = 't' in name[1:]
+            include_description = 'd' in name[1:]
+            include_legend = 'l' in name[1:]
+            try:
+                map = CustomMap.objects.get(id=int(text))
+                reference = nodes.reference('', '')
+                reference['refuri'] = reverse(
+                        'custommap-detail',
+                        kwargs={'pk': map.id, })
+                img_options = {}
+                img_options.update(options)
+                img_options['classes'] = ['custommap', ]
+                image_node = nodes.image(
+                    uri=map.rendered.url,
+                    **img_options)
+                reference.append(image_node)
+                nodelist = [reference, ]
+                if include_title and map.title:
+                    nodelist.append(nodes.paragraph('', map.title, **options))
+                if include_description and map.description:
+                    settings = OptionParser(components=(Parser,))\
+                            .get_default_values()
+                    parser = Parser()
+                    document = new_document('caption', settings)
+                    parser.parse(map.description, document)
+                    nodelist.extend(document.children)
+                if include_legend:
+                    for m in map.custommapmarker_set.all():
+                        if m.description == '-':
+                            continue
+                        nodelist.append(
+                                nodes.paragraph(
+                                    '',
+                                    '(%s) %s' % (m.label, m.get_description()),
+                                    **options))
+
             except ObjectDoesNotExist:
                 nodelist = []
         else:
