@@ -138,7 +138,7 @@ def get_text(name, rawtext, text, lineno, inliner,
                 reference.append(image_node)
                 nodelist = [reference, ]
                 if include_title and map.title:
-                    nodelist.append(nodes.inline('', map.title, **options))
+                    nodelist.append(nodes.paragraph('', map.title, **options))
                 if include_description and map.description:
                     settings = OptionParser(components=(Parser,))\
                             .get_default_values()

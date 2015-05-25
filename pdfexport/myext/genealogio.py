@@ -17,31 +17,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 # pylint: disable=import-error
-from maps.models import Place
+from maps.models import Place, CustomMap
 from genealogio.models import Person, Event, Family
 from genealogio.views import Sparkline
+from genealogio.filter.rst_filter import genrst_roles
 from notaro.models import Document, Picture, Source
-
-
-genrst_roles = {
-    'p': {'model': Person, },
-    'pd': {'model': Person,
-           'extra': [lambda p: ' (%s - %s)' %
-                               (p.datebirth.year if p.datebirth else '',
-                                p.datedeath.year if p.datedeath else '', )
-                     ], },
-    'l': {'model': Place, },
-    'e': {'model': Event, },
-    'f': {'model': Family, },
-    'd': {'model': Document, },
-    's': {'model': Source, },
-    'i': {'model': Picture, },
-    'it': {'model': Picture, },
-    'is': {'model': Picture, },
-    'im': {'model': Picture, },
-    'ib': {'model': Picture, },
-    'il': {'model': Picture, },
-}
 
 
 def get_text(name, rawtext, text, lineno, inliner,
@@ -71,13 +51,45 @@ def get_text(name, rawtext, text, lineno, inliner,
                 img = Picture.objects.get(id=int(text))
                 nodelist = [nodes.image(uri='/../media/' + img.image.__unicode__(),
                                         **options), ]
-                if False and img.caption:
+                if img.caption:
                     settings = OptionParser(components=(Parser,))\
                             .get_default_values()
                     parser = Parser()
                     document = new_document('caption', settings)
                     parser.parse(img.get_caption(), document)
                     nodelist[0].children.extend(document.children)
+            except ObjectDoesNotExist:
+                nodelist = []
+        elif name.startswith('m'):
+            # include custom map
+            include_title = 't' in name[1:]
+            include_description = 'd' in name[1:]
+            include_legend = 'l' in name[1:]
+            try:
+                map = CustomMap.objects.get(id=int(text))
+                image_node = nodes.image(
+                    uri='/../media/' + map.rendered.__unicode__(),
+                    **options)
+                nodelist = [image_node, ]
+                if include_title and map.title:
+                    nodelist.append(nodes.paragraph('', map.title, **options))
+                if include_description and map.description:
+                    settings = OptionParser(components=(Parser,))\
+                            .get_default_values()
+                    parser = Parser()
+                    document = new_document('caption', settings)
+                    parser.parse(map.description, document)
+                    nodelist.extend(document.children)
+                if include_legend:
+                    for m in map.custommapmarker_set.all():
+                        if m.description == '-':
+                            continue
+                        nodelist.append(
+                                nodes.paragraph(
+                                    '',
+                                    '(%s) %s' % (m.label, m.get_description()),
+                                    **options))
+
             except ObjectDoesNotExist:
                 nodelist = []
         else:
