@@ -166,7 +166,9 @@ class CustomMap(models.Model):
 
     # Use refresh field to allow user in admin to explicitly trigger
     # a new rendering task
-    refresh = models.BooleanField(default=False)
+    refresh = models.BooleanField(
+            default=False,
+            verbose_name="Gerenderte Karte aktualisieren")
 
     rendered = FileBrowseField("Bilddatei", max_length=200, directory="maps/",
                                extensions=[".png", ],
@@ -179,10 +181,19 @@ class CustomMap(models.Model):
     objects = CurrentSiteGeoManager()
 
     def save(self, *args, **kwargs):
-        if self.refresh:
-            render_map.delay(self.id)
-            self.refresh = False
+        # always save self.refresh as False, so that it is by default
+        # set to False in admin
+        refresh = self.refresh
+        self.refresh = False
+
         super(CustomMap, self).save(*args, **kwargs)
+
+        # Now trigger rendering process
+        # (do this after saving so that the rendering task does not
+        # save the model with outdated values)
+        if refresh:
+            render_map.delay(self.id)
+
 
     def get_render_status(self):
         if self.render_status == CustomMap.RENDERED:
