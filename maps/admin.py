@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.gis import admin
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
+from django.forms import TextInput
 
 from grappelli.forms import GrappelliSortableHiddenMixin
 import reversion
@@ -85,6 +86,11 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     search_fields = ('title', )
     inlines = [UrlInline, NotePlaceInline, ]
 
+    pnt = Point(8, 50.5, srid=4326)
+    pnt.transform(3857)
+    default_lon, default_lat = pnt.coords
+    default_zoom = 5
+
     def view_on_site(self, obj):
         return obj.get_absolute_url()
 
@@ -148,6 +154,12 @@ class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
     raw_id_fields = ('place', )
     autocomplete_lookup_fields = {'fk': ['place', ], }
     sortable_excludes = ('position', 'label_offset_x', 'label_offset_y', )
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name == 'label':
+            kwargs['widget'] = TextInput(attrs={'size': 2, })
+        return super(CustomMapMarkerInline,self)\
+                .formfield_for_dbfield(db_field, **kwargs)
 
 
 class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin):
