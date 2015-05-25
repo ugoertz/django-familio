@@ -74,9 +74,9 @@ $(window).on('map:init', function (e) {
             </div>
             <div style="margin-bottom: 50px;">
                 {% for m in object.custommapmarker_set.all %}
-                {% ifnotequal m.description '-' %}
-                <b>{{ m.label }}</b> {% firstof m.description m.place.title  %} <br>
-                {% endifnotequal %}
+                {% if m.get_description %}
+                <b>{{ m.label }}</b> {{ m.get_description }} <br>
+                {% endif %}
                 {% endfor %}
             </div>
 

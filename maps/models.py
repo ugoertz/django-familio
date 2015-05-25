@@ -129,6 +129,13 @@ class CustomMapMarker(models.Model):
             verbose_name="Stil")
     position = models.IntegerField(default=1)
 
+    def get_description(self):
+        if self.description == '-':
+            return None
+        if self.description:
+            return self.description
+        return self.place.title
+
     class Meta:
         ordering = ('position', )
 
