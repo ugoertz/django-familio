@@ -1,3 +1,8 @@
+# -*- coding: utf8 -*-
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import json
 import os
 import os.path
@@ -18,7 +23,6 @@ except ImportError:
 try:
     from django.conf import settings
     from filebrowser.base import FileObject
-    from .models import CustomMap
 except ImportError:
     # starting this worker outside of django instance, so import
     # settings from working directory and set up Celery.app directly
@@ -178,6 +182,9 @@ def save_png(filename, map_id):
 
     # store to db
 
+    # need to do this import here, because need to import tasks in models.py
+    from .models import CustomMap
+
     # pylint: disable=no-member
     map = CustomMap.objects.get(id=map_id)
 
@@ -191,6 +198,9 @@ def save_png(filename, map_id):
 
 @shared_task(name="maps.render_map", ignore_result=True)
 def render_map(map_id):
+    # need to do this import here, because need to import tasks in models.py
+    from .models import CustomMap
+
     # pylint: disable=no-member
     map = CustomMap.objects.get(id=map_id)
 

@@ -15,6 +15,7 @@ from filebrowser.fields import FileBrowseField
 from notaro.models import Note
 
 from .managers import CurrentSiteGeoManager, GenGeoManager
+from .tasks import render_map
 
 
 def cleanname(name):
@@ -128,6 +129,9 @@ class CustomMapMarker(models.Model):
             verbose_name="Stil")
     position = models.IntegerField(default=1)
 
+    class Meta:
+        ordering = ('position', )
+
 
 class CustomMap(models.Model):
 
@@ -166,6 +170,12 @@ class CustomMap(models.Model):
 
     all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
+
+    def save(self, *args, **kwargs):
+        if self.refresh:
+            render_map.delay(self.id)
+            self.refresh = False
+        super(CustomMap, self).save(*args, **kwargs)
 
     def get_render_status(self):
         if self.render_status == CustomMap.RENDERED:
@@ -209,3 +219,8 @@ class CustomMap(models.Model):
     def get_absolute_url(self):
         return reverse('custommap-detail',
                        kwargs={'pk':  self.id, })
+
+    class Meta:
+        ordering = ('-id', )
+        verbose_name = 'Eigene Landkarte'
+        verbose_name_plural = 'Eigene Landkarten'

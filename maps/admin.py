@@ -155,7 +155,7 @@ class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin
 
     fieldsets = (
             ('', {'fields': ('title', 'description', ), }),
-            ('Geo-Daten', {'fields': ('bbox', ), }),
+            ('Geo-Daten', {'fields': ('refresh', 'bbox', ), }),
             ('Marker', {'classes': ('placeholder custommapmarker_set-group', ),
                         'fields': ()}),
             ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
@@ -163,8 +163,8 @@ class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin
     inlines = [CustomMapMarkerInline, ]
     raw_id_fields = ('sites', )
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
-    list_display = ('title', 'view_on_site_link', )
-    search_fields = ('title', 'text', )
+    list_display = ('id', 'title', 'render_status', 'view_on_site_link', )
+    search_fields = ('title', 'description', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
     pnt = Point(8, 50.5, srid=4326)

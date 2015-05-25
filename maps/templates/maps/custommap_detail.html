@@ -68,9 +68,16 @@ $(window).on('map:init', function (e) {
 {{ object.description }}
 {% endfilter %}
             </div>
-            <div style="margin-bottom: 50px;">
+            <div style="margin-bottom: 10px;">
+                <p class="cabin" style="margin-bottom: 20px; font-size: 100%;">Status: {{ object.get_render_status }}</p>
                 {% if object.rendered %}<img style="width: 100%;" src="{{ object.rendered.url }}">{% else %}<p class="cabin">Es ist noch kein gerendertes Bild der Karte verfügbar.</p>{% endif %}
-                <p class="cabin" style="margin-top: 20px; font-size: 100%;">Status: {{ object.get_render_status }}</p>
+            </div>
+            <div style="margin-bottom: 50px;">
+                {% for m in object.custommapmarker_set.all %}
+                {% ifnotequal m.description '-' %}
+                <b>{{ m.label }}</b> {% firstof m.description m.place.title  %} <br>
+                {% endifnotequal %}
+                {% endfor %}
             </div>
 
             {% leaflet_map "custommap" %}
