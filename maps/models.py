@@ -167,6 +167,14 @@ class CustomMap(models.Model):
     all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
 
+    def get_render_status(self):
+        if self.render_status == CustomMap.RENDERED:
+            return 'Aktuelle Karte ist gerendert.'
+        if self.render_status == CustomMap.NOTRENDERED:
+            return 'Aktuelle Karte ist noch nicht gerendert.'
+        return 'Aktuelle Karte wird gerade gerendert (id %s).' % self.render_status
+
+
     def geojson(self):
         gj = {
                 "type": "FeatureCollection",
@@ -177,8 +185,8 @@ class CustomMap(models.Model):
                         "geometry": {
                             "type": "Point",
                             "coordinates": [
-                                m.place.location.x,
-                                m.place.location.y]
+                                m.place.location.x + m.label_offset_x,
+                                m.place.location.y + m.label_offset_y, ]
                             },
                         "properties": {
                             "label": m.label,

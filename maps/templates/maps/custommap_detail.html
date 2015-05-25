@@ -2,6 +2,7 @@
 {% extends "_layouts/base_leaflet.html" %}
 {% load static %}
 {% load markup_tags %}
+{% load fb_versions %}
 {% load leaflet_tags %}
 {% load l10n %}
 
@@ -66,6 +67,10 @@ $(window).on('map:init', function (e) {
 {% filter apply_markup:"genrestructuredtext" %}
 {{ object.description }}
 {% endfilter %}
+            </div>
+            <div style="margin-bottom: 50px;">
+                {% if object.rendered %}<img style="width: 100%;" src="{{ object.rendered.url }}">{% else %}<p class="cabin">Es ist noch kein gerendertes Bild der Karte verfügbar.</p>{% endif %}
+                <p class="cabin" style="margin-top: 20px; font-size: 100%;">Status: {{ object.get_render_status }}</p>
             </div>
 
             {% leaflet_map "custommap" %}
