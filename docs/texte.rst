@@ -59,6 +59,9 @@ Familiendatenbank <links-personen>` (und natürlich :ref:`auf andere Texte
 <links-texte>` und auch :ref:`auf externe Webseiten <links-extern>`) eingefügt
 werden.
 
+
+.. _restructuredtext:
+
 ................
 ReStructuredText
 ................
@@ -290,6 +293,31 @@ auch die folgenden Größen verwenden:
 * ``:ib:`` Big
 * ``:il:`` Large
 
+.. _karten-einbinden:
+
+................
+Karten einbinden
+................
+
+Ähnlich wie Bilder können auch :ref:`eigene Landkarten <karten-chapter>` in
+Texte eingebunden werden: ``:m:`id```. Dabei ist ``id`` 
+die Zahl, die der Karte in der Datenbank zugeordnet ist. Dies ist die Zahl, die
+in der Liste der Karten im Admin-Bereich in der linken Spalte angezeigt wird.
+Sie wird auch auf der Detail-Seite der Karte in der Box in der rechten Spalte
+angezeigt.
+
+Mit ``:m:`` wird nur die Karte selbst eingebunden. Stattdessen kann man
+auch die folgenden Kodes verwenden:
+
+* ``:mt:`` Karte mit Titel
+* ``:ml:`` Karte mit Legende
+* ``:md:`` Karte mit Beschreibung (*d*\ escription)
+* ``:mtl:`` Karte mit Titel und Legende
+* ``:mtld:`` Karte mit Titel, Legende und Beschreibung
+
+(Nach dem ``m`` sind alle Kombinationen von ``t``, ``d`` und ``l`` erlaubt. Die
+Reihenfolge ist irrelevant.)
+
 
 .. _autocomplete-editor:
 
@@ -299,7 +327,7 @@ Autocomplete
 
 Für :ref:`Links zu Objekten der Familiendatenbank <links-personen>` gibt es eine
 autocomplete-Funktion. Dafür gibt man den ersten Teil des Links ein, zum
-Beispiel ``:p:\`Ulrich`` und drückt dann ``Ctrl-Leertaste``. Es wird dann eine Liste
+Beispiel ``:p:`Ulrich`` und drückt dann ``Ctrl-Leertaste``. Es wird dann eine Liste
 von passenden Objekten angezeigt, und durch Klick wird das entsprechende handle
 am Ende eingefügt.
 
