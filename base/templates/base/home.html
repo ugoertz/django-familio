@@ -177,10 +177,10 @@ $(window).on('map:init', function (e) {
             {% leaflet_map "recentplaces" %}
             <div class="cabin" style="color: gray; margin-top: 50px;">
                 <h2><a href="/forum/">Aktuelle Beiträge im Forum</a></h2>
-                {% pybb_get_latest_posts cnt=5 as topics %}
+                {% pybb_get_latest_posts cnt=5 as posts %}
                 <ul class="list-group">
-                {% for t in topics %}
-                <li class="list-group-item"><a href="{{ t.get_absolute_url }}">{{ t.user.get_full_name }}: {{ t }}</a></li>
+                {% for p in posts %}
+                <li class="list-group-item"><a href="{{ p.get_absolute_url }}">{{ p.user.get_full_name }} - {{ p.topic }}:</br><span style="font-size: 80%;">{{ p }}</span></a></li>
                 {% endfor %}
                 </ul>
             </div>
