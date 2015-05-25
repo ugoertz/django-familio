@@ -177,6 +177,7 @@ def save_png(filename, map_id):
                 settings.FILEBROWSER_DIRECTORY,
                 'maps'),
             suffix='.png')
+    os.fchmod(outfile, 0664)
     fn = fn.encode('utf-8')
     urllib.urlretrieve('%s%s' % (settings.MAP_SERVER, filename), fn)
 
