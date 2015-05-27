@@ -49,15 +49,28 @@ def get_text(name, rawtext, text, lineno, inliner,
 
             try:
                 img = Picture.objects.get(id=int(text))
+                img_options = {}
+                img_options.update(options)
+                try:
+                    img_options['width'] = {
+                            'thumbnail': '2cm',
+                            'small': '4cm',
+                            'medium': '6cm',
+                            'big': '8cm', }[version]
+                except KeyError:
+                    pass
                 nodelist = [nodes.image(uri='/../media/' + img.image.__unicode__(),
-                                        **options), ]
+                                        **img_options), ]
                 if img.caption:
-                    settings = OptionParser(components=(Parser,))\
+                    settgs = OptionParser(components=(Parser,))\
                             .get_default_values()
                     parser = Parser()
-                    document = new_document('caption', settings)
-                    parser.parse(img.get_caption(), document)
-                    nodelist[0].children.extend(document.children)
+                    document = new_document('caption', settgs)
+                    try:
+                        parser.parse(img.get_caption(), document)
+                        nodelist[0].children.extend(document.children)
+                    except:
+                        pass
             except ObjectDoesNotExist:
                 nodelist = []
         elif name.startswith('m'):
@@ -74,12 +87,15 @@ def get_text(name, rawtext, text, lineno, inliner,
                 if include_title and map.title:
                     nodelist.append(nodes.paragraph('', map.title, **options))
                 if include_description and map.description:
-                    settings = OptionParser(components=(Parser,))\
+                    settgs = OptionParser(components=(Parser,))\
                             .get_default_values()
                     parser = Parser()
-                    document = new_document('caption', settings)
-                    parser.parse(map.description, document)
-                    nodelist.extend(document.children)
+                    document = new_document('caption', settgs)
+                    try:
+                        parser.parse(map.description, document)
+                        nodelist.extend(document.children)
+                    except:
+                        pass
                 if include_legend:
                     for m in map.custommapmarker_set.all():
                         if m.description == '-':
@@ -107,7 +123,7 @@ def get_text(name, rawtext, text, lineno, inliner,
             #     # FIXME: check that handle exists on some site
             nodelist = [nodes.inline(rawtext, t, **options), ]
     except:
-        msg = inliner.reporter.error('Problem when evaluating handle',
+        msg = inliner.reporter.error('Problem when evaluating handle: %s %s' % (text, rawtext, ),
                                      line=lineno)
         prb = inliner.problematic(text, rawtext, msg)
         return [prb], [msg]
