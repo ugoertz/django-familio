@@ -20,6 +20,19 @@
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "notaro/source_detail.rst" %}
             {% endfilter %}
+            {% with documents=object.documents.on_site %}
+            {% if documents %}
+            <h3>Zugehörige Dokumente</h3>
+            <table class="table">
+            {% for d in documents %}
+            <tr>
+                <td style="text-align: left;"><a href="{{ d.get_absolute_url }}">{{ d.name }}</a></td>
+                <td><a href="{{ d.doc.url }}">{{ d.doc.extension|cut:"." }} ({{ d.doc.filesize|filesizeformat }})</a></td>
+            </tr>
+            {% endfor %}
+            </table>
+            {% endif %}
+            {% endwith %}
             <hr>
             {% include "comments/comments.html" %}
         </div>
