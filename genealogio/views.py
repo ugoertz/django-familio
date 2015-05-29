@@ -575,7 +575,7 @@ def booktemplate():
             ['1_Familien', ] + families +
             ['1_Ereignisse', ] + events +
             ((['1_Quellen', ] + sources) if sources else []) +
-            ['1_Anhang', '2_Ereignisse in den Zeitstrahlen', ] + tlitems
+            ['1_Verschiedenes', '2_Ereignisse in den Zeitstrahlen', ] + tlitems
             )
 
 
