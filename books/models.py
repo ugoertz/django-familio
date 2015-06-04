@@ -9,7 +9,10 @@ from collections import defaultdict
 import json
 import os
 import os.path
+import re
+import shutil
 import tempfile
+import time
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -60,7 +63,8 @@ FLAGS_FLAT = [(FLAGS[m][o]['position'], m, o)  for m in FLAGS for o in FLAGS[m]]
 FLAGS_FLAT.sort()  # sort by position
 
 
-SEPARATORS = ':=-~`.'
+SEPARATORS = '&=-~`.:\'"^_*+#!$%(),/;<>?@[]{|}'
+
 
 INDEX_TEMPLATE_HEADER = '''
 =========================
@@ -295,11 +299,24 @@ class Book(models.Model):
             upload_to=get_upload_to)
 
     def save(self, *args, **kwargs):
-        if not self.directory:
-            self.directory = tempfile.mkdtemp(
+        ctr = 0
+        while ctr < 5 and not self.directory:
+            ctr += 1
+            d = os.path.basename(tempfile.mkdtemp(
                     dir=os.path.join(
                         settings.MEDIA_ROOT,
-                        settings.PDF_DIRECTORY))
+                        'tmp',
+                        settings.PDF_DIRECTORY)))
+            dest = os.path.join(
+                    settings.MEDIA_ROOT, settings.PDF_DIRECTORY, d)
+            if not os.path.exists(dest):
+                os.mkdir(dest)
+                self.directory = d
+            else:
+                print dest
+        if not self.directory:
+            # something went wrong
+            raise Exception
 
         # pylint: disable=no-member
         if self.site_id is None:
@@ -393,19 +410,54 @@ class Book(models.Model):
         f = json.loads(self.flags)
         return f[model][flag]
 
-    def get_directory(self):
-        # throw an error if directory is not set yet
-        # (model instance must be save before directory can ge retrieved)
-        assert self.directory
-        return self.directory
+    def get_directory_tmp(self):
+        """
+        Returns the directory where sphinx and xelatex are run.
+        """
+
+        return os.path.join(
+                settings.MEDIA_ROOT,
+                'tmp',
+                settings.PDF_DIRECTORY,
+                self.directory)
+
+    def get_directory_dest(self):
+        """
+        Returns the directory where the final zip and pdf will be stored (and
+        which is exposed to the user.).
+        """
+
+        return os.path.join(
+                settings.MEDIA_ROOT,
+                settings.PDF_DIRECTORY,
+                self.directory)
 
     def setup_sphinx(self):
         """
-        Create sphinx environment in self.directory.
+        Create sphinx environment in self.get_directory_tmp().
         Write custom conf.py.
         """
 
-        pass # FIXME
+        # copy sphinx files ...
+        for f in [
+                'conf.py', 'sphinx.sty',
+                'appendix.rst', 'license_custom.rst',
+                'Makefile', 'Makefile-pdf', ]:
+            shutil.copy(
+                    os.path.join(
+                        settings.PROJECT_ROOT,
+                        'pdfexport',
+                        f),
+                    self.get_directory_tmp())
+
+        os.mkdir(os.path.join(self.get_directory_tmp(), 'myext'))
+        for f in ['myext/__init__.py', 'myext/genealogio.py', ]:
+            shutil.copy(
+                    os.path.join(
+                        settings.PROJECT_ROOT,
+                        'pdfexport',
+                        f),
+                    os.path.join(self.get_directory_tmp(), 'myext'))
 
     def create_rst(self):
         """
@@ -413,7 +465,7 @@ class Book(models.Model):
         in self.directory. Also create a corresponding index.rst file.
         """
 
-        index = open(os.path.join(self.get_directory(), 'index.rst'), 'w')
+        index = open(os.path.join(self.get_directory_tmp(), 'index.rst'), 'w')
         index.write(INDEX_TEMPLATE_HEADER)
 
         for counter, collection in enumerate(self.root.collection_set.all()):
@@ -422,9 +474,9 @@ class Book(models.Model):
 
             # write chapter?.rst
             chapter = open(os.path.join(
-                self.get_directory(),
+                self.get_directory_tmp(),
                 'chapter_%d.rst' % counter), 'w')
-            chapter.write(collection.get_rst())
+            chapter.write(collection.get_rst().encode('utf8'))
             chapter.write('\n\n.. |br| raw:: html\n\n  <br />\n\n')
             chapter.close()
         index.write(INDEX_TEMPLATE_FOOTER)
@@ -435,33 +487,60 @@ class Book(models.Model):
         Compile tex file from the *.rst files (which must be created before).
         Also create a zip archive containing the tex file and everything else
         that is needed to run xelatex.
-        Copy zip file to "MEDIA_ROOT/%d_pdfs/%s/" % (SITE_ID, self.directory)
+        Copy zip file to destination directory
         """
 
-        # make latex
-        pass # FIXME
+        shutil.rmtree(
+                os.path.join(self.get_directory_tmp(), '_build'),
+                ignore_errors=True)
+        os.environ['DJANGO_PROJECT_DIR'] = settings.PROJECT_ROOT
+        os.environ['DJANGO_SETTINGS_MODULE'] = settings.SETTINGS_PATH
+        os.system('. %s/bin/activate && cd %s && make latex' %
+                (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
+        shutil.copy(
+                os.path.join(self.get_directory_tmp(), 'Makefile-pdf'),
+                os.path.join(self.get_directory_tmp(), '_build/latex/Makefile'))
+
+        shutil.make_archive(
+                os.path.join(self.get_directory_dest(), 'chronik'), 'zip',
+                root_dir=os.path.join(self.get_directory_tmp(), '_build'),
+                base_dir='latex')
 
     def create_pdf(self):
-        # mogrify (using self.mogrify_options)
-        # cp sphinx.sty
-        # xelatex
-        # xelatex
-        pass # FIXME
+        # FIXME set mogrify options, if required
+        os.system(
+                'cd %s && make pdf'
+                % os.path.join(self.get_directory_tmp(), '_build/latex'))
+        if self.titlepage:
+            os.system(
+                'cd %s && pdftk A=titlepage.pdf B=chronicle.pdf cat A B2- output c.pdf')
+            fn = 'c'
+        else:
+            fn = 'chronicle'
+        shutil.copy(
+                os.path.join(
+                    self.get_directory_tmp(),
+                    '_build/latex/%s.pdf' % fn),
+                os.path.join(self.get_directory_dest(), 'chronik.pdf'))
 
     def get_pdf_url(self):
-        fn = os.path.join(self.get_directory(), 'chronik.pdf')
+        fn = os.path.join(self.get_directory_dest(), 'chronik.pdf')
         if os.path.exists(fn):
-            return fn
+            return settings.MEDIA_URL +\
+                '%s/%s/chronik.pdf' % (settings.PDF_DIRECTORY, self.directory)
         return None
 
     def get_zip_url(self):
-        fn = os.path.join(self.get_directory(), 'chronik.zip')
+        fn = os.path.join(self.get_directory_dest(), 'chronik.zip')
         if os.path.exists(fn):
             return fn
         return None
 
     def get_pdf_creation_date(self):
-        return # FIXME
+        if not self.get_pdf_url():
+            return
+        return time.ctime(os.path.getmtime(
+            os.path.join(self.get_directory_dest(), 'chronik.pdf')))
 
     def get_absolute_url(self):
         return reverse('book-detail', kwargs={'pk': self.pk, })
@@ -523,7 +602,8 @@ class Item(models.Model):
         context = {
                 'object': self.obj,
                 'latexmode': True,
-                'itemtitle': self.title, }
+                'itemtitle':
+                    self.title if self.use_custom_title_in_pdf else '', }
 
         if self.obj_content_type == ContentType.objects.get_for_model(Family):
             if self.get_flag('genealogio.family', 'include_timeline'):
@@ -536,10 +616,21 @@ class Item(models.Model):
         # a celery task to get this done...; could return value to the caller of
         # all things that need to be done before proceeeding ...)
 
-        return render_to_string(
+        result = render_to_string(
                 "%s/%s_detail.rst" % (
                     self.obj._meta.app_label, self.obj._meta.model_name),
-                context).encode('utf8')
+                context)
+
+        # Correct headings according to collection level:
+        # Replace heading defined by SEPARATORS[i] in result by heading defined
+        # by SEPARATORS[i+self.parent.level]
+        for i in range(len(SEPARATORS)-self.parent.level-1, -1, -1):
+            expr = re.compile('^\\%s{4,}' % SEPARATORS[i], re.MULTILINE)
+            result = re.sub(
+                    expr,
+                    lambda m: SEPARATORS[i+self.parent.level]*len(m.group(0)),
+                    result)
+        return result
 
     def set_text_from_template(self):
         self.text = self.get_rst(force_from_template=True)
@@ -588,7 +679,9 @@ class Item(models.Model):
 
     def __unicode__(self):
         return 'Eintrag - %s - %d: %s' % (
-                self.obj_content_type.name if self.obj_content_type else '', self.obj_id if self.obj_content_type else 0, self.title)
+                self.obj_content_type.name if self.obj_content_type else '',
+                self.obj_id if self.obj_content_type else 0,
+                self.title)
 
     class Meta:
         ordering = ('position', )

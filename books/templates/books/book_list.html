@@ -16,7 +16,7 @@
                     <td>{{ book.description }}</td>
                     {% with authors=book.authors.all %}
                     <td>{% for a in authors %}{{ a.get_full_name }}, {% endfor %}</td>
-                    <td>... link to pdf ...</td>
+                    <td>{% with pdflink=book.get_pdf_url %}{% if pdflink %}<a href="{{ pdflink }}">pdf</a> ({{ book.get_pdf_creation_date }}){% else %}Noch kein PDF vorhanden{% endif %}{% endwith %}</td>
                     <td>{% if request.user in authors %}<a href="{{ book.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>{% endif %}
                     {% endwith %}
                 </tr>

@@ -1,0 +1,9 @@
+MOGRIFY_OPTIONS?=-strip -density 90 *.jpg
+
+pdf:
+	mogrify $(MOGRIFY_OPTIONS)
+	rm -f sphinx.sty
+	cp ../../sphinx.sty .
+	xelatex chronicle.tex
+	xelatex chronicle.tex
+

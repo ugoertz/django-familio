@@ -20,7 +20,10 @@ import shlex
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.environ['DJANGO_PROJECT_DIR'])
+
+print sys.path
+print os.environ
 
 # put the settings file that should be used here or define the environment
 # variable DJANGO_SETTINGS_MODULE in the shell
@@ -247,7 +250,7 @@ latex_elements = {
     'inputenc': '',
     'utf8extra': '',
     'fncychap': '\\usepackage[Sonny]{fncychap}',
-    'releasename': u'März 2015',
+    'releasename': u'',
 }
 
 

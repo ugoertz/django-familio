@@ -15,7 +15,7 @@ Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.
 
 {% for pic in object.get_pictures %}
 {% if latexmode %}
-.. image:: /../media/{{ pic.image }}
+.. image:: /../../../{{ pic.image }}
     :width: 10cm
 {% else %}
 .. image:: {% version pic.image 'medium' %}
