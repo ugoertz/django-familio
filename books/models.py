@@ -247,7 +247,10 @@ class Collection(models.Model):
 def get_upload_to(instance, filename):
     filename = os.path.basename(filename)
 
-    return os.path.join(instance.directory, 'titlepage.pdf')
+    return os.path.join(
+            settings.PDF_DIRECTORY,
+            instance.directory,
+            'titlepage.pdf')
 
 
 class Book(models.Model):
@@ -293,7 +296,10 @@ class Book(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.directory:
-            self.directory = tempfile.mkdtemp(dir=settings.PDF_DIRECTORY)
+            self.directory = tempfile.mkdtemp(
+                    dir=os.path.join(
+                        settings.MEDIA_ROOT,
+                        settings.PDF_DIRECTORY))
 
         # pylint: disable=no-member
         if self.site_id is None:

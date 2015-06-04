@@ -63,6 +63,12 @@ def download(request, fname):
     if not request.user.is_authenticated():
         raise Http404
 
+    if fname.startswith('tmp'):
+        # The tmp directory is used to store the pdfexport related files. Those
+        # files that should be served to users will be copied to another
+        # directory.
+        raise Http404
+
     # for files within a filebrowser-versions directory, check permissions
     # based on the relative path
     if fname.startswith('%d_versions/' % settings.SITE_ID):
@@ -75,8 +81,9 @@ def download(request, fname):
         # (versions for uploads to current site, and non-protected directories)
         return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
 
-    if fn.startswith('%d_uploads/' % settings.SITE_ID):
-        # the upload directory for the current site;
+    if (fn.startswith('%d_uploads/' % settings.SITE_ID) or
+        fn.startswith('%d_pdfs/' % settings.SITE_ID)):
+        # the upload/pdfs directory for the current site;
         # available without restrictions
         return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
 

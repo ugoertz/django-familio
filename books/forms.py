@@ -156,7 +156,9 @@ class BookCreateForm(BookForm):
         ), label='Objekte hinzufügen')
 
     # pylint: disable=no-member
-    reference = forms.CharField(widget=forms.Select(choices=[]))
+    reference = forms.CharField(
+            required=False,
+            widget=forms.Select(choices=[]))
 
     def __init__(self, *args, **kwargs):
         super(BookCreateForm, self).__init__(*args, **kwargs)
