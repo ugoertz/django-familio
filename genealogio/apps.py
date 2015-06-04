@@ -21,3 +21,6 @@ class GenealogioConfig(AppConfig):
         EventModel = self.get_model("Event")
         watson.register(EventModel.objects.all(), store=('handle', ))
 
+        TimelineItemModel = self.get_model("TimelineItem")
+        watson.register(TimelineItemModel.objects.all())
+

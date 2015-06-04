@@ -16,8 +16,8 @@
 
 {% if latexmode %}.. _{{ object.handle }}:{% endif %}
 
-Familie {{ object }}
-=================================================================================================================================
+{% if itemtitle %}{{ itemtitle }}{% else %}Familie {{ object }}{% endif %}
+======================================================================================================================================================================================
 
 {% if object.start_date or object.end_date %}
 {{ object.start_date|partial_date:"d.m.Y" }} - {{ object.end_date|partial_date:"d.m.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
@@ -49,7 +49,7 @@ Familie {{ object }}
 
 {% include "genealogio/notes.rst" %}
 
-{% ifnotequal fr 2100 %}
+{% if display_timeline %}
 
 Zeitstrahl
 ----------
@@ -83,8 +83,7 @@ Zeitstrahl
 
 {% endfor %}
 
-
-{% endifnotequal %}
+{% endif %}
 
 {% include "notaro/sources.rst" with all_sources=object.familysource_set.all %}
 

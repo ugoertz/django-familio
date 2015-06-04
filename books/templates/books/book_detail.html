@@ -1,0 +1,111 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load typogrify_tags %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-switch.min.css' %}">
+<style>
+div.bootstrap-switch span {
+    font-family: cabin, helvetica, sans;
+}
+label, input {
+    font-family: cabin, helvetica, sans;
+}
+textarea {
+    font-family: monospace, courier;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-switch.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#id_populate').selectize({});
+    $('#id_reference').selectize({
+        valueField: 'id',
+        searchField: ['label'],
+        closeAfterSelect: true,
+        render: {
+            option:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                },
+            item:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                }
+        },
+        create: false,
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            Dajaxice.books.get_persons_families(callback,
+                    {"query": query });
+        }
+    });
+
+    // bootstrapSwitch the checkboxes for model fields
+    $('label > input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "small"
+    });
+
+    // bootstrapSwitch the c_flags with "fromself" class
+    $('span.fromself input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "mini"
+    });
+});
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 cabin">
+            <h2>Buchprojekt {{ object.title }}</h2>
+
+            {% crispy form form.helper %}
+
+            {% if object.authors.all %}
+            <p>Autoren:
+            {% for a in object.authors.all %}{{ a.get_full_name }}, {% endfor %}
+            </p>
+
+            <p>Download:
+            {% with url=object.get_pdf_url %}
+            {% if url %}
+            <a href="url">pdf-Datei</a>
+            {% else %}
+            Noch keine pdf-Datei erstellt.
+            {% endif %}
+            {% endwith %}
+            {% with url=object.get_zip_url %}
+            {% if url %}
+            <a href="url">zip-Archiv der TeX-Datei</a>
+            {% endif %}
+            {% endwith %}
+            </p>
+            {% endif %}
+
+            {% if object.root %}
+            <h3>Inhalt</h3>
+            <a class="btn btn-default" href="{{ object.root.get_absolute_url }}">Bearbeiten</a>
+
+            {% include "books/collection_snippet.html" with object=object.root recursive=True %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

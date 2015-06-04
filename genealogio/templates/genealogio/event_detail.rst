@@ -3,8 +3,8 @@
 
 {% if latexmode %}.. _{{ object.handle }}:{% endif %}
 
-{{ object.title }}
-===============================================================================
+{% firstof itemtitle object.title %}
+======================================================================================================================================================================================
 
 {% if object.date %}am {{ object.date|partial_date:"d.m.Y" }}{% endif %}
 {% if object.place %}in `{{ object.place }} <{% url "place-detail" object.place.id %}>`__ {% endif %}

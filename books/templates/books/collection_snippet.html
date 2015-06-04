@@ -1,0 +1,42 @@
+{% if object.item_set.all %}
+<h4>Einträge</h4>
+{% endif %}
+<ul style="margin-top: 20px;" class="list-group" id="items">
+
+{% for item in object.item_set.all %}
+<li class="list-group-item" data-id="item-{{ item.id }}">
+    {% if sortable %}<span class="sort-handle glyphicon glyphicon-resize-vertical"></span>{% endif %}
+
+    {{ item }}
+
+    <span class="pull-right">
+        <a href="{{ item.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>
+        {% if allow_delete %}<span class="btn btn-warning btn-sm js-remove">Löschen</span>{% endif %}
+    </span>
+</li>
+{% endfor %}
+</ul>
+
+{% if object.collection_set.all %}
+<h4>Unterkollektionen</h4>
+{% endif %}
+<ul style="margin-top: 20px;" class="list-group" id="collections">
+{% for collection in object.collection_set.all %}
+<li class="list-group-item" data-id="coll-{{ collection.id }}">
+    {% if sortable %}<span class="sort-handle glyphicon glyphicon-resize-vertical"></span>{% endif %}
+
+    {{ collection }}
+
+    <span class="pull-right">
+        <a href="{{ collection.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>
+    {% if allow_delete %}<span class="btn btn-warning btn-sm js-remove">Löschen</span>{% endif %}
+    </span>
+
+    {% if recursive %}
+    {% include "books/collection_snippet.html" with recursive=True object=collection %}
+    {% endif %}
+</li>
+{% endfor %}
+
+</ul>
+

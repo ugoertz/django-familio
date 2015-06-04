@@ -345,6 +345,22 @@ class Person(PrimaryObject):
                                      verbose_name='Quellen')
 
     @property
+    def year_of_birth(self):
+        try:
+            # pylint: disable=no-member
+            return self.datebirth.year
+        except:
+            return ''
+
+    @property
+    def year_of_death(self):
+        try:
+            # pylint: disable=no-member
+            return self.datedeath.year
+        except:
+            return ''
+
+    @property
     def placebirth(self):
         try:
             return self.places.get(personplace__typ=PersonPlace.BIRTH)
@@ -357,6 +373,28 @@ class Person(PrimaryObject):
             return self.places.get(personplace__typ=PersonPlace.DEATH)
         except:
             return
+
+    def ancestors(self):
+        result = set()
+        for f in self.family.all():
+            # QUESTION: should we limit this to child_type==BIRTH? FIXME
+            if f.father:
+                result.add(f.father)
+                result |= f.father.ancestors()
+            if f.mother:
+                result.add(f.mother)
+                result |= f.mother.ancestors()
+
+        return result
+
+    def descendants(self):
+        result = set()
+        for children in [set(x[1]) for x in self.get_children()]:
+            result |= children
+            for child in children:
+                result |= child.descendants()
+
+        return result
 
     def get_last_name(self, separator=''):
         """Return the last name, from the related Name instances."""
@@ -481,8 +519,17 @@ class Person(PrimaryObject):
             pass
 
     def get_children(self):
-        """Get all children of this person (as stored in the Family objects
-        attached to it via the family m2m."""
+        """
+        Get all children of this person (as stored in the Family objects
+        attached to it via the family m2m.
+
+        Returns a list of tuples, one tuple for each family which gave rise to
+        children of self, each tuple consisting of
+        - other parent of the family
+        - queryset of children of that family
+        - text indicating whether the couple was/is married
+        - Family object
+        """
 
         # pylint: disable=no-member
         children = []

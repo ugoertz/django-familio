@@ -62,6 +62,7 @@ INSTALLED_APPS = (
     'braces',
     'taggit',
     'dajaxice',
+    'crispy_forms',
     # 'markdown',
     'django_markup',
     'typogrify',
@@ -80,6 +81,7 @@ INSTALLED_APPS = (
 
     # Local apps, referenced via appname
     'maps',
+    'books',
     'genealogio',
     'notaro',
     'partialdate',
@@ -434,6 +436,7 @@ PYBB_DEFAULT_TIMEZONE = 1
 PYBB_ATTACHMENT_ENABLE = True
 PYBB_PERMISSION_HANDLER = 'accounts.permissions.CustomPermissionHandler'
 
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 NOTARO_SETTINGS = {
     'autocomplete_helper': ('js/genrst-hint.js', ),

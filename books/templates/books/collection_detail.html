@@ -1,0 +1,139 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load typogrify_tags %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/bootstrap-switch.min.css' %}">
+<style>
+div.bootstrap-switch span {
+    font-family: cabin, helvetica, sans;
+}
+.ghost {
+    opacity: 0.4;
+}
+.sort-handle {
+    cursor: move;
+    cursor: -webkit-grabbing;
+}
+label, input, option, select {
+    font-family: cabin, helvetica, sans;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/bootstrap-switch.min.js' %}"></script>
+<script type="text/javascript" src="{% static "js/Sortable.min.js" %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    // bootstrapSwitch the checkboxes for model fields
+    $('label > input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "small"
+    });
+
+    // bootstrapSwitch the c_flags with "fromparentON" class
+    $('span.fromparentON input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "info",
+        size: "mini"
+    });
+
+    // bootstrapSwitch the c_flags with "fromparentOFF" class
+    $('span.fromparentOFF input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        offColor: "info",
+        size: "mini"
+    });
+
+    // bootstrapSwitch the c_flags with "fromself" class
+    $('span.fromself input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "mini"
+    });
+
+    // make lists sortable
+    var items = document.getElementById('items');
+    var sortableitems = Sortable.create(items, {
+        handle: '.sort-handle',
+        scroll: true,
+
+        // Bind delete buttons for items and subcollections.
+        // At this point we just remove the corresponding <li>.
+        // The corresponding id will not appear in sortable.toArray()
+        // anymore, and will be deleted from the database upon submission
+        // of the form.
+        filter: '.js-remove',
+        onFilter: function (evt) {
+            var e = sortableitems.closest(evt.item);
+            e && e.parentNode.removeChild(e);
+        }
+    });
+
+    var collections = document.getElementById('collections');
+    var sortablecollections = Sortable.create(collections, {
+        handle: '.sort-handle',
+        scroll: true,
+
+        // Bind delete buttons for items and subcollections.
+        // At this point we just remove the corresponding <li>.
+        // The corresponding id will not appear in sortable.toArray()
+        // anymore, and will be deleted from the database upon submission
+        // of the form.
+        filter: '.js-remove',
+        onFilter: function (evt) {
+            var e = sortablecollections.closest(evt.item);
+            e && e.parentNode.removeChild(e);
+        }
+    });
+
+    // save ordering to hidden form field upon submit
+    $('#submit-id-abspeichern').click(function() {
+        $('#id_ordering').val(JSON.stringify({
+            items: sortableitems.toArray(),
+            collections: sortablecollections.toArray()
+        }));
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="cabin col-md-12">
+            <div class="cabin" style="padding: 5px; margin-top: 10px; margin-bottom: 10px; background-color: lightblue;">
+                <a href="{{ object.book.get_absolute_url }}"><span class="glyphicon glyphicon-book"></span>{{ object.book.title }}</a> //
+                {% for c in object.parents %}
+                <a href="{{ c.get_absolute_url }}">({{ c.level }}) {{ c.title }}</a> //
+                {% endfor %}
+            </div>
+
+            <h2>Kollektion {{ object.title }}</h2>
+
+            {% crispy form form.helper %}
+
+            {% if object.id %} {# i.e., disable, when creting a new collection #}
+            <h3>Inhalt</h3>
+
+            {# <a href="" class="btn btn-default">In andere Kollektion einordnen</a> #}
+            <a href="{% url "collection-create" parent=object.id %}" class="btn btn-default">Neue Unterkollektion hinzufügen</a>
+            {% if object.level > 0 %}
+            <a href="{% url "item-create" parent=object.id %}" class="btn btn-default">Neuen Eintrag hinzufügen</a>
+            {% endif %}
+
+            {% include "books/collection_snippet.html" with sortable=True allow_delete=True %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

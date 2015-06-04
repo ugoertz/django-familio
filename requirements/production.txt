@@ -26,6 +26,7 @@ easy-thumbnails==2.2
 Markdown==2.6.1
 docutils==0.12
 typogrify==2.0.7
+django-crispy-forms==1.4.0
 
 # Security
 bleach==1.4.1

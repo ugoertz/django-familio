@@ -1,0 +1,178 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load dajaxice_templatetags %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-switch.min.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/show-hint.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/dialog.css' %}">
+<style>
+div.bootstrap-switch span {
+    font-family: cabin, helvetica, sans;
+}
+
+.CodeMirror {
+    /* Bootstrap Settings */
+    box-sizing: border-box;
+    margin: 0;
+    font: inherit;
+    overflow: auto;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    /* Code Mirror Settings */
+    font-family: monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+.CodeMirror-focused {
+    /* Bootstrap Settings */
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.CodeMirror div {
+    font-family: monospace;
+}
+
+label, input {
+    font-family: cabin, helvetica, sans;
+}
+</style>
+{% endblock %}
+
+{% block jsnocompress %}
+{{ block.super }}
+{% dajaxice_js_import %}
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-switch.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    // bootstrapSwitch the checkboxes for model fields
+    $('label > input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "small"
+    });
+
+    // bootstrapSwitch the c_flags with "fromparentON" class
+    $('span.fromparentON input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "info",
+        size: "mini"
+    });
+
+    // bootstrapSwitch the c_flags with "fromparentOFF" class
+    $('span.fromparentOFF input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        offColor: "info",
+        size: "mini"
+    });
+
+    // bootstrapSwitch the c_flags with "fromself" class
+    $('span.fromself input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "mini"
+    });
+
+
+
+    if ($("#id_text").size()) {
+        CodeMirror.commands.autocomplete = function(cm) {
+            cm.showHint({hint: CodeMirror.hint.genrst });
+        }
+        var editor = new CodeMirror.fromTextArea($("#id_text")[0],
+                { width: "600px", height: "500px", lineWrapping: true, mode: 'rst',
+                    extraKeys: {"Ctrl-Space": "autocomplete"}, });
+
+        window.editor = editor;
+    }
+
+    $('#id_obj_id').selectize({
+        valueField: 'id',
+        searchField: ['label'],
+        closeAfterSelect: true,
+        render: {
+            option:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                },
+            item:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                }
+        },
+        create: false,
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            Dajaxice.books.get_instances(callback,
+                    {"query": query, "model": $('#id_obj_content_type').val() });
+        }
+    });
+
+    $('#id_obj_content_type').selectize({
+        onChange: function(value) {
+            $('#id_obj_id')[0].selectize.clear();
+            $('#id_obj_id')[0].selectize.clearOptions();
+            $('#id_obj_id')[0].selectize.clearCache();
+        }
+    });
+
+});
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 cabin">
+            <div class="cabin" style="padding: 5px; margin-top: 10px; margin-bottom: 10px; background-color: lightblue;">
+                <a href="{{ object.parent.book.get_absolute_url }}">{{ object.parent.book.title }}</a> //
+                {% for c in object.parent.parents %}
+                ({{ c.level }}) <a href="{{ c.get_absolute_url }}">{{ c.title }}</a> //
+                {% endfor %}
+                Eintrag
+            </div>
+
+            <h2>Eintrag <a href="{{ object.obj.get_absolute_url }}">{{ object.obj }}</a></h2>
+
+            <p style="margin-bottom: 20px; font-size: 100%;">Zugeordnetes Objekt: {% if object.obj %}{{ object.obj_content_type }} <b>{{ object.obj }}</b>{% else %}-{% endif %}</p>
+
+            {% crispy form form.helper %}
+
+            <div style="margin-top: 20px;">
+                {% if object %}<a href="{% url "item-retrievetext" object.id %}" class="btn btn-default cabin">Text aus der Datenbank holen</a>{% endif %}
+            {# <a href="" class="btn btn-default">In andere Kollektion einordnen</a> #}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

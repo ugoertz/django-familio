@@ -23,7 +23,10 @@ from comments.models import Comment
 class CurrentSiteMixin(object):
     def get_queryset(self):
         qs = super(CurrentSiteMixin, self).get_queryset()
-        return qs.filter(sites=self.request.site)
+        try:
+            return qs.filter(sites=self.request.site)
+        except:
+            return qs.filter(site=self.request.site)
 
 
 def home(request):

@@ -1,0 +1,32 @@
+{% extends "_layouts/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="cabin col-md-12">
+            <h2>{{ page_title }}</h2>
+            <a href="{% url "book-create" %}" class="btn btn-success pull-right">Neues Buchprojekt anlegen</a>
+
+            {% if object_list %}
+            <table style="margin-top: 50px;" class="table">
+                <tr><th>Projekttitel</th><th>Kurzbeschreibung</th><th>Autoren</th></tr>
+                {% for book in object_list %}
+                <tr>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.description }}</td>
+                    {% with authors=book.authors.all %}
+                    <td>{% for a in authors %}{{ a.get_full_name }}, {% endfor %}</td>
+                    <td>... link to pdf ...</td>
+                    <td>{% if request.user in authors %}<a href="{{ book.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>{% endif %}
+                    {% endwith %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% include "notaro/pagination.html" %}
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
