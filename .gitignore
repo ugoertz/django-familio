@@ -26,6 +26,7 @@ familio/settings/*
 !familio/settings/test.py
 
 pdfexport/*.rst
+!pdfexport/appendix.rst
 pdfexport/_build
 
 htmlcov/*

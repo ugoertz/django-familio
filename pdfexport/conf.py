@@ -275,7 +275,7 @@ latex_show_pagerefs = True
 #latex_show_urls = False
 
 # Documents to append as an appendix to all manuals.
-#latex_appendices = []
+latex_appendices = ['appendix', ]
 
 # If false, no module index is generated.
 latex_domain_indices = False

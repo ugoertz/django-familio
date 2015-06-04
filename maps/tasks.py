@@ -1,7 +1,8 @@
 # -*- coding: utf8 -*-
 
 from __future__ import absolute_import
-from __future__ import unicode_literals
+# NOTE: Do not import unicode_literals here, since this conflicts with the
+# mapnik C++ bindings.
 
 import json
 import os
@@ -26,6 +27,27 @@ try:
 except ImportError:
     # starting this worker outside of django instance, so import
     # settings from working directory and set up Celery.app directly
+
+    # the "local" settings file must contain the following settings:
+    #
+    # CELERY_ALWAYS_EAGER = False  # required to activate celeryd
+    # BROKER_URL = 'amqp://username:password@rabbitmq_host/vhost'
+    # CELERY_RESULT_BACKEND = 'amqp'
+    # CELERY_ACCEPT_CONTENT = ['json']
+    # CELERY_TASK_SERIALIZER = 'json'
+    # CELERY_RESULT_SERIALIZER = 'json'
+    # MAP_DIRECTORY = "...../tilestache/cache/maps"
+    # STYLE_PREFIX = "...../maps"
+    # DEFAULT_STYLE = "nik4test"  # i.e., the directory ...../maps/nik4test
+    #                             # contains a mapnik style file mapnik.xml
+    #
+    # # the server where the rendered png files are stored and can be retrieved
+    # # by http
+    # MAP_SERVER = "http://tiles.geometry.de/maps/"
+    #
+    # # path to the watermark file (typically containing the OpenStreetMap
+    # # license notice)
+    # PATH_TO_WATERMARK = '/home/ug/devel/maps/watermark.png'
 
     # pylint: disable=import-error
     import settings
@@ -163,6 +185,17 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
 
     im = mapnik.Image(size[0], size[1])
     mapnik.render(m, im, scale_factor)
+
+    # add watermark
+    try:
+        watermark = mapnik.Image.open(settings.PATH_TO_WATERMARK)
+        x_offset = im.width() - watermark.width()
+        y_offset = im.height() - watermark.height()
+        opacity = 0.8
+        im.blend(x_offset,y_offset,watermark,opacity)
+    except:
+        pass
+
     im.save(filename.encode('utf-8'), fmt)
 
     return os.path.basename(filename)
