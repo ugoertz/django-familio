@@ -109,13 +109,13 @@ $(document).ready(function() {
     <div class="row">
         <div class="cabin col-md-12">
             <div class="cabin" style="padding: 5px; margin-top: 10px; margin-bottom: 10px; background-color: lightblue;">
-                <a href="{{ object.book.get_absolute_url }}"><span class="glyphicon glyphicon-book"></span>{{ object.book.title }}</a> //
+                <a href="{{ object.book.get_absolute_url }}"><span class="glyphicon glyphicon-book"></span> {{ object.book.title }}</a> //
                 {% for c in object.parents %}
                 <a href="{{ c.get_absolute_url }}">({{ c.level }}) {{ c.title }}</a> //
                 {% endfor %}
             </div>
 
-            <h2>Kollektion {{ object.title }}</h2>
+            <h2><span style="color: gray;">Kollektion</span> {{ object.title }}</h2>
 
             {% crispy form form.helper %}
 

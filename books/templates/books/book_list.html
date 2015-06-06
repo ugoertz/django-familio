@@ -5,7 +5,14 @@
     <div class="row">
         <div class="cabin col-md-12">
             <h2>{{ page_title }}</h2>
-            <a href="{% url "book-create" %}" class="btn btn-success pull-right">Neues Buchprojekt anlegen</a>
+            <p><span class="pull-right">
+            {% if public_books %}
+            <a class="btn btn-default" href="{% url 'my-book-list' %}">Meine Buchprojekte</a>
+            {% else %}
+            <a class="btn btn-default" href="{% url 'public-book-list' %}">Öffentlich verfügbare Bücher</a>
+            {% endif %}
+            <a href="{% url "book-create" %}" class="btn btn-success">Neues Buchprojekt anlegen</a>
+            </span></p>
 
             {% if object_list %}
             <table style="margin-top: 50px;" class="table">
@@ -16,7 +23,7 @@
                     <td>{{ book.description }}</td>
                     {% with authors=book.authors.all %}
                     <td>{% for a in authors %}{{ a.get_full_name }}, {% endfor %}</td>
-                    <td>{% with pdflink=book.get_pdf_url %}{% if pdflink %}<a href="{{ pdflink }}">pdf</a> ({{ book.get_pdf_creation_date }}){% else %}Noch kein PDF vorhanden{% endif %}{% endwith %}</td>
+                    <td>{% with pdflink=book.get_pdf_url %}{% if pdflink %}<a href="{{ pdflink }}">pdf</a> ({{ book.get_pdf_creation_date }}){% else %}Noch kein PDF vorhanden<br>{{ book.render_status }}{% endif %}{% endwith %}</td>
                     <td>{% if request.user in authors %}<a href="{{ book.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>{% endif %}
                     {% endwith %}
                 </tr>

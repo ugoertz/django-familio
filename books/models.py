@@ -240,7 +240,7 @@ class Collection(models.Model):
 
     def __unicode__(self):
         # pylint: disable=no-member
-        return '%s (in Buch %s)' % (self.title, self.book.title)
+        return '%s' % (self.title, )
 
     class Meta:
         ordering = ('position', )
@@ -258,6 +258,8 @@ def get_upload_to(instance, filename):
 
 
 class Book(models.Model):
+
+    RENDERED = 'RENDERED'
 
     title = models.CharField(
             max_length=50,
@@ -312,8 +314,7 @@ class Book(models.Model):
             if not os.path.exists(dest):
                 os.mkdir(dest)
                 self.directory = d
-            else:
-                print dest
+                self.setup_sphinx()
         if not self.directory:
             # something went wrong
             raise Exception
@@ -440,7 +441,7 @@ class Book(models.Model):
 
         # copy sphinx files ...
         for f in [
-                'conf.py', 'sphinx.sty',
+                'sphinx.sty',
                 'appendix.rst', 'license_custom.rst',
                 'Makefile', 'Makefile-pdf', ]:
             shutil.copy(
@@ -482,6 +483,14 @@ class Book(models.Model):
         index.write(INDEX_TEMPLATE_FOOTER)
         index.close()
 
+        # create conf.py base on self.root.title
+        os.system(
+                'sed "s/.*# TITLE/u\'%s\',/" %s/conf.py > %s/conf.py'
+                % (
+                    self.root.title or 'Unsere Familiengeschichte',
+                    os.path.join(settings.PROJECT_ROOT, 'pdfexport'),
+                    self.get_directory_tmp()))
+
     def create_tex(self):
         """
         Compile tex file from the *.rst files (which must be created before).
@@ -512,8 +521,12 @@ class Book(models.Model):
                 'cd %s && make pdf'
                 % os.path.join(self.get_directory_tmp(), '_build/latex'))
         if self.titlepage:
+            shutil.copy(
+                    os.path.join(self.get_directory_dest(), 'titlepage.pdf'),
+                    os.path.join(self.get_directory_tmp(), '_build/latex'))
             os.system(
-                'cd %s && pdftk A=titlepage.pdf B=chronicle.pdf cat A B2- output c.pdf')
+                'cd %s && pdftk A=titlepage.pdf B=chronicle.pdf cat A B2-end output c.pdf'
+                % os.path.join(self.get_directory_tmp(), '_build/latex'))
             fn = 'c'
         else:
             fn = 'chronicle'
@@ -533,7 +546,8 @@ class Book(models.Model):
     def get_zip_url(self):
         fn = os.path.join(self.get_directory_dest(), 'chronik.zip')
         if os.path.exists(fn):
-            return fn
+            return settings.MEDIA_URL +\
+                '%s/%s/chronik.zip' % (settings.PDF_DIRECTORY, self.directory)
         return None
 
     def get_pdf_creation_date(self):
@@ -594,32 +608,33 @@ class Item(models.Model):
         """
 
         if self.text and not force_from_template:
-            return self.text
-
-        if not self.obj:
+            result = self.text
+        elif not self.obj:
             return ''
+        else:
+            context = {
+                    'object': self.obj,
+                    'latexmode': True,
+                    'itemtitle':
+                        self.title if self.use_custom_title_in_pdf else '', }
 
-        context = {
-                'object': self.obj,
-                'latexmode': True,
-                'itemtitle':
-                    self.title if self.use_custom_title_in_pdf else '', }
+            if self.obj_content_type == ContentType.objects.get_for_model(Family):
+                if self.get_flag('genealogio.family', 'include_timeline'):
+                    context.update(FamilyDetail.get_context_data_for_object(
+                        self.obj, latex=True))
 
-        if self.obj_content_type == ContentType.objects.get_for_model(Family):
-            if self.get_flag('genealogio.family', 'include_timeline'):
-                context.update(FamilyDetail.get_context_data_for_object(
-                    self.obj, latex=True))
+            # genealogio.person
+            # --- include_map
+            # (this is more complicated?!, since we need to start
+            # a celery task to get this done...; could return value to the caller of
+            # all things that need to be done before proceeeding ...)
 
-        # genealogio.person
-        # --- include_map
-        # (this is more complicated?!, since we need to start
-        # a celery task to get this done...; could return value to the caller of
-        # all things that need to be done before proceeeding ...)
-
-        result = render_to_string(
-                "%s/%s_detail.rst" % (
-                    self.obj._meta.app_label, self.obj._meta.model_name),
-                context)
+            result = render_to_string(
+                    "%s/%s_detail.rst" % (
+                        self.obj._meta.app_label, self.obj._meta.model_name),
+                    context)
+            if force_from_template:
+                return result
 
         # Correct headings according to collection level:
         # Replace heading defined by SEPARATORS[i] in result by heading defined
@@ -678,9 +693,8 @@ class Item(models.Model):
         super(Item, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return 'Eintrag - %s - %d: %s' % (
+        return '%s: %s' % (
                 self.obj_content_type.name if self.obj_content_type else '',
-                self.obj_id if self.obj_content_type else 0,
                 self.title)
 
     class Meta:

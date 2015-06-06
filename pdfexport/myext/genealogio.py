@@ -59,7 +59,7 @@ def get_text(name, rawtext, text, lineno, inliner,
                             'big': '8cm', }[version]
                 except KeyError:
                     pass
-                nodelist = [nodes.image(uri='/../media/' + img.image.__unicode__(),
+                nodelist = [nodes.image(uri='/../../../' + img.image.__unicode__(),
                                         **img_options), ]
                 if img.caption:
                     settgs = OptionParser(components=(Parser,))\
@@ -81,7 +81,7 @@ def get_text(name, rawtext, text, lineno, inliner,
             try:
                 map = CustomMap.objects.get(id=int(text))
                 image_node = nodes.image(
-                    uri='/../media/' + map.rendered.__unicode__(),
+                    uri='/../../../' + map.rendered.__unicode__(),
                     **options)
                 nodelist = [image_node, ]
                 if include_title and map.title:
@@ -161,7 +161,7 @@ class SparklineImg(Image):
             surface.write_to_png(os.path.join(lateximagedir, filename))
 
         # change argument so as to point to our temporary file
-        self.arguments[0] = '/../media/latex/%s' % filename
+        self.arguments[0] = '/../../../latex/%s' % filename
 
         return super(SparklineImg, self).run()
 

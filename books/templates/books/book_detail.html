@@ -71,33 +71,36 @@ $(document).ready(function() {
 <div class="container">
     <div class="row">
         <div class="col-md-12 cabin">
-            <h2>Buchprojekt {{ object.title }}</h2>
+            <h2><span style="color: gray;">Buchprojekt</span> {{ object.title }}</h2>
 
             {% crispy form form.helper %}
 
             {% if object.authors.all %}
-            <p>Autoren:
+            <p style="margin-top: 20px;">Autoren:
             {% for a in object.authors.all %}{{ a.get_full_name }}, {% endfor %}
             </p>
 
             <p>Download:
             {% with url=object.get_pdf_url %}
             {% if url %}
-            <a href="url">pdf-Datei</a>
+            <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">pdf-Datei</a>
             {% else %}
             Noch keine pdf-Datei erstellt.
+            {{ book.render_status }}
             {% endif %}
             {% endwith %}
             {% with url=object.get_zip_url %}
             {% if url %}
-            <a href="url">zip-Archiv der TeX-Datei</a>
+            <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">zip-Archiv der TeX-Datei</a>
             {% endif %}
             {% endwith %}
             </p>
+
+            <p><a href="{% url "books-create-pdf" book.id %}" class="btn {% if book.render_status == 'RENDERED' or book.render_status == '' %}btn-primary{% else %}btn-warning{% endif %}">PDF erstellen</a>
             {% endif %}
 
             {% if object.root %}
-            <h3>Inhalt</h3>
+            <h3><span style="color: gray;">Inhalt:</span> {% firstof book.root.title "Unsere Familiengeschichte" %}</h3>
             <a class="btn btn-default" href="{{ object.root.get_absolute_url }}">Bearbeiten</a>
 
             {% include "books/collection_snippet.html" with object=object.root recursive=True %}

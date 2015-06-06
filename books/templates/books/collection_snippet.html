@@ -1,5 +1,5 @@
 {% if object.item_set.all %}
-<h4>Einträge</h4>
+<h5 style="color: gray;">Einträge</h5>
 {% endif %}
 <ul style="margin-top: 20px;" class="list-group" id="items">
 
@@ -18,14 +18,14 @@
 </ul>
 
 {% if object.collection_set.all %}
-<h4>Unterkollektionen</h4>
+<h5 style="color: gray;">Unterkollektionen</h5>
 {% endif %}
 <ul style="margin-top: 20px;" class="list-group" id="collections">
 {% for collection in object.collection_set.all %}
 <li class="list-group-item" data-id="coll-{{ collection.id }}">
     {% if sortable %}<span class="sort-handle glyphicon glyphicon-resize-vertical"></span>{% endif %}
 
-    {{ collection }}
+    <span style="font-size: 120%; font-weight: bold;">{{ collection }}</span>
 
     <span class="pull-right">
         <a href="{{ collection.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>

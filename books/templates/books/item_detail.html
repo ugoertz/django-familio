@@ -153,7 +153,7 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-md-12 cabin">
             <div class="cabin" style="padding: 5px; margin-top: 10px; margin-bottom: 10px; background-color: lightblue;">
-                <a href="{{ object.parent.book.get_absolute_url }}">{{ object.parent.book.title }}</a> //
+                <a href="{{ object.parent.book.get_absolute_url }}"><span class="glyphicon glyphicon-book"></span> {{ object.parent.book.title }}</a> //
                 {% for c in object.parent.parents %}
                 ({{ c.level }}) <a href="{{ c.get_absolute_url }}">{{ c.title }}</a> //
                 {% endfor %}

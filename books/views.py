@@ -12,7 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from braces.views import LoginRequiredMixin
 from django.views.generic import (
-        CreateView, DetailView, ListView, UpdateView, )
+        CreateView, DetailView, ListView, UpdateView, View, )
 from django.views.generic.detail import SingleObjectMixin
 
 from crispy_forms.helper import FormHelper
@@ -25,6 +25,7 @@ from .forms import (
         CollectionCreateForm, CollectionForm,
         ItemCreateForm, ItemForm, )
 from .models import Book, Collection, Item
+from .tasks import compile_book
 
 
 class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, ListView):
@@ -40,7 +41,8 @@ class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(PublicBookList, self).get_context_data(**kwargs)
-        context['page_title'] = 'Öffentlich verfügbare Buchprojekte'
+        context['public_books'] = True
+        context['page_title'] = 'Öffentlich verfügbare Bücher'
         return context
 
 
@@ -97,6 +99,14 @@ class BookCreateView(LoginRequiredMixin, CreateView):
         return super(BookCreateView, self).form_valid(form)
 
 
+class CreatePDFView(LoginRequiredMixin, View):
+
+    def get(self, *args, **kwargs):
+        compile_book(int(self.kwargs['id']))
+        return HttpResponseRedirect(
+                reverse('book-detail', kwargs={'pk': int(self.kwargs['id'])}))
+
+
 class CollectionDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     model = Collection
     form_class = CollectionForm
@@ -147,6 +157,9 @@ class CollectionCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         collection = form.save(commit=False)
 
+        collection.position =\
+                Collection.objects.filter(
+                        parent=form.cleaned_data['parent']).count()
         collection.parent = form.cleaned_data['parent']
         collection.save()
 
@@ -195,6 +208,8 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         item = form.save(commit=False)
+        item.position = Item.objects.filter(
+                parent=form.cleaned_data['parent']).count()
         item.parent = form.cleaned_data['parent']
         item.save()
 
