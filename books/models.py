@@ -46,15 +46,25 @@ FLAGS = {
     'genealogio.family': {
         'include_timeline': {
             'position': 0,
-            'label': 'Familie: Zeitstrahl einbinden',
+            'label': 'Familie:<br>Zeitstrahl einbinden',
+            'default': False,
+            },
+        'include_grandchildren': {
+            'position': 1,
+            'label': 'Familie:<br>Enkel auflisten',
             'default': False,
             }
     },
     'genealogio.person': {
         'include_map': {
-            'position': 1,
-            'label': 'Person: Landkarte einbinden',
+            'position': 2,
+            'label': 'Person:<br>Landkarte einbinden',
             'default': False,
+            },
+        'include_places': {
+            'position': 3,
+            'label': 'Person:<br>Orte auflisten',
+            'default':True,
             }
     },
 }
@@ -443,7 +453,7 @@ class Book(models.Model):
         for f in [
                 'sphinx.sty',
                 'appendix.rst', 'license_custom.rst',
-                'Makefile', 'Makefile-pdf', ]:
+                'Makefile', ]:
             shutil.copy(
                     os.path.join(
                         settings.PROJECT_ROOT,
@@ -507,7 +517,7 @@ class Book(models.Model):
         os.system('. %s/bin/activate && cd %s && make latex' %
                 (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
         shutil.copy(
-                os.path.join(self.get_directory_tmp(), 'Makefile-pdf'),
+                os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'Makefile-pdf'),
                 os.path.join(self.get_directory_tmp(), '_build/latex/Makefile'))
 
         shutil.make_archive(
@@ -622,12 +632,17 @@ class Item(models.Model):
                 if self.get_flag('genealogio.family', 'include_timeline'):
                     context.update(FamilyDetail.get_context_data_for_object(
                         self.obj, latex=True))
+                if not self.get_flag('genealogio.family', 'include_grandchildren'):
+                    context.update({'hide_grandchildren': True, })
 
-            # genealogio.person
-            # --- include_map
-            # (this is more complicated?!, since we need to start
-            # a celery task to get this done...; could return value to the caller of
-            # all things that need to be done before proceeeding ...)
+            if self.obj_content_type == ContentType.objects.get_for_model(Family):
+                if not self.get_flag('genealogio.person', 'include_places'):
+                    context.update({'hide_places': True, })
+
+                # --- include_map
+                # (this is more complicated?!, since we need to start
+                # a celery task to get this done...; could return value to the caller of
+                # all things that need to be done before proceeeding ...)
 
             result = render_to_string(
                     "%s/%s_detail.rst" % (
@@ -672,13 +687,13 @@ class Item(models.Model):
         except (AttributeError, KeyError):
             # pylint: disable=no-member
             if self.parent:
-                f = self.parent.get_flag(model, flag)
+                fl = self.parent.get_flag(model, flag)
             else:
-                f = self.book.get_flag(model, flag)
+                fl = self.book.get_flag(model, flag)
             if show_source:
-                return 'true_by_default' if f else 'false_by_default'
+                return 'true_by_default' if fl else 'false_by_default'
             else:
-                return f
+                return fl
 
     def get_absolute_url(self):
         return reverse('item-detail', kwargs={'pk': self.pk, })

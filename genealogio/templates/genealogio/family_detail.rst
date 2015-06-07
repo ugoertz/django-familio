@@ -37,7 +37,7 @@
 {% endif %}
 
 {% with grandchildren=object.get_grandchildren %}
-{% if grandchildren.count %}**Enkel:**
+{% if grandchildren.count and not hide_grandchildren %}**Enkel:**
 
 {% for child in grandchildren %}
 * {% include "genealogio/person_snippet_full.rst" with person=child %}

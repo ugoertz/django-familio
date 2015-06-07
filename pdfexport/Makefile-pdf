@@ -1,7 +1,7 @@
-MOGRIFY_OPTIONS?=-strip -density 90 *.jpg
+MOGRIFY_OPTIONS?=-strip -density 90
 
 pdf:
-	mogrify $(MOGRIFY_OPTIONS)
+	for f in *.jpg; do mogrify $(MOGRIFY_OPTIONS) $f; done
 	rm -f sphinx.sty
 	cp ../../sphinx.sty .
 	xelatex chronicle.tex

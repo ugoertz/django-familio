@@ -108,9 +108,7 @@ class FlagField(forms.fields.MultiValueField):
     widget = FlagWidget
 
     def __init__(self, *args, **kwargs):
-        list_fields = [
-                forms.fields.BooleanField(),
-                forms.fields.BooleanField()]
+        list_fields = [forms.fields.BooleanField() for x in FLAGS_FLAT]
         super(FlagField, self).__init__(list_fields, *args, **kwargs)
 
     def compress(self, values):

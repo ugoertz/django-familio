@@ -62,7 +62,7 @@
 
 {% include "genealogio/events.rst" %}
 
-{% if object.personplace_set.count %}
+{% if object.personplace_set.count and not hide_places %}
 
 Orte
 ----
