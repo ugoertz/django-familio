@@ -52,11 +52,13 @@
   <script src="{% static 'js/libs/jquery.min.js' %}"></script>
   <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
   {% dajaxice_js_import %}
+  {% block popover %}
   <script>
   $(document).ready(function() {
   {% include "base/popover.js" with selector='a[href*="/gen/person-view/"]' fct="Dajaxice.genealogio.popover_data" %}
   });
   </script>
+  {% endblock %}
   {% endcompress %}
 </head>
 <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}" {% block body_attributes %}{% endblock %}>
@@ -76,6 +78,7 @@
   </header>
 
   <div role="main">
+      {% block messages %}
       {% if messages %}
       <div class="container">
           <div class="row">
@@ -89,6 +92,7 @@
           </div>
       </div>
       {% endif %}
+      {% endblock messages %}
       <div class="container"><div class="row cabin">{% block breadcrumb %}{% endblock %}</div></div>
     {% block content %}{% endblock %}
   </div>
@@ -115,6 +119,8 @@
   <!-- end scripts -->
 
 {% endblock %}
+{% block piwik %}
 {% include_if_exists "base/piwik.html" %}
+{% endblock piwik %}
 </body>
 </html>

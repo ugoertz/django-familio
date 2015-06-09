@@ -247,6 +247,25 @@ class EventDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     model = Event
 
 
+def get_dict_pedigree(p, level=0):
+    if level < 0:
+        return
+    if p is None:
+        return {'name': '', 'born': '', 'died': '', 'url': '', }
+    data = {'name': p.get_primary_name(),
+            'born': p.datebirth.year if p.datebirth else '',
+            'died': p.datedeath.year if p.datedeath else '',
+            'url': p.get_absolute_url(),
+            'urlp': reverse("pedigree", kwargs={"pk": p.id, }),
+            'pk': p.pk,
+            }
+    if level > 0:
+        data['parents'] = [get_dict_pedigree(p.get_father(), level-1),
+                            get_dict_pedigree(p.get_mother(), level-1), ]
+
+    return data
+
+
 class Pedigree(LoginRequiredMixin, View):
     """Display pedigree for a person."""
 
@@ -254,27 +273,28 @@ class Pedigree(LoginRequiredMixin, View):
         # pylint: disable=no-member
         person = Person.objects.get(pk=pk)
 
-        def get_dict(p, level=0):
-            if level < 0:
-                return
-            if p is None:
-                return {'name': '', 'born': '', 'died': '', 'url': '', }
-            data = {'name': p.get_primary_name(),
-                    'born': p.datebirth.year if p.datebirth else '',
-                    'died': p.datedeath.year if p.datedeath else '',
-                    'url': p.get_absolute_url(),
-                    'urlp': reverse("pedigree", kwargs={"pk": p.id, }),
-                    'pk': p.pk,
-                    }
-            if level > 0:
-                data['parents'] = [get_dict(p.get_father(), level-1),
-                                   get_dict(p.get_mother(), level-1), ]
-
-            return data
-
-        data = get_dict(person, level=2)
+        data = get_dict_pedigree(person, level=2)
 
         return render(request, 'genealogio/pedigree.html',
+                      {'person': person, 'data': json.dumps(data), })
+
+
+class PedigreePDF(View):
+    """
+    Display simple pedigree page for a person which we can render to PDF via
+    phantomjs, in order to include it in a Book.
+    """
+
+    # This currently has no LoginRequiredMixin (nor any other method to make it
+    # non-public). FIXME
+
+    def get(self, request, pk):
+        # pylint: disable=no-member
+        person = Person.objects.get(pk=pk)
+
+        data = get_dict_pedigree(person, level=3)
+
+        return render(request, 'genealogio/pedigree_pdf.html',
                       {'person': person, 'data': json.dumps(data), })
 
 

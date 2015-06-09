@@ -60,7 +60,9 @@ var nodes = tree.nodes(json);
 var link = svg.selectAll(".link")
     .data(tree.links(nodes))
     .enter().append("path")
-    .attr("class", "link")
+    .style("shape-rendering", "crispEdges")
+    .style("fill", "none")
+    .style("stroke", "#000000")
     .attr("d", elbow);
 
 var node = svg.selectAll(".node")
@@ -74,7 +76,9 @@ node.append("svg:a")
     .attr("class", "popoverlink")
     .attr("xlink:href", function(d) { return d.urlp; })
     .append("text")
-    .attr("class", "name")
+    .style("font-family", "Vollkorn, times, serif")
+    .style("font-weight", 600)
+    .style("fill", "#666666")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-.5em")
@@ -95,7 +99,8 @@ node.append("text")
     .attr("x", 8)
     .attr("y", 8)
     .attr("dy", ".7em")
-    .attr("class", "about lifespan")
+    .style("font-family", "Vollkorn, times, serif")
+    .style("fill", "#777")
     .text(function(d) { if (d.born || d.died) return d.born + "–" + d.died; });
 
 function elbow(d, i) {
@@ -105,11 +110,13 @@ function elbow(d, i) {
 }
 
 {% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
+
 </script>
 {% endblock js %}
 
 {% block content %}
 <div class="container">
+    {% block pedigree_header %}
     <h2>Ahnentafel für {% include "genealogio/person_snippet_full.html" %}</h2>
     {% with allchildren=person.get_children %}
     <ul class="list-group">
@@ -128,7 +135,9 @@ function elbow(d, i) {
     {% endif %}
     </li>
     {% endfor %}
+    </ul>
     {% endwith %}
+    {% endblock pedigree_header %}
 
     <div id="pedi">
     </div>
