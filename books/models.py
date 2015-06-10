@@ -56,11 +56,11 @@ FLAGS = {
             }
     },
     'genealogio.person': {
-        'include_map': {
-            'position': 2,
-            'label': 'Person:<br>Landkarte einbinden',
-            'default': False,
-            },
+        # 'include_map': {
+        #     'position': 2,
+        #     'label': 'Person:<br>Landkarte einbinden',
+        #     'default': False,
+        #     },
         'include_places': {
             'position': 3,
             'label': 'Person:<br>Orte auflisten',
