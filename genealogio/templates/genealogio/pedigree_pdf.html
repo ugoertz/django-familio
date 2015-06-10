@@ -6,5 +6,58 @@
 {% block footer %}{% endblock %}
 {% block piwik %}{% endblock %}
 
+{% block css %}
+<style>
+.name {
+    font-family: Vollkorn, times, serif;
+    font-weight: 400;
+    fill: #000000;
+}
+
+.about {
+    font-family: Vollkorn, times, serif;
+    fill: #000000;
+    /* font-size: smaller; */
+}
+
+.link {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.control.glyphicon {
+    position: static;
+    cursor: pointer;
+    color: green;
+}
+
+p, li {
+    font-size: 120%;
+}
+</style>
+{% endblock css %}
+
 {% block pedigree_header %}{% endblock %}
+
+{% block size %}
+var margin = {top: 0, right: 250, bottom: 0, left: 0},
+    width = margin.right * {{ generations }},
+    height = 500 - margin.top - margin.bottom + 70 * {{ generations }};
+{% endblock %}
+
+{% block svg_name %}
+node.append("svg:a")
+    .filter(function(d) { return d && "name" in d && "name" != ""; })
+    .attr("class", "popoverlink")
+    .attr("xlink:href", function(d) { return d.urlp; })
+    .append("text")
+    .attr("class", "name")
+    .attr("x", 8)
+    .attr("y", -6)
+    .attr("dy", "-.5em")
+    .text(function(d) { return d.name; });
+{% endblock %}
+
+{% block svg_icon %}{% endblock %}
 

@@ -4,11 +4,13 @@
 {% block css %}
 <style>
 .name {
+    font-family: Vollkorn, times, serif;
     font-weight: 600;
     fill: #666666;
 }
 
 .about {
+    font-family: Vollkorn, times, serif;
     fill: #777;
     /* font-size: smaller; */
 }
@@ -38,9 +40,11 @@ p, li {
 {% block js %}
 {{ block.super }}
 <script>
+{% block size %}
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
     width = 960 - margin.left - margin.right,
     height = 650 - margin.top - margin.bottom;
+{% endblock %}
 
 var tree = d3.layout.tree()
     .separation(function(a, b) { return a.parent === b.parent ? 0.7 : 1; })
@@ -60,9 +64,7 @@ var nodes = tree.nodes(json);
 var link = svg.selectAll(".link")
     .data(tree.links(nodes))
     .enter().append("path")
-    .style("shape-rendering", "crispEdges")
-    .style("fill", "none")
-    .style("stroke", "#000000")
+    .attr("class", "link")
     .attr("d", elbow);
 
 var node = svg.selectAll(".node")
@@ -71,19 +73,20 @@ var node = svg.selectAll(".node")
     .attr("class", "node")
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
+{% block svg_name %}
 node.append("svg:a")
-    .filter(function(d) { return "name" in d && "name" != ""; })
+    .filter(function(d) { return d && "name" in d && "name" != ""; })
     .attr("class", "popoverlink")
     .attr("xlink:href", function(d) { return d.urlp; })
     .append("text")
-    .style("font-family", "Vollkorn, times, serif")
-    .style("font-weight", 600)
-    .style("fill", "#666666")
+    .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-.5em")
     .text(function(d) { return d.name; });
+{% endblock %}
 
+{% block svg_icon %}
 node.append("svg:a")
     .attr("xlink:href", function(d) { return d.url;  })
     .append("svg:foreignObject")
@@ -94,19 +97,19 @@ node.append("svg:a")
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
     .style("display", function(d) { return d.url == "" ? "none" : null; });
+{% endblock %}
 
 node.append("text")
     .attr("x", 8)
     .attr("y", 8)
     .attr("dy", ".7em")
-    .style("font-family", "Vollkorn, times, serif")
-    .style("fill", "#777")
+    .attr("class", "about")
     .text(function(d) { if (d.born || d.died) return d.born + "–" + d.died; });
 
 function elbow(d, i) {
     return "M" + d.source.y + "," + d.source.x
         + "H" + d.target.y + "V" + d.target.x
-        + (d.target.children ? "" : "h" + margin.right);
+        + "h" + margin.right;
 }
 
 {% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}

@@ -251,7 +251,7 @@ def get_dict_pedigree(p, total, level=0):
     if level < 0:
         return
     if p is None:
-        return {'name': '', 'born': '', 'died': '', 'url': '', }
+        return ''
     data = {'name': p.get_primary_name(),
             'born': p.datebirth.year if p.datebirth else '',
             'died': p.datedeath.year if p.datedeath else '',
@@ -302,7 +302,10 @@ class PedigreePDF(View):
                 level=int(generations))
 
         return render(request, 'genealogio/pedigree_pdf.html',
-                      {'person': person, 'data': json.dumps(data), })
+                      {
+                          'person': person,
+                          'generations': generations,
+                          'data': json.dumps(data), })
 
 
 class Descendants(LoginRequiredMixin, View):

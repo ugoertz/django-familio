@@ -1,4 +1,7 @@
+# -*- coding: utf8 -*-
+
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from functools import partial
 from docutils import nodes
@@ -31,9 +34,21 @@ class includepdf(nodes.image, nodes.Element):
 
 def visit_includepdf(self, node):
     attrs = node.attributes
+    placement = '[%s]' % attrs['placement'] if 'placement' in attrs else ''
+    angle = 'angle=90, ' if not 'rotate' in attrs else ''
+    height = attrs.get('height', '23.5cm')
+    caption = r'\caption{%s}' % attrs['caption'] if attrs['caption'] else ''
+    if not height[-2:] in ['cm', 'mm', 'pt']:
+        height += 'cm'
+
     self.body.append(
-            '\n\n\\includepdf[angle=90]{%s}\n\n'
-            % os.path.basename(attrs['uri']))
+            r'''
+\begin{figure}%s
+\includegraphics[%sheight=%s, keepaspectratio]{%s}
+%s
+\end{figure}
+
+''' % (placement, angle, height, os.path.basename(attrs['uri']), caption))
 
 def depart_includepdf(self, node):
     pass
@@ -150,7 +165,13 @@ class PedigreePDF(Directive):
 
     required_arguments = 1
     optional_arguments = 0
-    option_spec = {'generations': directives.positive_int, }
+    option_spec = {
+            'generations': directives.positive_int,
+            'rotate': directives.flag,
+            'height': directives.unchanged,
+            'placement': directives.unchanged,
+            'caption': directives.unchanged,
+            }
 
     def run(self):
         env = self.state.document.settings.env
@@ -168,9 +189,14 @@ class PedigreePDF(Directive):
                     'generations': self.options.get('generations', 3), }))
         os.system("%s/phantomjs %s/rasterize.js '%s' %s"\
                 % (settings.PHANTOMJS_PATH, settings.PHANTOMJS_PATH, url, fn))
+
+        if not 'caption' in self.options:
+            p = Person.objects.get(handle=handle)
+            self.options['caption'] = 'Ahnentafel für %s' % p.get_primary_name()
         return [
                 includepdf(
-                    uri='/../../../latex/%s' % os.path.basename(fn)), ]
+                    uri='/../../../latex/%s' % os.path.basename(fn),
+                    **self.options), ]
 
 
 class SparklineImg(Image):
