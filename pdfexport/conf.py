@@ -122,11 +122,15 @@ htmlhelp_basename = 'chronicledoc'
 # -- Options for LaTeX output ---------------------------------------------
 
 ADDITIONAL_PREAMBLE = r"""
+\usepackage{pdfpages}
 \usepackage{microtype}
 \usepackage{fontspec}
 
 \setmainfont{Vollkorn}
 
+\definecolor{TitleColor}{rgb}{0,0,0}
+\definecolor{InnerLinkColor}{rgb}{0,0,0}
+\definecolor{OuterLinkColor}{rgb}{0,0,0}
 \newcommand\DUroleunderline[1]{\underline{#1}}
 """
 

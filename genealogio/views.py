@@ -288,9 +288,9 @@ class PedigreePDF(View):
     # This currently has no LoginRequiredMixin (nor any other method to make it
     # non-public). FIXME
 
-    def get(self, request, pk):
+    def get(self, request, handle):
         # pylint: disable=no-member
-        person = Person.objects.get(pk=pk)
+        person = Person.objects.get(handle=handle)
 
         data = get_dict_pedigree(person, level=3)
 

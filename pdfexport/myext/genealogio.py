@@ -4,7 +4,7 @@ from functools import partial
 from docutils import nodes
 from docutils.utils import new_document
 from docutils.frontend import OptionParser
-from docutils.parsers.rst import roles, Parser
+from docutils.parsers.rst import directives, roles, Parser, Directive
 from docutils.parsers.rst.directives.images import Image
 import os
 import os.path
@@ -12,6 +12,7 @@ import tempfile
 import urllib
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 # from django_markup.filter.rst_filter import RstMarkupFilter
 from django.core.urlresolvers import reverse
@@ -22,6 +23,20 @@ from genealogio.models import Person, Event, Family
 from genealogio.views import Sparkline
 from genealogio.filter.rst_filter import genrst_roles
 from notaro.models import Document, Picture, Source
+
+
+class includepdf(nodes.image, nodes.Element):
+    pass
+
+
+def visit_includepdf(self, node):
+    attrs = node.attributes
+    self.body.append(
+            '\n\n\\includepdf[angle=90]{%s}\n\n'
+            % os.path.basename(attrs['uri']))
+
+def depart_includepdf(self, node):
+    pass
 
 
 def get_text(name, rawtext, text, lineno, inliner,
@@ -122,12 +137,40 @@ def get_text(name, rawtext, text, lineno, inliner,
             #     # on another site; so fail silently
             #     # FIXME: check that handle exists on some site
             nodelist = [nodes.inline(rawtext, t, **options), ]
-    except:
-        msg = inliner.reporter.error('Problem when evaluating handle: %s %s' % (text, rawtext, ),
-                                     line=lineno)
+    except ImportError:
+        msg = inliner.reporter.error(
+                'Problem when evaluating handle: %s %s' % (text, rawtext, ),
+                line=lineno)
         prb = inliner.problematic(text, rawtext, msg)
         return [prb], [msg]
     return nodelist, []
+
+
+class PedigreePDF(Directive):
+
+    required_arguments = 1
+    optional_arguments = 0
+    option_spec = {'generations': directives.positive_int, }
+
+    def run(self):
+        env = self.state.document.settings.env
+
+        handle = self.arguments[0]
+
+        # FIXME deal with self.options['generations']
+
+        _, fn = tempfile.mkstemp(
+                dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
+                suffix='.pdf',
+                prefix='phantom')
+        url = 'http://%s%s' % (
+                Site.objects.get_current().domain,
+                reverse('pedigree-pdf', kwargs={'handle': handle, }))
+        os.system("%s/phantomjs %s/rasterize.js '%s' %s"\
+                % (settings.PHANTOMJS_PATH, settings.PHANTOMJS_PATH, url, fn))
+        return [
+                includepdf(
+                    uri='/../../../latex/%s' % os.path.basename(fn)), ]
 
 
 class SparklineImg(Image):
@@ -168,9 +211,12 @@ class SparklineImg(Image):
 
 # pylint: disable=no-member
 def setup(app):
+    app.add_node(includepdf, latex=(visit_includepdf, depart_includepdf))
     for role in genrst_roles:
-        app.add_role(role, partial(get_text,
-                                   model=genrst_roles[role]['model'],
-                                   extra=genrst_roles[role].get('extra', '')))
+        app.add_role(role, partial(
+            get_text,
+            model=genrst_roles[role]['model'],
+            extra=genrst_roles[role].get('extra', '')))
+    app.add_directive('pedigree', PedigreePDF)
     app.add_directive('sparklineimg', SparklineImg)
 
