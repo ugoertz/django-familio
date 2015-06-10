@@ -157,15 +157,15 @@ class PedigreePDF(Directive):
 
         handle = self.arguments[0]
 
-        # FIXME deal with self.options['generations']
-
         _, fn = tempfile.mkstemp(
                 dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
                 suffix='.pdf',
                 prefix='phantom')
         url = 'http://%s%s' % (
                 Site.objects.get_current().domain,
-                reverse('pedigree-pdf', kwargs={'handle': handle, }))
+                reverse('pedigree-pdf', kwargs={
+                    'handle': handle,
+                    'generations': self.options.get('generations', 3), }))
         os.system("%s/phantomjs %s/rasterize.js '%s' %s"\
                 % (settings.PHANTOMJS_PATH, settings.PHANTOMJS_PATH, url, fn))
         return [

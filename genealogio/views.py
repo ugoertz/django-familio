@@ -17,7 +17,7 @@ from django.http import HttpResponse  # , HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import DetailView, ListView, View
 from django.shortcuts import render
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string
 
 from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
@@ -247,7 +247,7 @@ class EventDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     model = Event
 
 
-def get_dict_pedigree(p, level=0):
+def get_dict_pedigree(p, total, level=0):
     if level < 0:
         return
     if p is None:
@@ -259,9 +259,13 @@ def get_dict_pedigree(p, level=0):
             'urlp': reverse("pedigree", kwargs={"pk": p.id, }),
             'pk': p.pk,
             }
+    if total - level > 3:
+        data['name'] += ' (%s-%s)' % (data['born'], data['died'])
+        data['born'] = ''
+        data['died'] = ''
     if level > 0:
-        data['parents'] = [get_dict_pedigree(p.get_father(), level-1),
-                            get_dict_pedigree(p.get_mother(), level-1), ]
+        data['parents'] = [get_dict_pedigree(p.get_father(), total, level-1),
+                            get_dict_pedigree(p.get_mother(), total, level-1), ]
 
     return data
 
@@ -273,7 +277,7 @@ class Pedigree(LoginRequiredMixin, View):
         # pylint: disable=no-member
         person = Person.objects.get(pk=pk)
 
-        data = get_dict_pedigree(person, level=2)
+        data = get_dict_pedigree(person, total=2, level=2)
 
         return render(request, 'genealogio/pedigree.html',
                       {'person': person, 'data': json.dumps(data), })
@@ -288,11 +292,14 @@ class PedigreePDF(View):
     # This currently has no LoginRequiredMixin (nor any other method to make it
     # non-public). FIXME
 
-    def get(self, request, handle):
+    def get(self, request, handle, generations):
         # pylint: disable=no-member
         person = Person.objects.get(handle=handle)
 
-        data = get_dict_pedigree(person, level=3)
+        data = get_dict_pedigree(
+                person,
+                total=int(generations),
+                level=int(generations))
 
         return render(request, 'genealogio/pedigree_pdf.html',
                       {'person': person, 'data': json.dumps(data), })
