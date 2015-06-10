@@ -252,7 +252,7 @@ def get_dict_pedigree(p, total, level=0):
         return
     if p is None:
         return ''
-    data = {'name': p.get_primary_name(),
+    data = {'name': p.get_short_name(),
             'born': p.datebirth.year if p.datebirth else '',
             'died': p.datedeath.year if p.datedeath else '',
             'url': p.get_absolute_url(),

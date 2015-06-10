@@ -483,6 +483,29 @@ class Person(PrimaryObject):
 
         return name
 
+    def get_short_name(self):
+        """
+        Return a "short" name of the person, to be used in pedigrees and
+        descendant trees.
+        """
+
+        try:
+            first = self.name_set.filter(typ=Name.RUFNAME)[0].name
+        except IndexError:
+            first = self.first_name
+
+        try:
+            name = self.name_set.filter(typ=Name.BIRTHNAME)[0].name
+        except IndexError:
+            name = self.last_name
+
+        if len(first) + len(name) > 22:
+            fsplit = first.split(' ')
+            first = ' '.join(fsplit[:1] + [x[0]+'.' for x in fsplit[1:]])
+        if len(first) + len(name) > 22:
+            first = first[0] + '.'
+        return '%s %s' % (first, name)
+
     def get_primary_name(self):
         """
         Return the preferred name of a person.
