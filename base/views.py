@@ -63,10 +63,10 @@ def download(request, fname):
     if not request.user.is_authenticated():
         raise Http404
 
-    if fname.startswith('tmp'):
-        # The tmp directory is used to store the pdfexport related files. Those
-        # files that should be served to users will be copied to another
-        # directory.
+    if fname.startswith('tmp') or fname.startswith('latex'):
+        # The latex and tmp directories are used to store the pdfexport related
+        # files. Those files that should be served to users will be copied to
+        # another directory.
         raise Http404
 
     # for files within a filebrowser-versions directory, check permissions
