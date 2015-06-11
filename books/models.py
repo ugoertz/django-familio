@@ -493,11 +493,12 @@ class Book(models.Model):
         index.write(INDEX_TEMPLATE_FOOTER)
         index.close()
 
-        # create conf.py base on self.root.title
+        # create conf.py based on self.root.title
         os.system(
-                'sed "s/.*# TITLE/u\'%s\',/" %s/conf.py > %s/conf.py'
+                'sed -e "s/.*# TITLE/u\'%s\',/" -e "s/.*# RELEASENAME/u\'%s\',/" %s/conf.py > %s/conf.py'
                 % (
                     self.root.title or 'Unsere Familiengeschichte',
+                    Site.objects.get_current().domain,
                     os.path.join(settings.PROJECT_ROOT, 'pdfexport'),
                     self.get_directory_tmp()))
 

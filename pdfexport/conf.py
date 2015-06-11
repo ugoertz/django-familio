@@ -161,7 +161,10 @@ latex_elements = {
     'inputenc': '',
     'utf8extra': '',
     'fncychap': '\\usepackage[Sonny]{fncychap}',
-    'releasename': u'',
+    'releasename':
+    # the following needs to be on a line of its own since it is 
+    # replaced by a sed command in books/models.py
+    u'', # RELEASENAME
 }
 
 
