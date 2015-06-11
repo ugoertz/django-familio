@@ -283,7 +283,7 @@ class Pedigree(LoginRequiredMixin, View):
                       {'person': person, 'data': json.dumps(data), })
 
 
-class PedigreePDF(View):
+class PedigreePDF(LoginRequiredMixin, View):
     """
     Display simple pedigree page for a person which we can render to PDF via
     phantomjs, in order to include it in a Book.
