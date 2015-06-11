@@ -35,7 +35,7 @@ class includepdf(nodes.image, nodes.Element):
 def visit_includepdf(self, node):
     attrs = node.attributes
     placement = '[%s]' % attrs['placement'] if 'placement' in attrs else ''
-    angle = 'angle=90, ' if not 'rotate' in attrs else ''
+    angle = 'angle=90, ' if 'rotate' in attrs else ''
     height = attrs.get('height', '23.5cm')
     caption = r'\caption{%s}' % attrs['caption'] if attrs['caption'] else ''
     if not height[-2:] in ['cm', 'mm', 'pt']:
@@ -44,7 +44,7 @@ def visit_includepdf(self, node):
     self.body.append(
             r'''
 \begin{figure}%s
-\includegraphics[%sheight=%s, keepaspectratio]{%s}
+\includegraphics[%sheight=%s, width=\textwidth, keepaspectratio]{%s}
 %s
 \end{figure}
 
@@ -161,9 +161,12 @@ def get_text(name, rawtext, text, lineno, inliner,
     return nodelist, []
 
 
-class PedigreePDF(Directive):
+class FamilyTreePDF(Directive):
 
-    required_arguments = 1
+    # required arguments:
+    # handle of a person
+    # "pedigree" or "descendants
+    required_arguments = 2
     optional_arguments = 0
     option_spec = {
             'generations': directives.positive_int,
@@ -174,28 +177,53 @@ class PedigreePDF(Directive):
             }
 
     def run(self):
-        env = self.state.document.settings.env
+        if self.arguments[1] == 'pedigree':
+            generations_default = 3
 
+            # for pedigree, use landscape mode by default, for descendants use
+            # portrait mode by default:
+            if 'rotate' in self.options:
+                try:
+                    del self.options['rotate']
+                except KeyError:
+                    self.options['rotate'] = True
+
+        elif self.arguments[1] == 'descendants':
+            generations_default = 2
+        else:
+            return []
         handle = self.arguments[0]
+
+        if not 'caption' in self.options:
+            p = Person.objects.get(handle=handle)
+            if self.arguments[1] == 'pedigree':
+                self.options['caption'] =\
+                        'Ahnentafel für %s' % p.get_primary_name()
+            elif self.arguments[1] == 'descendants':
+                self.options['caption'] =\
+                        'Nachkommen von %s' % p.get_primary_name()
 
         _, fn = tempfile.mkstemp(
                 dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
                 suffix='.pdf',
                 prefix='phantom')
+        _, fn2= tempfile.mkstemp(
+                dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
+                suffix='.pdf',
+                prefix='phantom')
         url = 'http://%s%s' % (
                 Site.objects.get_current().domain,
-                reverse('pedigree-pdf', kwargs={
+                reverse('%s-pdf' % self.arguments[1], kwargs={
                     'handle': handle,
-                    'generations': self.options.get('generations', 3), }))
+                    'generations':
+                    self.options.get('generations', generations_default), }))
         os.system("%s/phantomjs %s/rasterize.js '%s' %s"\
                 % (settings.PHANTOMJS_PATH, settings.PHANTOMJS_PATH, url, fn))
+        os.system("pdfcrop %s %s" % (fn, fn2))
 
-        if not 'caption' in self.options:
-            p = Person.objects.get(handle=handle)
-            self.options['caption'] = 'Ahnentafel für %s' % p.get_primary_name()
         return [
                 includepdf(
-                    uri='/../../../latex/%s' % os.path.basename(fn),
+                    uri='/../../../latex/%s' % os.path.basename(fn2),
                     **self.options), ]
 
 
@@ -243,6 +271,6 @@ def setup(app):
             get_text,
             model=genrst_roles[role]['model'],
             extra=genrst_roles[role].get('extra', '')))
-    app.add_directive('pedigree', PedigreePDF)
+    app.add_directive('familytree', FamilyTreePDF)
     app.add_directive('sparklineimg', SparklineImg)
 

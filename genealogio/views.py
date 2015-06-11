@@ -289,9 +289,6 @@ class PedigreePDF(LoginRequiredMixin, View):
     phantomjs, in order to include it in a Book.
     """
 
-    # This currently has no LoginRequiredMixin (nor any other method to make it
-    # non-public). FIXME
-
     def get(self, request, handle, generations):
         # pylint: disable=no-member
         person = Person.objects.get(handle=handle)
@@ -308,6 +305,70 @@ class PedigreePDF(LoginRequiredMixin, View):
                           'data': json.dumps(data), })
 
 
+def p_dict_descendants(person, suffix):
+    try:
+        return {
+            'name' + suffix: person.get_primary_name(),
+            'born' + suffix:
+            person.datebirth.year if person.datebirth else '',
+            'died' + suffix:
+            person.datedeath.year if person.datedeath else '',
+            'url' + suffix: person.get_absolute_url(),
+            'urlp' + suffix:
+            reverse("descendants", kwargs={"pk": person.id, }),
+            'pk' + suffix: person.pk,
+            }
+    except:
+        pass
+    return {
+        'name' + suffix: person or '',
+        'born' + suffix: '',
+        'died' + suffix: '',
+        'url' + suffix: '',
+        'urlp' + suffix: None,
+        'pk' + suffix: '',
+        }
+
+
+def get_dict_descendants(p, level=0):
+    """Returns a list of dictionaries, one for each family where p is
+    father or mother."""
+
+    if level < 0:
+        return 1, None
+    if p is None:
+        return 0, {}
+
+    data = [p_dict_descendants(p, '1')]
+    fams = p.get_children()
+    height = 0
+
+    def add_family(data, family):
+        height = 0
+        partner, children, _text, _family = family
+        data[-1].update(p_dict_descendants(partner, '2'))
+
+        if level > 0:
+            data[-1]['parents'] = []
+            for ch in children:
+                h, d = get_dict_descendants(ch, level-1)
+                height += h
+                data[-1]['parents'].extend(d)
+            else:
+                height += 1
+        return height
+
+    if fams:
+        height += add_family(data, fams[0])
+    for family in fams[1:]:
+        # Now handle other families
+        # Here, replace name of p by '...'
+        data.append(p_dict('...', '1'))
+        height += add_family(data, family)
+
+    return height+2, data
+
+
 class Descendants(LoginRequiredMixin, View):
     """Display descendants of a person."""
 
@@ -316,79 +377,38 @@ class Descendants(LoginRequiredMixin, View):
         person = Person.objects.get(pk=pk)
         height = 0
 
-        def p_dict(person, suffix):
-            try:
-                return {
-                    'name' + suffix: person.get_primary_name(),
-                    'born' + suffix:
-                    person.datebirth.year if person.datebirth else '',
-                    'died' + suffix:
-                    person.datedeath.year if person.datedeath else '',
-                    'url' + suffix: person.get_absolute_url(),
-                    'urlp' + suffix:
-                    reverse("descendants", kwargs={"pk": person.id, }),
-                    'pk' + suffix: person.pk,
-                    }
-            except:
-                pass
-            return {
-                'name' + suffix: person or '',
-                'born' + suffix: '',
-                'died' + suffix: '',
-                'url' + suffix: '',
-                'urlp' + suffix: None,
-                'pk' + suffix: '',
-                }
-
-        def get_dict(p, level=0):
-            """Returns a list of dictionaries, one for each family where p is
-            father or mother."""
-
-            if level < 0:
-                return 1, None
-            if p is None:
-                return 0, {}
-
-            data = [p_dict(p, '1')]
-            fams = p.get_children()
-            height = 0
-
-            def add_family(data, family):
-                height = 0
-                partner, children, _text, _family = family
-                data[-1].update(p_dict(partner, '2'))
-
-                if level > 0:
-                    data[-1]['parents'] = []
-                    for ch in children:
-                        h, d = get_dict(ch, level-1)
-                        height += h
-                        data[-1]['parents'].extend(d)
-                    else:
-                        height += 1
-                return height
-
-            if fams:
-                height += add_family(data, fams[0])
-            for family in fams[1:]:
-                # Now handle other families
-                # Here, replace name of p by '...'
-                data.append(p_dict('...', '1'))
-                height += add_family(data, family)
-
-            return height+2, data
-
         if person.get_children():
-            height, d = get_dict(person, level=2)
+            height, d = get_dict_descendants(person, level=2)
             data = {'parents': d, }
         else:
-            height = 0
             data = []
         # print json.dumps(data, indent=4)
 
         return render(request, 'genealogio/descendants.html',
                       {'person': person,
                        'height': height * 30,
+                       'data': json.dumps(data), })
+
+
+class DescendantsPDF(LoginRequiredMixin, View):
+    """Display descendants of a person."""
+
+    def get(self, request, handle, generations):
+        # pylint: disable=no-member
+        person = Person.objects.get(handle=handle)
+        height = 0
+
+        if person.get_children():
+            height, d = get_dict_descendants(person, level=int(generations))
+            data = {'parents': d, }
+        else:
+            data = []
+        # print json.dumps(data, indent=4)
+
+        return render(request, 'genealogio/descendants_pdf.html',
+                      {'person': person,
+                       'height': height * 30,
+                       'generations': int(generations),
                        'data': json.dumps(data), })
 
 

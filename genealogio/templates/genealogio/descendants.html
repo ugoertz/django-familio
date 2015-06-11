@@ -43,16 +43,18 @@ p, li {
 {% block js %}
 {{ block.super }}
 <script>
+{% block size %}
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
     width = 1260 - margin.left - margin.right,
     height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
+{% endblock size %}
 
 var tree = d3.layout.tree()
     .separation(function(a, b) { return a.parent === b.parent ? 0.9 : 1; })
     .children(function(d) { return d.parents; })
     .size([height, width]);
 
-var svg = d3.select("#descendants").append("svg")
+var svg = d3.select("#familytree_svg").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -76,26 +78,19 @@ var node = svg.selectAll(".node")
     .attr("class", "node")
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
+{% block svg_name1 %}
 node.append("svg:a")
-    .filter(function(d) { return d.urlp1 != null; })
     .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp1; })
+    .attr("xlink:href", function(d) { return d.urlp1 ? d.urlp1 : ""; })
     .append("text")
     .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-1.5em")
     .text(function(d) { return d.name1; });
+{% endblock svg_name1 %}
 
-node.append("text")
-    .filter(function(d) { return d.urlp1 == null; })
-    .attr("class", "name")
-    .attr("x", 28)
-    .attr("y", -6)
-    .attr("dy", "-1.5em")
-    .text(function(d) { return d.name1; });
-
-
+{% block svg_icon1 %}
 node.append("svg:a")
     .attr("xlink:href", function(d) { return d.url1;  })
     .append("svg:foreignObject")
@@ -106,8 +101,9 @@ node.append("svg:a")
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
     .style("display", function(d) { return d.url1 == "" ? "none" : null; });
+{% endblock svg_icon1 %}
 
-
+{% block svg_about1 %}
 node.append("text")
     .attr("x", 8)
     .attr("y", 8)
@@ -115,7 +111,9 @@ node.append("text")
     .attr("dy", "1.8em")
     .attr("class", "about lifespan")
     .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
+{% endblock svg_about1 %}
 
+{% block svg_name2 %}
 node.append("svg:a")
     .filter(function(d) { return "name2" in d; })
     .attr("class", "popoverlink")
@@ -127,7 +125,10 @@ node.append("svg:a")
     .attr("dx", "1.21em")
     .attr("dy", "1.51em")
     .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
+{% endblock svg_name2 %}
 
+
+{% block svg_icon2 %}
 node.append("svg:a")
     .attr("xlink:href", function(d) { return d.url2;  })
     .append("svg:foreignObject")
@@ -138,13 +139,16 @@ node.append("svg:a")
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
     .style("display", function(d) { return (!("url2" in d) || d.url2 == "") ? "none" : null; });
+{% endblock svg_icon2 %}
 
+{% block svg_about2 %}
 node.append("text")
     .attr("x", 8)
     .attr("y", 8)
     .attr("dy", "-1.25em")
     .attr("class", "about lifespan")
     .text(function(d) { if (d.name1 != "..." && (d.born1 || d.died1)) return d.born1 + "–" + d.died1; else return ""; });
+{% endblock svg_about2 %}
 
 function elbow(d, i) {
     return "M" + (d.source.name1=="..." ? d.source.y+15 : d.source.y) + "," + d.source.x
@@ -158,8 +162,10 @@ function elbow(d, i) {
 
 {% block content %}
 <div class="container">
+    {% block pedigree_header %}
     <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
-    <div id="descendants">
+    {% endblock pedigree_header %}
+    <div id="familytree_svg">
     </div>
 </div>
 {% endblock %}

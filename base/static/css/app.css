@@ -13,6 +13,8 @@
         font-weight: 400;
         src:
           url("../fonts/vollkorn-italic-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-Italic.ttf") format('truetype');
+          url("../fonts/Vollkorn-Italic.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -20,13 +22,17 @@
         font-weight: 500;
         src:
           url("../fonts/vollkorn-mediumitalic-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-MediumItalic.ttf") format('truetype');
+          url("../fonts/Vollkorn-MediumItalic.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
         font-style: italic;
         font-weight: 600;
         src:
-          url("../fonts/vollkorn-bolditalic-webfont.woff") format('woff');
+          url("../fonts/vollkorn-semibolditalic-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-SemiboldItalic.ttf") format('truetype');
+          url("../fonts/Vollkorn-SemiboldItalic.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -34,6 +40,8 @@
         font-weight: 700;
         src:
           url("../fonts/vollkorn-bolditalic-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-BoldItalic.ttf") format('truetype');
+          url("../fonts/Vollkorn-BoldItalic.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -41,6 +49,8 @@
         font-weight: 400;
         src:
           url("../fonts/vollkorn-regular-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-Regular.ttf") format('truetype');
+          url("../fonts/Vollkorn-Regular.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -48,6 +58,8 @@
         font-weight: 500;
         src:
           url("../fonts/vollkorn-medium-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-Medium.ttf") format('truetype');
+          url("../fonts/Vollkorn-Medium.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -55,6 +67,8 @@
         font-weight: 600;
         src:
           url("../fonts/vollkorn-semibold-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-Semibold.ttf") format('truetype');
+          url("../fonts/Vollkorn-Semibold.otf") format('opentype');
     }
     @font-face {
         font-family: Vollkorn;
@@ -62,6 +76,8 @@
         font-weight: 700;
         src:
           url("../fonts/vollkorn-bold-webfont.woff") format('woff');
+          url("../fonts/Vollkorn-Bold.ttf") format('truetype');
+          url("../fonts/Vollkorn-Bold.otf") format('opentype');
     }
     @font-face {
         font-family: Cabin;

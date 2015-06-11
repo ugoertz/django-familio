@@ -51,7 +51,7 @@ var tree = d3.layout.tree()
     .children(function(d) { return d.parents; })
     .size([height, width]);
 
-var svg = d3.select("#pedi").append("svg")
+var svg = d3.select("#familytree_svg").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
@@ -142,7 +142,7 @@ function elbow(d, i) {
     {% endwith %}
     {% endblock pedigree_header %}
 
-    <div id="pedi">
+    <div id="familytree_svg">
     </div>
 </div>
 {% endblock %}

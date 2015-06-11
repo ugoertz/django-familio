@@ -2,9 +2,11 @@ from django.conf.urls import patterns, url
 
 from .views import (
         PersonList, PersonDetail, EventDetail, FamilyList,
-        Sparkline, Pedigree, PedigreePDF,
+        Sparkline,
+        Pedigree, PedigreePDF,
+        Descendants, DescendantsPDF,
         HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
-        Descendants)
+        )
 
 
 urlpatterns = patterns(
@@ -33,6 +35,9 @@ urlpatterns = patterns(
         url(r'^descendants/(?P<pk>\d+)/$',
             Descendants.as_view(),
             name='descendants'),
+        url(r'^descendants-pdf/(?P<handle>\w+)/(?P<generations>\d+)/$',
+            DescendantsPDF.as_view(),
+            name='descendants-pdf'),
         url(r'^sparkline-person/' +
             r'(?P<pk>\d+)/(?P<fampk>\d+)/' +
             r'(?P<fr>\d\d\d\d)/(?P<to>\d\d\d\d)/$',

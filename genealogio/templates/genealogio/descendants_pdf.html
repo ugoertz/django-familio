@@ -1,0 +1,101 @@
+
+{% extends "genealogio/descendants.html" %}
+
+{% block popover %}{% endblock %}
+{% block navbar %}{% endblock %}
+{% block messages %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block piwik %}{% endblock %}
+
+{% block css %}
+<style>
+.name {
+    font-family: Vollkorn, times, serif;
+    font-weight: 400;
+    fill: #000000;
+    font-size: 120%;
+}
+
+.name2 {
+    font-family: Vollkorn, times, serif;
+    font-weight: 400;
+    fill: #000000;
+    font-size: 120%;
+}
+
+.about {
+    font-family: Vollkorn, times, serif;
+    fill: #000000;
+    /* font-size: smaller; */
+}
+
+.link {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+p, li {
+    font-size: 120%;
+}
+</style>
+{% endblock css %}
+
+{% block pedigree_header %}{% endblock %}
+
+{% block size %}
+var margin = {top: 0, right: 320, bottom: 0, left: 0},
+    width = 320*{{ generations }} - margin.left + margin.right,
+    height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
+{% endblock %}
+
+{% block svg_name1 %}
+node.append("svg:a")
+    .attr("class", "popoverlink")
+    .attr("xlink:href", function(d) { return d.urlp1 ? d.urlp1 : ""; })
+    .append("text")
+    .attr("class", "name")
+    .attr("x", 8)
+    .attr("y", -2)
+    .attr("dy", "-1.5em")
+    .text(function(d) { return d.name1; });
+{% endblock svg_name1 %}
+
+{% block svg_about1 %}
+node.append("text")
+    .attr("x", 12)
+    .attr("y", 12)
+    .attr("dx", "1.21em")
+    .attr("dy", "1.8em")
+    .attr("class", "about lifespan")
+    .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
+{% endblock svg_about1 %}
+
+
+
+{% block svg_name2 %}
+node.append("svg:a")
+    .filter(function(d) { return "name2" in d; })
+    .attr("class", "popoverlink")
+    .attr("xlink:href", function(d) { return d.urlp2; })
+    .append("text")
+    .attr("class", "name2")
+    .attr("x", 8)
+    .attr("y", -6)
+    .attr("dx", "1.21em")
+    .attr("dy", "1.51em")
+    .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
+{% endblock svg_name2 %}
+
+{% block svg_about2 %}
+node.append("text")
+    .attr("x", 8)
+    .attr("y", 8)
+    .attr("dy", "-1.25em")
+    .attr("class", "about lifespan")
+    .text(function(d) { if (d.name1 != "..." && (d.born1 || d.died1)) return d.born1 + "–" + d.died1; else return ""; });
+{% endblock svg_about2 %}
+
+{% block svg_icon1 %}{% endblock %}
+{% block svg_icon2 %}{% endblock %}
+
