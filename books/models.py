@@ -11,7 +11,6 @@ import os
 import os.path
 import re
 import shutil
-import subprocess
 import tempfile
 import time
 
@@ -498,13 +497,15 @@ class Book(models.Model):
         index.close()
 
         # create conf.py based on self.root.title
-        subprocess.call([
-                'sed', '-e "s/.*# TITLE/u\'%s\',/" -e "s/.*# RELEASENAME/u\'%s\',/" %s/conf.py > %s/conf.py'
-                % (
-                    self.root.title or 'Unsere Familiengeschichte',
-                    Site.objects.get_current().domain,
-                    os.path.join(settings.PROJECT_ROOT, 'pdfexport'),
-                    self.get_directory_tmp()) ])
+        with open(os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'conf.py')) as source:
+            with open(os.path.join(self.get_directory_tmp(), 'conf.py'), 'w') as dest:
+                for l in source:
+                    if l.find('# TITLE') != -1:
+                        dest.write(b"u'%s',\n" % (self.root.title.encode('utf8') or 'Unsere Familiengeschichte'))
+                    elif l.find('# RELEASENAME') != -1:
+                        dest.write(b"u'%s',\n" % Site.objects.get_current().domain)
+                    else:
+                        dest.write(l)
 
     def create_tex(self):
         """
