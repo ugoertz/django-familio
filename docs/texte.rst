@@ -257,7 +257,6 @@ Bei Links auf externe Webseiten gibt man einfach die vollständige URL an:
   siehe auch `Xyy Zzz <http://de.wikipedia.org/wiki/xyyzzz/>`__
 
 
-.. _bilder-einbinden:
 
 
 .........................................
@@ -273,6 +272,8 @@ Quellen können mit ``:s: Verlinkter Text id``` eingebunden werden, wobei ``id``
 hier durch die Zahl zu ersetzen ist, die der Quelle in der Datenbank zugeordnet
 ist. :ref:`Autocomplete <autocomplete-editor>` anhand des zu verlinkenden Textes
 (meist vermutlich der Titel der Quelle) ist mit Ctrl-Leertaste möglich.
+
+.. _bilder-einbinden:
 
 ................
 Bilder einbinden
