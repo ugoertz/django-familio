@@ -1,9 +1,12 @@
+
+SHELL=/bin/bash
 MOGRIFY_OPTIONS?=-strip -density 90
 
 pdf:
-	for f in *.jpg; do mogrify $(MOGRIFY_OPTIONS) $f; done
+	for f in *.jpg ; do mogrify -strip -density 90 $$f ; done
 	rm -f sphinx.sty
 	cp ../../sphinx.sty .
 	xelatex -interaction=nonstopmode chronicle.tex
 	xelatex -interaction=nonstopmode chronicle.tex
+
 
