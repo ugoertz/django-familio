@@ -315,15 +315,18 @@ class Book(models.Model):
         ctr = 0
         while ctr < 5 and not self.directory:
             ctr += 1
-            d = os.path.basename(tempfile.mkdtemp(
+            tmpdir = tempfile.mkdtemp(
                     dir=os.path.join(
                         settings.MEDIA_ROOT,
                         'tmp',
-                        settings.PDF_DIRECTORY)))
+                        settings.PDF_DIRECTORY))
+            os.chmod(tmpdir, 0775)
+            d = os.path.basename(tmpdir)
             dest = os.path.join(
                     settings.MEDIA_ROOT, settings.PDF_DIRECTORY, d)
             if not os.path.exists(dest):
                 os.mkdir(dest)
+                os.chmod(dest, 0775)
                 self.directory = d
                 self.setup_sphinx()
         if not self.directory:
