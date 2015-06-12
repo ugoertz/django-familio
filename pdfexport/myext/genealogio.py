@@ -183,10 +183,9 @@ class FamilyTreePDF(Directive):
             # for pedigree, use landscape mode by default, for descendants use
             # portrait mode by default:
             if 'rotate' in self.options:
-                try:
-                    del self.options['rotate']
-                except KeyError:
-                    self.options['rotate'] = True
+                del self.options['rotate']
+            else:
+                self.options['rotate'] = True
 
         elif self.arguments[1] == 'descendants':
             generations_default = 2

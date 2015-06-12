@@ -308,7 +308,7 @@ class PedigreePDF(LoginRequiredMixin, View):
 def p_dict_descendants(person, suffix):
     try:
         return {
-            'name' + suffix: person.get_primary_name(),
+            'name' + suffix: person.get_short_name(),
             'born' + suffix:
             person.datebirth.year if person.datebirth else '',
             'died' + suffix:
