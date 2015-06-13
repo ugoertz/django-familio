@@ -344,16 +344,41 @@ admin.site.register(Source, SourceAdmin)
 class UploadZipFileForm(forms.Form):
     path = forms.CharField(
             max_length=50,
-            required=False,
+            required=True,
             label="Pfad",
-            help_text="Wenn ein Pfad angegeben wird, werden die"
-                      " Bilder in einem eigenen Unterverzeichnis gespeichert.",
+            help_text=
+            'Unterverzeichnis, in dem die Bilder gespeichert werden '
+            'sollen. Es muss ein Pfad angegeben werden. Zum Beispiel: '
+            '<span style="font-family: courier, monospace;">ug2015-06</span> '
+            'oder <span style="font-family: courier, monospace;">'
+            'personen/mast/123</span>.',
             widget=forms.TextInput(attrs={'style': 'width: 100%;', }))
-    archive = forms.FileField(label="Archiv-Datei (.zip)")
+    archive = forms.FileField(label="Archiv-Datei (.zip)", required=True)
     target = forms.ChoiceField(
             label="Inhalt der zip-Datei",
             choices=(('images', 'Bilddateien'),
                      ('documents', 'Dokumente')))
+
+    def clean_path(self):
+        path = self.cleaned_data['path']
+        if path.startswith('/') or path.startswith('\\'):
+            raise forms.ValidationError('Pfad darf nicht mit "/" oder "\\" beginnen.')
+
+        return path
+
+    def clean(self):
+        for required_field in ['archive', 'path', 'target', ]:
+            if not required_field in self.cleaned_data:
+                return self.cleaned_data
+        if not zipfile.is_zipfile(self.cleaned_data['archive']):
+            raise forms.ValidationError('Die Datei ist kein zip-Archiv.')
+
+        target_path = os.path.join(settings.MEDIA_ROOT,
+                                   settings.FILEBROWSER_DIRECTORY,
+                                   self.cleaned_data['target'],
+                                   self.cleaned_data['path'])
+        if os.path.exists(target_path):
+            raise forms.ValidationError('Dieser Pfad existiert bereits.')
 
 
 class SourcePictureInline(admin.TabularInline):
@@ -405,7 +430,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         if request.method == 'POST':
             form = UploadZipFileForm(request.POST, request.FILES)
             if form.is_valid():
-                path = form.cleaned_data.get('path', '')
+                path = form.cleaned_data['path']
                 zipf = zipfile.ZipFile(request.FILES['archive'], 'r')
                 target_path = os.path.join(settings.MEDIA_ROOT,
                                            settings.FILEBROWSER_DIRECTORY,

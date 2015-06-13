@@ -60,13 +60,10 @@ Bilddateien als ein zip-Archiv hochladen unter::
 
   http://www.....unserefamilie.net/admin/notaro/picture/uploadarchive/
 
-Wenn gewünscht, werden alle Dateien aus der Archiv-Datei in einen eigenen Ordner
-geschrieben - damit kann man etwas leichter Ordnung in dem Bilderordner halten.
-
-*Achtung:* Bilddateien mit demselben Dateinamen werden gegebenenfalls
-überschrieben! Auch aus diesem Grund empfiehlt es sich, das Archiv in ein
-Unterverzeichnis entpacken zu lassen.
-
+Dabei muss ein Unterverzeichnis (oder ein Pfad) angegeben werden, in dem das
+zip-Archiv dann entpackt wird. Auf diese Weise kann man seine Bilddateien
+leichter wiederfinden und es wird verhindert, dass andere Dateien mit dem
+gleichen Dateinamen durch eine Datei aus dem Archiv überschrieben werden.
 
 --------------------
 Andere Familienbäume
