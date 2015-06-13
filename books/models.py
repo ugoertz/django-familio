@@ -18,6 +18,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.loader import render_to_string
@@ -374,9 +375,15 @@ class Book(models.Model):
         if reference:
             # pylint: disable=no-member
             if reference.startswith('P'):
-                refs = [Person.objects.get(handle=reference), ]
+                try:
+                    refs = [Person.objects.get(handle=reference), ]
+                except ObjectDoesNotExist:
+                    pass
             elif reference.startswith('F'):
-                family = Family.objects.get(handle=reference)
+                try:
+                    family = Family.objects.get(handle=reference)
+                except ObjectDoesNotExist:
+                    pass
                 refs = [x for x in [family.father, family.mother] if x]
         if not refs:
             return
@@ -623,11 +630,18 @@ class Item(models.Model):
         text.
         """
 
+
         if self.text and not force_from_template:
             result = self.text
         elif not self.obj:
             return ''
         else:
+            try:
+                if not Site.objects.get_current() in self.obj.sites.all():
+                    return ''
+            except AttributeError:
+                # If self.obj has no attribute "sites", then this is not a problem
+                pass
             context = {
                     'object': self.obj,
                     'latexmode': True,

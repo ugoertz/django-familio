@@ -363,7 +363,8 @@ placement
 
 caption
   Der Untertitel des Stammbaums (Voreinstellung: *Ahnentafel für ...* bzw.
-  *Nachkommen von ...*).
+  *Nachkommen von ...*). Wird diese Option ohne Wert angegeben (wie im zweiten
+  Beispiel unten), dann wird keine Bildunterschrift gegeben.
 
 **Beispiele:**
 
@@ -377,6 +378,7 @@ caption
   .. familytree:: P_GoertzUlrich1973_57482 descendants
     :generations: 1
     :placement: H
+    :caption:
 
 .. _titelseite:
 
