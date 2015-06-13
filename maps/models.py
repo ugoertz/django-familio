@@ -32,8 +32,8 @@ def cleanname(name):
 
 
 class Url(models.Model):
-    title = models.CharField(max_length=200, blank=True)
-    link = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, blank=True, verbose_name="Titel")
+    link = models.CharField(max_length=200, verbose_name="Link")
 
     def __unicode__(self):
         return self.title or self.link[:50]
@@ -44,8 +44,8 @@ class Url(models.Model):
 
 
 class PlaceUrl(models.Model):
-    url = models.ForeignKey(Url)
-    place = models.ForeignKey('Place')
+    url = models.ForeignKey(Url, verbose_name="URL")
+    place = models.ForeignKey('Place', verbose_name="Ort")
     position = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -55,8 +55,8 @@ class PlaceUrl(models.Model):
 
 
 class PlaceNote(models.Model):
-    place = models.ForeignKey('Place')
-    note = models.ForeignKey(Note)
+    place = models.ForeignKey('Place', verbose_name="Ort")
+    note = models.ForeignKey(Note, verbose_name="Text")
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -65,14 +65,25 @@ class PlaceNote(models.Model):
 
 
 class Place(models.Model):
-    title = models.CharField(max_length=200, blank=True)
+    title = models.CharField(max_length=200, blank=True, verbose_name="Titel")
     slug = models.SlugField(blank=True)
     handle = models.CharField(max_length=50, unique=True)
 
-    urls = models.ManyToManyField(Url, through=PlaceUrl, blank=True)
-    location = models.PointField(blank=True, null=True)
+    urls = models.ManyToManyField(
+            Url,
+            through=PlaceUrl,
+            blank=True,
+            verbose_name="URLs")
+    location = models.PointField(
+            blank=True,
+            null=True,
+            verbose_name="Geo-Koordinaten")
 
-    notes = models.ManyToManyField(Note, blank=True, through=PlaceNote)
+    notes = models.ManyToManyField(
+            Note,
+            blank=True,
+            through=PlaceNote,
+            verbose_name="Texte")
 
     objects = models.GeoManager()
 
