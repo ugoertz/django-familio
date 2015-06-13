@@ -156,14 +156,27 @@ function elbow(d, i) {
         + (d.target.children ? "" : "h" + 0.7*margin.right);
 }
 
-{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
 </script>
 {% endblock js %}
+
+{% block popover %}
+<script>
+$(document).ready(function() {
+{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
+{% include "base/popover.js" with selector='.popoverlink-header' fct="Dajaxice.genealogio.popover_data" get_href="href" %}
+});
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
     {% block pedigree_header %}
     <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
+    <p style="margin-bottom: 40px;">
+    Vater: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" %},
+    Mutter: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" %}.
+    <a href="{% url "pedigree" person.pk %}" class="pull-right">Ahnentafel</a>
+    </p>
     {% endblock pedigree_header %}
     <div id="familytree_svg">
     </div>

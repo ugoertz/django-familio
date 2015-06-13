@@ -112,34 +112,51 @@ function elbow(d, i) {
         + "h" + margin.right;
 }
 
-{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
 
 </script>
 {% endblock js %}
+
+{% block popover %}
+<script>
+$(document).ready(function() {
+{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
+{% include "base/popover.js" with selector='.popoverlink-header' fct="Dajaxice.genealogio.popover_data" get_href="href" %}
+});
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
     {% block pedigree_header %}
     <h2>Ahnentafel für {% include "genealogio/person_snippet_full.html" %}</h2>
+    <div class="row">
+        <div class="col-md-10">
     {% with allchildren=person.get_children %}
+    <p>
     <ul class="list-group">
     {% for partner, children, txt, family in allchildren %}
 
     <li class="list-group-item">
-        {{ txt }} {% include "genealogio/person_snippet.html" with person=partner %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
+        {{ txt }} {% include "genealogio/person_snippet_pedigree.html" with person=partner target="pedigree" %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
 
     {% if children %}
     </br><b>Kinder:</b>
     {% for child in children %}
     {% spaceless %}
-    {% include "genealogio/person_snippet.html" with person=child %}<span>{% if not forloop.last %},{% else %}.{% endif %}</span>
+    {% include "genealogio/person_snippet_pedigree.html" with person=child target="pedigree" %}<span>{% if not forloop.last %},{% else %}.{% endif %}</span>
     {% endspaceless %}
     {% endfor %}
     {% endif %}
     </li>
     {% endfor %}
     </ul>
+    </p>
     {% endwith %}
+        </div>
+        <div class="col-md-2">
+            <p><a href="{% url "descendants" person.pk %}" class="pull-right">Nachkommen</a></p>
+        </div>
+    </div>
     {% endblock pedigree_header %}
 
     <div id="familytree_svg">
