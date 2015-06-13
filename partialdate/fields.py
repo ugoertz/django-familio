@@ -47,6 +47,27 @@ class PartialDate(object):
     def __len__(self):
         return len('{0}'.format(datetime.MAXYEAR)) + 6
 
+    def __cmp__(self, other):
+        if not isinstance(other, PartialDate):
+            # Typically this would mean that other is None
+            # None should be less than any date (this is consistent with the
+            # return values further on in cases where month or day are None.
+            return 1
+
+        if self.year < other.year:
+            return -1
+        if self.year > other.year:
+            return 1
+        if self.month < other.month:
+            return -1
+        if self.month > other.month:
+            return 1
+        if self.day < other.day:
+            return -1
+        if self.day > other.day:
+            return 1
+        return 0
+
     @classmethod
     def fromdate(cls, date):
         """Convert a datetime.date object to a PartialDate object."""

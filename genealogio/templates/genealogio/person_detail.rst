@@ -68,7 +68,7 @@ Orte
 ----
 
 {% for pl in object.personplace_set.all %}
-* {% if pl.start and pl.start.year != pl.end.year or pl.start.month != pl.end.month or pl.start.day != pl.end.day %}{{ pl.start|partial_date:"d.m.Y" }} - {% endif %}{{ pl.end|partial_date:"d.m.Y" }}{% if pl.start or pl.end %}: {% endif %} `{{ pl.place }} <{{ pl.place.get_absolute_url }}>`__ ({{ pl.get_typ_display }})
+* {% if pl.start and pl.start != pl.end %}{{ pl.start|partial_date:"d.m.Y" }}{% endif %}{% if pl.start and pl.end and pl.start != pl.end %} - {% endif %}{{ pl.end|partial_date:"d.m.Y" }}{% if pl.start or pl.end %}: {% endif %} `{{ pl.place }} <{{ pl.place.get_absolute_url }}>`__ ({{ pl.get_typ_display }})
 {% endfor %}
 {% endif %}
 
