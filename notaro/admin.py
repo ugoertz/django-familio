@@ -287,11 +287,14 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     def get_changeform_initial_data(self, request):
         initial = super(NoteAdmin, self).get_changeform_initial_data(request)
+        initial['sites'] = [request.site, ]
+
         if 'rstfile' in request.GET:
             with open(request.GET['rstfile']) as f:
                 rst = f.read()
                 initial.update({'text': rst, 'published': False })
         initial.update({'title': request.GET.get('title', ''), })
+
         return initial
 
     class Media:
@@ -404,6 +407,9 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     list_filter = ('sites', )
     search_fields = ('caption', )
     inlines = [SourcePictureInline, ]
+
+    def get_changeform_initial_data(self, request):
+        return {'sites': [request.site, ] }
 
     def image_thumbnail(self, obj):
         """Display thumbnail, to be used in django admin list_display."""
