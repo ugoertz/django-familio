@@ -9,6 +9,8 @@ var page = require('webpage').create(),
     system = require('system'),
     address, output, size;
 
+page.settings.resourceTimeout = 10000;
+
 address = system.args[1];
 output = system.args[2];
 // page.viewportSize = { width: 1500, height: 1500 };
