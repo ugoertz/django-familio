@@ -35,3 +35,15 @@ function() {
 }
 );
 
+$('body').click(function() {
+    $('{{ selector }}').each(
+            function() {
+                $(this).popover('hide');
+                if (popover_timer) {
+                    clearTimeout(popover_timer);
+                    popover_timer = null;
+                }
+            }
+            )
+});
+
