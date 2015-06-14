@@ -4,13 +4,14 @@ import datetime
 import os.path
 import re
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
 from django.utils.translation import ungettext
 from django.contrib.sites.models import Site
-from django_transfer import TransferHttpResponse
+from django.views.generic import View
 
 from braces.views import LoginRequiredMixin
+from django_transfer import TransferHttpResponse
 from grappelli.views.related import (AutocompleteLookup, get_label,
                                      ajax_response, never_cache, )
 from grappelli.settings import AUTOCOMPLETE_LIMIT
@@ -124,7 +125,7 @@ def download(request, fname):
 
 
 class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
-    """ patch grappelli's autocomplete to let us control the queryset 
+    """ patch grappelli's autocomplete to let us control the queryset
     by creating a autocomplete_queryset function on the model """
 
     def get_queryset(self, request=None):
@@ -162,6 +163,26 @@ class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
                           '%(counter)s results', 0) % {'counter': 0}
         data = [{"value": None, "label": label}]
         return ajax_response(data)
+
+
+class ToggleStaffView(LoginRequiredMixin, View):
+    """
+    Toggle whether in templates the additional information, links, ... for staff
+    members should be displayed. (If not, the page looks the same as for
+    non-staff users.)
+
+    The default is to display the staff information. This can be changed by the
+    user in the "user dropdown menu" in navbar.
+    """
+
+    def post(self, request):
+        if request.session.get('staff_view', True):
+            request.session['staff_view'] = False
+            print 'set false'
+        else:
+            request.session['staff_view'] = True
+            print 'set true'
+        return HttpResponseRedirect(request.POST.get('next', '/'))
 
 
 # class SearchView(View):

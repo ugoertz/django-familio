@@ -40,6 +40,17 @@
                     <li class="divider"></li>
                     <li><a href="{% settings_value "DOCUMENTATION_URL" %}benutzer.html">Hilfe</a></li>
                     <li class="divider"></li>
+                    {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
+                    {# Note that we cannot use user_is_admin here, because this menu item #}
+                    {# must be displayed regardless of the staff_view setting #}
+                    <li>
+                        <form action="{% url "toggle_staff_view" %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <span class="glyphicon {% if user_is_admin %}glyphicon-ok{% else %}glyphicon-remove{% endif %}" style="margin-left: 3px; margin-right: 2px; font-size: 60%;"></span>
+                            <button class="btn-as-link" type="submit">Ansicht als Redakteur</button>
+                        </form>
+                    </li>{% endif %}
                     <li><a href="/accounts/signout/">Abmelden</a></li>
                 </ul>
                 </li>

@@ -189,7 +189,7 @@
     margin-top: 50px;
     padding-left: 10px;
     padding-right: 30px;
-    padding-top: 10px; 
+    padding-top: 10px;
     padding-bottom: 10px;
     border: 1px solid lightgray;
 }
@@ -215,3 +215,24 @@ th, td {
 td p {
     font-size: 10pt;
 }
+
+.btn-as-link {
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+    background: none;
+
+    font-family: Cabin, helvetica, sans;
+    font-size: inherit;
+    line-height: inherit;
+    text-shadow: none;
+
+
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+
+    cursor: pointer;
+}
+
