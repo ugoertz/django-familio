@@ -10,6 +10,7 @@ from django.utils.translation import ungettext
 from django.contrib.sites.models import Site
 from django_transfer import TransferHttpResponse
 
+from braces.views import LoginRequiredMixin
 from grappelli.views.related import (AutocompleteLookup, get_label,
                                      ajax_response, never_cache, )
 from grappelli.settings import AUTOCOMPLETE_LIMIT
@@ -32,28 +33,34 @@ class CurrentSiteMixin(object):
 def home(request):
     """ Default view for the root """
 
-    # pylint: disable=no-member
-    dates = [datetime.date.today() + (i-4) * datetime.timedelta(days=1)
-             for i in range(20)]
-    birthdeathdays = [
-            (d,
-             Person.objects
-             .filter(datebirth__endswith=d.strftime('-%m-%d')),
-             Person.objects
-             .filter(datedeath__endswith=d.strftime('-%m-%d')), )
-            for d in dates]
-    birthdeathdays = [(d, born, died)
-                      for d, born, died in birthdeathdays if born or died]
+    if request.user.is_authenticated():
+        # pylint: disable=no-member
+        dates = [datetime.date.today() + (i-4) * datetime.timedelta(days=1)
+                for i in range(20)]
+        birthdeathdays = [
+                (d,
+                Person.objects
+                .filter(datebirth__endswith=d.strftime('-%m-%d')),
+                Person.objects
+                .filter(datedeath__endswith=d.strftime('-%m-%d')), )
+                for d in dates]
+        birthdeathdays = [(d, born, died)
+                        for d, born, died in birthdeathdays if born or died]
+        context = {
+                'personen': Person.objects.all().order_by('-date_added')[:5],
+                'comments': Comment.objects.all().order_by('-date')[:5],
+                'birthdeathdays': birthdeathdays,
+                'today': datetime.date.today(),
+                'notes': Note.objects.filter(published=True)
+                .order_by('-date_added')[:5], }
+    else:
+        context = {}
 
     # pylint: disable=no-member
     return render(
             request, 'base/home.html',
-            {'personen': Person.objects.all().order_by('-date_added')[:5],
-             'comments': Comment.objects.all().order_by('-date')[:5],
-             'birthdeathdays': birthdeathdays,
-             'today': datetime.date.today(),
-             'notes': Note.objects.filter(published=True)
-                          .order_by('-date_added')[:5], })
+            context)
+
 
 protected_path = re.compile('\d+_')
 
@@ -116,7 +123,7 @@ def download(request, fname):
     raise Http404
 
 
-class CustomAutocompleteLookup(AutocompleteLookup):
+class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
     """ patch grappelli's autocomplete to let us control the queryset 
     by creating a autocomplete_queryset function on the model """
 
@@ -155,6 +162,7 @@ class CustomAutocompleteLookup(AutocompleteLookup):
                           '%(counter)s results', 0) % {'counter': 0}
         data = [{"value": None, "label": label}]
         return ajax_response(data)
+
 
 # class SearchView(View):
 
