@@ -166,6 +166,32 @@ class Family(PrimaryObject):
                                      verbose_name="Quellen",
                                      through=FamilySource)
 
+    def save(self, *args, **kwargs):
+        """Create handle before saving Family instance."""
+
+        if not self.handle:
+            self.handle = 'F_'
+
+            # pylint: disable=no-member
+            try:
+                self.handle += cleanname(self.father.last_name)
+                if self.father.datebirth:
+                    self.handle += unicode(self.father.datebirth.year)
+            except:
+                pass
+            try:
+                self.handle += cleanname(self.mother.last_name)
+                if self.mother.datebirth:
+                    self.handle += unicode(self.mother.datebirth.year)
+            except:
+                pass
+            self.handle = u'%s_%s' % (
+                         self.handle[:44],
+                         unicode(datetime.now().microsecond)[:5])
+
+        super(Family, self).save(*args, **kwargs)
+
+
     def get_children(self):
         return self.person_set(manager='objects').all().order_by('datebirth')
 
@@ -589,6 +615,15 @@ class Person(PrimaryObject):
                 fam
                 ])
         return children
+
+    @property
+    def has_spouse(self):
+        # pylint: disable=no-member
+        if Family.objects.filter(father=self).exists():
+            return True
+        if Family.objects.filter(mother=self).exists():
+            return True
+        return False
 
     @staticmethod
     def get_handle(

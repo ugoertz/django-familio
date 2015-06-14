@@ -134,14 +134,9 @@ class AddPersonForm(forms.ModelForm):
     marriedname = forms.CharField(
             required=False,
             max_length=200,
-            label="Geburtsname",
+            label="Ehename",
             help_text="Ehename (sofern er sich vom jetzigen "
                       "Nachnamen unterscheidet).")
-    gender = forms.ChoiceField(
-            label="Geschlecht",
-            choices=(
-                (Person.MALE, 'männlich'),
-                (Person.FEMALE, 'weiblich')))
 
     # use this field to provide further information:
     # - id of family to which this person should be attached as
@@ -172,12 +167,45 @@ class AddPersonForm(forms.ModelForm):
                 Div(
                     Div('datebirth', css_class="col-md-2"),
                     Div('datedeath', css_class="col-md-2"),
-                    Div('gender', css_class="col-md-2"),
+                    Div('gender_type', css_class="col-md-2"),
                     css_class="row"
                 ),
                 'attach_to',
                 Submit('Abspeichern', 'Abspeichern', css_class='btn-success'))
         self.helper = helper
+
+    class Meta:
+        model = Person
+        fields = ['first_name', 'last_name', 'datebirth', 'datedeath', 'gender_type', ]
+
+
+class AddSpouseForm(AddPersonForm):
+
+    start_date = forms.CharField(
+            max_length=20,
+            required=False,
+            label='Hochzeitsdatum',
+            help_text="Im Format JJJJ-MM-TT."
+            )
+
+    def __init__(self, *args, **kwargs):
+        super(AddSpouseForm, self).__init__(*args, **kwargs)
+
+        self.helper.layout = Layout(
+                Div(
+                    Div('first_name', css_class="col-md-4"),
+                    Div('last_name', css_class="col-md-4"),
+                    Div('marriedname', css_class="col-md-4"),
+                    css_class="row"
+                ),
+                Div(
+                    Div('datebirth', css_class="col-md-2"),
+                    Div('datedeath', css_class="col-md-2"),
+                    css_class="row"
+                ),
+                'start_date',
+                'attach_to',
+                Submit('Abspeichern', 'Abspeichern', css_class='btn-success'))
 
     class Meta:
         model = Person

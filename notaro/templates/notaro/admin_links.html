@@ -1,6 +1,9 @@
 {% load base_tags %}
 
+<div class="cabin" style="width: 100%; display: block;">
 <p class="pull-right" style="font-size: 100%; margin-bottom: 20px;"><a class="btn btn-default btn-xs" href="{% settings_value "DOCUMENTATION_URL" %}{% firstof doc_link "index.html" %}">Dokumentation</a></p>
+</div>
+<div class="cabin" style="width="100%;">
 <p style="font-size: 85%;">
 {% firstof object.handle object.id %}
 </p>
@@ -8,6 +11,7 @@
 <a class="btn btn-default" href="/admin/{{ admin_edit_link }}/{{ object.id }}/">Bearbeiten</a>
 </p>
 <div style="display: none;" class="btn btn-warning" id="errormsg">
+</div>
 </div>
 
 

@@ -502,29 +502,6 @@ class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 
         return rof + super(FamilyAdmin, self).get_readonly_fields(request, obj)
 
-    def save_model(self, request, obj, form, change):
-        """Create handle before saving Family instance."""
-
-        if not obj.handle:
-            obj.handle = 'F_'
-            try:
-                obj.handle += cleanname(obj.father.last_name)
-                if obj.father.datebirth:
-                    obj.handle += unicode(obj.father.datebirth.year)
-            except:
-                pass
-            try:
-                obj.handle += cleanname(obj.mother.last_name)
-                if obj.mother.datebirth:
-                    obj.handle += unicode(obj.mother.datebirth.year)
-            except:
-                pass
-            obj.handle = u'%s_%s' % (
-                         obj.handle[:44],
-                         unicode(datetime.now().microsecond)[:5])
-
-        super(FamilyAdmin, self).save_model(request, obj, form, change)
-
     def father_os(self, obj):
         sitelist = ', '.join([s.siteprofile.short_name
                               for s in obj.father.sites.exclude(

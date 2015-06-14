@@ -142,6 +142,9 @@ $(window).on('map:init', function (e) {
                     {% if not person.family.exists %}
                     <a href="{% url "add_parents" person.pk %}" class="btn btn-default">Eltern hinzufügen</a>
                     {% endif %}
+                    {% if not person.has_spouse %}
+                    <a href="{% url "add_spouse" person.pk %}" class="btn btn-default">Ehepartner hinzufügen</a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
