@@ -16,7 +16,8 @@ from django.contrib.sites.models import Site
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.views.generic import DetailView, FormView, ListView, View
+from django.views.generic import (
+        CreateView, DetailView, FormView, ListView, View)
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
@@ -27,7 +28,7 @@ from base.views import CurrentSiteMixin
 from maps.models import Place
 from notaro.models import Note, Source
 
-from .forms import AddParentForm
+from .forms import AddParentForm, AddPersonForm
 from .models import (
         Name, Person, PersonPlace, Event, Family, TimelineItem, PersonFamily)
 
@@ -719,4 +720,77 @@ class AddParents(LoginRequiredMixin, FormView):
 
         return HttpResponseRedirect(
                 reverse('family-detail', kwargs={'pk': family.pk, }))
+
+
+class AddChildView(CreateView):
+    model = Person
+    form_class = AddPersonForm
+
+    def form_valid(self, form):
+        # save person
+        handle = Person.get_handle(
+                last_name=form.cleaned_data['last_name'],
+                first_name=form.cleaned_data['first_name'],
+                married_name=form.cleaned_data['marriedname'],
+                datebirth=form.cleaned_data['datebirth'],
+                datedeath=form.cleaned_data['datedeath'])
+        person = Person.objects.create(
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                probably_alive=(form.cleaned_data['datedeath'] == ''),
+                gender_type=form.cleaned_data['gender'],
+                datebirth=form.cleaned_data['datebirth'],
+                datedeath=form.cleaned_data['datedeath'],
+                handle=handle
+                )
+
+        site = Site.objects.get_current()
+        person.sites.add(site)
+        for s in site.siteprofile.neighbor_sites.all():
+            person.sites.add(s)
+
+        if form.cleaned_data['last_name']:
+            Name.objects.create(
+                    name=form.cleaned_data['last_name'],
+                    typ=Name.BIRTHNAME,
+                    person=person)
+        if form.cleaned_data['marriedname']:
+            Name.objects.create(
+                    name=form.cleaned_data['marriedname'],
+                    typ=Name.MARRIEDNAME,
+                    person=person)
+        if form.cleaned_data['first_name']:
+            Name.objects.create(
+                    name=form.cleaned_data['first_name'],
+                    typ=Name.FIRSTNAME,
+                    person=person)
+
+        # add as child to family
+        family = Family.objects.get(pk=form.cleaned_data['attach_to'])
+        PersonFamily.objects.create(
+                person=person,
+                family=family,
+                child_type=PersonFamily.BIRTH)
+
+        return HttpResponseRedirect(
+                reverse('person-detail', kwargs={'pk': person.pk, }))
+
+    def get_context_data(self, **kwargs):
+        context = super(AddChildView, self).get_context_data(**kwargs)
+
+        f = Family.objects.get(pk=self.kwargs['pk'])
+        context.update({
+            'info_text': 'Füge ein Kind zur Familie <b>%s</b> hinzu.' % unicode(f)
+            })
+
+        return context
+
+
+    def get_initial(self):
+        initial = super(AddChildView, self).get_initial()
+        initial.update({
+            'attach_to': self.kwargs['pk'],
+            })
+
+        return initial
 

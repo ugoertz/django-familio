@@ -315,8 +315,14 @@ class Person(PrimaryObject):
                    (FEMALE, 'weiblich'), )
 
     # these fields are set in the admin
-    last_name = models.CharField(max_length=200, blank=True, default='')
-    first_name = models.CharField(max_length=200, blank=True, default='')
+
+    # last_name is the family name *at birth*
+    last_name = models.CharField(
+            max_length=200, blank=True, default='',
+            verbose_name="Geburtsname")
+    first_name = models.CharField(
+            max_length=200, blank=True, default='',
+            verbose_name="Vorname")
 
     gender_type = models.IntegerField('Geschlecht', choices=GENDER_TYPE,
                                       default=3)
@@ -593,11 +599,14 @@ class Person(PrimaryObject):
         handle += cleanname(married_name)[:20]
         handle += cleanname(first_name)[:20]
 
-        # pylint: disable=no-member
-        if datebirth:
+        try:
             handle += unicode(datebirth.year)
-        if datedeath:
+        except:
+            pass
+        try:
             handle += unicode(datedeath.year)
+        except:
+            pass
         if id:
             handle += '-' + unicode(id)
         else:

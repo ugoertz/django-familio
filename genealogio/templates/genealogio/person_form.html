@@ -1,0 +1,24 @@
+{% extends "_layouts/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{{ block.super }}
+<style>
+.help-block {
+    font-size: 80%;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-top: 30px;" class="container">
+    <div class="row">
+        <div class="col-md-10">
+            <p class="cabin">{{ info_text|safe }}</p>
+
+{% crispy form form.helper %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
+

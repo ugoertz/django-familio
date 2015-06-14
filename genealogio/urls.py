@@ -6,7 +6,7 @@ from .views import (
         Pedigree, PedigreePDF,
         Descendants, DescendantsPDF,
         HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
-        AddParents,
+        AddParents, AddChildView,
         )
 
 
@@ -57,5 +57,8 @@ urlpatterns = patterns(
         url(r'^add-parents/(?P<pk>\d+)/',
             AddParents.as_view(),
             name="add_parents"),
+        url(r'^add-child/(?P<pk>\d+)/',
+            AddChildView.as_view(),
+            name="add_child"),
         )
 

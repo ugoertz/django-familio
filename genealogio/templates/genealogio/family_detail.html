@@ -93,6 +93,7 @@ $(window).on('map:init', function (e) {
         {% if user_is_admin %}
             <div class="cabin adminbox">
             {% include "notaro/admin_links.html" with admin_edit_link="genealogio/family" doc_link="familien.html" %}
+            <a href="{% url "add_child" family.pk %}" class="btn btn-default">Kind hinzufügen</a>
             </div>
         {% endif %}
         </div>
