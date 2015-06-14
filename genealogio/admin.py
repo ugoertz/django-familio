@@ -265,25 +265,17 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 
     def save_model(self, request, obj, form, change):
         if not obj.handle:
-            obj.handle = 'P_'
-            try:
-                obj.handle += cleanname(request.POST['name_set-1-name'])[:20]
-            except KeyError:
-                pass
-            try:
-                obj.handle += cleanname(request.POST['name_set-2-name'])[:20]
-            except KeyError:
-                pass
-            try:
-                obj.handle += cleanname(request.POST['name_set-0-name'])[:20]
-            except KeyError:
-                pass
-            if obj.datebirth:
-                obj.handle += unicode(obj.datebirth.year)
-            if obj.datedeath:
-                obj.handle += unicode(obj.datedeath.year)
-            obj.handle = obj.handle[:44]
-            obj.handle += u'_' + unicode(datetime.now().microsecond)[:5]
+            # FIXME We assume here that last_name is in the inline field
+            # name_set-1-name, etc.
+            obj.handle = Person.get_handle(
+                    last_name=cleanname(
+                        request.POST.get('name_set-1-name', ''))[:20],
+                    first_name=cleanname(
+                        request.POST.get('name_set-0-name', ''))[:20],
+                    married_name=cleanname(
+                        request.POST.get('name_set-2-name', ''))[:20],
+                    datebirth=obj.datebirth,
+                    datedeath=obj.datedeath)
         super(PersonAdmin, self).save_model(request, obj, form, change)
 
     def save_related(self, request, form, formset, change):

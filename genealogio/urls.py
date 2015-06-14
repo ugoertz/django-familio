@@ -6,6 +6,7 @@ from .views import (
         Pedigree, PedigreePDF,
         Descendants, DescendantsPDF,
         HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
+        AddParents,
         )
 
 
@@ -52,5 +53,9 @@ urlpatterns = patterns(
             r'(?P<tlid>\d+)/' +
             r'(?P<fr>\d\d\d\d)/(?P<to>\d\d\d\d)/$',
             Sparkline.as_view(),
-            name='sparkline-tlitem'), )
+            name='sparkline-tlitem'),
+        url(r'^add-parents/(?P<pk>\d+)/',
+            AddParents.as_view(),
+            name="add_parents"),
+        )
 

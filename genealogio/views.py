@@ -11,11 +11,12 @@ import cairocffi as cairo
 import json
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.db.models import Count
-from django.http import HttpResponse  # , HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.views.generic import DetailView, ListView, View
+from django.views.generic import DetailView, FormView, ListView, View
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
@@ -26,7 +27,9 @@ from base.views import CurrentSiteMixin
 from maps.models import Place
 from notaro.models import Note, Source
 
-from .models import Person, PersonPlace, Event, Family, TimelineItem
+from .forms import AddParentForm
+from .models import (
+        Name, Person, PersonPlace, Event, Family, TimelineItem, PersonFamily)
 
 
 class HomeGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
@@ -586,4 +589,134 @@ class Sparkline(LoginRequiredMixin, View):
                 ctx.stroke()
 
         return surface
+
+
+class AddParents(LoginRequiredMixin, FormView):
+    template_name = "genealogio/add_parents.html"
+    form_class = AddParentForm
+
+    def get_initial(self):
+        initial = super(AddParents, self).get_initial()
+        initial.update({
+            'family_for': int(self.kwargs['pk']),
+            })
+        return initial
+
+
+    def form_valid(self, form):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error('Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
+        print form.cleaned_data
+        family_kwargs = {
+                'name': form.cleaned_data['family_name']\
+                        or form.cleaned_data['last_name_father'],
+                'family_rel_type': Family.MARRIED,
+                'start_date': form.cleaned_data['start_date'],
+                }
+
+        if (
+                form.cleaned_data['last_name_father'] or
+                form.cleaned_data['first_name_father']):
+            father_kwargs = {
+                    'gender_type': Person.MALE,
+                    'probably_alive': form.cleaned_data['date_death_father'] == '',
+                    'last_name': form.cleaned_data['last_name_father'],
+                    'first_name': form.cleaned_data['first_name_father'],
+                    }
+            if form.cleaned_data['date_birth_father']:
+                father_kwargs['datebirth'] = form.cleaned_data['date_birth_father']
+            if form.cleaned_data['date_death_father']:
+                father_kwargs['datedeath'] = form.cleaned_data['date_death_father']
+            father_kwargs['handle'] = Person.get_handle(
+                    last_name=father_kwargs['last_name'],
+                    first_name=father_kwargs['first_name'],
+                    datebirth=father_kwargs.get('datebirth', ''),
+                    datedeath=father_kwargs.get('datedeath', ''))
+            father = Person.objects.create(**father_kwargs)
+
+            site = Site.objects.get_current()
+            father.sites.add(site)
+            for s in site.siteprofile.neighbor_sites.all():
+                father.sites.add(s)
+
+            if form.cleaned_data['last_name_father']:
+                Name.objects.create(
+                        name=father.last_name,
+                        typ=Name.BIRTHNAME,
+                        person=father)
+            if form.cleaned_data['first_name_father']:
+                Name.objects.create(
+                        name=father.first_name,
+                        typ=Name.FIRSTNAME,
+                        person=father)
+            family_kwargs['father'] = father
+
+        if (
+                form.cleaned_data['last_name_mother'] or
+                form.cleaned_data['first_name_mother']):
+            mother_kwargs = {
+                    'gender_type': Person.FEMALE,
+                    'probably_alive': form.cleaned_data['date_death_mother'] == '',
+                    'last_name': form.cleaned_data['last_name_father'],
+                    'first_name': form.cleaned_data['first_name_mother'],
+                    }
+            if form.cleaned_data['date_birth_mother']:
+                mother_kwargs['datebirth'] = form.cleaned_data['date_birth_mother']
+            if form.cleaned_data['date_death_mother']:
+                mother_kwargs['datedeath'] = form.cleaned_data['date_death_mother']
+
+            mother_kwargs['handle'] = Person.get_handle(
+                    last_name=mother_kwargs['last_name'],
+                    first_name=mother_kwargs['first_name'],
+                    married_name=form.cleaned_data['last_name_father'],
+                    datebirth=mother_kwargs.get('datebirth', ''),
+                    datedeath=mother_kwargs.get('datedeath', ''))
+            mother = Person.objects.create(**mother_kwargs)
+
+            site = Site.objects.get_current()
+            mother.sites.add(site)
+            for s in site.siteprofile.neighbor_sites.all():
+                mother.sites.add(s)
+
+            if form.cleaned_data['last_name_mother']:
+                Name.objects.create(
+                        name=form.cleaned_data['last_name_mother'],
+                        typ=Name.BIRTHNAME,
+                        person=mother)
+            if form.cleaned_data['last_name_father']:
+                Name.objects.create(
+                        name=form.cleaned_data['last_name_father'],
+                        typ=Name.MARRIEDNAME,
+                        person=mother)
+            if form.cleaned_data['first_name_mother']:
+                Name.objects.create(
+                        name=mother.first_name,
+                        typ=Name.FIRSTNAME,
+                        person=mother)
+            family_kwargs['mother'] = mother
+
+        family_kwargs['handle'] = ('F_' +
+                form.cleaned_data['family_name'] +
+                form.cleaned_data['last_name_father'] +
+                form.cleaned_data['date_birth_father'] +
+                form.cleaned_data['last_name_mother'] +
+                form.cleaned_data['date_birth_mother'])[:44] +\
+                unicode(datetime.datetime.now().microsecond)[:5]
+
+        family = Family.objects.create(**family_kwargs)
+        site = Site.objects.get_current()
+        family.sites.add(site)
+        for s in site.siteprofile.neighbor_sites.all():
+            family.sites.add(s)
+
+        child = Person.objects.get(pk=form.cleaned_data['family_for'])
+        PersonFamily.objects.create(
+                person=child,
+                family=family,
+                child_type=PersonFamily.BIRTH)
+
+        return HttpResponseRedirect(
+                reverse('family-detail', kwargs={'pk': family.pk, }))
 

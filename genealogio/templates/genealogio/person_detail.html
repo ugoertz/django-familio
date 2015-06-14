@@ -136,11 +136,14 @@ $(window).on('map:init', function (e) {
             <p style="margin-top:50px; font-size: 80%;" class="cabin">{{ person.first_name }} benutzt auch diese Webseite.</p>
             <p><a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" class="btn-sm btn btn-default cabin">Nachricht schreiben</a></p>
             {% endif %}
-        {% if user_is_admin %}
-            <div class="cabin adminbox">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="personen.html" %}
-            </div>
-        {% endif %}
+            {% if user_is_admin %}
+                <div class="cabin adminbox">
+                    {% include "notaro/admin_links.html" with admin_edit_link="genealogio/person" doc_link="personen.html" %}
+                    {% if not person.family.exists %}
+                    <a href="{% url "add_parents" person.pk %}" class="btn btn-default">Eltern hinzufügen</a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

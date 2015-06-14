@@ -5,6 +5,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.contrib.gis.db import models
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
@@ -582,25 +584,40 @@ class Person(PrimaryObject):
                 ])
         return children
 
-    def reset_handle(self):
-        """Recompute handle for a Person object which already has an id."""
-        self.handle = 'P_'
-        self.handle += cleanname(self.last_name)[:20]
-        try:
-            marriedname = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
-            self.handle += cleanname(marriedname)[:20]
-        except IndexError:
-            pass
-        self.handle += cleanname(self.first_name)[:20]
+    @staticmethod
+    def get_handle(
+            last_name='', first_name='', married_name='',
+            datebirth=None, datedeath=None, id=None):
+        handle = 'P_'
+        handle += cleanname(last_name)[:20]
+        handle += cleanname(married_name)[:20]
+        handle += cleanname(first_name)[:20]
 
         # pylint: disable=no-member
-        if self.datebirth:
-            self.handle += unicode(self.datebirth.year)
-        if self.datedeath:
-            self.handle += unicode(self.datedeath.year)
-        self.handle += '-' + unicode(self.id)
-        self.handle = self.handle[:49]
+        if datebirth:
+            handle += unicode(datebirth.year)
+        if datedeath:
+            handle += unicode(datedeath.year)
+        if id:
+            handle += '-' + unicode(id)
+        else:
+            handle += u'_' + unicode(datetime.now().microsecond)[:5]
+
+        handle = handle[:49]
+        return handle
+
+    def reset_handle(self):
+        """Recompute handle for a Person object which already has an id."""
+
+        try:
+            married_name = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
+        except IndexError:
+            married_name = ''
+        self.handle = Person.get_handle(
+                self.last_name, self.first_name, married_name,
+                self.datebirth, self.datedeath)
         self.save()
+
 
     def __unicode__(self):
         return u"%s %s" % (self.get_primary_name(), self.handle)
