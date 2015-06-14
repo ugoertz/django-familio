@@ -7,7 +7,7 @@
 
 {% block js %}
 {{ block.super  }}
-{% if user.is_authenticated and user.userprofile.is_staff_for_site %}
+{% if user_is_admin %}
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 {% endif %}
 {% endblock js %}
@@ -30,7 +30,7 @@
             {% include "notaro/sources.rst" with all_sources=object.picturesource_set.all %}
             {% endfilter %}
         </div>
-        {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
+        {% if user_is_admin %}
         <div class="col-md-3 col-md-offset-1">
             <div class="cabin adminbox">
                 {% include "notaro/admin_links.html" with admin_edit_link="notaro/picture" doc_link="bilder.html" %}
