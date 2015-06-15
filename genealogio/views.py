@@ -611,7 +611,7 @@ class AddParents(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error('Es ist ein Fehler aufgetreten.')
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         print form.cleaned_data
@@ -769,7 +769,7 @@ class AddChildView(AddPersonView):
 
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error('Es ist ein Fehler aufgetreten.')
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         # save person
@@ -811,7 +811,7 @@ class AddSpouseView(AddPersonView):
 
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error('Es ist ein Fehler aufgetreten.')
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         p = Person.objects.get(pk=form.cleaned_data['attach_to'])
