@@ -128,9 +128,12 @@ $(window).on('map:init', function (e) {
             {% include "comments/comments.html" %}
         </div>
         <div class="col-md-3 col-md-offset-1">
-            <p style="margin-top:50px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
+            <p style="margin-top:30px;"><a href="{% url "pedigree" object.id %}">Ahnentafel</a></p>
             {% if person.get_children %}
-            <p style="margin-top:50px;"><a href="{% url "descendants" object.id %}">Nachkommen</a></p>
+            <p style="margin-top:30px;"><a href="{% url "descendants" object.id %}">Nachkommen</a></p>
+            {% endif %}
+            {% if person.family.exists %}
+            <p style="margin-top:30px;"><a href="{% url "family-detail" person.family.first.id %}">Familie</a></p>
             {% endif %}
             {% if person.userprofile_set.exists %}
             <p style="margin-top:50px; font-size: 80%;" class="cabin">{{ person.first_name }} benutzt auch diese Webseite.</p>

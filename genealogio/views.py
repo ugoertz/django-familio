@@ -597,9 +597,14 @@ class AddParents(LoginRequiredMixin, FormView):
     form_class = AddParentForm
 
     def get_initial(self):
+        child = Person.objects.get(pk=self.kwargs['pk'])
         initial = super(AddParents, self).get_initial()
         initial.update({
             'family_for': int(self.kwargs['pk']),
+            'family_name': child.last_name,
+            'last_name_father': child.last_name,
+            'married_name_mother': child.last_name,
+            'family_rel_type': Family.MARRIED,
             })
         return initial
 
@@ -613,7 +618,7 @@ class AddParents(LoginRequiredMixin, FormView):
         family_kwargs = {
                 'name': form.cleaned_data['family_name']\
                         or form.cleaned_data['last_name_father'],
-                'family_rel_type': Family.MARRIED,
+                'family_rel_type': form.cleaned_data['family_rel_type'],
                 'start_date': form.cleaned_data['start_date'],
                 }
 
@@ -621,20 +626,16 @@ class AddParents(LoginRequiredMixin, FormView):
                 form.cleaned_data['last_name_father'] or
                 form.cleaned_data['first_name_father']):
             father_kwargs = {
-                    'gender_type': Person.MALE,
-                    'probably_alive': form.cleaned_data['date_death_father'] == '',
                     'last_name': form.cleaned_data['last_name_father'],
                     'first_name': form.cleaned_data['first_name_father'],
+                    'datebirth': form.cleaned_data['date_birth_father'],
+                    'datedeath': form.cleaned_data['date_death_father'],
                     }
-            if form.cleaned_data['date_birth_father']:
-                father_kwargs['datebirth'] = form.cleaned_data['date_birth_father']
-            if form.cleaned_data['date_death_father']:
-                father_kwargs['datedeath'] = form.cleaned_data['date_death_father']
-            father_kwargs['handle'] = Person.get_handle(
-                    last_name=father_kwargs['last_name'],
-                    first_name=father_kwargs['first_name'],
-                    datebirth=father_kwargs.get('datebirth', ''),
-                    datedeath=father_kwargs.get('datedeath', ''))
+
+            father_kwargs['handle'] = Person.get_handle(**father_kwargs)
+            father_kwargs['gender_type'] = Person.MALE
+            father_kwargs['probably_alive'] =\
+                    form.cleaned_data['date_death_father'] == ''
             father = Person.objects.create(**father_kwargs)
 
             site = Site.objects.get_current()
@@ -658,22 +659,18 @@ class AddParents(LoginRequiredMixin, FormView):
                 form.cleaned_data['last_name_mother'] or
                 form.cleaned_data['first_name_mother']):
             mother_kwargs = {
-                    'gender_type': Person.FEMALE,
-                    'probably_alive': form.cleaned_data['date_death_mother'] == '',
-                    'last_name': form.cleaned_data['last_name_father'],
+                    'last_name': form.cleaned_data['last_name_mother'],
                     'first_name': form.cleaned_data['first_name_mother'],
+                    'datebirth': form.cleaned_data['date_birth_mother'],
+                    'datedeath': form.cleaned_data['date_death_mother'],
                     }
-            if form.cleaned_data['date_birth_mother']:
-                mother_kwargs['datebirth'] = form.cleaned_data['date_birth_mother']
-            if form.cleaned_data['date_death_mother']:
-                mother_kwargs['datedeath'] = form.cleaned_data['date_death_mother']
 
             mother_kwargs['handle'] = Person.get_handle(
-                    last_name=mother_kwargs['last_name'],
-                    first_name=mother_kwargs['first_name'],
-                    married_name=form.cleaned_data['last_name_father'],
-                    datebirth=mother_kwargs.get('datebirth', ''),
-                    datedeath=mother_kwargs.get('datedeath', ''))
+                    married_name=form.cleaned_data['married_name_mother'],
+                    **mother_kwargs)
+            mother_kwargs['gender_type'] = Person.FEMALE
+            mother_kwargs['probably_alive'] =\
+                    form.cleaned_data['date_death_mother'] == ''
             mother = Person.objects.create(**mother_kwargs)
 
             site = Site.objects.get_current()
@@ -686,9 +683,9 @@ class AddParents(LoginRequiredMixin, FormView):
                         name=form.cleaned_data['last_name_mother'],
                         typ=Name.BIRTHNAME,
                         person=mother)
-            if form.cleaned_data['last_name_father']:
+            if form.cleaned_data['married_name_mother']:
                 Name.objects.create(
-                        name=form.cleaned_data['last_name_father'],
+                        name=form.cleaned_data['married_name_mother'],
                         typ=Name.MARRIEDNAME,
                         person=mother)
             if form.cleaned_data['first_name_mother']:
@@ -771,6 +768,10 @@ class AddChildView(AddPersonView):
     form_class = AddPersonForm
 
     def form_valid(self, form):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error('Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
         # save person
         person = self.save_person(form)
 
@@ -809,6 +810,10 @@ class AddSpouseView(AddPersonView):
     form_class = AddSpouseForm
 
     def form_valid(self, form):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error('Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
         p = Person.objects.get(pk=form.cleaned_data['attach_to'])
         form.cleaned_data['gender_type'] =\
                 Person.MALE if p.gender_type == Person.FEMALE else Person.MALE
@@ -823,8 +828,9 @@ class AddSpouseView(AddPersonView):
             father = spouse
             mother = p
         family = Family.objects.create(
-                father=father, mother=mother, name=father.last_name,
-                family_rel_type = Family.MARRIED,
+                father=father, mother=mother,
+                family_rel_type = form.cleaned_data['family_rel_type'],
+                name=form.cleaned_data['family_name'],
                 start_date=form.cleaned_data['start_date'],
                 )
         site = Site.objects.get_current()
@@ -844,4 +850,27 @@ class AddSpouseView(AddPersonView):
             })
 
         return context
+
+    def get_initial(self):
+        p = Person.objects.get(pk=self.kwargs['pk'])
+        initial = super(AddSpouseView, self).get_initial()
+        initial.update({
+            'family_rel_type': Family.MARRIED,
+            })
+        if p.gender_type == Person.MALE:
+            initial.update({
+                'marriedname': p.last_name,
+                'family_name': p.last_name
+                })
+        else:
+            try:
+                p_marriedname = Name.objects.filter(
+                        person=p, typ=Name.MARRIEDNAME)[0].name
+                initial.update({
+                    'last_name': p_marriedname,
+                    })
+            except:
+                pass
+
+        return initial
 

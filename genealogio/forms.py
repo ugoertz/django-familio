@@ -40,6 +40,8 @@ class AddParentForm(forms.Form):
             required=False,
             help_text="Im Format JJJJ-MM-TT.",
             max_length=20)
+    family_rel_type = forms.ChoiceField(
+            choices=Family.FAMILY_REL_TYPE)
     last_name_father = forms.CharField(
             label="Nachname",
             required=False,
@@ -60,6 +62,10 @@ class AddParentForm(forms.Form):
             max_length=20)
     last_name_mother = forms.CharField(
             label="Geburtsname",
+            required=False,
+            max_length=200)
+    married_name_mother = forms.CharField(
+            label="Ehename",
             required=False,
             max_length=200)
     first_name_mother = forms.CharField(
@@ -100,7 +106,8 @@ class AddParentForm(forms.Form):
         helper.form_class = 'form-horizontal'
         helper.layout = Layout(
                 Div(
-                    Div('family_name', css_class="col-md-10"),
+                    Div('family_name', css_class="col-md-8"),
+                    Div('family_rel_type', css_class="col-md-2"),
                     Div('start_date', css_class="col-md-2"),
                     css_class="row"
                 ),
@@ -117,8 +124,9 @@ class AddParentForm(forms.Form):
                 Fieldset(
                     'Mutter',
                     Div(
-                        Div('first_name_mother', css_class="col-md-4"),
-                        Div('last_name_mother', css_class="col-md-4"),
+                        Div('first_name_mother', css_class="col-md-3"),
+                        Div('last_name_mother', css_class="col-md-3"),
+                        Div('married_name_mother', css_class="col-md-2"),
                         Div('date_birth_mother', css_class="col-md-2"),
                         Div('date_death_mother', css_class="col-md-2"),
                         css_class="row"
@@ -135,8 +143,8 @@ class AddPersonForm(forms.ModelForm):
             required=False,
             max_length=200,
             label="Ehename",
-            help_text="Ehename (sofern er sich vom jetzigen "
-                      "Nachnamen unterscheidet).")
+            help_text="Ehename (sofern er sich vom "
+                      "Geburtsnamen unterscheidet).")
 
     # use this field to provide further information:
     # - id of family to which this person should be attached as
@@ -181,6 +189,12 @@ class AddPersonForm(forms.ModelForm):
 
 class AddSpouseForm(AddPersonForm):
 
+    family_name = forms.CharField(
+            label="Familienname",
+            required=False,
+            max_length=200)
+    family_rel_type = forms.ChoiceField(
+            choices=Family.FAMILY_REL_TYPE)
     start_date = forms.CharField(
             max_length=20,
             required=False,
@@ -192,18 +206,27 @@ class AddSpouseForm(AddPersonForm):
         super(AddSpouseForm, self).__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
-                Div(
-                    Div('first_name', css_class="col-md-4"),
-                    Div('last_name', css_class="col-md-4"),
-                    Div('marriedname', css_class="col-md-4"),
-                    css_class="row"
-                ),
-                Div(
-                    Div('datebirth', css_class="col-md-2"),
-                    Div('datedeath', css_class="col-md-2"),
-                    css_class="row"
-                ),
-                'start_date',
+                Fieldset(
+                    'Familie',
+                    Div(
+                        Div('family_name', css_class="col-md-8"),
+                        Div('family_rel_type', css_class="col-md-2"),
+                        Div('start_date', css_class="col-md-2"),
+                        css_class="row"
+                    )),
+                Fieldset(
+                    'Ehepartner',
+                    Div(
+                        Div('first_name', css_class="col-md-4"),
+                        Div('last_name', css_class="col-md-4"),
+                        Div('marriedname', css_class="col-md-4"),
+                        css_class="row"
+                    ),
+                    Div(
+                        Div('datebirth', css_class="col-md-2"),
+                        Div('datedeath', css_class="col-md-2"),
+                        css_class="row"
+                    )),
                 'attach_to',
                 Submit('Abspeichern', 'Abspeichern', css_class='btn-success'))
 
