@@ -123,6 +123,10 @@ class FamilySource(models.Model):
     family = models.ForeignKey('Family', verbose_name="Familie")
     source = models.ForeignKey(Source, verbose_name="Quelle")
     comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ('position', )
 
 
 class Family(PrimaryObject):
@@ -325,6 +329,10 @@ class PersonSource(models.Model):
     person = models.ForeignKey('Person', verbose_name="Person")
     source = models.ForeignKey(Source, verbose_name="Quelle")
     comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ('position', )
 
 
 class Person(PrimaryObject):
@@ -771,6 +779,10 @@ class EventSource(models.Model):
     person = models.ForeignKey('Event', verbose_name="Ereignis")
     source = models.ForeignKey(Source, verbose_name="Quelle")
     comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    position = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ('position', )
 
 
 class Event(PrimaryObject):

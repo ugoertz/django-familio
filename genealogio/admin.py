@@ -93,7 +93,7 @@ class NameInline(GrappelliSortableHiddenMixin, admin.TabularInline):
         return self.extra
 
 
-class SourcePInline(admin.TabularInline):
+class SourcePInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     """Inline class to put Person-Source into Person's detail page."""
 
     # pylint: disable=no-member
@@ -103,6 +103,7 @@ class SourcePInline(admin.TabularInline):
     autocomplete_lookup_fields = {'fk': ['source', ], }
     verbose_name = "Quellenangabe"
     verbose_name_plural = "Quellenangaben"
+    sortable_excludes = ('position', )
 
 
 class EventInline(OSitesMixin, admin.TabularInline):
@@ -312,7 +313,7 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 admin.site.register(Person, PersonAdmin)
 
 
-class SourceEInline(admin.TabularInline):
+class SourceEInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     """The SourceEInline class."""
 
     # pylint: disable=no-member
@@ -322,6 +323,7 @@ class SourceEInline(admin.TabularInline):
     autocomplete_lookup_fields = {'fk': ['source', ], }
     verbose_name = "Quellenangabe"
     verbose_name_plural = "Quellenangaben"
+    sortable_excludes = ('position', )
 
 
 class FamilyEInline(admin.TabularInline):
@@ -408,7 +410,7 @@ class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 admin.site.register(Event, EventAdmin)
 
 
-class SourceFInline(admin.TabularInline):
+class SourceFInline(GrappelliSortableHiddenMixin, admin.TabularInline):
     """Inline class: Source for Family."""
 
     # pylint: disable=no-member
@@ -418,6 +420,7 @@ class SourceFInline(admin.TabularInline):
     autocomplete_lookup_fields = {'fk': ['source', ], }
     verbose_name = "Quellenangabe"
     verbose_name_plural = "Quellenangaben"
+    sortable_excludes = ('position', )
 
 
 class PersonFInline(GrappelliSortableHiddenMixin,
