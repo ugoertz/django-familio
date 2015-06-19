@@ -1,8 +1,10 @@
 from django.conf.urls import patterns, url
 
 from .views import (
-        NoteDetail, NoteList, PictureDetail, SourceDetail,
-        DocumentList, DocumentDetail, SourceList)
+        NoteDetail, NoteList, PictureDetail, PictureList,
+        SourceDetail,
+        DocumentList, DocumentDetail, SourceList,
+        )
 
 
 urlpatterns = patterns('notaro.views',
@@ -19,6 +21,11 @@ urlpatterns = patterns('notaro.views',
                        url(r'^doc-view/(?P<pk>\d+)/$',
                            DocumentDetail.as_view(), name='document-detail'),
                        url(r'^picture-view/(?P<pk>\d+)/$',
-                           PictureDetail.as_view(), name='picture-detail'), )
+                           PictureDetail.as_view(), name='picture-detail'),
+                       url(r'^picture-list/$',
+                           PictureList.as_view(), name='picture-list'),
+                       url(r'^picture-list/(?P<size>\w+)/$',
+                           PictureList.as_view(), name='picture-list'),
+                       )
 
 

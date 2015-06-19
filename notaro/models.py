@@ -12,8 +12,10 @@ from django.conf import settings
 from django.contrib.sites.managers import CurrentSiteManager
 from filebrowser.fields import FileBrowseField
 from filebrowser.settings import ADMIN_THUMBNAIL
+from taggit.managers import TaggableManager
 
 from .managers import GenManager
+from tags.models import CustomTagThrough
 
 
 class Source(models.Model):
@@ -124,6 +126,9 @@ class Picture(models.Model):
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()
     objects = CurrentSiteManager()
+    tags = TaggableManager(
+            through=CustomTagThrough,
+            blank=True, help_text="")
 
     def __unicode__(self):
         # pylint: disable=no-member
@@ -147,6 +152,15 @@ class Picture(models.Model):
     def get_absolute_url(self):
         return reverse('picture-detail', kwargs={'pk': self.id, })
 
+    def as_html_in_list(self):
+        """
+        HTML representing this picture (typically to be used to show a list of
+        pictures with a certain tag, e.g. in a detail view of a Person, ...
+        """
+
+        # pylint: disable=no-member
+        return '<img src="%s">' % self.image.version_generate('small').url
+
     def get_caption(self):
         return self.caption
         # return '\n'.join(['.. class:: cabin\n\n'] +
@@ -169,6 +183,9 @@ class Document(models.Model):
     sites = models.ManyToManyField(Site)
     all_objects = GenManager()
     objects = CurrentSiteManager()
+    tags = TaggableManager(
+            through=CustomTagThrough,
+            blank=True, help_text="")
 
     @staticmethod
     def autocomplete_search_fields():

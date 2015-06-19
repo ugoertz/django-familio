@@ -1,15 +1,6 @@
-{% extends "_layouts/base.html" %}
+{% extends "genealogio/detail_view.html" %}
 {% load markup_tags %}
 {% load static%}
-
-{% block js %}
-{{block.super}}
-
-{% if user_is_admin %}
-<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
-{% endif %}
-{% endblock js %}
-
 
 
 {% block content %}
@@ -19,6 +10,7 @@
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "genealogio/event_detail.rst" %}
             {% endfilter %}
+            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
             <hr>
             {% include "comments/comments.html" %}
         </div>

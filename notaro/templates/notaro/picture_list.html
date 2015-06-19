@@ -1,0 +1,83 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load markup_tags %}
+{% load fb_versions %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+
+<style>
+button, .selectize-input {
+    font-family: Cabin, helvetica, sans;
+}
+</style>
+{% endblock css %}
+
+{% block js %}
+{{ block.super  }}
+{% if user_is_admin %}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    {% for picture in object_list %}
+    {% include "tags/selectize_tags.js" %}
+    {% endfor %}
+});
+</script>
+{% endif %}
+{% endblock js %}
+
+
+{% block content %}
+<div class="container">
+    <h2>Bilder</h2>
+    <div class="row">
+        <div style="margin-bottom: 50px;" class="pull-right">
+            <a class="{% if "thumbnail" in request.path %}active {% endif %}btn btn-default btn-sm cabin" href="{% url "picture-list" %}thumbnail/">Klein</a>
+            <a class="{% if not "thumbnail" in request.path and not "medium" in request.path %}active {% endif %}btn btn-default btn-sm cabin" href="{% url "picture-list" %}">Normal</a>
+            <a class="{% if "medium" in request.path %}active {% endif %}btn btn-default btn-sm cabin" href="{% url "picture-list" %}medium/">Groß</a>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-md-10">
+            <div class="row">
+                <ul class="list-group">
+                    {% for picture in object_list %}
+                        <li class="list-group-item col-md-6">
+                            <a name="pic{{ picture.id }}"></a>
+
+                            <div style="overflow: hidden; vertical-align: top; margin-bottom: 20px;">
+                                <a href="{{ picture.get_absolute_url }}"><img onerror='this.style.display = "none"' style="float: left; margin-right: 20px;" src="{% version picture.image size %}"></a>
+
+                                <div style="overflow: hidden; vertical-align: top;">
+                                    {{ picture.caption|apply_markup:"genrestructuredtext" }}
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">{% for tag in picture.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
+
+                            {% if user_is_admin %}
+                            {% url "save-tags" "notaro" "picture" picture.pk as action %}
+                            {% with id_as_string=picture.id|slugify %}
+                            {% with next=request.get_full_path|add:"#pic"|add:id_as_string %}
+                            {% include "tags/tags_form.html" with next=next %}
+                            {% endwith %}
+                            {% endwith %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-2">
+            {% for tag in tag_list %}
+            <div>{{ tag.as_span|safe }}</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% include "notaro/pagination.html" %}
+</div>
+{% endblock %}
+

@@ -232,6 +232,29 @@ class Family(PrimaryObject):
         self.handle = self.handle[:49]
         self.save()
 
+    def as_tag(self):
+        if self.name:
+            tag = self.name
+        else:
+            try:
+                # pylint: disable=no-member
+                tag = self.father.last_name
+            except:
+                tag = ''
+
+        details = [tag]
+        if self.start_date:
+            # pylint: disable=no-member
+            details.append('(%s-)' % self.start_date.year)
+
+        # pylint: disable=no-member
+        if self.father:
+            details.append(self.father.get_short_name())
+        if self.mother:
+            details.append(self.mother.get_short_name())
+
+        return ("Familie %s" % tag, "Familie %s" % ', '.join(details))
+
     def __unicode__(self):
         n = ''
 
@@ -670,6 +693,13 @@ class Person(PrimaryObject):
                 self.datebirth, self.datedeath)
         self.save()
 
+    def as_tag(self):
+        tag = self.get_short_name()
+        details = self.get_primary_name()
+        if self.year_of_birth or self.year_of_death:
+            details += ' (%s~%s)' % (self.year_of_birth, self.year_of_death)
+
+        return ("%s" % tag, details)
 
     def __unicode__(self):
         return u"%s %s" % (self.get_primary_name(), self.handle)
@@ -861,6 +891,9 @@ class Event(PrimaryObject):
         self.handle += '-' + unicode(self.id)
         self.handle = self.handle[:49]
         self.save()
+
+    def as_tag(self):
+        return (self.title, self.title)
 
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.get_event_type_display())

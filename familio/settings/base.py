@@ -78,6 +78,7 @@ INSTALLED_APPS = (
     'base',
     'accounts',
     'comments',
+    'tags',
 
     # Local apps, referenced via appname
     'maps',

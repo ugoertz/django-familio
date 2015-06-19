@@ -1,13 +1,16 @@
 from __future__ import unicode_literals
 
 # from django.shortcuts import render
-from django.http import Http404
-from django.views.generic import DetailView, ListView, TemplateView
+from django.http import Http404, HttpResponseRedirect
+from django.views.generic import DetailView, ListView, TemplateView, View
+from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from braces.views import LoginRequiredMixin
 
 from base.views import CurrentSiteMixin
 
+from tags.models import CustomTag
 from .models import Note, Picture, Source, Document
 
 
@@ -78,7 +81,6 @@ class DocumentList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     paginate_by = 15
 
 
-
 class SourceList(LoginRequiredMixin, CurrentSiteMixin, ListView):
 
     """Display list of all notes."""
@@ -86,3 +88,19 @@ class SourceList(LoginRequiredMixin, CurrentSiteMixin, ListView):
     model = Source
     paginate_by = 15
 
+
+class PictureList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+
+    """Display list of all notes."""
+
+    model = Picture
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super(PictureList, self).get_context_data(**kwargs)
+        context.update({
+            'size': self.kwargs.get('size', 'small'),
+            'tag_list': CustomTag.objects.all(),
+            })
+
+        return context

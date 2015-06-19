@@ -1,0 +1,11 @@
+<form class="form" action="{{ action }}" method="POST">
+{% csrf_token %}
+<input type="hidden" name="next" value="{{ next }}">
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 100px;"><span class="cabin" style="padding-right: 20px;">Schlagwörter:</span></td>
+        <td style="width: 100%;"><input type="text" autocomplete="off" id="id_tags{{ picture.id }}" name="tags" style="width: 100%;" value=""></td>
+        <td style="width: 150px;"><button style="margin-left: 20px;" class="btn btn-success btn-xs">Abspeichern</button></td>
+    </tr>
+</table>
+</form>

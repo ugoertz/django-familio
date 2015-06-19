@@ -31,6 +31,18 @@ ul.simple li {
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 {% endif %}
 
+<script type="text/javascript" src="{% static 'js/showhide.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("img").error(function () {
+        $(this).hide();
+    });
+
+    show_hide_button('#tagged_objs_picture', '#obj_list_picture', 'pics');
+    show_hide_button('div#personen > h3', 'div#personen > .row', 'persons');
+});
+</script>
+
 {% localize off %}
 <script type="text/javascript">
 
@@ -46,20 +58,6 @@ $(window).on('map:init', function (e) {
 </script>
 {% endlocalize %}
 
-<script type="text/javascript">
-$(document).ready(function() {
-    $('div#personen > h3').append('<span class="btn btn-default btn-xs pull-right" id="showhidebtn">Verbergen</span>')
-    $('#showhidebtn').click(function() {
-        $('div#personen > .row').toggle(500);
-        if ($('#showhidebtn').html() == 'Verbergen') {
-            $('#showhidebtn').html('Anzeigen')
-        } else {
-            $('#showhidebtn').html('Verbergen')
-        }
-    })
-});
-</script>
-
 {% endblock %}
 
 
@@ -73,7 +71,12 @@ $(document).ready(function() {
             {% endfilter %}
             </div>
 
+            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+
+
+            <div style="margin-top: 50px;">
             {% leaflet_map "place" %}
+            </div>
             <hr>
             {% include "comments/comments.html" %}
         </div>

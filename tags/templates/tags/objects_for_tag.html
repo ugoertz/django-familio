@@ -1,0 +1,19 @@
+{% load fb_versions %}
+{% load tags_tags %}
+
+{% if tag %}
+{% get_tag_list app model tag as obj_list %}
+{% else %}
+{% get_obj_list app model object as obj_list %}
+{% endif %}
+
+{% if obj_list %}
+<h2 id="tagged_objs_{{ model }}">{{ title }}</h2>
+
+
+<div id="obj_list_{{ model }}">
+{% for obj in obj_list %}
+<a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
+{% endfor %}
+</div>
+{% endif %}

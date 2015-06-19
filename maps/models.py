@@ -11,8 +11,10 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 
 from filebrowser.fields import FileBrowseField
+from taggit.managers import TaggableManager
 
 from notaro.models import Note
+from tags.models import CustomTagThrough
 
 from .managers import CurrentSiteGeoManager, GenGeoManager
 from .tasks import render_map
@@ -102,6 +104,9 @@ class Place(models.Model):
         self.handle = self.handle[:49]
         self.save()
 
+    def as_tag(self):
+        return ("Ort: %s" % self.title, "Ort: %s" % self.title)
+
     def __unicode__(self):
         return self.title
 
@@ -190,6 +195,9 @@ class CustomMap(models.Model):
 
     all_objects = GenGeoManager()
     objects = CurrentSiteGeoManager()
+    tags = TaggableManager(
+            through=CustomTagThrough,
+            blank=True, help_text="")
 
     def save(self, *args, **kwargs):
         # always save self.refresh as False, so that it is by default

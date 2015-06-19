@@ -1,73 +1,17 @@
-{% extends "_layouts/base_leaflet.html" %}
+{% extends "genealogio/detail_view.html" %}
 {% load static %}
 {% load markup_tags %}
 {% load leaflet_tags %}
 
-{% block css %}
-{{block.super}}
-
-<style>
-#places {
-    height: 700px;
-}
-
-ul.simple {
-    list-style: none;
-    padding-left: 1em;
-}
-
-ul.simple li {
-    padding-left: 3em;
-    font-size: 110%;
-}
-
-.marginleft30 {
-    margin-left: 30px;
-}
-
-.alignleft {
-    float: left;
-    padding-left: 3px;
-    padding-top: 5px;
-}
-
-.alignright {
-    float: right;
-    padding-right: 3px;
-    padding-top: 5px;
-}
-</style>
-{% endblock css %}
-
-
 {% block js %}
-{{block.super}}
+{{ block.super }}
 
-{% if user_is_admin %}
-<script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
-{% endif %}
-
-<script type="text/javascript">
-
-/*
-$(window).on('map:init', function (e) {
-    var redMarker = L.AwesomeMarkers.icon({ icon: 'plus', markerColor: 'brown' });
-
-    var layer = L.geoJson();
-    var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
-    detail.map.setView([52.3, 7.8], 7);
-    detail.map.addLayer(layer);
-    $.getJSON("{% url 'personplaces-data' %}", {person_id: {{ person.id }} }, function (data) {
-        layer.addData(data);
-    });
-    Dajaxice.genealogio.pplaces_lines(function (data) {
-        layer.addData(data);
-    }, {person_id: {{ person.id }} });
+<script>
+$(document).ready(function() {
+    show_hide_button("#zeitstrahl h3", "#zeitstrahl > table", "timeline");
 });
-*/
 </script>
 {% endblock %}
-
 
 {% block content %}
 <div class="container">
@@ -78,6 +22,8 @@ $(window).on('map:init', function (e) {
                 {% include "genealogio/family_detail.rst" %}
                 {% endfilter %}
             </div>
+
+            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
 
             {% comment %}
             {% if person.places.count %}
