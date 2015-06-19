@@ -207,8 +207,8 @@ class Document(models.Model):
         """
 
         # pylint: disable=no-member
-        return '<li class="list-group-item" style="font-size: 140%%;">%s<br><span style="font-family: courier, monospace; font-size: 70%%">%s</span></li>' % (
-                self.name, os.path.basename(self.doc.filename))
+        return '<li class="list-group-item" style="font-size: 140%%;">%s<br><span style="font-family: courier, monospace; font-size: 70%%">%s, Objekt-ID: %d</span></li>' % (
+                self.name, os.path.basename(self.doc.filename), self.id)
 
     def __unicode__(self):
         # pylint: disable=no-member

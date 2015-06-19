@@ -13,7 +13,10 @@
 
 <div id="obj_list_{{ model }}">
 {% for obj in obj_list %}
+<div style="display: inline-block;">
 <a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
+{% if show_id %}<br><span class="cabin">Objekt-ID: {{ obj.id }}</span>{% endif %}
+</div>
 {% endfor %}
 </div>
 {% endif %}

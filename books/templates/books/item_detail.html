@@ -170,6 +170,17 @@ $(document).ready(function() {
                 {% if object %}<a href="{% url "item-retrievetext" object.id %}" class="btn btn-default cabin">Text aus der Datenbank holen</a>{% endif %}
             {# <a href="" class="btn btn-default">In andere Kollektion einordnen</a> #}
             </div>
+
+            {% include "tags/objects_for_tag.html" with object=object.obj title="Bilder" app="notaro" model="picture" show_id=True %}
+
+            <h3>Bilder einbinden</h3>
+
+            Im Textfeld kann ein Bild folgendermaßen eingebunden werden:
+            <pre>:i:`OBJEKT-ID`</pre>
+
+            Hier ist <code>OBJEKT-ID</code> durch die entsprechende Zahl zu ersetzen, zum Beispiel <code>:i:`13`</code>. Bilder, die mit dem zugehörigen Objekt durch ein Schlagwort verbunden sind, sind hier mit ihrer ID angezeigt.
+
+            Varianten: <code>:it:`OBJEKT-ID`</code> (thumbnail), <code>:is:`OBJEKT-ID`</code> (klein), <code>:ib:`OBJEKT-ID`</code> (big), <code>:il:`OBJEKT-ID`</code> (large).
         </div>
     </div>
 </div>
