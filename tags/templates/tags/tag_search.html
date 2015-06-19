@@ -8,6 +8,10 @@
     <div class="row">
         <h1>Schlagwort {{ tag|as_tag_text }}</h1>
         {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+
+        <ul class="list-group">
+        {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+        </ul>
     </div>
 </div>
 {% endblock %}

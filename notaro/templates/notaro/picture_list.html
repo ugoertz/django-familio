@@ -20,7 +20,7 @@ button, .selectize-input {
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
 <script>
 $(document).ready(function() {
-    {% for picture in object_list %}
+    {% for object in object_list %}
     {% include "tags/selectize_tags.js" %}
     {% endfor %}
 });
@@ -61,7 +61,7 @@ $(document).ready(function() {
                             {% url "save-tags" "notaro" "picture" picture.pk as action %}
                             {% with id_as_string=picture.id|slugify %}
                             {% with next=request.get_full_path|add:"#pic"|add:id_as_string %}
-                            {% include "tags/tags_form.html" with next=next %}
+                            {% include "tags/tags_form.html" with object=picture next=next %}
                             {% endwith %}
                             {% endwith %}
                             {% endif %}

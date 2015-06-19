@@ -213,6 +213,14 @@ class CustomMap(models.Model):
         if refresh:
             render_map.delay(self.id)
 
+    def as_html_in_list(self):
+        """
+        HTML representing this map (typically to be used to show a list of
+        objects with a certain tag, e.g. in a detail view of a Person, ...
+        """
+
+        # pylint: disable=no-member
+        return self.title
 
     def get_render_status(self):
         if self.render_status == CustomMap.RENDERED:
@@ -220,7 +228,6 @@ class CustomMap(models.Model):
         if self.render_status == CustomMap.NOTRENDERED:
             return 'Aktuelle Karte ist noch nicht gerendert.'
         return 'Aktuelle Karte wird gerade gerendert (id %s).' % self.render_status
-
 
     def geojson(self):
         gj = {

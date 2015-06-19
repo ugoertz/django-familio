@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import os
+import os.path
 import re
 
 from django.db import models
@@ -197,6 +199,16 @@ class Document(models.Model):
             return self.__unicode__()
         else:
             return '[[ %s ]]' % self.__unicode__()
+
+    def as_html_in_list(self):
+        """
+        HTML representing this document (typically to be used to show a list of
+        objects with a certain tag, e.g. in a detail view of a Person, ...
+        """
+
+        # pylint: disable=no-member
+        return '<li class="list-group-item" style="font-size: 140%%;">%s<br><span style="font-family: courier, monospace; font-size: 70%%">%s</span></li>' % (
+                self.name, os.path.basename(self.doc.filename))
 
     def __unicode__(self):
         # pylint: disable=no-member

@@ -24,14 +24,10 @@ $(document).ready(function() {
             </div>
 
             {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+            <ul class="list-group">
+            {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+            </ul>
 
-            {% comment %}
-            {% if person.places.count %}
-            <h2>Karte</h2>
-
-            {% leaflet_map "places" %}
-            {% endif %}
-            {% endcomment %}
             <hr>
             {% include "comments/comments.html" %}
         </div>

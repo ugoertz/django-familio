@@ -38,7 +38,8 @@ $(document).ready(function() {
         $(this).hide();
     });
 
-    show_hide_button('#tagged_objs_picture', '#obj_list_picture', 'pics');
+    show_hide_button('#tagged_objs_picture', '#obj_list_picture', 'pictures');
+    show_hide_button('#tagged_objs_document', '#obj_list_document', 'documents');
     show_hide_button('div#personen > h3', 'div#personen > .row', 'persons');
 });
 </script>
@@ -72,6 +73,9 @@ $(window).on('map:init', function (e) {
             </div>
 
             {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+            <ul class="list-group">
+            {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+            </ul>
 
 
             <div style="margin-top: 50px;">

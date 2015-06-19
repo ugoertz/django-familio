@@ -81,6 +81,9 @@ $(window).on('map:init', function (e) {
             </div>
 
             {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+            <ul class="list-group">
+            {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+            </ul>
 
             {% if person.places.count %}
             <h2>Karte</h2>
