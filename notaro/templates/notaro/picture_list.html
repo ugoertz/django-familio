@@ -74,6 +74,11 @@ $(document).ready(function() {
             {% for tag in tag_list %}
             <div>{{ tag.as_span|safe }}</div>
             {% endfor %}
+            {% if user_is_admin %}
+            <div style="margin-top: 50px;" class="adminbox">
+                <a href="{% url "unbound-images" %}" title="Liste der Bilddateien, die nicht als Bildobjekt eingebunden sind.">Weitere Bilddateien</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 

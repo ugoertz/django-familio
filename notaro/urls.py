@@ -4,6 +4,7 @@ from .views import (
         NoteDetail, NoteList, PictureDetail, PictureList,
         SourceDetail,
         DocumentList, DocumentDetail, SourceList,
+        UnboundImagesView,
         )
 
 
@@ -22,6 +23,8 @@ urlpatterns = patterns('notaro.views',
                            DocumentDetail.as_view(), name='document-detail'),
                        url(r'^picture-view/(?P<pk>\d+)/$',
                            PictureDetail.as_view(), name='picture-detail'),
+                       url(r'^unbound-images/$',
+                           UnboundImagesView.as_view(), name='unbound-images'),
                        url(r'^picture-list/$',
                            PictureList.as_view(), name='picture-list'),
                        url(r'^picture-list/(?P<size>\w+)/$',

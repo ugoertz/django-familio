@@ -1,0 +1,41 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load fb_versions %}
+
+
+{% block content %}
+<div class="container">
+    <h2>Nicht verwendete Bilddateien</h2>
+    <div class="row" style="margin-bottom: 30px;">
+        <div class="col-md-10">
+            <div class="row">
+                <ul class="list-group">
+                    {% for file in files %}
+                        {% ifchanged file.dirname %}
+                            </ul>
+                            <h3>{{ file.dirname }}</h3>
+                            <ul class="list-group">
+                        {% endifchanged %}
+                        <li class="list-group-item">
+                            <div style="overflow: hidden; vertical-align: top; margin-bottom: 20px;">
+                            <img style="float: left; margin-right: 20px;" src="{% version file "medium" %}" >
+                                <div style="overflow: hidden; vertical-align: top; font-family: courier, monospace;">
+                                {{ file.filename }}
+                                <br>
+
+                                </div>
+                            </div>
+                            <form action="{% url "unbound-images" %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="filename" value="{{ file.path }}">
+                                <button style="position: relative; bottom: 50px;" class="pull-right btn btn-default cabin">Bildobjekt erstellen</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

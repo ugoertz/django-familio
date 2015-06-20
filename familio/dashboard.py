@@ -54,6 +54,11 @@ class CustomIndexDashboard(Dashboard):
                     'external': False,
                 },
                 {
+                    'title': _('Bilddateien, die keinem Bildobjekt zugeordnet sind'),
+                    'url': '/notes/unbound-images/',
+                    'external': False,
+                },
+                {
                     'title': _('Hochgeladene Dokumente'),
                     'url': '/admin/filebrowser/browse/?&dir=documents',
                     'external': False,

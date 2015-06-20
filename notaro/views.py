@@ -1,15 +1,21 @@
 from __future__ import unicode_literals
 
-# from django.shortcuts import render
+import os
+import os.path
+
+from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import DetailView, ListView, TemplateView, View
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+
 from braces.views import LoginRequiredMixin
+from filebrowser.base import FileListing
 
 from base.views import CurrentSiteMixin
-
 from tags.models import CustomTag
 from .models import Note, Picture, Source, Document
 
@@ -104,3 +110,46 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, ListView):
             })
 
         return context
+
+
+class UnboundImagesView(LoginRequiredMixin, View):
+    """
+    Display list of all files in _uploads/images which are not referenced by
+    a Picture object.
+    """
+
+    def get(self, request):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
+        # pylint: disable=no-member
+        pic_urls = [pic.image.url for pic in Picture.objects.all()]
+
+        path = os.path.join(settings.FILEBROWSER_DIRECTORY, 'images')
+        file_listing = FileListing(
+                path, sorting_by='date', sorting_order='desc')
+        files = [x for x in file_listing.files_walk_total()
+                 if x.filetype=='Image' and not x.url in pic_urls
+                ]
+
+        return render(
+                request,
+                "notaro/unbound_images_list.html",
+                {'files': files, })
+
+    def post(self, request):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
+        if not 'filename' in request.POST:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
+        # create Picture object for filename
+        # pylint: disable=no-member
+        picture = Picture.objects.create(image=request.POST['filename'])
+        picture.sites.add(request.site)
+
+        return HttpResponseRedirect(picture.get_absolute_url())
