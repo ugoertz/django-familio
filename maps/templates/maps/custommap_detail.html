@@ -75,7 +75,7 @@ $(window).on('map:init', function (e) {
             <div style="margin-bottom: 50px;">
                 {% for m in object.custommapmarker_set.all %}
                 {% if m.get_description %}
-                <b>{{ m.label }}</b> {{ m.get_description }} <br>
+                <p>{{ m.get_label_html|safe }} {{ m.get_description }} </p>
                 {% endif %}
                 {% endfor %}
             </div>

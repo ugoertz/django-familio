@@ -199,6 +199,10 @@ latex_appendices = ['appendix', ]
 latex_domain_indices = False
 
 
+latex_additional_files = [
+        '../../../../maps/static/png/%s.png' % x
+        for x in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
+
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.

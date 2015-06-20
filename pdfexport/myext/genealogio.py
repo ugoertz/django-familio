@@ -131,9 +131,12 @@ def get_text(name, rawtext, text, lineno, inliner,
                         if m.description == '-':
                             continue
                         nodelist.append(
-                                nodes.paragraph(
+                                nodes.raw(
                                     '',
-                                    '(%s) %s' % (m.label, m.get_description()),
+                                    '\n\n%s %s\n\n' % (
+                                        m.get_label_tex(),
+                                        m.get_description()),
+                                    format="latex",
                                     **options))
 
             except ObjectDoesNotExist:

@@ -145,6 +145,19 @@ class CustomMapMarker(models.Model):
             verbose_name="Stil")
     position = models.IntegerField(default=1)
 
+    def get_label_html(self):
+        if len(self.label) == 1 and self.label in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            return '<img width="18" src="%spng/%s.png">'\
+                    % (settings.STATIC_URL, self.label)
+        else:
+            return '<b>(%s)</b>' % self.label
+
+    def get_label_tex(self):
+        if len(self.label) == 1 and self.label in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
+            return r'\includegraphics[width=0.4cm]{%s}' % self.label
+        else:
+            return r'\textbf{(%s)}' % self.label
+
     def get_description(self):
         if self.description == '-':
             return None
@@ -227,7 +240,8 @@ class CustomMap(models.Model):
             return 'Aktuelle Karte ist gerendert.'
         if self.render_status == CustomMap.NOTRENDERED:
             return 'Aktuelle Karte ist noch nicht gerendert.'
-        return 'Aktuelle Karte wird gerade gerendert (id %s).' % self.render_status
+        return 'Aktuelle Karte wird gerade gerendert (id %s).'\
+                % self.render_status
 
     def geojson(self):
         gj = {
