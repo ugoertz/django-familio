@@ -1,5 +1,6 @@
 {% extends "_layouts/base.html" %}
 {% load static %}
+{% load base_tags %}
 {% load typogrify_tags %}
 {% load crispy_forms_tags %}
 
@@ -127,6 +128,7 @@ $(document).ready(function() {
             {% if object.level > 0 %}
             <a href="{% url "item-create" parent=object.id %}" class="btn btn-default">Neuen Eintrag hinzufügen</a>
             {% endif %}
+            <a href="{% settings_value "DOCUMENTATION_URL" %}pdfexport.html" class="btn btn-default">Dokumentation</a>
 
             {% include "books/collection_snippet.html" with sortable=True allow_delete=True %}
             {% endif %}

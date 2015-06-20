@@ -1,4 +1,5 @@
 {% extends "_layouts/base.html" %}
+{% load base_tags %}
 
 {% block content %}
 <div class="container">
@@ -6,6 +7,7 @@
         <div class="cabin col-md-12">
             <h2>{{ page_title }}</h2>
             <p><span class="pull-right">
+                <a href="{% settings_value "DOCUMENTATION_URL" %}pdfexport.html" class="btn btn-default">Dokumentation</a>
             {% if public_books %}
             <a class="btn btn-default" href="{% url 'my-book-list' %}">Meine Buchprojekte</a>
             {% else %}
