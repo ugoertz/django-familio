@@ -21,6 +21,7 @@ from .models import Book
         ignore_result=True)
 def create_rst(book_id):
     b = Book.objects.get(id=book_id)
+    b.setup_sphinx()
     b.create_rst()
 
 

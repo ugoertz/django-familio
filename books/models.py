@@ -471,7 +471,8 @@ class Book(models.Model):
                         f),
                     self.get_directory_tmp())
 
-        os.mkdir(os.path.join(self.get_directory_tmp(), 'myext'))
+        if not os.path.exists(os.path.join(self.get_directory_tmp(), 'myext')):
+            os.mkdir(os.path.join(self.get_directory_tmp(), 'myext'))
         for f in ['myext/__init__.py', 'myext/genealogio.py', ]:
             shutil.copy(
                     os.path.join(
