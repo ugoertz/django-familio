@@ -328,7 +328,6 @@ class Book(models.Model):
                 os.mkdir(dest)
                 os.chmod(dest, 0775)
                 self.directory = d
-                self.setup_sphinx()
         if not self.directory:
             # something went wrong
             raise Exception
