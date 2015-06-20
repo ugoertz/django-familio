@@ -21,9 +21,12 @@ def get_obj_list(app, model, obj):
     obj (an object in the db, e.g. Person, Family, ...).
     '''
 
-    return get_model(app, model).objects.filter(
-            tags__slug='%s.%s-%d' % (
-                obj._meta.app_label, obj._meta.model_name, obj.id))
+    try:
+        return get_model(app, model).objects.filter(
+                tags__slug='%s.%s-%d' % (
+                    obj._meta.app_label, obj._meta.model_name, obj.id))
+    except:
+        return []
 
 
 @register.assignment_tag
@@ -32,7 +35,10 @@ def get_tag_list(app, model, tag):
     Return list of all objects of type app.model tagged with the tag "tag".
     '''
 
-    return get_model(app, model).objects.filter(tags__slug='%s' % tag)
+    try:
+        return get_model(app, model).objects.filter(tags__slug='%s' % tag)
+    except:
+        return []
 
 
 @register.filter
