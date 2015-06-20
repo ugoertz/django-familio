@@ -7,6 +7,23 @@ Personen
 Die Personentabelle ist der wichtigste Teil der Datenbank.
 
 
+--------------------
+Schnelles Hinzufügen
+--------------------
+
+In Standardfällen lassen sich Personen und Familien direkt über die Links "Kind
+hinzufügen" (auf der Seite einer Familie), "Eltern hinzufügen" und "Ehepartner
+hinzufügen" (auf der Seite einer Person) hinzufügen.
+
+Der "Eltern hinzufügen"-Link kann nur verwendet werden, wenn weder Vater noch
+Mutter schon in der Datenbank eingetragen sind.
+
+Es werden für einige Felder Werte vorgeschlagen (zum Beispiel Nachname des
+Vaters/Ehename der Mutter basierend auf dem Nachnamen des Kindes, dessen Eltern
+hinzugefügt werden). Diese Werte können natürlich gegebenenfalls vor dem
+Abspeichern geändert werden.
+
+
 -------------------
 Personen hinzufügen
 -------------------
