@@ -72,7 +72,7 @@ $(document).ready(function() {
         </div>
         <div class="col-md-2">
             {% for tag in tag_list %}
-            <div>{{ tag.as_span|safe }}</div>
+            {{ tag.as_span|safe }}
             {% endfor %}
             {% if user_is_admin %}
             <div style="margin-top: 50px;" class="adminbox">
