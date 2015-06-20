@@ -5,7 +5,8 @@ import os.path
 
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
-from django.views.generic import DetailView, ListView, TemplateView, View
+from django.views.generic import (
+        DetailView, ListView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import Site
@@ -20,10 +21,18 @@ from tags.models import CustomTag
 from .models import Note, Picture, Source, Document
 
 
-class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
+class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     """Display a picture."""
 
     model = Picture
+    fields = ['caption', ]
+    template_name_suffix = '_detail'
+
+    def post(self, request, *args, **kwargs):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+        return super(PictureDetail, self).post(request, *args, **kwargs)
 
 
 class SourceDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
