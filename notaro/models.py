@@ -169,6 +169,7 @@ class Picture(models.Model):
         #                  ['    '+l for l in self.caption.splitlines()])
 
     class Meta:
+        ordering = ('-id', )
         verbose_name = 'Bild'
         verbose_name_plural = 'Bilder'
 
