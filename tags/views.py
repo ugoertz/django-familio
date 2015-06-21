@@ -1,3 +1,6 @@
+# -*- coding: utf8 -*-
+
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from django.http import HttpResponseRedirect
@@ -30,6 +33,17 @@ class SaveTags(LoginRequiredMixin, View):
             t = x.strip()
             if t.startswith('new-'):
                 t = 'tag-' + t[4:]
+                try:
+                    # Make sure that tag does not contain non-allowed characters
+                    reverse('tag-search', kwargs={'tag': t}),
+                except:
+                    messages.error(
+                            request,
+                            'Das Schlagwort "%s" kann ' % t[4:] +\
+                            'nicht gespeichert werden. '
+                            'Erlaubte Zeichen in Schlagwörtern: '
+                            'Buchstaben, ",.;_+-:!" und Leerzeichen.')
+                    t = ''
             if t:
                 taglist.append(t)
 

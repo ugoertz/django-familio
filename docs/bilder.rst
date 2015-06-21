@@ -87,6 +87,8 @@ abgespeichert werden.
 Die Reihenfolge der Schlagworte spielt keine Rolle (und kann sich beim
 Abspeichern ändern).
 
+Erlaubte Zeichen in Schlagwörtern: Buchstaben, Leerzeichen, ``,.;_+-:!``.
+
 
 -------------------------------------
 Zip-Archiv von Bilddateien hinzufügen

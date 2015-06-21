@@ -36,10 +36,24 @@ class CustomTag(TagBase):
     SPAN_TEMPLATE = '<a href="%s" class="btn btn-default btn-xs cabin" style="margin: 3px; background-color: %s;">%s</a>'
 
     def slugify(self, tag, i=None):
-        if tag:
-            return tag.split(' ')[-1]
-        else:
+        if not tag:
             raise Exception('Error in CustomTag.slugify: empty tag.')
+
+        if tag.startswith('tag-'):
+            try:
+                reverse('tag-search', kwargs={'tag': tag}),
+                return tag
+            except:
+                raise Exception('Error in CustomTag.slugify: empty tag.')
+        else:
+            try:
+                slug = tag.split(' ')[-1]
+                assert slug.find('.') != -1
+                _, id = slug.split('-')
+                int(id)
+                return slug
+            except:
+                raise Exception('Error in CustomTag.slugify: empty tag.')
 
     def as_span(self):
         if self.slug.startswith('tag-'):
@@ -48,19 +62,22 @@ class CustomTag(TagBase):
                     '#eeeeee',
                     self.name[4:])
 
-        model = self.slug[self.slug.find('.')+1:self.slug.find('-')]
-        bg_color = {
-                'person': 'lightgreen',
-                'family': 'lightblue',
-                'event': 'yellow',
-                'place': 'orange',
-                }.get(model, 'red')
-        tag = ' '.join(self.name.split(' ')[:-1])
-        url = reverse(
-                '%s-detail' % model,
-                kwargs={'pk': int(self.slug.split('-')[1])})
+        try:
+            model = self.slug[self.slug.find('.')+1:self.slug.find('-')]
+            bg_color = {
+                    'person': 'lightgreen',
+                    'family': 'lightblue',
+                    'event': 'yellow',
+                    'place': 'orange',
+                    }.get(model, 'red')
+            tag = ' '.join(self.name.split(' ')[:-1])
+            url = reverse(
+                    '%s-detail' % model,
+                    kwargs={'pk': int(self.slug.split('-')[1])})
 
-        return CustomTag.SPAN_TEMPLATE % (url, bg_color, tag)
+            return CustomTag.SPAN_TEMPLATE % (url, bg_color, tag)
+        except:
+            return '<span>%s</span>' % self.name
 
     def as_tag_text(self):
         if self.slug.startswith('tag-'):
