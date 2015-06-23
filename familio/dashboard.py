@@ -64,7 +64,7 @@ class CustomIndexDashboard(Dashboard):
                     'external': False,
                 },
                 {
-                    'title': _('Zip-Archiv mit Bildern/Dokumenten hochladen'),
+                    'title': _('Bilder/Dokumente hochladen'),
                     'url': '/admin/notaro/picture/uploadarchive',
                     'external': False,
                 },

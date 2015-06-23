@@ -5,25 +5,33 @@
 from __future__ import unicode_literals
 from __future__ import absolute_import
 
+import datetime
+from io import BytesIO
 import os
 import os.path
 import tempfile
 import zipfile
 
+from django import forms
 from django.conf import settings
 from django.conf.urls import url
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
+from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.encoding import smart_text
 from django.utils.http import urlquote
-from django import forms
-import reversion
-from filebrowser.settings import ADMIN_THUMBNAIL
-from grappelli.forms import GrappelliSortableHiddenMixin
 
+from filebrowser.base import FileObject
+from filebrowser.settings import ADMIN_THUMBNAIL, NORMALIZE_FILENAME, CONVERT_FILENAME
+from filebrowser.utils import convert_filename
+from grappelli.forms import GrappelliSortableHiddenMixin
+import reversion
+
+from base.fields import MultiFileField
 from base.models import SiteProfile
 from accounts.models import UserSite
 from .models import (Note, Picture, Source, PictureNote, NoteSource,
@@ -345,6 +353,7 @@ admin.site.register(Source, SourceAdmin)
 
 
 class UploadZipFileForm(forms.Form):
+
     path = forms.CharField(
             max_length=50,
             required=True,
@@ -356,32 +365,69 @@ class UploadZipFileForm(forms.Form):
             'oder <span style="font-family: courier, monospace;">'
             'personen/mast/123</span>.',
             widget=forms.TextInput(attrs={'style': 'width: 100%;', }))
-    archive = forms.FileField(label="Archiv-Datei (.zip)", required=True)
-    target = forms.ChoiceField(
-            label="Inhalt der zip-Datei",
-            choices=(('images', 'Bilddateien'),
-                     ('documents', 'Dokumente')))
+    archive = MultiFileField(
+            label="Bilddateien (.jpg, .png), "
+                  "pdf-Dateien, Archiv-Dateien (.zip)",
+            required=True)
+    create_objects = forms.BooleanField(
+            label="Automatisch Bildobjekte erstellen",
+            required=False,
+            initial=True)
 
     def clean_path(self):
         path = self.cleaned_data['path']
-        if path.startswith('/') or path.startswith('\\'):
-            raise forms.ValidationError('Pfad darf nicht mit "/" oder "\\" beginnen.')
+        for forbidden in ['..', '\\', ':']:
+            if path.find(forbidden) != -1:
+                raise forms.ValidationError(
+                        'Pfad darf nicht "%s" enthalten.' % forbidden)
+        if path.find('\n') != -1 or path.find('\r') != -1:
+            raise forms.ValidationError(
+                    'Pfad darf keine Zeilenumbrüche enthalten.')
+        if path.startswith('/'):
+            raise forms.ValidationError(
+                    'Pfad darf nicht mit "/" beginnen.')
 
         return path
 
     def clean(self):
-        for required_field in ['archive', 'path', 'target', ]:
-            if not required_field in self.cleaned_data:
-                return self.cleaned_data
-        if not zipfile.is_zipfile(self.cleaned_data['archive']):
-            raise forms.ValidationError('Die Datei ist kein zip-Archiv.')
+        cleaned_data = super(UploadZipFileForm, self).clean()
+        for required_field in ['archive', 'path', ]:
+            if not required_field in cleaned_data:
+                return cleaned_data
 
-        target_path = os.path.join(settings.MEDIA_ROOT,
-                                   settings.FILEBROWSER_DIRECTORY,
-                                   self.cleaned_data['target'],
-                                   self.cleaned_data['path'])
-        if os.path.exists(target_path):
-            raise forms.ValidationError('Dieser Pfad existiert bereits.')
+        errors = []
+        for filedata in cleaned_data['archive']:
+            # sanitize uploaded files:
+            # FIXME: pdf, doc, ...
+
+            if filedata.name[-4:] in ['.jpg', '.png']:
+                # from django.forms.fields.ImageField
+                from PIL import Image
+
+                if hasattr(filedata, 'temporary_file_path'):
+                    file = filedata.temporary_file_path()
+                else:
+                    if hasattr(filedata, 'read'):
+                        file = BytesIO(filedata.read())
+                    else:
+                        file = BytesIO(filedata['content'])
+
+                try:
+                    image = Image.open(file)
+                    image.verify()
+                except:
+                    errors.append(
+                            'Die Datei %s konnte nicht eingelesen werden.'
+                            % filedata.name)
+
+            if filedata.name.endswith('.zip') and\
+                    not zipfile.is_zipfile(filedata):
+                errors.append(
+                        'Die Datei %s ist kein zip-Archiv.' % filedata.name)
+        if errors:
+            raise forms.ValidationError(' '.join(errors))
+
+        return cleaned_data
 
 
 class SourcePictureInline(admin.TabularInline):
@@ -432,24 +478,102 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                     name="uploadarchive"),
                 ] + urls
 
+    def handle_file_upload(self, filedata, path, create_objects):
+        filename = convert_filename(os.path.basename(filedata.name))
+        if filename[-4:].lower() in ['.jpg', '.png', ]:
+            uploaded_images = True
+            target = 'images'
+        elif filename[-4:].lower() in [
+                '.pdf', '.doc', '.rtf',
+                '.tif', '.mp3', '.mp4', 'docx']:
+            target = 'documents'
+        else:
+            return
+
+        full_path = os.path.join(
+                settings.MEDIA_ROOT,
+                settings.FILEBROWSER_DIRECTORY,
+                target,
+                path)
+
+        # There is a small risk of a race condition here (if the same
+        # user tries to upload files twice at the same time from
+        # different forms ...). We ignore this problem.
+        try:
+            os.makedirs(full_path)
+        except OSError:
+            if not os.path.isdir(full_path):
+                raise
+
+        uploadedfile = default_storage.save(
+                os.path.join(full_path, filename),
+                filedata)
+        if create_objects and filename[-4:].lower() in ['.jpg', '.png', ]:
+            picture_path = os.path.join(
+                    settings.FILEBROWSER_DIRECTORY, target, path, filename)
+            # pylint: disable=no-member
+            picture = Picture.objects.create(image=picture_path)
+            picture.sites.add(Site.objects.get_current())
+
+        # return information whether we uploaded an image or a document
+        return target
+
     def upload_archive(self, request):
         if request.method == 'POST':
             form = UploadZipFileForm(request.POST, request.FILES)
             if form.is_valid():
                 path = form.cleaned_data['path']
-                zipf = zipfile.ZipFile(request.FILES['archive'], 'r')
-                target_path = os.path.join(settings.MEDIA_ROOT,
-                                           settings.FILEBROWSER_DIRECTORY,
-                                           form.cleaned_data['target'],
-                                           path)
-                zipf.extractall(target_path.encode('utf8'))
-                zipf.close()
+
+                target = None
+
+                # check whether among all uploaded files there was at least one image
+                # (one document, resp.) (the final redirect will depend on this)
+                uploaded_images = False
+                uploaded_documents = False
+
+                for filedata in form.cleaned_data['archive']:
+                    if filedata.name.endswith('.zip'):
+                        zipf = zipfile.ZipFile(filedata, 'r')
+                        for fn in zipf.infolist():
+                            target = self.handle_file_upload(
+                                    zipf.open(fn),
+                                    path,
+                                    form.cleaned_data['create_objects'])
+                            if target == 'images':
+                                uploaded_images = True
+                            elif target == 'documents':
+                                uploaded_documents = True
+                        zipf.close()
+                    else:
+                        target = self.handle_file_upload(
+                                filedata,
+                                path,
+                                form.cleaned_data['create_objects'])
+                        if target == 'images':
+                            uploaded_images = True
+                        elif target == 'documents':
+                            uploaded_documents = True
+
+                if uploaded_images:
+                    if form.cleaned_data['create_objects']:
+                        return HttpResponseRedirect(reverse('picture-list'))
+                    else:
+                        target = 'images'
+                if not (uploaded_images or uploaded_documents):
+                    messages.warning(request,
+                            'Es wurden keine Dateien hochgeladen. '
+                            'Erlaubt: .jpg, .png, .pdf, .zip, '
+                            '.doc, .rtf, .docx, .mp3, .mp4'
+                            )
+                    return HttpResponseRedirect(reverse('admin:uploadarchive'))
 
                 return HttpResponseRedirect(
                             '/admin/filebrowser/browse/?&dir=' +
-                            os.path.join(form.cleaned_data['target'], path))
+                            os.path.join(target, path))
         else:
-            form = UploadZipFileForm()
+            initial_path = '%s/' % request.user.username
+            initial_path += datetime.datetime.now().strftime('%Y/%m-%d')
+            form = UploadZipFileForm(initial={'path': initial_path, })
         return render(request, 'customadmin/uploadarchive.html',
                 {'form': form, 'title': 'Zip-Archiv importieren'})
 

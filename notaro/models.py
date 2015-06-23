@@ -176,7 +176,7 @@ class Picture(models.Model):
 
 class Document(models.Model):
     doc = FileBrowseField("Document", max_length=200, directory="documents/",
-                          extensions=[".pdf", ".doc", ".rtf", ".jpg",
+                          extensions=[".pdf", ".doc", ".docx", ".rtf", ".jpg",
                                       ".tif", ".mp3", ".mp4", ],
                           blank=True, null=True,
                           help_text=".pdf, .doc, .rtf, .jpg, .tif, .mp3, .mp4")
