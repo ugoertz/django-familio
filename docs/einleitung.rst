@@ -60,11 +60,17 @@ Die Verwaltungsseite der Webseite, wo neue Objekte angelegt/Objekte geändert un
 gelöscht und Texte angelegt und redigiert werden können, erreicht man unter
 ``http://...unserefamilie.net/admin/``. Um sich dort anzumelden, benötigt man
 den *Status als Redakteur* (der von einem *Superuser* freigeschaltet werden kann).
+Für Benutzer mit diesem Status ist der Verwaltungsbereich auch im Benutzermenü
+(Benutzernamen in der Kopfzeile anklicken) verlinkt.
 
 Bei existierenden Objekten befindet sich auch in der Box in der rechten Spalte
 (die nur für Redakteure angezeigt wird) ein Link, um direkt das enstprechende
 Objekt editieren zu können.
 
+Diese Boxen und andere Hinweise, die nur für Redakteure angezeigt werden, kann
+man temporär "ausschalten", indem man im Benutzermenü die "Ansicht als
+Redakteur" ausschaltet. So kann man die Seite so sehen, wie "normale" Benutzer
+sie sehen.
 
 ----------------------
 Quelltext der Webseite
