@@ -1,5 +1,6 @@
 {% load fb_versions %}
 {% load partialdate_tags %}
+{% load markup_tags %}
 
 <div style="width: 400px;">
 <h4>
@@ -31,6 +32,6 @@
 {% endfor %}
 {% endwith %}
 
-<p>{{ person.comments|safe }}</p>
+<p>{{ person.comments|apply_markup:"genrestructuredtext" }}</p>
 </div>
 
