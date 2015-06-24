@@ -12,7 +12,11 @@ from django import forms
 class MultiFileInput(forms.FileInput):
     def render(self, name, value, attrs={}):
         attrs['multiple'] = 'multiple'
-        return super(MultiFileInput, self).render(name, None, attrs=attrs)
+        attrs['class'] = attrs.get('class', '') + ' js-multi with-preview'
+        return '<span class="file-wrapper"><span class="button">Datei auswählen (Klick oder Drag-and-drop)</span>' +\
+                super(MultiFileInput, self).render(name, None, attrs=attrs) +\
+                '</span><div id="filelist" style="margin-top: 10px;"></div>'
+
     def value_from_datadict(self, data, files, name):
         if hasattr(files, 'getlist'):
             return files.getlist(name)

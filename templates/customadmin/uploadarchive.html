@@ -1,11 +1,69 @@
 
 {% extends "admin/base.html" %}
 {% load i18n %}
+{% load static %}
+
+{% block extrahead %}
+<style>
+@import url("{% static 'css/font-awesome.min.css' %}");
+</style>
+
+<script src="{% static 'js/libs/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
+<script type="text/javascript">
+$(function() {
+    $('.js-multi').MultiFile({
+        list: '#filelist',
+        STRING: {
+            remove: '<i class="fa fa-remove" style="font-size: 200%; color: red;"></i> ',
+            file: '<span style="font-size: 120%; margin: 10px;">$file</span>'
+        }
+    });
+});
+</script>
+
+<style>
+.file-wrapper {
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  position: relative;
+}
+.file-wrapper input {
+  cursor: pointer;
+  font-size: 100px;
+  height: 100%;
+  filter: alpha(opacity=1);
+  -moz-opacity: 0.01;
+  opacity: 0.01;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.file-wrapper .button {
+  background: #BBBBBB;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 5px;
+  padding: 40px 60px;
+}
+</style>
+{% endblock extrahead %}
+
+
 
 {% block content %}
 
-<div style="margin-bottom: 20px; max-width: 400px;">
-    <p>Mit dem Formular unten können Bilder und Dokumente (als Einzeldateien oder als Zip-Archiv) hochgeladen werden.</p>
+<div style="margin-bottom: 20px; max-width: 600px;">
+    <p>Mit dem Formular unten können Bilder und Dokumente (als Einzeldateien oder als Zip-Archiv) hochgeladen werden. Es können auch mehrere Dateien auf einmal hochgeladen werden.</p>
+
+    <p>In neueren Internet-Browsern können Dateien mit Drag-and-Drop auf das entsprechende Feld gezogen werden. In jedem Fall kann man auf das Feld klicken und dann Dateien auswählen. Die Einstellungen bei "Pfad" und "Automatisch Bildobjekte erstellen" müssen normalerweise nicht verändert werden.</p>
 
     <p>Um die Übersichtlichkeit zu wahren, werden die Dateien immer in einem "Unterverzeichnis" abgespeichert ("Pfad" im Formular) Der Vorschlag dort kann gegebenenfalls geändert werden.</p>
 </div>

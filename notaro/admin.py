@@ -354,6 +354,10 @@ admin.site.register(Source, SourceAdmin)
 
 class UploadZipFileForm(forms.Form):
 
+    archive = MultiFileField(
+            label="Bilddateien (.jpg, .png), "
+                  "pdf-Dateien, Archiv-Dateien (.zip)",
+            required=True)
     path = forms.CharField(
             max_length=50,
             required=True,
@@ -365,10 +369,6 @@ class UploadZipFileForm(forms.Form):
             'oder <span style="font-family: courier, monospace;">'
             'personen/mast/123</span>.',
             widget=forms.TextInput(attrs={'style': 'width: 100%;', }))
-    archive = MultiFileField(
-            label="Bilddateien (.jpg, .png), "
-                  "pdf-Dateien, Archiv-Dateien (.zip)",
-            required=True)
     create_objects = forms.BooleanField(
             label="Automatisch Bildobjekte erstellen",
             required=False,
