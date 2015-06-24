@@ -40,6 +40,7 @@
                     <li><a href="/books/mybooks/">Export als PDF</a></li>
                     <li class="divider"></li>
                     <li><a href="{% settings_value "DOCUMENTATION_URL" %}benutzer.html">Hilfe</a></li>
+                    {% if user_is_admin %}<li><a href="/admin/">Verwaltungsbereich</a></li>{% endif %}
                     <li class="divider"></li>
                     {% if user.is_authenticated and user.userprofile.is_staff_for_site %}
                     {# Note that we cannot use user_is_admin here, because this menu item #}
