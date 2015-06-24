@@ -94,17 +94,21 @@ Erlaubte Zeichen in Schlagwörtern: Buchstaben, Leerzeichen, ``,.;_+-:!``.
 Bilder (und Dokumente) hochladen
 --------------------------------
 
-Wenn viele neue Bilder eingepflegt werden sollen, kann man die zugehörigen
-Bilddateien hochladen unter::
+Neue Bilder können am einfachsten mit der "Box" in der rechten Spalte der Liste
+aller Bilder hochgeladen werden.  Hier kann man auch mehrere Bilddateien auf
+einmal hochladen. Es besteht auch die Möglichkeit, zip-Archive hochzuladen. In
+modernen Browsern (getestet mit Firefox und Chrome) lassen sich Dateien einfach
+per "drag and drop" auf die entsprechend markierte Fläche ziehen. In jedem Fall
+kann man die Fläche anklicken und dann eine oder mehrere Dateien auswählen (und
+gegebenenfalls danach erneut klicken und zusätzliche Dateien auswählen).
+
+Auf diese Art und Weise werden direkt Bildobjekte in der Datenbank zu den
+hochgeladenen Dateien angelegt.
+
+Gegebenenfalls kann man noch genauer Einfluss nehmen, indem man das Formular zum
+Hochladen im Verwaltungsbereich verwendet, siehe
 
   http://www.....unserefamilie.net/admin/notaro/picture/uploadarchive/
-
-Hier kann man auch mehrere Bilddateien auf einmal hochladen. Es besteht auch die
-Möglichkeit, zip-Archive hochzuladen. In modernen Browsern (getestet mit Firefox
-und Chrome) lassen sich Dateien einfach per "drag and drop" auf die entsprechend
-markierte Fläche ziehen. In jedem Fall kann man die Fläche anklicken und dann
-eine oder mehrere Dateien auswählen (und gegebenenfalls danach erneut klicken
-und zusätzliche Dateien auswählen).
 
 Die weiteren Einstellungen ("Pfad", "Automatisch Bildobjekte anlegen") können in
 der Regel unverändert bleiben. Bei Bedarf kann hier genau eingestellt werden, wo
@@ -117,8 +121,7 @@ in der Liste aller Bilder angezeigt wird).
 Bildobjekte zu neuen Dateien anlegen
 ------------------------------------
 
-In der Liste der Bilder (Link "Weitere Bilder" unten in der rechten Spalte) und
-in der Startseite des Verwaltungsbereichs sind Links auf eine Liste aller
+In der Startseite des Verwaltungsbereichs ist ein Link auf eine Liste aller
 Bilddateien, die noch keinem Bildobjekt zugeordnet sind. Aus dieser Liste lässt
 sich durch Anklicken des entsprechenden Buttons ein Bildobjekt zu der
 entsprechenden Datei erzeugen und direkt bearbeiten. (Ab dann ist das Bild, zum

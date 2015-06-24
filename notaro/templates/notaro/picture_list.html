@@ -6,6 +6,7 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+<link rel="stylesheet" href="{% static 'css/file_upload.css' %}">
 
 <style>
 button, .selectize-input {
@@ -25,6 +26,20 @@ $(document).ready(function() {
     {% endfor %}
 });
 </script>
+
+<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
+<script type="text/javascript">
+$(function() {
+    $('.js-multi').MultiFile({
+        list: '#filelist',
+        STRING: {
+            remove: '<span class="glyphicon glyphicon-remove" style="font-size: 120%; color: red;"></i> ',
+            file: '<span class="cabin" style="font-size: 120%; margin: 10px;">$file</span>'
+        }
+    });
+});
+</script>
+
 {% endif %}
 {% endblock js %}
 
@@ -71,14 +86,14 @@ $(document).ready(function() {
             </div>
         </div>
         <div class="col-md-2">
+            {% if user_is_admin %}
+            <div style="margin-bottom: 50px;" class="adminbox">
+                {% include "notaro/add_files_form.html" %}
+            </div>
+            {% endif %}
             {% for tag in tag_list %}
             {{ tag.as_span|safe }}
             {% endfor %}
-            {% if user_is_admin %}
-            <div style="margin-top: 50px;" class="adminbox">
-                <a href="{% url "unbound-images" %}" title="Liste der Bilddateien, die nicht als Bildobjekt eingebunden sind.">Weitere Bilddateien</a>
-            </div>
-            {% endif %}
         </div>
     </div>
 

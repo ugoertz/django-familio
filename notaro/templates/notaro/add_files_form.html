@@ -1,0 +1,10 @@
+<h3 class="cabin">Dateien hinzufügen</h3>
+<form method="post" enctype="multipart/form-data" action="{% url "admin:uploadarchive" %}">
+{% csrf_token %}
+    <span class="file-wrapper"><span class="button cabin">Datei auswählen (Klick oder Drag-and-drop)</span><input class=" js-multi with-preview" id="id_archive" multiple="multiple" name="archive" type="file" /></span><div id="filelist" style="margin-top: 10px;"></div>
+
+    <input id="id_path" maxlength="50" name="path" style="width: 100%;" type="hidden" value="{{ user.username }}/{% now "Y/m-d" %}" />
+    <input value="True" id="id_create_objects" name="create_objects" type="hidden" />
+<input class="cabin btn btn-success btn-sm" style="margin-top: 20px;" value="Abschicken" type="submit">
+</form>
+

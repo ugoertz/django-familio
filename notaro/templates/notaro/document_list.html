@@ -1,22 +1,59 @@
 
 {% extends "_layouts/base.html" %}
+{% load static %}
 {% load markup_tags %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/file_upload.css' %}">
+{% endblock css %}
+
+
+{% block js %}
+{{ block.super  }}
+{% if user_is_admin %}
+<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
+<script type="text/javascript">
+$(function() {
+    $('.js-multi').MultiFile({
+        list: '#filelist',
+        STRING: {
+            remove: '<span class="glyphicon glyphicon-remove" style="font-size: 120%; color: red;"></i> ',
+            file: '<span class="cabin" style="font-size: 120%; margin: 10px;">$file</span>'
+        }
+    });
+});
+</script>
+{% endif %}
+{% endblock js %}
 
 
 {% block content %}
 <div class="container">
-    <div class="col-md-8">
-        <h1>Dokumente</h1>
-        <ul class="list-group">
-            {% for object in object_list %}
-            <li class="list-group-item"><a href="{{ object.get_absolute_url }}">{{ object.name }} ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})</a>
-                <span class="pull-right">{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
-            </li>
-        {% endfor %}
-        </ul>
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Dokumente</h1>
+            <ul class="list-group">
+                {% for object in object_list %}
+                <li class="list-group-item"><a href="{{ object.get_absolute_url }}">{{ object.name }} ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})</a>
+                    <span class="pull-right">{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
+                </li>
+            {% endfor %}
+            </ul>
 
+        </div>
+        <div class="col-md-2">
+            {% if user_is_admin %}
+            <div style="margin-bottom: 50px;" class="adminbox">
+                {% include "notaro/add_files_form.html" %}
+            </div>
+            {% endif %}
+            {% for tag in tag_list %}
+            {{ tag.as_span|safe }}
+            {% endfor %}
+        </div>
+    </div>
     {% include "notaro/pagination.html" %}
-</div>
 </div>
 {% endblock %}
 
