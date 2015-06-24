@@ -92,6 +92,7 @@ $(function() {
             </div>
             {% endif %}
             {% for tag in tag_list %}
+            {% ifchanged %}<span class="label label-info cabin" style="font-weight: bold;">{{ tag.num_times }}</span>{% endifchanged %}
             {{ tag.as_span|safe }}
             {% endfor %}
         </div>

@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 
 from braces.views import LoginRequiredMixin
 from filebrowser.base import FileListing
@@ -115,7 +116,9 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, ListView):
         context = super(PictureList, self).get_context_data(**kwargs)
         context.update({
             'size': self.kwargs.get('size', 'small'),
-            'tag_list': CustomTag.objects.all(),
+            'tag_list': CustomTag.objects.all()\
+                    .annotate(num_times=Count('tags_customtagthrough_items'))\
+                    .order_by('-num_times', 'name'),
             })
 
         return context
