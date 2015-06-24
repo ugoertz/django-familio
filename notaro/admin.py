@@ -575,7 +575,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
             initial_path += datetime.datetime.now().strftime('%Y/%m-%d')
             form = UploadZipFileForm(initial={'path': initial_path, })
         return render(request, 'customadmin/uploadarchive.html',
-                {'form': form, 'title': 'Zip-Archiv importieren'})
+                {'form': form, 'title': 'Bilder/Dokumente hochladen'})
 
     class Media:
         js = ('js/adminactions.js', )

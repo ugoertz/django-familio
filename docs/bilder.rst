@@ -90,19 +90,27 @@ Abspeichern ändern).
 Erlaubte Zeichen in Schlagwörtern: Buchstaben, Leerzeichen, ``,.;_+-:!``.
 
 
--------------------------------------
-Zip-Archiv von Bilddateien hinzufügen
--------------------------------------
+--------------------------------
+Bilder (und Dokumente) hochladen
+--------------------------------
 
 Wenn viele neue Bilder eingepflegt werden sollen, kann man die zugehörigen
-Bilddateien als ein zip-Archiv hochladen unter::
+Bilddateien hochladen unter::
 
   http://www.....unserefamilie.net/admin/notaro/picture/uploadarchive/
 
-Dabei muss ein Unterverzeichnis (oder ein Pfad) angegeben werden, in dem das
-zip-Archiv dann entpackt wird. Auf diese Weise kann man seine Bilddateien
-leichter wiederfinden und es wird verhindert, dass andere Dateien mit dem
-gleichen Dateinamen durch eine Datei aus dem Archiv überschrieben werden.
+Hier kann man auch mehrere Bilddateien auf einmal hochladen. Es besteht auch die
+Möglichkeit, zip-Archive hochzuladen. In modernen Browsern (getestet mit Firefox
+und Chrome) lassen sich Dateien einfach per "drag and drop" auf die entsprechend
+markierte Fläche ziehen. In jedem Fall kann man die Fläche anklicken und dann
+eine oder mehrere Dateien auswählen (und gegebenenfalls danach erneut klicken
+und zusätzliche Dateien auswählen).
+
+Die weiteren Einstellungen ("Pfad", "Automatisch Bildobjekte anlegen") können in
+der Regel unverändert bleiben. Bei Bedarf kann hier genau eingestellt werden, wo
+die Bilder abgelegt werden sollen, und ob automatisch zu allen hochgeladenen
+Bilddateien ein Bildobjekt in der Datenbank angelegt wird (das dann zum Beispiel
+in der Liste aller Bilder angezeigt wird).
 
 
 ------------------------------------
