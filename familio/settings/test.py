@@ -44,7 +44,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # Tell nose to measure coverage on the 'foo' and 'bar' apps
 NOSE_ARGS = [
         '--with-coverage',
-        '--cover-package=partialdate,comments,accounts,base,genealogio,notaro',
+        '--cover-package=partialdate,comments,accounts,base,genealogio,notaro,books,tags,maps,pdfexport',
         ]
 
 # Recipients of traceback emails and other notifications.
