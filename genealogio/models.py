@@ -690,7 +690,7 @@ class Person(PrimaryObject):
             married_name = ''
         self.handle = Person.get_handle(
                 self.last_name, self.first_name, married_name,
-                self.datebirth, self.datedeath)
+                self.datebirth, self.datedeath, self.id)
         self.save()
 
     def as_tag(self):
