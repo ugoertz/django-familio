@@ -120,7 +120,7 @@ $(window).on('map:init', function (e) {
       {% get_unread_message_count_for user as unread_message_count %}
       {% if unread_message_count %}
         <div class="col-md-12">
-            <div class="cabin" style="padding: 5px 15px; font-weight: bold; background-color: lightgreen;">
+            <div class="cabin" style="padding: 5px 15px; margin-bottom: 20px; font-weight: bold; background-color: lightgreen;">
                 Du hast {{ unread_message_count }} ungelesene Nachricht{% if unread_message_count > 1 %}en{% endif %}.
               <a href="/messages/" class="btn btn-default btn-sm" style="margin-left: 20px;">Anzeigen</a>
             </div>
