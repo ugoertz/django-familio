@@ -37,7 +37,7 @@ Anforderungen an den Webserver
     CREATE EXTENSION
 
 * pip, virtualenv
-* ``aptitude install python-dev libffi-dev``
+* ``aptitude install python-dev libffi-dev libcairo2``
 * ``pip install -r requirements/production.txt``
 * latex: ``aptitude install texlive-full``
 * pandoc (zum Importieren von docx/html-Dateien), aktuelle Ubuntu-Pakete auf
