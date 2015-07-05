@@ -200,7 +200,7 @@ latex_domain_indices = False
 
 
 latex_additional_files = [
-        '../../../../maps/static/png/%s.png' % x
+        '../../../../familio/maps/static/png/%s.png' % x
         for x in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
 
 # -- Options for Epub output ----------------------------------------------
