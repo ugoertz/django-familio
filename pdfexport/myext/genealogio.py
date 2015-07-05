@@ -219,8 +219,8 @@ class FamilyTreePDF(Directive):
                     'handle': handle,
                     'generations':
                     self.options.get('generations', generations_default), }))
-        os.system("%s/phantomjs %s/rasterize.js '%s' %s"\
-                % (settings.PHANTOMJS_PATH, settings.PHANTOMJS_PATH, url, fn))
+        os.system("phantomjs %s '%s' %s"\
+                % (settings.PHANTOMJS_SCRIPT, url, fn))
         os.system("pdfcrop %s %s" % (fn, fn2))
 
         return [
