@@ -12,17 +12,24 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-def get_env_setting(setting):
-    """ Get the environment setting or return exception """
-    try:
-        return os.environ[setting]
-    except KeyError:
-        error_msg = "Set the %s env variable" % setting
-        raise ImproperlyConfigured(error_msg)
-
-
 # Your project root
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__) + "../../../")
+
+SITE_ID = int(os.environ['SITE_ID'])
+SECRET_KEY = os.environ['SECRET_KEY']
+SETTINGS_PATH = os.environ['DJANGO_SETTINGS_MODULE']
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': 'db',
+        'PORT': '',
+    },
+}
 
 SUPPORTED_NONLOCALES = ['media', 'admin', 'static']
 
@@ -238,30 +245,6 @@ FILE_UPLOAD_PERMISSIONS = 0o0664
 # The WSGI Application to use for runserver
 WSGI_APPLICATION = 'familio.wsgi.application'
 
-# Define your database connections
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
-        # 'OPTIONS': {
-        #    'init_command': 'SET storage_engine=InnoDB',
-        #    'charset' : 'utf8',
-        #    'use_unicode' : True,
-        # },
-        # 'TEST_CHARSET': 'utf8',
-        # 'TEST_COLLATION': 'utf8_general_ci',
-    },
-    # 'slave': {
-    #     ...
-    # },
-}
-
-# Uncomment this and set to all slave DBs in use on the site.
-# SLAVE_DATABASES = ['slave']
 
 # Recipients of traceback emails and other notifications.
 ADMINS = (
@@ -306,10 +289,6 @@ DEV = False
 
 # Set this to true if you use a proxy that sets X-Forwarded-Host
 # USE_X_FORWARDED_HOST = False
-
-SERVER_EMAIL = "ug@geometry.de"
-DEFAULT_FROM_EMAIL = "ug@geometry.de"
-SYSTEM_EMAIL_PREFIX = "[unserefamilie.net]"
 
 # Log settings
 
@@ -393,6 +372,13 @@ GRAPPELLI_SWITCH_USER = True
 
 FILEBROWSER_MAX_UPLOAD_SIZE = 100000000 # 100MB
 FILEBROWSER_OVERWRITE_EXISTING = False
+FILEBROWSER_VERSIONS_BASEDIR = '%d_versions/' % SITE_ID
+FILEBROWSER_DIRECTORY = '%d_uploads/' % SITE_ID
+PDF_DIRECTORY = '%d_pdfs' % SITE_ID
+
+# sequence of settings variables accessible via template tag
+ALLOWABLE_VALUES = ('DOCUMENTATION_URL', )
+
 
 MARKUP_SETTINGS = {
     'restructuredtext': {
@@ -419,8 +405,6 @@ MARKUP_SETTINGS = {
     }
 }
 
-
-TRANSFER_SERVER = 'apache'
 
 
 LEAFLET_CONFIG = {
@@ -453,5 +437,12 @@ MESSAGE_TAGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media/')
+MEDIA_ROOT = '/var/django/media'
 
+TRANSFER_SERVER = 'nginx'
+TRANSFER_MAPPINGS = {
+    MEDIA_ROOT: '/transfer',
+}
+
+
+PHANTOMJS_SCRIPT = '/var/django/misc/rasterize.js'

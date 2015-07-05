@@ -527,8 +527,13 @@ class Book(models.Model):
                 ignore_errors=True)
         os.environ['DJANGO_PROJECT_DIR'] = settings.PROJECT_ROOT
         os.environ['DJANGO_SETTINGS_MODULE'] = settings.SETTINGS_PATH
-        os.system('. %s/bin/activate && cd %s && make latex' %
-                (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
+        try:
+            # try to run sphinx in virtualenv
+            os.system('. %s/bin/activate && cd %s && make latex' %
+                    (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
+        except AttributeError:
+            os.system('cd %s && make latex' %
+                    (self.get_directory_tmp(), ))
         shutil.copy(
                 os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'Makefile-pdf'),
                 os.path.join(self.get_directory_tmp(), '_build/latex/Makefile'))
