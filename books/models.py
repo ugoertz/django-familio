@@ -645,11 +645,13 @@ class Item(models.Model):
                 if not Site.objects.get_current() in self.obj.sites.all():
                     return ''
             except AttributeError:
-                # If self.obj has no attribute "sites", then this is not a problem
+                # If self.obj has no attribute "sites", then it is available on
+                # all sites.
                 pass
             context = {
                     'object': self.obj,
                     'latexmode': True,
+                    'current_site': Site.objects.get_current(),
                     'itemtitle':
                         self.title if self.use_custom_title_in_pdf else '', }
 
@@ -660,7 +662,7 @@ class Item(models.Model):
                 if not self.get_flag('genealogio.family', 'include_grandchildren'):
                     context.update({'hide_grandchildren': True, })
 
-            if self.obj_content_type == ContentType.objects.get_for_model(Family):
+            if self.obj_content_type == ContentType.objects.get_for_model(Person):
                 if not self.get_flag('genealogio.person', 'include_places'):
                     context.update({'hide_places': True, })
 

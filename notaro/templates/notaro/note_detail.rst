@@ -15,8 +15,10 @@ Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.
 
 {% for pic in object.get_pictures %}
 {% if latexmode %}
+{% if current_site in pic.sites.all %}
 .. image:: /../../../{{ pic.image }}
     :width: 10cm
+{% endif %}
 {% else %}
 .. image:: {% version pic.image 'medium' %}
     :target: {{ pic.get_absolute_url }}

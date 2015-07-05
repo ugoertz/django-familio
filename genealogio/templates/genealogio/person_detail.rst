@@ -11,9 +11,11 @@
 
 {% if object.portrait.image %}
 {% if latexmode %}
+{% if current_site in object.portrait.sites.all %}
 .. raw:: latex
 
     \begin{minipage}[t]{11cm}\vspace{0pt}
+{% endif %}
 {% else %}
 .. image:: {% version object.portrait.image 'small' %}
     :class: pull-right
@@ -44,6 +46,7 @@
 {% endwith %}
 
 {% if latexmode and object.portrait.image %}
+{% if current_site in object.portrait.sites.all %}
 .. raw:: latex
 
     \end{minipage}\hfill
@@ -55,6 +58,7 @@
 .. raw:: latex
 
     \end{minipage}
+{% endif %}
 {% endif %}
 
 {{ object.comments|safe }}
