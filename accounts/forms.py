@@ -74,6 +74,11 @@ class AcceptInviteForm(forms.Form):
             raise forms.ValidationError(
                     'Der Benutzername darf nur A-Z, a-z, Leerzeichen, ., - '
                     'und @ enthalten.')
+        if get_user_model().objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError(
+                    'Diesen Benutzernamen gibt es schon. Bitte wähle einen '
+                    'anderen aus.')
+
         return username
 
 
