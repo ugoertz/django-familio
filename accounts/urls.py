@@ -10,7 +10,7 @@ urlpatterns = patterns('',
                        url(r'^register/(?P<key>\w+)/$',
                            AcceptInvitationView.as_view(),
                            name="accept-invitation"),
-                       url(r'^(?P<username>[\.\w-]+)/edit/$',
+                       url(r'^(?P<username>[\@ \.\w-]+)/edit/$',
                            'userena.views.profile_edit',
                            {'edit_profile_form': EditProfileFormExtra},
                            name='edit-profile'))

@@ -2,6 +2,8 @@
 
 from __future__ import unicode_literals
 
+import re
+
 from django.contrib.auth import get_user_model
 from django import forms
 from userena.forms import EditProfileForm
@@ -65,6 +67,15 @@ class AcceptInviteForm(forms.Form):
                                     render_value=False,
                                     attrs={'style': 'width: 100%;'}),
                                 label="Passwort wiederholen")
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if re.match('^[\@\. \w-]+$', username) is None:
+            raise forms.ValidationError(
+                    'Der Benutzername darf nur A-Z, a-z, Leerzeichen, ., - '
+                    'und @ enthalten.')
+        return username
+
 
     def clean(self):
         """
