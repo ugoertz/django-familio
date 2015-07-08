@@ -134,10 +134,10 @@ $(document).ready(function() {
     {% with allchildren=person.get_children %}
     <p>
     <ul class="list-group">
-    {% for partner, children, txt, family in allchildren %}
+    {% for partner, children, family in allchildren %}
 
     <li class="list-group-item">
-        {{ txt }} {% include "genealogio/person_snippet_pedigree.html" with person=partner target="pedigree" %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
+        {{ family.get_relation_text }} {% include "genealogio/person_snippet_pedigree.html" with person=partner target="pedigree" %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
 
     {% if children %}
     </br><b>Kinder:</b>

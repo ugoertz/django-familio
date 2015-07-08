@@ -349,7 +349,7 @@ def get_dict_descendants(p, level=0):
 
     def add_family(data, family):
         height = 0
-        partner, children, _text, _family = family
+        partner, children, _family = family
         data[-1].update(p_dict_descendants(partner, '2'))
 
         if level > 0:
@@ -567,7 +567,7 @@ class Sparkline(LoginRequiredMixin, View):
                           year_to_x(DEATH_YEAR)+0.04,
                           0.4)
 
-            for p, c, _t, _f in person.get_children():
+            for p, c, _f in person.get_children():
                 for child in c:
                     if not child.datebirth:
                         continue

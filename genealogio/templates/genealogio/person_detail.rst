@@ -29,9 +29,9 @@
 **Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.get_mother %}
 
 {% with allchildren=object.get_children %}
-{% for partner, children, txt, family in allchildren %}
+{% for partner, children, family in allchildren %}
 
-{{ txt }} {% include "genealogio/person_snippet.rst" with person=partner %}{% if latexmode %}. :ref:`Familie {% firstof family.name family %} <{{family.handle}}>`{% else %}— `Familie {% firstof family.name family.father.last_name person.last_name %} <{{ family.get_absolute_url }}>`__{% endif %}
+{{ family.get_relation_text }} {% include "genealogio/person_snippet.rst" with person=partner %}{% if latexmode %}. :ref:`Familie {% firstof family.name family %} <{{family.handle}}>`{% else %}— `Familie {% firstof family.name family.father.last_name person.last_name %} <{{ family.get_absolute_url }}>`__{% endif %}
 
 {% if children %}
 .. container:: marginleft30

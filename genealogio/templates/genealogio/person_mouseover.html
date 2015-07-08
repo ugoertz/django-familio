@@ -15,9 +15,9 @@
 <p><b>Mutter:</b> {% firstof person.get_mother.get_primary_name "Unbekannt" %}</p>
 
 {% with allchildren=person.get_children %}
-{% for partner, children, txt, family in allchildren %}
+{% for partner, children, family in allchildren %}
 
-<p>{{ txt }} {{ partner.get_primary_name }} — Familie {% firstof family.name family.father.last_name person.last_name %}</p>
+<p>{{ family.get_relation_text }} {{ partner.get_primary_name }} — Familie {% firstof family.name family.father.last_name person.last_name %}</p>
 
 {% if children %}
 <p><b>Kinder:</b></br>

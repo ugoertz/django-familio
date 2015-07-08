@@ -137,12 +137,17 @@ class Family(PrimaryObject):
     MARRIED = 2
     UNMARRIED = 3
     CIVILUNION = 4
+    DIVORCED = 5
+    SEPARATED = 6
 
     FAMILY_REL_TYPE = ((UNKNOWN, 'Unbekannt'),
                        (OTHER, 'Andere'),
                        (MARRIED, 'Verheiratet'),
                        (UNMARRIED, 'Unverheiratet'),
-                       (CIVILUNION, 'Eingetragene Partnerschaft'), )
+                       (CIVILUNION, 'Eingetragene Partnerschaft'),
+                       (DIVORCED, 'Geschieden'),
+                       (SEPARATED, 'Getrennt lebend'),
+                       )
 
     father = models.ForeignKey('Person', related_name="father_ref",
                                null=True, blank=True,
@@ -202,7 +207,7 @@ class Family(PrimaryObject):
     def get_grandchildren(self):
         qslist = []
         for c in self.get_children():
-            qslist.extend([v for _k, v, _t, _f in c.get_children()
+            qslist.extend([v for _k, v, _f in c.get_children()
                            if v.exists()])
         if not qslist:
             return
@@ -254,6 +259,16 @@ class Family(PrimaryObject):
             details.append(self.mother.get_short_name())
 
         return ("Familie %s" % tag, "Familie %s" % ', '.join(details))
+
+    def get_relation_text(self):
+        texts = {
+                Family.MARRIED: 'Verheiratet mit',
+                Family.UNMARRIED: 'Partnerschaft mit',
+                Family.DIVORCED: 'Geschieden von',
+                Family.SEPARATED: 'Getrennt lebend von',
+                Family.CIVILUNION: 'Eingetragene Partnerschaft mit',
+                }
+        return texts.get(self.family_rel_type, 'Familie mit')
 
     def __unicode__(self):
         n = ''
@@ -615,7 +630,6 @@ class Person(PrimaryObject):
         children of self, each tuple consisting of
         - other parent of the family
         - queryset of children of that family
-        - text indicating whether the couple was/is married
         - Family object
         """
 
@@ -629,8 +643,6 @@ class Person(PrimaryObject):
                 m,
                 fam.person_set(manager='objects').all().order_by(
                     'datebirth', 'handle'),
-                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
-                else 'Familie mit',
                 fam
                 ])
         for fam in Family.objects.filter(
@@ -641,8 +653,6 @@ class Person(PrimaryObject):
                 f,
                 fam.person_set(manager='objects').all().order_by(
                     'datebirth', 'handle'),
-                'Verheiratet mit' if fam.family_rel_type == Family.MARRIED
-                else 'Familie mit',
                 fam
                 ])
         return children
