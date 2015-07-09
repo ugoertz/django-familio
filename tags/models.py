@@ -38,6 +38,8 @@ class CustomTag(TagBase):
     def slugify(self, tag, i=None):
         if not tag:
             raise Exception('Error in CustomTag.slugify: empty tag.')
+        if i is not None:
+            raise Exception('Error in CustomTag.slugify: tag exists.')
 
         if tag.startswith('tag-'):
             try:

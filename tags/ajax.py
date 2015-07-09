@@ -17,7 +17,7 @@ from .models import CustomTag
 # cannot have ',', '.' and '-' in tag texts
 # this translator should be used by as_tag methods
 def tag_translate(s):
-    for c in '.,-':
+    for c in '.,':
         s = s.replace(c, ' ')
     return s
 
