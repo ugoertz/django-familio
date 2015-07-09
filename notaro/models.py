@@ -317,6 +317,6 @@ class Note(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('link', )
+        ordering = ('title', )
         verbose_name = 'Text'
         verbose_name_plural = 'Texte'
