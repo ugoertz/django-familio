@@ -118,7 +118,7 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, ListView):
             'size': self.kwargs.get('size', 'small'),
             'tag_list': CustomTag.objects.all()\
                     .annotate(num_times=Count('tags_customtagthrough_items'))\
-                    .order_by('-num_times', 'name'),
+                    .order_by('-num_times', 'name')[:50],
             })
 
         return context
