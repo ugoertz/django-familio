@@ -29,6 +29,16 @@ def clean_date(d):
     return d
 
 
+def clean_name(n):
+    if '(' in n or ')' in n:
+        raise forms.ValidationError(
+                'Der Name darf keine Klammern enthalten. Spitznamen u.ä. müssen '
+                'separat im Verwaltungsbereich eingegeben werden. Falls der Name '
+                'selbst wirklich Klammern enthält, muss er im Verwaltungsbereich '
+                'eingegeben werden.')
+    return n
+
+
 class AddParentForm(forms.Form):
 
     family_name = forms.CharField(
@@ -99,6 +109,24 @@ class AddParentForm(forms.Form):
     def clean_date_death_mother(self):
         return clean_date(self.cleaned_data['date_death_mother'])
 
+    def clean_first_name_father(self):
+        return clean_name(self.cleaned_data['first_name_father'])
+
+    def clean_first_name_mother(self):
+        return clean_name(self.cleaned_data['first_name_mother'])
+
+    def clean_last_name_father(self):
+        return clean_name(self.cleaned_data['last_name_father'])
+
+    def clean_last_name_mother(self):
+        return clean_name(self.cleaned_data['last_name_mother'])
+
+    def clean_married_name_mother(self):
+        return clean_name(self.cleaned_data['married_name_mother'])
+
+    def clean_family_name(self):
+        return clean_name(self.cleaned_data['family_name'])
+
     def __init__(self, *args, **kwargs):
         super(AddParentForm, self).__init__(*args, **kwargs)
 
@@ -154,6 +182,15 @@ class AddPersonForm(forms.ModelForm):
             max_length=60,
             widget=forms.HiddenInput)
 
+    def clean_first_name(self):
+        return clean_name(self.cleaned_data['first_name'])
+
+    def clean_last_name(self):
+        return clean_name(self.cleaned_data['last_name'])
+
+    def clean_marriedname(self):
+        return clean_name(self.cleaned_data['marriedname'])
+
     def clean_datebirth(self):
         return clean_date(self.cleaned_data['datebirth'])
 
@@ -201,6 +238,12 @@ class AddSpouseForm(AddPersonForm):
             label='Hochzeitsdatum',
             help_text="Im Format JJJJ-MM-TT."
             )
+
+    def clean_family_name(self):
+        return clean_name(self.cleaned_data['family_name'])
+
+    def clean_start_date(self):
+        return clean_date(self.cleaned_data['start_date'])
 
     def __init__(self, *args, **kwargs):
         super(AddSpouseForm, self).__init__(*args, **kwargs)
