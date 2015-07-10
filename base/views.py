@@ -3,12 +3,15 @@
 import datetime
 import os.path
 import re
-from django.shortcuts import render
-from django.http import Http404, HttpResponseRedirect
+
 from django.conf import settings
-from django.utils.translation import ungettext
 from django.contrib.sites.models import Site
-from django.views.generic import View
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.utils.translation import ungettext
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView, View
 
 from braces.views import LoginRequiredMixin
 from django_transfer import TransferHttpResponse
@@ -20,6 +23,17 @@ from accounts.models import UserSite
 from genealogio.models import Person
 from notaro.models import Note, Picture, Document
 from comments.models import Comment
+
+
+class PaginateListView(ListView):
+
+    paginate_by = 12
+
+    def get_paginate_by(self, queryset):
+        try:
+            return self.request.session['paginate_by']
+        except:
+            return self.paginate_by
 
 
 class CurrentSiteMixin(object):
@@ -185,15 +199,19 @@ class ToggleStaffView(LoginRequiredMixin, View):
         return HttpResponseRedirect(request.POST.get('next', '/'))
 
 
-# class SearchView(View):
+class StorePaginateByView(LoginRequiredMixin, View):
 
-#     def get(self, request):
-#         try:
-#             q = request.GET.get('q')
-#             results = watson.search(q)
-#         except:
-#             results = {}
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(StorePaginateByView, self).dispatch(*args, **kwargs)
 
-#         return render(request, 'base/searchresults.html',
-#                       {'searchterm': q, 'object_list': results, })
+    def post(self, request):
+        if 'paginate_by' in request.POST:
+            try:
+                pb = int(request.POST['paginate_by'])
+                assert pb > 0
+                request.session['paginate_by'] = pb
+            except:
+                pass
+        return HttpResponse()
 

@@ -17,14 +17,14 @@ from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.views.generic import (
-        CreateView, DetailView, FormView, ListView, View)
+        CreateView, DetailView, FormView, View)
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
 from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
 
-from base.views import CurrentSiteMixin
+from base.views import CurrentSiteMixin, PaginateListView
 from maps.models import Place
 from notaro.models import Note, Source
 
@@ -108,18 +108,16 @@ class PPlacesGeoJSON(LoginRequiredMixin, GeoJSONLayerView):
         return qs
 
 
-class PersonList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class PersonList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     """Display list of all persons."""
 
     model = Person
-    paginate_by = 12
 
 
-class FamilyList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class FamilyList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     """Display list of all persons."""
 
     model = Family
-    paginate_by = 12
 
 
 class PersonDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):

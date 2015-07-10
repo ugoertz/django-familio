@@ -11,16 +11,18 @@ h2 {
 
 {% block content %}
 <div class="container">
-    <div class="col-md-8">
-    <h1>Texte</h1>
-        {% filter apply_markup:"genrestructuredtext" %}
-        {% for note in object_list %}
-        {% include "notaro/note_trailer.rst" %}
-        {% endfor %}
-        {% endfilter %}
+    <div class="row">
+        <div class="col-md-10">
+        <h1>Texte</h1>
+            {% filter apply_markup:"genrestructuredtext" %}
+            {% for note in object_list %}
+            {% include "notaro/note_trailer.rst" %}
+            {% endfor %}
+            {% endfilter %}
 
+        </div>
+    </div>
     {% include "notaro/pagination.html" %}
-</div>
 </div>
 {% endblock %}
 

@@ -6,7 +6,7 @@ import os.path
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import (
-        DetailView, ListView, TemplateView, UpdateView, View, )
+        DetailView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.sites.models import Site
@@ -17,7 +17,7 @@ from django.db.models import Count
 from braces.views import LoginRequiredMixin
 from filebrowser.base import FileListing
 
-from base.views import CurrentSiteMixin
+from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
 from .models import Note, Picture, Source, Document
 
@@ -77,40 +77,36 @@ class NoteDetailVerboseLink(LoginRequiredMixin,
         return context
 
 
-class NoteList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class NoteList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     """Display list of all notes."""
 
     model = Note
-    paginate_by = 5
 
     def get_queryset(self):
         # pylint: disable=no-member
         return Note.objects.filter(published=True)
 
 
-class DocumentList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class DocumentList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     """Display list of all notes."""
 
     model = Document
-    paginate_by = 15
 
 
-class SourceList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class SourceList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     """Display list of all notes."""
 
     model = Source
-    paginate_by = 15
 
 
-class PictureList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     """Display list of all notes."""
 
     model = Picture
-    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super(PictureList, self).get_context_data(**kwargs)

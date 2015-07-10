@@ -6,16 +6,18 @@
 
 {% block content %}
 <div class="container">
-    <div class="col-md-8">
-        <h1>Quellen</h1>
-        <ul class="list-group">
-            {% for object in object_list %}
-            <li class="list-group-item"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></li>
-        {% endfor %}
-        </ul>
+    <div class="row">
+        <div class="col-md-10">
+            <h1>Quellen</h1>
+            <ul class="list-group">
+                {% for object in object_list %}
+                <li class="list-group-item"><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></li>
+            {% endfor %}
+            </ul>
 
+        </div>
+    </div>
     {% include "notaro/pagination.html" %}
-</div>
 </div>
 {% endblock %}
 
