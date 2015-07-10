@@ -30,20 +30,28 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('#pagination12').click(function() {
-        $.post('/store-paginate-by/', {paginate_by: 12});
-        window.location.href = "{{ request.path }}";
+        $.post('/store-paginate-by/', {paginate_by: 12},
+                function () {
+                    window.location.href = "{{ request.path }}";
+                });
     });
     $('#pagination24').click(function() {
-        $.post('/store-paginate-by/', {paginate_by: 24});
-        window.location.href = "{{ request.path }}";
+        $.post('/store-paginate-by/', {paginate_by: 24},
+                function () {
+                    window.location.href = "{{ request.path }}";
+                });
     });
     $('#pagination48').click(function() {
-        $.post('/store-paginate-by/', {paginate_by: 48});
-        window.location.href = "{{ request.path }}";
+        $.post('/store-paginate-by/', {paginate_by: 48},
+                function () {
+                    window.location.href = "{{ request.path }}";
+                });
     });
     $('#pagination10000').click(function() {
-        $.post('/store-paginate-by/', {paginate_by: 10000});
-        window.location.href = "{{ request.path }}";
+        $.post('/store-paginate-by/', {paginate_by: 10000},
+                function () {
+                    window.location.href = "{{ request.path }}";
+                });
     });
 });
 </script>
