@@ -14,6 +14,8 @@ urlpatterns = patterns(
         'genealogio.views',
         url(r'^persons/$', PersonList.as_view(),
             name='person-list'),
+        url(r'^persons/(?P<order_by>\w+)/$', PersonList.as_view(),
+            name='person-list-ordered'),
         url(r'^person-view/(?P<pk>\d+)/$',
             PersonDetail.as_view(), name='person-detail'),
         url(r'^families/$', FamilyList.as_view(),
