@@ -57,32 +57,38 @@ $(function() {
     <div class="row" style="margin-bottom: 30px;">
         <div class="col-md-10">
             <div class="row">
-                <ul class="list-group">
-                    {% for picture in object_list %}
-                        <li class="list-group-item col-md-6">
-                            <a name="pic{{ picture.id }}"></a>
+                {% for ctr in '01' %}
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        {% for picture in object_list %}
+                            {% if ctr == '0' and not forloop.counter|divisibleby:2 or ctr == '1' and forloop.counter|divisibleby:2 %}
+                            <li class="list-group-item" style="margin-bottom: 10px;">
+                                <a name="pic{{ picture.id }}"></a>
 
-                            <div style="overflow: hidden; vertical-align: top; margin-bottom: 20px;">
-                                <a href="{{ picture.get_absolute_url }}"><img onerror='this.style.display = "none"' style="float: left; margin-right: 20px;" src="{% version picture.image size %}"></a>
+                                <div style="overflow: hidden; vertical-align: top; margin-bottom: 20px;">
+                                    <a href="{{ picture.get_absolute_url }}"><img onerror='this.style.display = "none"' style="float: left; margin-right: 20px;" src="{% version picture.image size %}"></a>
 
-                                <div style="overflow: hidden; vertical-align: top;">
-                                    {{ picture.caption|apply_markup:"genrestructuredtext" }}
+                                    <div style="overflow: hidden; vertical-align: top;">
+                                        {{ picture.caption|apply_markup:"genrestructuredtext" }}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div style="margin-bottom: 20px;">{% for tag in picture.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
+                                <div style="margin-bottom: 20px;">{% for tag in picture.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
 
-                            {% if user_is_admin %}
-                            {% url "save-tags" "notaro" "picture" picture.pk as action %}
-                            {% with id_as_string=picture.id|slugify %}
-                            {% with next=request.get_full_path|add:"#pic"|add:id_as_string %}
-                            {% include "tags/tags_form.html" with object=picture next=next %}
-                            {% endwith %}
-                            {% endwith %}
+                                {% if user_is_admin %}
+                                {% url "save-tags" "notaro" "picture" picture.pk as action %}
+                                {% with id_as_string=picture.id|slugify %}
+                                {% with next=request.get_full_path|add:"#pic"|add:id_as_string %}
+                                {% include "tags/tags_form.html" with object=picture next=next %}
+                                {% endwith %}
+                                {% endwith %}
+                                {% endif %}
+                            </li>
                             {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endfor %}
             </div>
         </div>
         <div class="col-md-2">
