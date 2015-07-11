@@ -116,11 +116,12 @@ class PersonList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     def get_queryset(self):
         qs = super(PersonList, self).get_queryset()
         if 'order_by' in self.kwargs:
-            if self.kwargs['order_by'] == 'lastname':
-                # last_name (= birth name)
+            if self.kwargs['order_by'] == 'birthname':
                 qs = qs.order_by('last_name', 'first_name', 'datebirth')
+            elif self.kwargs['order_by'] == 'lastname':
+                qs = qs.order_by('last_name_current', 'first_name', 'datebirth')
             elif self.kwargs['order_by'] == 'firstname':
-                qs = qs.order_by('first_name', 'last_name')
+                qs = qs.order_by('first_name', 'last_name', 'datebirth')
             elif self.kwargs['order_by'] == 'datebirth':
                 qs = qs.order_by('datebirth', 'datedeath', 'last_name')
             elif self.kwargs['order_by'] == 'datebirthdesc':

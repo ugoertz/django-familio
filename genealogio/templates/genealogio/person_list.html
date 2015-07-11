@@ -8,7 +8,8 @@
         <div class="pull-right cabin"><span style="font-size: 60%; font-weight: normal;">Sortiere nach</span>
         <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Sortierungskriterium">
             {% url "person-list" as url_person_list %}
-            <a href="{% url "person-list-ordered" "lastname" %}" class="btn btn-default {% if request.path == url_person_list or "lastname" in request.path %}active{% endif %}">Geburtsname</a>
+            <a href="{% url "person-list-ordered" "birthname" %}" class="btn btn-default {% if request.path == url_person_list or "birthname" in request.path %}active{% endif %}">Geburtsname</a>
+            <a href="{% url "person-list-ordered" "lastname" %}" class="btn btn-default {% if "lastname" in request.path %}active{% endif %}">Nachname</a>
             <a href="{% url "person-list-ordered" "firstname" %}" class="btn btn-default {% if "firstname" in request.path %}active{% endif %}">Vorname</a>
             <a href="{% if not "datebirth" in request.path or "datebirthdesc" in request.path %}{% url "person-list-ordered" "datebirth" %}{% else %}{% url "person-list-ordered" "datebirthdesc" %}{% endif %}" class="btn btn-default {% if "datebirth" in request.path %}active{% endif %}">Geburtsdatum <span class="glyphicon glyphicon-chevron-{% if not "datebirth" in request.path %}down{% else %}{% if "datebirthdesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
         </div>
