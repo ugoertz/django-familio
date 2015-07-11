@@ -395,6 +395,9 @@ class Person(PrimaryObject):
     first_name = models.CharField(
             max_length=200, blank=True, default='',
             verbose_name="Vorname")
+    last_name_current = models.CharField(
+            max_length=200, blank=True, default='',
+            verbose_name="Aktueller Nachname")
 
     gender_type = models.IntegerField('Geschlecht', choices=GENDER_TYPE,
                                       default=3)
@@ -477,28 +480,13 @@ class Person(PrimaryObject):
         return result
 
     def get_last_name(self, separator=''):
-        """Return the last name, from the related Name instances."""
+        """Return the last name."""
 
-        birthname = ''
-        try:
-            birthname = self.name_set.filter(typ=Name.BIRTHNAME)[0].name
-        except IndexError:
-            pass
-
-        marriedname = ''
-        try:
-            marriedname = self.name_set.filter(typ=Name.MARRIEDNAME)[0].name
-        except IndexError:
-            pass
-
-        if marriedname and birthname:
-            return '%s %s(geb. %s)' % (marriedname, separator, birthname)
-        elif birthname:
-            return '%s' % (birthname)
-        elif marriedname:
-            return '%s' % (marriedname)
+        if self.last_name != self.last_name_current:
+            return '%s %s(geb. %s)' % (
+                    self.last_name_current, separator, self.last_name)
         else:
-            return ''
+            return '%s' % (self.last_name, )
 
     def get_full_name_html(self):
         return mark_safe(self.get_full_name(fmt="html"))
@@ -574,10 +562,7 @@ class Person(PrimaryObject):
         except IndexError:
             first = self.first_name
 
-        try:
-            name = self.name_set.filter(typ=Name.BIRTHNAME)[0].name
-        except IndexError:
-            name = self.last_name
+        name = self.last_name
 
         if len(first) + len(name) > 22:
             fsplit = first.split(' ')

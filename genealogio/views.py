@@ -639,6 +639,7 @@ class AddParents(LoginRequiredMixin, FormView):
                 form.cleaned_data['first_name_father']):
             father_kwargs = {
                     'last_name': form.cleaned_data['last_name_father'],
+                    'last_name_current': form.cleaned_data['last_name_father'],
                     'first_name': form.cleaned_data['first_name_father'],
                     'datebirth': form.cleaned_data['date_birth_father'],
                     'datedeath': form.cleaned_data['date_death_father'],
@@ -672,6 +673,8 @@ class AddParents(LoginRequiredMixin, FormView):
                 form.cleaned_data['first_name_mother']):
             mother_kwargs = {
                     'last_name': form.cleaned_data['last_name_mother'],
+                    'last_name_current':
+                        form.cleaned_data['married_name_mother'],
                     'first_name': form.cleaned_data['first_name_mother'],
                     'datebirth': form.cleaned_data['date_birth_mother'],
                     'datedeath': form.cleaned_data['date_death_mother'],
@@ -737,6 +740,8 @@ class AddPersonView(CreateView):
         person = Person.objects.create(
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
+                last_name_current=form.cleaned_data['marriedname']
+                    or form.cleaned_data['last_name'],
                 probably_alive=(form.cleaned_data['datedeath'] == ''),
                 gender_type=form.cleaned_data['gender_type'],
                 datebirth=form.cleaned_data['datebirth'],

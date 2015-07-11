@@ -9,7 +9,7 @@ class GenealogioConfig(AppConfig):
     def ready(self):
         PersonModel = self.get_model("Person")
         watson.register(PersonModel.objects.all(),
-                        fields=('first_name', 'last_name',
+                        fields=('first_name', 'last_name', 'last_name_current',
                                 'name_set__name', 'places', 'handle',
                                 'datebirth', 'datedeath',
                                 'events', 'comments'),

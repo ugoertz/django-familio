@@ -289,6 +289,11 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         except:
             pass
         try:
+            obj.last_name_current = obj.name_set.filter(
+                    typ=Name.MARRIEDNAME)[0].name
+        except:
+            obj.last_name_current = obj.last_name
+        try:
             obj.first_name = obj.name_set.filter(typ__in=[Name.FIRSTNAME,
                                                           Name.RUFNAME,
                                                           Name.NICKNAME,
