@@ -41,9 +41,9 @@ p, li {
 {{ block.super }}
 <script>
 {% block size %}
-var margin = {top: 0, right: 320, bottom: 0, left: 0},
-    width = 960 - margin.left - margin.right,
-    height = 650 - margin.top - margin.bottom;
+var margin = {top: 0, right: 270, bottom: 0, left: 0},
+    width = margin.right * ({{ generations }} - 1),
+    height = 550 - margin.top - margin.bottom + 110 * {{ generations }};
 {% endblock %}
 
 var tree = d3.layout.tree()
@@ -154,12 +154,13 @@ $(document).ready(function() {
     {% endwith %}
         </div>
         <div class="col-md-2">
-            <p><a href="{% url "descendants" person.pk %}" class="pull-right">Nachkommen</a></p>
+            <p style="margin-bottom: 30px;"><a href="{% url "descendants" person.pk %}">Nachkommen</a></p>
+            {% include "genealogio/choose_number_generations.html" with base_url="pedigree-level" %}
         </div>
     </div>
     {% endblock pedigree_header %}
 
-    <div id="familytree_svg">
+    <div id="familytree_svg" style="margin-top: 20px;">
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,8 @@
+<span class="cabin" style="margin-right: 20px;">Anzahl Generationen:</span>
+<div class="btn-group cabin">
+<a href="{% url base_url person.pk 3 %}" class="btn btn-default {% if generations == 3 %}active{% endif %}">3</a>
+<a href="{% url base_url person.pk 4 %}" class="btn btn-default {% if generations == 4 %}active{% endif %}">4</a>
+<a href="{% url base_url person.pk 5 %}" class="btn btn-default {% if generations == 5 %}active{% endif %}">5</a>
+<a href="{% url base_url person.pk 6 %}" class="btn btn-default {% if generations == 6 %}active{% endif %}">6</a>
+<a href="{% url base_url person.pk 7 %}" class="btn btn-default {% if generations == 7 %}active{% endif %}">7</a>
+</div>

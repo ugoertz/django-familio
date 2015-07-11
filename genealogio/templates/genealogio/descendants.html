@@ -45,7 +45,7 @@ p, li {
 <script>
 {% block size %}
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
-    width = 1260 - margin.left - margin.right,
+    width = 320*{{ generations }} - margin.left,
     height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
 {% endblock size %}
 
@@ -171,14 +171,24 @@ $(document).ready(function() {
 {% block content %}
 <div class="container">
     {% block pedigree_header %}
-    <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
-    <p style="margin-bottom: 40px;">
-    Vater: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" %},
-    Mutter: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" %}.
-    <a href="{% url "pedigree" person.pk %}" class="pull-right">Ahnentafel</a>
-    </p>
+    <div class="row">
+        <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
+        <div class="col-md-10">
+            <p style="margin-bottom: 40px;">
+            Vater: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" %} -
+            Mutter: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" %}
+            </p>
+        </div>
+        <div class="col-md-2">
+            <p style="margin-bottom: 30px;">
+            <a href="{% url "pedigree" person.pk %}">Ahnentafel</a>
+            </p>
+
+            {% include "genealogio/choose_number_generations.html" with base_url="descendants-level" %}
+        </div>
+    </div>
     {% endblock pedigree_header %}
-    <div id="familytree_svg">
+    <div style="margin-top: 20px;" id="familytree_svg">
     </div>
 </div>
 {% endblock %}

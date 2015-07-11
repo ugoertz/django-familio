@@ -290,14 +290,21 @@ def get_dict_pedigree(p, total, level=0):
 class Pedigree(LoginRequiredMixin, View):
     """Display pedigree for a person."""
 
-    def get(self, request, pk):
+    def get(self, request, pk, level=3):
         # pylint: disable=no-member
         person = Person.objects.get(pk=pk)
 
-        data = get_dict_pedigree(person, total=2, level=2)
+        data = get_dict_pedigree(
+                person,
+                total=int(level)-1,
+                level=int(level)-1)
 
         return render(request, 'genealogio/pedigree.html',
-                      {'person': person, 'data': json.dumps(data), })
+                      {
+                          'person': person,
+                          'data': json.dumps(data),
+                          'generations': int(level),
+                          })
 
 
 class PedigreePDF(LoginRequiredMixin, View):
@@ -389,13 +396,15 @@ def get_dict_descendants(p, level=0):
 class Descendants(LoginRequiredMixin, View):
     """Display descendants of a person."""
 
-    def get(self, request, pk):
+    def get(self, request, pk, level=3):
         # pylint: disable=no-member
         person = Person.objects.get(pk=pk)
         height = 0
 
         if person.get_children():
-            height, d = get_dict_descendants(person, level=2)
+            height, d = get_dict_descendants(
+                    person,
+                    level=int(level)-1)
             data = {'parents': d, }
         else:
             data = []
@@ -404,6 +413,7 @@ class Descendants(LoginRequiredMixin, View):
         return render(request, 'genealogio/descendants.html',
                       {'person': person,
                        'height': height * 30,
+                       'generations': int(level),
                        'data': json.dumps(data), })
 
 
