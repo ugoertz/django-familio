@@ -14,7 +14,6 @@ Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.
 {% include "notaro/sources.rst" with all_sources=object.notesource_set.all %}
 
 {% for pic in object.get_pictures %}
-{% if current_site in pic.sites.all %}
 {% if latexmode %}
 .. image:: /../../../{{ pic.image }}
     :width: 10cm
@@ -25,7 +24,6 @@ Autor{% if object.authors.count > 1 %}en{% endif %}: {% for u in object.authors.
 
 {{ pic.get_caption|safe }}
 
-{% endif %}
 {% endfor %}
 
 

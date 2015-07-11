@@ -4,7 +4,7 @@
 
 <div style="width: 400px;">
 <h4>
-{% if person.portrait %}<img onerror='this.style.display = "none"' style="margin-right: 10px;" src="{% version person.portrait.image 'thumbnail' %}">{% endif %}
+    {% if person.portrait %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' style="margin-right: 10px;" src="{% version person.portrait.image 'thumbnail' %}">{% endif %}{% endif %}
 {{ person.get_full_name_html }}
 </h4>
 

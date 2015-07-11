@@ -19,7 +19,7 @@
 
     <ul class="list-group">
         {% for person in object_list %}
-        <li class="list-group-item">{% if person.portrait.image %}<img onerror='this.style.display = "none"' src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% include "genealogio/person_snippet.html" %}</li>
+        <li class="list-group-item">{% if person.portrait.image %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% endif %}{% include "genealogio/person_snippet.html" %}</li>
         {% endfor %}
     </ul>
 

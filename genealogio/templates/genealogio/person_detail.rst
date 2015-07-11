@@ -10,12 +10,14 @@
 ==============================================================================================================================================================
 
 {% if object.portrait.image %}
-{% if current_site in object.portrait.sites.all %}
 {% if latexmode %}
+{% if current_site in object.portrait.sites.all %}
 .. raw:: latex
 
     \begin{minipage}[t]{11cm}\vspace{0pt}
+{% endif %}
 {% else %}
+{% if request.site in object.portrait.sites.all %}
 .. image:: {% version object.portrait.image 'small' %}
     :class: pull-right
 {% endif %}

@@ -44,7 +44,7 @@ def popover_data(request, link):
                 return "Unbekannt"
             return render_to_string(
                     'genealogio/%s' % template,
-                    {'person': p, })
+                    {'person': p, 'request': request })
 
 
 @dajaxice_register(method="GET")
