@@ -10,7 +10,7 @@
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "genealogio/event_detail.rst" %}
             {% endfilter %}
-            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
             <ul class="list-group">
             {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
             </ul>

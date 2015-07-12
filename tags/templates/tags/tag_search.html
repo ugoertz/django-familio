@@ -3,11 +3,12 @@
 {% load fb_versions %}
 {% load tags_tags %}
 
+
 {% block content %}
 <div class="container">
     <div class="row">
         <h1>Schlagwort {{ tag|as_tag_text }}</h1>
-        {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" %}
+        {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
 
         <ul class="list-group">
         {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
