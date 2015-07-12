@@ -1,5 +1,5 @@
-    <div class="row" style="font-size: 120%;">
-        <div class="col-md-7 cabin">
+<div class="row" style="font-size: 120%;">
+    <div class="col-md-7 cabin">
     {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Vorherige Seite</a>{% endif %}
 
     <span style="margin-left: 30px; margin-right: 30px;">
@@ -13,20 +13,23 @@
     </span>
 
     {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Nächste Seite</a>{% endif %} <span style="margin-left:20px; font-size: 80%;">(Insgesamt {{ page_obj.paginator.count }} Einträge)</span>
-        </div>
-        <div class="col-md-5">
-
-    <div class="pull-right cabin">Zeige 
-        <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Anzahl gezeigter Einträge">
-            <button type="button" id="pagination12" class="btn btn-default {% if not request.session.paginate_by or request.session.paginate_by == 12 %}active{% endif %}">12</button>
-            <button type="button" id="pagination24" class="btn btn-default {% if request.session.paginate_by == 24 %}active{% endif %}">24</button>
-            <button type="button" id="pagination48" class="btn btn-default {% if request.session.paginate_by == 48 %}active{% endif %}">48</button>
-            <button type="button" id="pagination10000" class="btn btn-default {% if request.session.paginate_by == 10000 %}active{% endif %}">alle</button>
-        </div>
-        Einträge.
     </div>
+    <div class="col-md-5">
+
+{% if not hide_individual_pagination %}
+        <div class="pull-right cabin">Zeige 
+            <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Anzahl gezeigter Einträge">
+                <button type="button" id="pagination12" class="btn btn-default {% if not request.session.paginate_by or request.session.paginate_by == 12 %}active{% endif %}">12</button>
+                <button type="button" id="pagination24" class="btn btn-default {% if request.session.paginate_by == 24 %}active{% endif %}">24</button>
+                <button type="button" id="pagination48" class="btn btn-default {% if request.session.paginate_by == 48 %}active{% endif %}">48</button>
+                <button type="button" id="pagination10000" class="btn btn-default {% if request.session.paginate_by == 10000 %}active{% endif %}">alle</button>
+            </div>
+            Einträge.
+        </div>
+{% endif %}
     </div>
 </div>
+{% if not hide_individual_pagination %}
 <script type="text/javascript">
 $(document).ready(function() {
     $('#pagination12').click(function() {
@@ -55,3 +58,4 @@ $(document).ready(function() {
     });
 });
 </script>
+{% endif %}
