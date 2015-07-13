@@ -12,8 +12,8 @@
         font-style: italic;
         font-weight: 400;
         src:
-          url("../fonts/vollkorn-italic-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-Italic.ttf") format('truetype');
+          url("../fonts/vollkorn-italic-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-Italic.ttf") format('truetype'),
           url("../fonts/Vollkorn-Italic.otf") format('opentype');
     }
     @font-face {
@@ -21,8 +21,8 @@
         font-style: italic;
         font-weight: 500;
         src:
-          url("../fonts/vollkorn-mediumitalic-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-MediumItalic.ttf") format('truetype');
+          url("../fonts/vollkorn-mediumitalic-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-MediumItalic.ttf") format('truetype'),
           url("../fonts/Vollkorn-MediumItalic.otf") format('opentype');
     }
     @font-face {
@@ -30,8 +30,8 @@
         font-style: italic;
         font-weight: 600;
         src:
-          url("../fonts/vollkorn-semibolditalic-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-SemiboldItalic.ttf") format('truetype');
+          url("../fonts/vollkorn-semibolditalic-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-SemiboldItalic.ttf") format('truetype'),
           url("../fonts/Vollkorn-SemiboldItalic.otf") format('opentype');
     }
     @font-face {
@@ -39,8 +39,8 @@
         font-style: italic;
         font-weight: 700;
         src:
-          url("../fonts/vollkorn-bolditalic-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-BoldItalic.ttf") format('truetype');
+          url("../fonts/vollkorn-bolditalic-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-BoldItalic.ttf") format('truetype'),
           url("../fonts/Vollkorn-BoldItalic.otf") format('opentype');
     }
     @font-face {
@@ -48,8 +48,8 @@
         font-style: normal;
         font-weight: 400;
         src:
-          url("../fonts/vollkorn-regular-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-Regular.ttf") format('truetype');
+          url("../fonts/vollkorn-regular-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-Regular.ttf") format('truetype'),
           url("../fonts/Vollkorn-Regular.otf") format('opentype');
     }
     @font-face {
@@ -57,8 +57,8 @@
         font-style: normal;
         font-weight: 500;
         src:
-          url("../fonts/vollkorn-medium-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-Medium.ttf") format('truetype');
+          url("../fonts/vollkorn-medium-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-Medium.ttf") format('truetype'),
           url("../fonts/Vollkorn-Medium.otf") format('opentype');
     }
     @font-face {
@@ -66,8 +66,8 @@
         font-style: normal;
         font-weight: 600;
         src:
-          url("../fonts/vollkorn-semibold-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-Semibold.ttf") format('truetype');
+          url("../fonts/vollkorn-semibold-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-Semibold.ttf") format('truetype'),
           url("../fonts/Vollkorn-Semibold.otf") format('opentype');
     }
     @font-face {
@@ -75,8 +75,8 @@
         font-style: normal;
         font-weight: 700;
         src:
-          url("../fonts/vollkorn-bold-webfont.woff") format('woff');
-          url("../fonts/Vollkorn-Bold.ttf") format('truetype');
+          url("../fonts/vollkorn-bold-webfont.woff") format('woff'),
+          url("../fonts/Vollkorn-Bold.ttf") format('truetype'),
           url("../fonts/Vollkorn-Bold.otf") format('opentype');
     }
     @font-face {
@@ -84,7 +84,7 @@
         font-style: normal;
         font-weight: 400;
         src:
-        url("../fonts/Cabin-Regular.ttf") format('truetype');
+        url("../fonts/Cabin-Regular.ttf") format('truetype'),
         url("../fonts/Cabin-Regular.otf") format('opentype');
     }
     @font-face {
@@ -92,7 +92,7 @@
         font-style: normal;
         font-weight: 500;
         src:
-        url("../fonts/Cabin-Medium.ttf") format('truetype');
+        url("../fonts/Cabin-Medium.ttf") format('truetype'),
         url("../fonts/Cabin-Medium.otf") format('opentype');
     }
     @font-face {
@@ -100,7 +100,7 @@
         font-style: normal;
         font-weight: 600;
         src:
-        url("../fonts/Cabin-SemiBold.ttf") format('truetype');
+        url("../fonts/Cabin-SemiBold.ttf") format('truetype'),
         url("../fonts/Cabin-SemiBold.otf") format('opentype');
     }
     @font-face {
@@ -108,7 +108,7 @@
         font-style: normal;
         font-weight: 700;
         src:
-        url("../fonts/Cabin-Bold.ttf") format('truetype');
+        url("../fonts/Cabin-Bold.ttf") format('truetype'),
         url("../fonts/Cabin-Bold.otf") format('opentype');
     }
     @font-face {
@@ -116,7 +116,7 @@
         font-style: italic;
         font-weight: 400;
         src:
-        url("../fonts/Cabin-Italic.ttf") format('truetype');
+        url("../fonts/Cabin-Italic.ttf") format('truetype'),
         url("../fonts/Cabin-Italic.otf") format('opentype');
     }
     @font-face {
@@ -124,7 +124,7 @@
         font-style: italic;
         font-weight: 500;
         src:
-        url("../fonts/Cabin-MediumItalic.ttf") format('truetype');
+        url("../fonts/Cabin-MediumItalic.ttf") format('truetype'),
         url("../fonts/Cabin-MediumItalic.otf") format('opentype');
     }
     @font-face {
@@ -132,7 +132,7 @@
         font-style: italic;
         font-weight: 600;
         src:
-        url("../fonts/Cabin-SemiBoldItalic.ttf") format('truetype');
+        url("../fonts/Cabin-SemiBoldItalic.ttf") format('truetype'),
         url("../fonts/Cabin-SemiBoldItalic.otf") format('opentype');
     }
     @font-face {
@@ -140,7 +140,7 @@
         font-style: italic;
         font-weight: 700;
         src:
-          url("../fonts/Cabin-BoldItalic.ttf") format('truetype');
+          url("../fonts/Cabin-BoldItalic.ttf") format('truetype'),
           url("../fonts/Cabin-BoldItalic.otf") format('opentype');
     }
     div {
