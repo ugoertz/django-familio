@@ -10,9 +10,9 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
 from django.views.generic import (
-        CreateView, DetailView, ListView, UpdateView, View, )
+        CreateView, DetailView, UpdateView, View, )
 
-from base.views import CurrentSiteMixin
+from base.views import CurrentSiteMixin, PaginateListView
 
 from .forms import (
         BookCreateForm, BookForm,
@@ -22,7 +22,7 @@ from .models import Book, Collection, Item
 from .tasks import compile_book
 
 
-class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     """Display list of all publically available books."""
 
     model = Book
@@ -40,7 +40,7 @@ class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, ListView):
         return context
 
 
-class UserBookList(LoginRequiredMixin, CurrentSiteMixin, ListView):
+class UserBookList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     """Display list of all book project authored by request.user."""
 
     model = Book
