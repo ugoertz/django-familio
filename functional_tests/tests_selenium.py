@@ -5,10 +5,14 @@ from __future__ import unicode_literals
 
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.core import mail
+from django.core.urlresolvers import reverse
 from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
 
 from accounts.models import UserSite
 from accounts.tests import UserFactory
+from genealogio.models import PersonFamily
+from genealogio.tests import FamilyFactory, PersonFactory
 from notaro.tests import NoteFactory, RST_WITH_ERRORS
 
 # pylint: disable=no-member
@@ -157,4 +161,108 @@ class LoginTest(StaticLiveServerTestCase):
         # and should have staff status here (test for link to admin being
         # displayed in menu)
         self.assertIn("Verwaltungsbereich", self.selenium.page_source)
+
+    def test_send_invitation_email(self):
+        self.login(self.user)
+
+        self.selenium.get('%s/accounts/invite/' % self.live_server_url)
+        self.assertIn('mindestens die Anrede', self.selenium.page_source)
+
+        input = self.selenium.find_element_by_id('id_email')
+        input.send_keys('aaa@example.com')
+
+        input = self.selenium.find_element_by_id('id_first_name')
+        input.send_keys('Django')
+
+        input = self.selenium.find_element_by_id('id_last_name')
+        input.send_keys('Reinhardt')
+
+        submit = self.selenium.find_element_by_id('id_submit_invitation')
+        submit.click()
+
+        self.assertIn('verschickt', self.selenium.page_source)
+
+        self.assertEqual(len(mail.outbox), 1)
+
+        site = Site.objects.get_current()
+        self.assertEqual(
+                mail.outbox[0].subject,
+                'Einladung von %s' % site.domain)
+
+    def test_some_genealogio_views(self):
+        self.login(self.user)
+
+        # set up some persons and families
+        grandfather_f = PersonFactory()
+        grandmother_f = PersonFactory()
+        grandfather_m = PersonFactory()
+        grandmother_m = PersonFactory()
+        father = PersonFactory()
+        mother = PersonFactory()
+        child1 = PersonFactory()
+        child2 = PersonFactory()
+
+        family = FamilyFactory(father=grandfather_f, mother=grandmother_f)
+        PersonFamily.objects.create(person=father, family=family)
+        family = FamilyFactory(father=grandfather_m, mother=grandmother_m)
+        PersonFamily.objects.create(person=mother, family=family)
+
+        family = FamilyFactory(father=father, mother=mother)
+        PersonFamily.objects.create(person=child1, family=family)
+        PersonFamily.objects.create(person=child2, family=family)
+
+        self.selenium.get('%s/' % self.live_server_url)
+        self.assertIn(child1.get_primary_name(), self.selenium.page_source)
+        self.assertNotIn('Die neuesten Texte', self.selenium.page_source)
+        self.assertNotIn('Die neuesten Kommentare', self.selenium.page_source)
+
+        self.selenium.get(
+                '%s' % self.live_server_url +
+                reverse('person-detail', kwargs={'pk': child1.pk}))
+
+        self.assertNotIn('unbekannt', self.selenium.page_source)
+
+        self.selenium.get(
+                '%s' % self.live_server_url +
+                reverse('person-detail', kwargs={'pk': grandfather_f.pk}))
+
+        # father, mother should be unknown
+        self.assertIn('unbekannt', self.selenium.page_source)
+
+        # No comments so far
+        self.assertIn(
+                'Es gibt noch keine Kommentare', self.selenium.page_source)
+
+        # add a comment
+        inpt = self.selenium.find_element_by_id('id_content')
+        inpt.send_keys('This is the first comment.')
+        inpt.submit()
+        self.assertIn(
+                'This is the first comment.', self.selenium.page_source)
+        self.assertNotIn(
+                'Es gibt noch keine Kommentare', self.selenium.page_source)
+
+        self.selenium.get(
+                '%s' % self.live_server_url +
+                reverse('person-list'))
+        self.assertIn(child1.get_primary_name(), self.selenium.page_source)
+        self.assertIn(child2.get_primary_name(), self.selenium.page_source)
+        self.assertIn(father.get_primary_name(), self.selenium.page_source)
+        self.assertIn(
+                grandfather_f.get_primary_name(), self.selenium.page_source)
+        self.assertIn(
+                grandmother_m.get_primary_name(), self.selenium.page_source)
+        self.assertIn(
+                grandmother_f.get_primary_name(), self.selenium.page_source)
+
+        self.selenium.get(
+                '%s' % self.live_server_url +
+                reverse('family-list'))
+        # expect to see 3 families
+        self.assertIn('3 Einträge', self.selenium.page_source)
+
+        self.selenium.get('%s/' % self.live_server_url)
+        self.assertIn(child2.get_primary_name(), self.selenium.page_source)
+        self.assertIn('Die neuesten Kommentare', self.selenium.page_source)
+
 
