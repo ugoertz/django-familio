@@ -200,8 +200,8 @@ latex_domain_indices = False
 
 
 latex_additional_files = [
-        '../../../../familio/maps/static/png/%s.png' % x
-        for x in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
+        os.path.join(settings.PROJECT_ROOT, 'maps/static/png/%s.png' % x)
+        for x in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
 
 # -- Options for Epub output ----------------------------------------------
 

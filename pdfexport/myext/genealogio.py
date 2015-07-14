@@ -7,12 +7,11 @@ from functools import partial
 from docutils import nodes
 from docutils.utils import new_document
 from docutils.frontend import OptionParser
-from docutils.parsers.rst import directives, roles, Parser, Directive
+from docutils.parsers.rst import directives, Parser, Directive
 from docutils.parsers.rst.directives.images import Image
 import os
 import os.path
 import tempfile
-import urllib
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -21,11 +20,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 
 # pylint: disable=import-error
-from maps.models import Place, CustomMap
-from genealogio.models import Person, Event, Family
+from maps.models import CustomMap
+from genealogio.models import Person
 from genealogio.views import Sparkline
 from genealogio.filter.rst_filter import genrst_roles
-from notaro.models import Document, Picture, Source
+from notaro.models import Picture
 
 
 class includepdf(nodes.image, nodes.Element):
@@ -49,6 +48,7 @@ def visit_includepdf(self, node):
 \end{figure}
 
 ''' % (placement, angle, height, os.path.basename(attrs['uri']), caption))
+
 
 def depart_includepdf(self, node):
     pass
@@ -89,8 +89,9 @@ def get_text(name, rawtext, text, lineno, inliner,
                             'big': '8cm', }[version]
                 except KeyError:
                     pass
-                nodelist = [nodes.image(uri='/../../../' + img.image.__unicode__(),
-                                        **img_options), ]
+                nodelist = [nodes.image(
+                    uri='/../../../' + img.image.__unicode__(),
+                    **img_options), ]
                 if img.caption:
                     settgs = OptionParser(components=(Parser,))\
                             .get_default_values()
@@ -142,18 +143,7 @@ def get_text(name, rawtext, text, lineno, inliner,
             except ObjectDoesNotExist:
                 nodelist = []
         else:
-            handle = text.split(' ')[-1]
-            # try:
-            #     p = model.objects.get(handle=handle)
-            #     for f in extra:
-            #         t += f(p)
-            #     nodelist = [nodes.reference(
-            #                     rawtext, t,
-            #                     refuri=p.get_absolute_url(), **options), ]
-            # except ObjectDoesNotExist:
-            #     # for now, assume that this is because that object exists only
-            #     # on another site; so fail silently
-            #     # FIXME: check that handle exists on some site
+            # for now, ignore links to database objects here
             nodelist = [nodes.inline(rawtext, t, **options), ]
     except ImportError:
         msg = inliner.reporter.error(
@@ -196,8 +186,11 @@ class FamilyTreePDF(Directive):
             return []
         handle = self.arguments[0]
 
-        if not 'caption' in self.options:
-            p = Person.objects.get(handle=handle)
+        if 'caption' not in self.options:
+            try:
+                p = Person.objects.get(handle=handle)
+            except ObjectDoesNotExist:
+                return []
             if self.arguments[1] == 'pedigree':
                 self.options['caption'] =\
                         'Ahnentafel für %s' % p.get_primary_name()
@@ -209,7 +202,7 @@ class FamilyTreePDF(Directive):
                 dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
                 suffix='.pdf',
                 prefix='phantom')
-        _, fn2= tempfile.mkstemp(
+        _, fn2 = tempfile.mkstemp(
                 dir=os.path.join(settings.MEDIA_ROOT, 'latex'),
                 suffix='.pdf',
                 prefix='phantom')
@@ -219,8 +212,8 @@ class FamilyTreePDF(Directive):
                     'handle': handle,
                     'generations':
                     self.options.get('generations', generations_default), }))
-        os.system("phantomjs %s '%s' %s"\
-                % (settings.PHANTOMJS_SCRIPT, url, fn))
+        os.system("phantomjs %s '%s' %s"
+                  % (settings.PHANTOMJS_SCRIPT, url, fn))
         os.system("pdfcrop %s %s" % (fn, fn2))
 
         return [
