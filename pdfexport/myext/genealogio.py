@@ -213,7 +213,11 @@ class FamilyTreePDF(Directive):
                     'generations':
                     self.options.get('generations', generations_default), }))
         os.system("phantomjs %s '%s' %s"
-                  % (settings.PHANTOMJS_SCRIPT, url, fn))
+                  % (os.path.join(
+                      settings.PROJECT_ROOT,
+                      'pdfexport/misc/rasterize.js'),
+                     url,
+                     fn))
         os.system("pdfcrop %s %s" % (fn, fn2))
 
         return [
