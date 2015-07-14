@@ -1,5 +1,5 @@
 """
-This is your project's main settings file that can be committed to your
+This is the project's main settings file that can be committed to your
 repo. If you need to override a setting locally, use local.py
 """
 
@@ -8,7 +8,6 @@ import logging
 
 # Normally you should not import ANYTHING from Django directly
 # into your settings, but ImproperlyConfigured is an exception.
-from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
@@ -55,13 +54,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.humanize',
-    # 'django.contrib.syndication',
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.sites',
 
     # Third-party apps, patches, fixes
-    # 'djcelery',
     'reversion',
     'debug_toolbar',
     'compressor',
@@ -70,7 +67,6 @@ INSTALLED_APPS = (
     'taggit',
     'dajaxice',
     'crispy_forms',
-    # 'markdown',
     'django_markup',
     'typogrify',
     'watson',
@@ -115,15 +111,8 @@ SESSION_COOKIE_HTTPONLY = True
 # Set this to true if you are using https
 SESSION_COOKIE_SECURE = False
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.example.com/static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
-
-# URL prefix for static files.
-# Example: "http://media.example.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = '/static/'  # override in local settings files if required
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -189,9 +178,6 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ]
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or
-    # "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(PROJECT_ROOT, 'templates'),
 )
@@ -206,6 +192,7 @@ TEMPLATE_LOADERS = (
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 DEBUG_TOOLBAR_PATCH_SETTINGS = True
+
 
 def custom_show_toolbar(request):
     """ Only show the debug toolbar to users with the superuser flag. """
@@ -232,8 +219,6 @@ DEBUG_TOOLBAR_CONFIG = {
 #     'debug_toolbar.panels.logger.LoggingPanel',
 # )
 
-# Specify a custom user model to use
-# AUTH_USER_MODEL = 'accounts.MyUser'
 
 AUTHENTICATION_BACKENDS = {
     'base.auth_backend.SiteBackend',
@@ -261,36 +246,10 @@ DEBUG = TEMPLATE_DEBUG = False
 # instances and False on stage/prod.
 DEV = False
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-# ALLOWED_HOSTS = []
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# Hardcoded values can leak through source control.
-# This is an example method of getting the value from an environment setting.
-# Uncomment to use, and then make sure you set the SECRET_KEY environment
-# variable.  This is good to use in production, and on services that support it
-# such as Heroku.
-# SECRET_KEY = get_env_setting('SECRET_KEY')
-
-# Uncomment these to activate and customize Celery:
-# CELERY_ALWAYS_EAGER = False  # required to activate celeryd
-# BROKER_HOST = 'localhost'
-# BROKER_PORT = 5672
-# BROKER_USER = 'django'
-# BROKER_PASSWORD = 'django'
-# BROKER_VHOST = 'django'
-# CELERY_RESULT_BACKEND = 'amqp'
-
-# INTERNAL_IPS = ('127.0.0.1')
 
 # Enable this option for memcached
 # CACHE_BACKEND= "memcached://127.0.0.1:11211/"
 
-# Set this to true if you use a proxy that sets X-Forwarded-Host
-# USE_X_FORWARDED_HOST = False
-
-# Log settings
 
 LOG_LEVEL = logging.INFO
 HAS_SYSLOG = True
@@ -337,12 +296,6 @@ LOGGING = {
 }
 
 
-# Common Event Format logging parameters
-# CEF_PRODUCT = 'familio'
-# CEF_VENDOR = 'Your Company'
-# CEF_VERSION = '0'
-# CEF_DEVICE_VERSION = '0'
-
 DAJAXICE_XMLHTTPREQUEST_JS_IMPORT = False
 
 
@@ -370,7 +323,7 @@ GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
 GRAPPELLI_INDEX_DASHBOARD = 'familio.dashboard.CustomIndexDashboard'
 GRAPPELLI_SWITCH_USER = True
 
-FILEBROWSER_MAX_UPLOAD_SIZE = 100000000 # 100MB
+FILEBROWSER_MAX_UPLOAD_SIZE = 100000000  # 100MB
 FILEBROWSER_OVERWRITE_EXISTING = False
 FILEBROWSER_VERSIONS_BASEDIR = '%d_versions/' % SITE_ID
 FILEBROWSER_DIRECTORY = '%d_uploads/' % SITE_ID
@@ -404,7 +357,6 @@ MARKUP_SETTINGS = {
         }
     }
 }
-
 
 
 LEAFLET_CONFIG = {
@@ -444,5 +396,3 @@ TRANSFER_MAPPINGS = {
     MEDIA_ROOT: '/transfer',
 }
 
-
-PHANTOMJS_SCRIPT = '/var/django/misc/rasterize.js'
