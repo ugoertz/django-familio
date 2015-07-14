@@ -389,7 +389,7 @@ MESSAGE_TAGS = {
 }
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/django/media'
+MEDIA_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '..', 'media'))
 
 TRANSFER_SERVER = 'nginx'
 TRANSFER_MAPPINGS = {

@@ -5,35 +5,20 @@ These settings overrides what's in settings/base.py
 """
 
 from __future__ import absolute_import
-import json
 import os
 
 from .base import *
 
-# PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__) + "../../../")
-from .base import *
-
-secrets = json.load(file(os.path.join(PROJECT_ROOT, '../secrets_test.json')))
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'djfdbtest',
         'USER': 'djftest',
-        'PASSWORD': secrets['DB_PASSWORD'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
         'HOST': '',
         'PORT': '',
-        # 'OPTIONS': {
-        #     'init_command': 'SET storage_engine=InnoDB',
-        #     'charset' : 'utf8',
-        #     'use_unicode' : True,
-        # },
-        # 'TEST_CHARSET': 'utf8',
-        # 'TEST_COLLATION': 'utf8_general_ci',
     },
-    # 'slave': {
-    #     ...
-    # },
 }
 
 INSTALLED_APPS += ('django_nose', )
@@ -70,15 +55,7 @@ ALLOWED_HOSTS = ['localhost', ]
 # LOGGING_CONFIG = None
 
 ADMIN_USERNAME = 'admin'
-SITE_ID = 1
-
-SECRET_KEY = secrets['SECRET_KEY_%d' % SITE_ID]
-
-FILEBROWSER_VERSIONS_BASEDIR = '%d_versions/' % SITE_ID
-FILEBROWSER_DIRECTORY = '%d_uploads/' % SITE_ID
-STATIC_URL = '/static/'
 
 DOCUMENTATION_URL =\
         os.path.join(PROJECT_ROOT, '/docs/_build/html/')
-ALLOWABLE_VALUES = ('DOCUMENTATION_URL', )
 
