@@ -9,6 +9,7 @@ from braces.views import LoginRequiredMixin
 
 from .models import Place, CustomMap
 
+
 class PlaceDetail(LoginRequiredMixin, DetailView):
     """Display details for a person."""
 

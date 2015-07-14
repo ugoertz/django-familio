@@ -141,7 +141,10 @@ class CustomMapMarker(models.Model):
     label_offset_y = models.FloatField(
             default=0,
             verbose_name="Positionskorrektur Label Y")
-    style = models.CharField(max_length=400, blank=True, null=True,
+    style = models.CharField(
+            max_length=400,
+            blank=True,
+            null=True,
             verbose_name="Stil")
     position = models.IntegerField(default=1)
 
@@ -172,8 +175,8 @@ class CustomMapMarker(models.Model):
 class CustomMap(models.Model):
 
     # possible values of render_status
-    NOTRENDERED = "NOTRENDERED" # no rendering task has been started yet
-    RENDERED = "RENDERED"       # rendered map stored in rendered field
+    NOTRENDERED = "NOTRENDERED"  # no rendering task has been started yet
+    RENDERED = "RENDERED"        # rendered map stored in rendered field
     # if rendering task currently running, then store celery task id
     # in this field
 
@@ -241,12 +244,12 @@ class CustomMap(models.Model):
         if self.render_status == CustomMap.NOTRENDERED:
             return 'Aktuelle Karte ist noch nicht gerendert.'
         return 'Aktuelle Karte wird gerade gerendert (id %s).'\
-                % self.render_status
+               % self.render_status
 
     def geojson(self):
         gj = {
                 "type": "FeatureCollection",
-                "features" :
+                "features":
                 [
                     {
                         "type": "Feature",
@@ -260,8 +263,8 @@ class CustomMap(models.Model):
                             "label": m.label,
                             "scale": 1.0,
 
-                            # the following settings have no effect so far; need
-                            # to wait for Mapnik 3.0
+                            # the following settings have no effect so far;
+                            # need to wait for Mapnik 3.0
                             "font": "Open Sans Bold",
                             "font-size": 12.0,
                             "image": "circle_black.svg"

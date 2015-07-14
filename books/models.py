@@ -29,16 +29,18 @@ from notaro.models import Note, Source
 
 # In FLAGS, store options for pdf export, such as whether to include the time
 # line in a family item. Book, Collection and Item all have a flag field; if
-# a flag is not defined for some item, its value is looked up recursively on its
-# parents. Each Book item needs to set default values for all available flags.
+# a flag is not defined for some item, its value is looked up recursively on
+# its parents. Each Book item needs to set default values for all available
+# flags.
 #
 # The flags field is a CharField where the values of the flags is stored as
 # a JSON record. Its format is:
 #
 # Dictionary with
 #   KEYS: model name (genealogio.family, notaro.note, etc.)
-#   VALUES: Dictionaries with key: name of flag (as defined in global variable FLAG below)
-#                           value: setting of the flag
+#   VALUES: Dictionaries with
+#       key: name of flag (as defined in global variable FLAG below)
+#       value: setting of the flag
 #
 # In the global variable defined here, we also define the position of the flag
 # inside the FlagWidget (a MultiWidget consisting of Checkboxes), and the label
@@ -65,12 +67,12 @@ FLAGS = {
         'include_places': {
             'position': 3,
             'label': 'Person:<br>Orte auflisten',
-            'default':True,
+            'default': True,
             }
     },
 }
 
-FLAGS_FLAT = [(FLAGS[m][o]['position'], m, o)  for m in FLAGS for o in FLAGS[m]]
+FLAGS_FLAT = [(FLAGS[m][o]['position'], m, o) for m in FLAGS for o in FLAGS[m]]
 FLAGS_FLAT.sort()  # sort by position
 
 
@@ -180,10 +182,9 @@ class Collection(models.Model):
             for counter, m in enumerate(
                     [Note, Person, Family, Event, Source, TimelineItem, ]):
 
-
                 # do not create "empty" chapters
                 m_id = ContentType.objects.get_for_model(m).id
-                if id_dict and ((not m_id in id_dict) or not id_dict[m_id]):
+                if id_dict and ((m_id not in id_dict) or not id_dict[m_id]):
                     continue
 
                 c = Collection(
@@ -296,7 +297,7 @@ class Book(models.Model):
 
     # root collection:
     root = models.ForeignKey(Collection, blank=True, null=True,
-            related_name='book_root')
+                             related_name='book_root')
 
     sphinx_conf = models.TextField(blank=True)
     mogrify_options = models.CharField(max_length=300, blank=True)
@@ -338,8 +339,8 @@ class Book(models.Model):
 
         # set default values for flags
         if not self.flags:
-            fl = { m: {k: v['default'] for k, v in vdict.items() }
-                    for m, vdict in FLAGS.items() }
+            fl = {m: {k: v['default'] for k, v in vdict.items()}
+                  for m, vdict in FLAGS.items()}
             self.flags = json.dumps(fl)
 
         # create root collection
@@ -401,7 +402,7 @@ class Book(models.Model):
                 id_dict[ContentType.objects.get_for_model(Person).id] |=\
                         p.ancestors()
             id_dict[ContentType.objects.get_for_model(Person).id] |=\
-                    refs[0].descendants()
+                refs[0].descendants()
 
         # add families, notes, sources for these persons:
 
@@ -482,8 +483,8 @@ class Book(models.Model):
 
     def create_rst(self):
         """
-        Write the ReStructuredText for the root collection to chapter?.rst files
-        in self.directory. Also create a corresponding index.rst file.
+        Write the ReStructuredText for the root collection to chapter?.rst
+        files in self.directory. Also create a corresponding index.rst file.
         """
 
         index = open(os.path.join(self.get_directory_tmp(), 'index.rst'), 'w')
@@ -504,13 +505,18 @@ class Book(models.Model):
         index.close()
 
         # create conf.py based on self.root.title
-        with open(os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'conf.py')) as source:
-            with open(os.path.join(self.get_directory_tmp(), 'conf.py'), 'w') as dest:
+        with open(os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'conf.py'))\
+                as source:
+            with open(os.path.join(self.get_directory_tmp(), 'conf.py'), 'w')\
+                    as dest:
                 for l in source:
                     if l.find('# TITLE') != -1:
-                        dest.write(b"u'%s',\n" % (self.root.title.encode('utf8') or 'Unsere Familiengeschichte'))
+                        dest.write(b"u'%s',\n" % (
+                            self.root.title.encode('utf8')
+                            or 'Unsere Familiengeschichte'))
                     elif l.find('# RELEASENAME') != -1:
-                        dest.write(b"u'%s',\n" % Site.objects.get_current().domain)
+                        dest.write(b"u'%s',\n"
+                                   % Site.objects.get_current().domain)
                     else:
                         dest.write(l)
 
@@ -530,13 +536,15 @@ class Book(models.Model):
         try:
             # try to run sphinx in virtualenv
             os.system('. %s/bin/activate && cd %s && make latex' %
-                    (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
+                      (settings.SPHINX_VIRTUALENV, self.get_directory_tmp()))
         except AttributeError:
             os.system('cd %s && make latex' %
-                    (self.get_directory_tmp(), ))
+                      (self.get_directory_tmp(), ))
         shutil.copy(
-                os.path.join(settings.PROJECT_ROOT, 'pdfexport', 'Makefile-pdf'),
-                os.path.join(self.get_directory_tmp(), '_build/latex/Makefile'))
+                os.path.join(
+                    settings.PROJECT_ROOT, 'pdfexport', 'Makefile-pdf'),
+                os.path.join(
+                    self.get_directory_tmp(), '_build/latex/Makefile'))
 
         shutil.make_archive(
                 os.path.join(self.get_directory_dest(), 'chronik'), 'zip',
@@ -553,8 +561,10 @@ class Book(models.Model):
                     os.path.join(self.get_directory_dest(), 'titlepage.pdf'),
                     os.path.join(self.get_directory_tmp(), '_build/latex'))
             os.system(
-                'cd %s && pdftk A=titlepage.pdf B=chronicle.pdf cat A B2-end output c.pdf'
-                % os.path.join(self.get_directory_tmp(), '_build/latex'))
+                'cd %s '
+                % os.path.join(self.get_directory_tmp(), '_build/latex') +
+                '&& pdftk A=titlepage.pdf B=chronicle.pdf '
+                'cat A B2-end output c.pdf')
             fn = 'c'
         else:
             fn = 'chronicle'
@@ -600,9 +610,11 @@ class Book(models.Model):
 class Item(models.Model):
     parent = models.ForeignKey(Collection)
 
-    obj_content_type = models.ForeignKey(ContentType, blank=True, null=True,
+    obj_content_type = models.ForeignKey(
+            ContentType, blank=True, null=True,
             verbose_name='Typ des zugeordneten Objekts')
-    obj_id = models.IntegerField(blank=True, null=True,
+    obj_id = models.IntegerField(
+            blank=True, null=True,
             verbose_name='Zugeordnetes Objekt')
     obj = GenericForeignKey('obj_content_type', 'obj_id')
 
@@ -635,7 +647,6 @@ class Item(models.Model):
         text.
         """
 
-
         if self.text and not force_from_template:
             result = self.text
         elif not self.obj:
@@ -653,23 +664,27 @@ class Item(models.Model):
                     'latexmode': True,
                     'current_site': Site.objects.get_current(),
                     'itemtitle':
-                        self.title if self.use_custom_title_in_pdf else '', }
+                    self.title if self.use_custom_title_in_pdf else '', }
 
-            if self.obj_content_type == ContentType.objects.get_for_model(Family):
+            if (self.obj_content_type
+                    == ContentType.objects.get_for_model(Family)):
                 if self.get_flag('genealogio.family', 'include_timeline'):
                     context.update(FamilyDetail.get_context_data_for_object(
                         self.obj, latex=True))
-                if not self.get_flag('genealogio.family', 'include_grandchildren'):
+                if not self.get_flag(
+                        'genealogio.family', 'include_grandchildren'):
                     context.update({'hide_grandchildren': True, })
 
-            if self.obj_content_type == ContentType.objects.get_for_model(Person):
+            if (self.obj_content_type
+                    == ContentType.objects.get_for_model(Person)):
                 if not self.get_flag('genealogio.person', 'include_places'):
                     context.update({'hide_places': True, })
 
                 # --- include_map
                 # (this is more complicated?!, since we need to start
-                # a celery task to get this done...; could return value to the caller of
-                # all things that need to be done before proceeeding ...)
+                # a celery task to get this done...; could return value to the
+                # caller of all things that need to be done before proceeeding
+                # ...)
 
             result = render_to_string(
                     "%s/%s_detail.rst" % (

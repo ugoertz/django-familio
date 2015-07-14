@@ -8,10 +8,10 @@ from geopy.distance import distance as geopy_distance
 from django import template
 from django.contrib.gis.measure import D
 
-from maps.models import Place
 from genealogio.models import Person, PersonPlace
 
 register = template.Library()
+
 
 @register.inclusion_tag('genealogio/borndiedhere.rst')
 def related_people(place):
@@ -37,12 +37,12 @@ def related_people(place):
         person_count = 0
         l = [(geopy_distance((ppl.place.location.y, ppl.place.location.x),
                              (place.location.y, place.location.x)),
-             ppl.place.id,                                # for sorting
-             ppl.person.last_name, ppl.person.first_name, # for sorting
+             ppl.place.id,                                 # for sorting
+             ppl.person.last_name, ppl.person.first_name,  # for sorting
              ppl.place, ppl.person) for ppl in pl_close_by]
         l.sort()
         for distance, _, _, _, pl, person in l:
-            if not pl.id in results:
+            if pl.id not in results:
                 results[pl.id] = {
                         'place': pl, 'distance': distance, 'persons': [], }
             results[pl.id]['persons'].append(person)

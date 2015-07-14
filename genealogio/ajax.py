@@ -44,7 +44,7 @@ def popover_data(request, link):
                 return "Unbekannt"
             return render_to_string(
                     'genealogio/%s' % template,
-                    {'person': p, 'request': request })
+                    {'person': p, 'request': request, })
 
 
 @dajaxice_register(method="GET")
@@ -61,15 +61,15 @@ def autocomplete(request, q, role):
             template = ':%s:`' + q + ' %s`'
             return json.dumps([{'text': template % (role, x.id),
                                 'displayText': str(x), }
-                                for x in results])
+                               for x in results])
         else:
             # For all other models, work with handle
             template = ':%s:`' + (q + ' %s`' if handleStart == -1
                                   else q[:handleStart] + '%s`')
             return json.dumps([{'text': template % (role, x.handle),
                                 'displayText': str(x), }
-                                for x in results
-                                if x.handle.startswith(handlePart)])
+                               for x in results
+                               if x.handle.startswith(handlePart)])
 
     return json.dumps([])
 

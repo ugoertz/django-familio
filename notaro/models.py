@@ -111,7 +111,10 @@ class Source(models.Model):
 class PictureSource(models.Model):
     picture = models.ForeignKey('Picture', verbose_name="Bild")
     source = models.ForeignKey(Source, verbose_name="Quelle")
-    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
 
 
 class Picture(models.Model):
@@ -208,8 +211,12 @@ class Document(models.Model):
         """
 
         # pylint: disable=no-member
-        return '<li class="list-group-item" style="font-size: 140%%;">%s<br><span style="font-family: courier, monospace; font-size: 70%%">%s, Objekt-ID: %d</span></li>' % (
-                self.name, os.path.basename(self.doc.filename), self.id)
+        return ''.join([
+            '<li class="list-group-item" style="font-size: 140%%;">',
+            '%s<br>' % self.name,
+            '<span style="font-family: courier, monospace; font-size: 70%">',
+            '%s, Objekt-ID: %d</span></li>' % (
+                os.path.basename(self.doc.filename), self.id), ])
 
     def __unicode__(self):
         # pylint: disable=no-member
@@ -236,7 +243,10 @@ class PictureNote(models.Model):
 class NoteSource(models.Model):
     note = models.ForeignKey('Note', verbose_name="Text")
     source = models.ForeignKey(Source, verbose_name="Quelle")
-    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
 
 
 class Note(models.Model):

@@ -9,9 +9,7 @@ from django.views.generic import (
         DetailView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.db.models import Count
 
 from braces.views import LoginRequiredMixin
@@ -112,9 +110,11 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
         context = super(PictureList, self).get_context_data(**kwargs)
         context.update({
             'size': self.kwargs.get('size', 'small'),
-            'tag_list': CustomTag.objects.all()\
-                    .annotate(num_times=Count('tags_customtagthrough_items'))\
-                    .order_by('-num_times', 'name')[:50],
+            'tag_list':
+            CustomTag.objects
+                     .all()
+                     .annotate(num_times=Count('tags_customtagthrough_items'))
+                     .order_by('-num_times', 'name')[:50],
             })
 
         return context
@@ -138,8 +138,7 @@ class UnboundImagesView(LoginRequiredMixin, View):
         file_listing = FileListing(
                 path, sorting_by='date', sorting_order='desc')
         files = [x for x in file_listing.files_walk_total()
-                 if x.filetype=='Image' and not x.url in pic_urls
-                ]
+                 if x.filetype == 'Image' and x.url not in pic_urls]
 
         return render(
                 request,
@@ -151,7 +150,7 @@ class UnboundImagesView(LoginRequiredMixin, View):
             messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
-        if not 'filename' in request.POST:
+        if 'filename' not in request.POST:
             messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 

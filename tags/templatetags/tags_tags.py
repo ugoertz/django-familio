@@ -6,13 +6,10 @@ from __future__ import absolute_import
 from django import template
 from django.db.models.loading import get_model
 
-from maps.models import Place
-from genealogio.models import Event, Family, Person
-from notaro.models import Document, Picture
-
 from ..models import CustomTag
 
 register = template.Library()
+
 
 @register.assignment_tag
 def get_obj_list(app, model, obj):

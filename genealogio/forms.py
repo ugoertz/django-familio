@@ -8,9 +8,8 @@ from __future__ import unicode_literals
 from django import forms
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit, Fieldset, MultiField
+from crispy_forms.layout import Layout, Div, Submit, Fieldset
 
-from partialdate.fields import PartialDateField
 from .models import Family, Person
 
 
@@ -32,10 +31,10 @@ def clean_date(d):
 def clean_name(n):
     if '(' in n or ')' in n:
         raise forms.ValidationError(
-                'Der Name darf keine Klammern enthalten. Spitznamen u.ä. müssen '
-                'separat im Verwaltungsbereich eingegeben werden. Falls der Name '
-                'selbst wirklich Klammern enthält, muss er im Verwaltungsbereich '
-                'eingegeben werden.')
+                'Der Name darf keine Klammern enthalten. Spitznamen u.ä. '
+                'müssen separat im Verwaltungsbereich eingegeben werden. '
+                'Falls der Name selbst wirklich Klammern enthält, muss er '
+                'im Verwaltungsbereich eingegeben werden.')
     return n
 
 
@@ -221,7 +220,12 @@ class AddPersonForm(forms.ModelForm):
 
     class Meta:
         model = Person
-        fields = ['first_name', 'last_name', 'datebirth', 'datedeath', 'gender_type', ]
+        fields = [
+                'first_name',
+                'last_name',
+                'datebirth',
+                'datedeath',
+                'gender_type', ]
 
 
 class AddSpouseForm(AddPersonForm):

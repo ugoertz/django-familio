@@ -18,14 +18,16 @@ import reversion
 
 from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Place, Url, PlaceNote, PlaceUrl, cleanname, CustomMap,
-        CustomMapMarker, )
+                     CustomMapMarker, )
 
 
 class OSitesMixin(object):
     """
-    Mixin used in the inline admin classes which refer to "site-dependent" models.
+    Mixin used in the inline admin classes which refer to "site-dependent"
+    models.
 
-    Provides a read only field showing on which sites the related objects exist.
+    Provides a read only field showing on which sites the related objects
+    exist.
     """
 
     def get_readonly_fields(self, request, obj=None):
@@ -158,11 +160,12 @@ class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
     def formfield_for_dbfield(self, db_field, **kwargs):
         if db_field.name == 'label':
             kwargs['widget'] = TextInput(attrs={'size': 2, })
-        return super(CustomMapMarkerInline,self)\
-                .formfield_for_dbfield(db_field, **kwargs)
+        return super(CustomMapMarkerInline, self)\
+            .formfield_for_dbfield(db_field, **kwargs)
 
 
-class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin):
+class CustomMapAdmin(
+        CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin):
     """Admin class for CustomMap model."""
 
     fieldsets = (
@@ -171,7 +174,7 @@ class CustomMapAdmin(CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin
             ('Marker', {'classes': ('placeholder custommapmarker_set-group', ),
                         'fields': ()}),
             ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
-                               'fields': ('sites', ), }), )
+                                'fields': ('sites', ), }), )
     inlines = [CustomMapMarkerInline, ]
     raw_id_fields = ('sites', )
     autocomplete_lookup_fields = {'m2m': ['sites', ], }

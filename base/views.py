@@ -1,3 +1,8 @@
+# -*- coding: utf8 -*-
+
+from __future__ import unicode_literals
+from __future__ import division
+
 """ Views for the base application """
 
 import datetime
@@ -51,16 +56,16 @@ def home(request):
     if request.user.is_authenticated():
         # pylint: disable=no-member
         dates = [datetime.date.today() + (i-4) * datetime.timedelta(days=1)
-                for i in range(20)]
+                 for i in range(20)]
         birthdeathdays = [
                 (d,
-                Person.objects
-                .filter(datebirth__endswith=d.strftime('-%m-%d')),
-                Person.objects
-                .filter(datedeath__endswith=d.strftime('-%m-%d')), )
+                 Person.objects
+                 .filter(datebirth__endswith=d.strftime('-%m-%d')),
+                 Person.objects
+                 .filter(datedeath__endswith=d.strftime('-%m-%d')), )
                 for d in dates]
         birthdeathdays = [(d, born, died)
-                        for d, born, died in birthdeathdays if born or died]
+                          for d, born, died in birthdeathdays if born or died]
         context = {
                 'personen': Person.objects.all().order_by('-date_added')[:5],
                 'comments': Comment.objects.all().order_by('-date')[:5],
@@ -104,7 +109,7 @@ def download(request, fname):
         return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
 
     if (fn.startswith('%d_uploads/' % settings.SITE_ID) or
-        fn.startswith('%d_pdfs/' % settings.SITE_ID)):
+            fn.startswith('%d_pdfs/' % settings.SITE_ID)):
         # the upload/pdfs directory for the current site;
         # available without restrictions
         return TransferHttpResponse(os.path.join(settings.MEDIA_ROOT, fname))
@@ -181,8 +186,8 @@ class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
 
 class ToggleStaffView(LoginRequiredMixin, View):
     """
-    Toggle whether in templates the additional information, links, ... for staff
-    members should be displayed. (If not, the page looks the same as for
+    Toggle whether in templates the additional information, links, ... for
+    staff members should be displayed. (If not, the page looks the same as for
     non-staff users.)
 
     The default is to display the staff information. This can be changed by the

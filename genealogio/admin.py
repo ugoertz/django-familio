@@ -545,10 +545,10 @@ class TimelineItemAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         ('', {'fields': ('title', ('typ', 'start_date', 'end_date'),
                          'url', 'description', ), }),
         ('Familienbäume, Familien', {'classes': ('grp-collapse grp-closed', ),
-                                     'fields': ('sites', 'families' ), }),
+                                      'fields': ('sites', 'families', ), }),
         )
     raw_id_fields = ('families', 'sites', )
-    autocomplete_lookup_fields = {'m2m': ['sites', 'families' ], }
+    autocomplete_lookup_fields = {'m2m': ['sites', 'families', ], }
     list_display = ('__unicode__', 'show_families', )
     search_fields = ('title', 'start_date', 'end_date', )
 

@@ -34,12 +34,13 @@ class SaveTags(LoginRequiredMixin, View):
             if t.startswith('new-'):
                 t = 'tag-' + t[4:]
                 try:
-                    # Make sure that tag does not contain non-allowed characters
+                    # Make sure that tag does not contain non-allowed
+                    # characters
                     reverse('tag-search', kwargs={'tag': t}),
                 except:
                     messages.error(
                             request,
-                            'Das Schlagwort "%s" kann ' % t[4:] +\
+                            'Das Schlagwort "%s" kann ' % t[4:] +
                             'nicht gespeichert werden. '
                             'Erlaubte Zeichen in Schlagwörtern: '
                             'Buchstaben, ",.;_+-:!" und Leerzeichen.')

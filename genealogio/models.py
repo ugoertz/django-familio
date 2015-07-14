@@ -11,7 +11,6 @@ from django.contrib.gis.db import models
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 from partialdate.fields import PartialDateField
 
@@ -122,7 +121,10 @@ class FamilyNote(models.Model):
 class FamilySource(models.Model):
     family = models.ForeignKey('Family', verbose_name="Familie")
     source = models.ForeignKey(Source, verbose_name="Quelle")
-    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -199,7 +201,6 @@ class Family(PrimaryObject):
                          unicode(datetime.now().microsecond)[:5])
 
         super(Family, self).save(*args, **kwargs)
-
 
     def get_children(self):
         return self.person_set(manager='objects').all().order_by('datebirth')
@@ -366,7 +367,10 @@ class PersonNote(models.Model):
 class PersonSource(models.Model):
     person = models.ForeignKey('Person', verbose_name="Person")
     source = models.ForeignKey(Source, verbose_name="Quelle")
-    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -495,8 +499,10 @@ class Person(PrimaryObject):
         """Return the full name information of the person:
         - title (prefix)
         - the first name,
-          if fmt is "rst" (the default): with the Rufname underlined (ReST-formatted)
-          if fmt is "html": with the Rufname underlined (HTML-formatted)
+          if fmt is "rst" (the default):
+              with the Rufname underlined (ReST-formatted)
+          if fmt is "html":
+              with the Rufname underlined (HTML-formatted)
         - the nickname (if available), in parentheses
         - the last name (birthname or marriedname + birthname)
         - title (suffix)
@@ -532,17 +538,20 @@ class Person(PrimaryObject):
         name = '%s %s' % (name, self.get_last_name())
 
         try:
-            name = self.name_set.filter(typ=Name.TITLE_PRE)[0].name + ' ' + name
+            name = '%s %s' % (
+                    self.name_set.filter(typ=Name.TITLE_PRE)[0].name, name)
         except IndexError:
             pass
 
         try:
-            name = name + ' ' + self.name_set.filter(typ=Name.TITLE_SUFF)[0].name
+            name = '%s %s' % (
+                    name, self.name_set.filter(typ=Name.TITLE_SUFF)[0].name)
         except IndexError:
             pass
 
         try:
-            name = name + ', genannt ' + self.name_set.filter(typ=Name.VULGO)[0].name
+            name = '%s, genannt %s' % (
+                    name, self.name_set.filter(typ=Name.VULGO)[0].name)
         except IndexError:
             pass
 
@@ -803,7 +812,10 @@ class EventNote(models.Model):
 class EventSource(models.Model):
     person = models.ForeignKey('Event', verbose_name="Ereignis")
     source = models.ForeignKey(Source, verbose_name="Quelle")
-    comment = models.CharField(max_length=500, blank=True, verbose_name="Kommentar")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -960,12 +972,13 @@ class TimelineItem(models.Model):
                               verbose_name="Art des Ereignisses")
 
     sites = models.ManyToManyField(Site)
-    families = models.ManyToManyField(Family, blank=True,
+    families = models.ManyToManyField(
+            Family,
+            blank=True,
             verbose_name="Familien",
             help_text="Sind hier Familien ausgewählt, so wird der Eintrag nur"
-                      "bei den ausgewählten Familien angezeigt, sonst bei allen"
-                      "Familien"
-            )
+                      "bei den ausgewählten Familien angezeigt, "
+                      "sonst bei allen Familien")
 
     all_objects = GenManager()
     objects = CurrentSiteManager()
@@ -996,7 +1009,7 @@ class TimelineItem(models.Model):
         return '%s (%s)' % (self.title, self.period)
 
     class Meta:
-        ordering = ('start_date', 'end_date', 'title' )
+        ordering = ('start_date', 'end_date', 'title', )
         verbose_name = 'Ereignis im Zeitstrahl'
         verbose_name_plural = 'Ereignisse im Zeitstrahl'
 

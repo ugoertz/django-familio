@@ -37,13 +37,12 @@ def get_tags(request, query):
         'id': '%s' % (tag, ),
         'label': tag[4:],
         'tag': tag[4:],
-        'bg_color': '#eeeeee' } for tag in result_tags ]
+        'bg_color': '#eeeeee', } for tag in result_tags]
     for x in result_db:
         tag, details = x.as_tag()
         all_tags.append({
-            'id': tag_translate(tag) +\
-                    ' %s.%s-%d' % (
-                        x._meta.app_label, x._meta.model_name, x.pk),
+            'id': tag_translate(tag) +
+            ' %s.%s-%d' % (x._meta.app_label, x._meta.model_name, x.pk),
             'label': details,
             'tag': tag_translate(tag),
             'bg_color': {

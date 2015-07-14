@@ -1,13 +1,11 @@
 import json
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
 
 from dajaxice.decorators import dajaxice_register
 import watson
 
-from notaro.models import Document, Source
-from genealogio.models import Person, Event, Family, TimelineItem
+from genealogio.models import Person, Family
 
 
 @dajaxice_register(method="GET")
@@ -22,6 +20,7 @@ def get_instances(request, query, model=None):
     qs = watson.filter(model.objects.all(), query).distinct()
     return json.dumps([{'id': p.id, 'label': p.__unicode__(), } for p in qs])
 
+
 @dajaxice_register(method="GET")
 def get_persons_families(request, query):
 
@@ -33,7 +32,7 @@ def get_persons_families(request, query):
             [{'id': x.handle,
               'label': '%s (%s-%s)' %
               (x.get_primary_name(), x.year_of_birth, x.year_of_death), }
-              for x in qs_p] +
+             for x in qs_p] +
             [{'id': x.handle, 'label': 'Familie ' + x.__unicode__(), }
                 for x in qs_f])
     return result

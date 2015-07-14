@@ -3,8 +3,6 @@
 from __future__ import unicode_literals
 from __future__ import division
 
-import os
-import os.path
 import datetime
 import math
 import cairocffi as cairo
@@ -19,14 +17,12 @@ from django.core.urlresolvers import reverse
 from django.views.generic import (
         CreateView, DetailView, FormView, View)
 from django.shortcuts import render
-from django.template.loader import render_to_string
 
 from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin, PaginateListView
 from maps.models import Place
-from notaro.models import Note, Source
 
 from .forms import AddParentForm, AddPersonForm, AddSpouseForm
 from .models import (
@@ -119,7 +115,8 @@ class PersonList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
             if self.kwargs['order_by'] == 'birthname':
                 qs = qs.order_by('last_name', 'first_name', 'datebirth')
             elif self.kwargs['order_by'] == 'lastname':
-                qs = qs.order_by('last_name_current', 'first_name', 'datebirth')
+                qs = qs.order_by(
+                        'last_name_current', 'first_name', 'datebirth')
             elif self.kwargs['order_by'] == 'firstname':
                 qs = qs.order_by('first_name', 'last_name', 'datebirth')
             elif self.kwargs['order_by'] == 'datebirth':
@@ -154,7 +151,7 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         timeline = timeline.order_by('start_date', 'end_date', 'title')
 
         # not so beautiful, but we cannot filter on properties:
-        timeline = [ x for x in timeline if fr <= x.end and x.start <= to]
+        timeline = [x for x in timeline if fr <= x.end and x.start <= to]
         return timeline
 
     @staticmethod
@@ -172,7 +169,8 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         legref += '\n\n'.join([
             '.. |Tmg%02d%s| %s:: %s'
             % (x.id, label, image_directive,
-               reverse('sparkline-tlitem', kwargs={'tlid': x.id, 'fr': fr, 'to': to, }))
+               reverse('sparkline-tlitem',
+                       kwargs={'tlid': x.id, 'fr': fr, 'to': to, }))
             for x in timeline])
 
         legref += '\n\n'
@@ -181,7 +179,6 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         legref += '\n\n'
 
         return legref
-
 
     @classmethod
     def get_context_data_for_object(cls, obj, latex=False):
@@ -233,8 +230,8 @@ class FamilyDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
         timeline = cls.get_timeline_items(obj.id, fr, to)
 
         l = ['| |T%02d%04d|%s    | |Tmg%02d%04d|                    |\n'
-                % (x.id, obj.id, '_' if x.url else ' ', x.id, obj.id)
-                for x in timeline]
+             % (x.id, obj.id, '_' if x.url else ' ', x.id, obj.id)
+             for x in timeline]
         l.append('\n')
 
         legend = '+---------------+--------------------------------+\n'.join(l)
@@ -282,7 +279,7 @@ def get_dict_pedigree(p, total, level=0):
         data['died'] = ''
     if level > 0:
         data['parents'] = [get_dict_pedigree(p.get_father(), total, level-1),
-                            get_dict_pedigree(p.get_mother(), total, level-1), ]
+                           get_dict_pedigree(p.get_mother(), total, level-1), ]
 
     return data
 
@@ -387,7 +384,7 @@ def get_dict_descendants(p, level=0):
     for family in fams[1:]:
         # Now handle other families
         # Here, replace name of p by '...'
-        data.append(p_dict('...', '1'))
+        data.append(p_dict_descendants('...', '1'))
         height += add_family(data, family)
 
     return height+2, data
@@ -443,7 +440,7 @@ class Sparkline(LoginRequiredMixin, View):
 
     """Sparkline view. """
 
-    width =  512
+    width = 512
     height = 32
 
     def get(self, request, fampk=None, pk=None, tlid=None, fr=None, to=None):
@@ -456,13 +453,14 @@ class Sparkline(LoginRequiredMixin, View):
     def get_image(cls, fampk=None, pk=None, tlid=None,
                   fr=None, to=None, width=None, height=None):
         """
-        If pk (== person's id) and fampk (== family's id) are both not None, then
-        return sparkling image for that person/family.
+        If pk (== person's id) and fampk (== family's id) are both not None,
+        then return sparkling image for that person/family.
 
         If pk is None but fampk is not None, then return the headline image for
         that family.
 
-        If tlid is not None, then return image for the corresponding timeline item.
+        If tlid is not None, then return image for the corresponding timeline
+        item.
         """
 
         width = width or cls.width
@@ -530,7 +528,8 @@ class Sparkline(LoginRequiredMixin, View):
 
         if fampk is not None:
             # head or person
-            for x in FamilyDetail.get_timeline_items(fampk, FROM_YEAR, TO_YEAR):
+            for x in FamilyDetail.get_timeline_items(
+                    fampk, FROM_YEAR, TO_YEAR):
                 draw_line(year_to_x(x.start-0.2),
                           year_to_x(x.end if x.end > x.start else x.start+0.2),
                           0.3,
@@ -631,16 +630,15 @@ class AddParents(LoginRequiredMixin, FormView):
             })
         return initial
 
-
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            messages.error(self.request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         print form.cleaned_data
         family_kwargs = {
-                'name': form.cleaned_data['family_name']\
-                        or form.cleaned_data['last_name_father'],
+                'name': form.cleaned_data['family_name']
+                or form.cleaned_data['last_name_father'],
                 'family_rel_type': form.cleaned_data['family_rel_type'],
                 'start_date': form.cleaned_data['start_date'],
                 }
@@ -659,7 +657,7 @@ class AddParents(LoginRequiredMixin, FormView):
             father_kwargs['handle'] = Person.get_handle(**father_kwargs)
             father_kwargs['gender_type'] = Person.MALE
             father_kwargs['probably_alive'] =\
-                    form.cleaned_data['date_death_father'] == ''
+                form.cleaned_data['date_death_father'] == ''
             father = Person.objects.create(**father_kwargs)
 
             site = Site.objects.get_current()
@@ -685,7 +683,7 @@ class AddParents(LoginRequiredMixin, FormView):
             mother_kwargs = {
                     'last_name': form.cleaned_data['last_name_mother'],
                     'last_name_current':
-                        form.cleaned_data['married_name_mother'],
+                    form.cleaned_data['married_name_mother'],
                     'first_name': form.cleaned_data['first_name_mother'],
                     'datebirth': form.cleaned_data['date_birth_mother'],
                     'datedeath': form.cleaned_data['date_death_mother'],
@@ -696,7 +694,7 @@ class AddParents(LoginRequiredMixin, FormView):
                     **mother_kwargs)
             mother_kwargs['gender_type'] = Person.FEMALE
             mother_kwargs['probably_alive'] =\
-                    form.cleaned_data['date_death_mother'] == ''
+                form.cleaned_data['date_death_mother'] == ''
             mother = Person.objects.create(**mother_kwargs)
 
             site = Site.objects.get_current()
@@ -752,7 +750,7 @@ class AddPersonView(CreateView):
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name'],
                 last_name_current=form.cleaned_data['marriedname']
-                    or form.cleaned_data['last_name'],
+                or form.cleaned_data['last_name'],
                 probably_alive=(form.cleaned_data['datedeath'] == ''),
                 gender_type=form.cleaned_data['gender_type'],
                 datebirth=form.cleaned_data['datebirth'],
@@ -797,7 +795,7 @@ class AddChildView(AddPersonView):
 
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            messages.error(self.request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         # save person
@@ -817,7 +815,8 @@ class AddChildView(AddPersonView):
 
         f = Family.objects.get(pk=self.kwargs['pk'])
         context.update({
-            'info_text': 'Füge ein Kind zur Familie <b>%s</b> hinzu.' % unicode(f)
+            'info_text':
+            'Füge ein Kind zur Familie <b>%s</b> hinzu.' % unicode(f)
             })
 
         return context
@@ -833,18 +832,19 @@ class AddChildView(AddPersonView):
 
         return initial
 
+
 class AddSpouseView(AddPersonView):
 
     form_class = AddSpouseForm
 
     def form_valid(self, form):
         if not self.request.user.userprofile.is_staff_for_site:
-            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            messages.error(self.request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
         p = Person.objects.get(pk=form.cleaned_data['attach_to'])
         form.cleaned_data['gender_type'] =\
-                Person.MALE if p.gender_type == Person.FEMALE else Person.MALE
+            Person.MALE if p.gender_type == Person.FEMALE else Person.MALE
 
         # save person
         spouse = self.save_person(form)
@@ -857,7 +857,7 @@ class AddSpouseView(AddPersonView):
             mother = p
         family = Family.objects.create(
                 father=father, mother=mother,
-                family_rel_type = form.cleaned_data['family_rel_type'],
+                family_rel_type=form.cleaned_data['family_rel_type'],
                 name=form.cleaned_data['family_name'],
                 start_date=form.cleaned_data['start_date'],
                 )
@@ -874,7 +874,8 @@ class AddSpouseView(AddPersonView):
 
         p = Person.objects.get(pk=self.kwargs['pk'])
         context.update({
-            'info_text': 'Füge den Ehepartner von <b>%s</b> hinzu.' % unicode(p)
+            'info_text':
+            'Füge den Ehepartner von <b>%s</b> hinzu.' % unicode(p)
             })
 
         return context

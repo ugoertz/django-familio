@@ -5,18 +5,12 @@ from __future__ import division
 
 import json
 
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.contrib.sites.models import Site
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from braces.views import LoginRequiredMixin
 from django.views.generic import (
         CreateView, DetailView, ListView, UpdateView, View, )
-from django.views.generic.detail import SingleObjectMixin
-
-from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Div, Submit
 
 from base.views import CurrentSiteMixin
 
@@ -134,7 +128,8 @@ class CollectionDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
                 collection_ids = [int(x[5:]) for x in ordering['collections']]
                 for collection in self.get_object().collection_set.all():
                     try:
-                        collection.position = collection_ids.index(collection.id)
+                        collection.position = collection_ids.index(
+                                collection.id)
                         collection.save()
                     except ValueError:
                         collection.delete()
@@ -157,9 +152,8 @@ class CollectionCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         collection = form.save(commit=False)
 
-        collection.position =\
-                Collection.objects.filter(
-                        parent=form.cleaned_data['parent']).count()
+        collection.position = Collection.objects.filter(
+                parent=form.cleaned_data['parent']).count()
         collection.parent = form.cleaned_data['parent']
         collection.save()
 

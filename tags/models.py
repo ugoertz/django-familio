@@ -25,15 +25,16 @@ class CustomTag(TagBase):
 
       The model must have an as_tag method which returns a a pair consisting of
       the displayed_tag string for the given instance and a second string
-      describing the tag which is used as the selectize option. Neither of these
-      strings should contain the "app.model-id" part. The second string could just
-      be the same as the first one, or it could contain additional information
-      that might be useful for making a choice of text (e.g., date of birth of
-      a person to distinguish between several persons with the same or similar
-      names).
+      describing the tag which is used as the selectize option. Neither of
+      these strings should contain the "app.model-id" part. The second string
+      could just be the same as the first one, or it could contain additional
+      information that might be useful for making a choice of text (e.g., date
+      of birth of a person to distinguish between several persons with the same
+      or similar names).
     """
 
-    SPAN_TEMPLATE = '<a href="%s" class="btn btn-default btn-xs cabin" style="margin: 3px; background-color: %s;">%s</a>'
+    SPAN_TEMPLATE = '<a href="%s" class="btn btn-default btn-xs cabin" ' +\
+                    'style="margin: 3px; background-color: %s;">%s</a>'
 
     def slugify(self, tag, i=None):
         if not tag:
@@ -86,7 +87,6 @@ class CustomTag(TagBase):
             return self.name[4:]
 
         return ' '.join(self.name.split(' ')[:-1])
-
 
 
 class CustomTagThrough(GenericTaggedItemBase):

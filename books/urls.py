@@ -8,7 +8,8 @@ from .views import (
         )
 
 
-urlpatterns = patterns('books.views',
+urlpatterns = patterns(
+        'books.views',
         url(r'^publicbooks/$', PublicBookList.as_view(),
             name='public-book-list'),
         url(r'^mybooks/$', UserBookList.as_view(),

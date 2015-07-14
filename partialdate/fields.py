@@ -3,7 +3,8 @@
 - PartialDateField: as DateField, but allow for "partial dates", i.e., year
   only, or year+month only
 
-see https://gitorious.org/wmbr-playback/wmbr-dj3000/source/f6ad6a8e947e60ecd097e196003e0400cd8d4829:partialdatefield
+see https://gitorious.org/wmbr-playback/wmbr-dj3000/source/
+f6ad6a8e947e60ecd097e196003e0400cd8d4829:partialdatefield
 """
 
 from __future__ import unicode_literals

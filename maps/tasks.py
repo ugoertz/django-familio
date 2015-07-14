@@ -4,10 +4,8 @@ from __future__ import absolute_import
 # NOTE: Do not import unicode_literals here, since this conflicts with the
 # mapnik C++ bindings.
 
-import json
 import os
 import os.path
-import math
 import re
 import tempfile
 import urllib
@@ -76,12 +74,14 @@ def xml_vars(style, v):
 
 
 # dummy class to collect options as properties
-class A(object):
+class Collector(object):
     pass
 
 
 @shared_task(name="maps.create_custom_map", queue="render")
-def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotate=False):
+def create_custom_map(
+        geojson, bbox, style=None, ppi=300,
+        size=(170, 0)):
 
     gf, geojsonfilename = tempfile.mkstemp(suffix='.geojson', dir='/tmp')
     with open(geojsonfilename, 'w') as f:
@@ -90,11 +90,15 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
     # much of the code below is adapted from Nik4
     # https://github.com/Zverik/Nik4 by Ilya Zverev
 
-    p3857 = mapnik.Projection('+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over')
-    p4326 = mapnik.Projection('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+    p3857 = mapnik.Projection(
+            '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 '
+            '+lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m '
+            '+nadgrids=@null +no_defs +over')
+    p4326 = mapnik.Projection(
+            '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
     transform = mapnik.ProjTransform(p4326, p3857)
 
-    options = A()
+    options = Collector()
     options.bbox = bbox
     options.style = ('%s/%s/%s' % (
             settings.STYLE_PREFIX,
@@ -102,16 +106,13 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
             'mapnik.xml')).encode('utf-8')
     options.ppi = ppi
     options.size = size
-    options.norotate = norotate
     options.vars = {
             'geojsonfilename': geojsonfilename,
             }
 
     dim_mm = None
-    scale = None
     size = None
     bbox = None
-    rotate = not options.norotate
 
     fmt = 'png256'
 
@@ -124,9 +125,6 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
 
     # convert physical size to pixels
     size = [int(round(dim_mm[0] * ppmm)), int(round(dim_mm[1] * ppmm))]
-
-    # scale = options.scale * 0.00028 / scale_factor
-    # scale = scale / math.cos(math.radians((options.bbox[3] + options.bbox[1]) / 2))
 
     if options.bbox:
         bbox = options.bbox
@@ -142,7 +140,7 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
         style_xml = xml_vars(style_xml, options.vars)
 
     # for layer processing we need to create the Map object
-    m = mapnik.Map(100, 100) # temporary size, will be changed before output
+    m = mapnik.Map(100, 100)  # temporary size, will be changed before output
     mapnik.load_map_from_string(m, style_xml, False, style_path)
     m.srs = p3857.params()
 
@@ -150,31 +148,19 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
     if not bbox:
         raise Exception('Bounding box was not specified in any way')
 
-    # rotate image to fit bbox better
-    # if rotate and size:
-    #     portrait = bbox.maxy - bbox.miny > bbox.maxx - bbox.minx
-    #     # take into consideration zero values, which mean they should be calculated from bbox
-    #     if (size[0] == 0 or size[0] > size[1]) and portrait:
-    #         size = [size[1], size[0]]
-
     if size[1] == 0:
-        size[1] = int(round(size[0] / (bbox.maxx - bbox.minx) * (bbox.maxy - bbox.miny)))
+        size[1] = int(round(size[0] / (bbox.maxx - bbox.minx)
+                            * (bbox.maxy - bbox.miny)))
     # print bbox.minx, bbox.maxx, bbox.miny, bbox.maxy
     # print size
 
     if max(size[0], size[1]) > 16384:
-        raise Exception('Image size exceeds mapnik limit ({} > {}), use tiles'.format(max(size[0], size[1]), 16384))
-
-    # if options.debug:
-    #     print 'scale={}'.format(scale)
-    #     print 'scale_factor={}'.format(scale_factor)
-    #     print 'size={},{}'.format(size[0], size[1])
-    #     print 'bbox={}'.format(bbox)
-    #     print 'bbox_wgs84={}'.format(transform.backward(bbox) if bbox else None)
-    #     print 'layers=' + ','.join([l.name for l in m.layers if l.active])
+        raise Exception(
+                'Image size exceeds mapnik limit ({} > {}), use tiles'
+                .format(max(size[0], size[1]), 16384))
 
     # export image
-    m.aspect_fix_mode = mapnik.aspect_fix_mode.GROW_BBOX;
+    m.aspect_fix_mode = mapnik.aspect_fix_mode.GROW_BBOX
     m.resize(size[0], size[1])
     m.zoom_to_box(bbox)
 
@@ -192,7 +178,7 @@ def create_custom_map(geojson, bbox, style=None, ppi=300, size=(170, 0), norotat
         x_offset = im.width() - watermark.width()
         y_offset = im.height() - watermark.height()
         opacity = 0.8
-        im.blend(x_offset,y_offset,watermark,opacity)
+        im.blend(x_offset, y_offset, watermark, opacity)
     except:
         pass
 

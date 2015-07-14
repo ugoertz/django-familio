@@ -22,11 +22,9 @@ from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.utils.encoding import smart_text
 from django.utils.http import urlquote
 
-from filebrowser.base import FileObject
-from filebrowser.settings import ADMIN_THUMBNAIL, NORMALIZE_FILENAME, CONVERT_FILENAME
+from filebrowser.settings import ADMIN_THUMBNAIL
 from filebrowser.utils import convert_filename
 from grappelli.forms import GrappelliSortableHiddenMixin
 import reversion
@@ -35,7 +33,7 @@ from base.fields import MultiFileField
 from base.models import SiteProfile
 from accounts.models import UserSite
 from .models import (Note, Picture, Source, PictureNote, NoteSource,
-        PictureSource, Document)
+                     PictureSource, Document)
 
 
 CODEMIRROR_CSS = (
@@ -229,7 +227,8 @@ class UploadFileForm(forms.Form):
                             widget=forms.TextInput(
                                 attrs={'style': 'width: 100%;', }))
     upfile = forms.FileField(label="Datei")
-    fmt = forms.ChoiceField(label="Format",
+    fmt = forms.ChoiceField(
+            label="Format",
             choices=(('docx', 'Microsoft Word docx'),
                      ('html', 'HTML'),))
 
@@ -272,9 +271,11 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                 path = tempfile.mkdtemp(
                         dir=os.path.join(settings.PROJECT_ROOT, 'tmp'))
                 f = request.FILES['upfile']
-                with open(os.path.join(path,
-                    'original.%s' % form.cleaned_data['fmt']), 'wb')\
-                            as destination:
+                with open(
+                        os.path.join(path,
+                                     'original.%s'
+                                     % form.cleaned_data['fmt']), 'wb')\
+                        as destination:
                     for chunk in f.chunks():
                         destination.write(chunk)
 
@@ -282,16 +283,18 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                 rstfile = os.path.join(path, 'result.rst')
                 os.system(
                     'cd %s && pandoc -f %s -t rst original.%s > result.rst' %
-                    (path, form.cleaned_data['fmt'], form.cleaned_data['fmt'], ))
+                    (path,
+                     form.cleaned_data['fmt'], form.cleaned_data['fmt'], ))
                 return HttpResponseRedirect(reverse(
                     'admin:%s_%s_add' %
-                    (self.model._meta.app_label, self.model._meta.model_name)) +
+                    (self.model._meta.app_label,
+                     self.model._meta.model_name)) +
                     '?title=%s&rstfile=%s' %
                     (urlquote(title), os.path.join(path, rstfile)))
         else:
             form = UploadFileForm()
         return render(request, 'customadmin/import.html',
-                {'form': form, 'title': 'Text importieren'})
+                      {'form': form, 'title': 'Text importieren'})
 
     def get_changeform_initial_data(self, request):
         initial = super(NoteAdmin, self).get_changeform_initial_data(request)
@@ -300,7 +303,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         if 'rstfile' in request.GET:
             with open(request.GET['rstfile']) as f:
                 rst = f.read()
-                initial.update({'text': rst, 'published': False })
+                initial.update({'text': rst, 'published': False, })
         initial.update({'title': request.GET.get('title', ''), })
 
         return initial
@@ -324,7 +327,8 @@ admin.site.register(Note, NoteAdmin)
 class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     """Admin class for Source model."""
 
-    fieldsets = (('', {'fields': ('name', 'description', 'confidence_level', ), }),
+    fieldsets = (('', {'fields':
+                       ('name', 'description', 'confidence_level', ), }),
                  ('Dokumente', {'fields': ('documents', )}),
                  ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                                      'fields': ('sites', ), }), )
@@ -348,7 +352,6 @@ class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
         css = {'all': ('css/source_admin.css', ) + CODEMIRROR_CSS, }
 
 
-
 admin.site.register(Source, SourceAdmin)
 
 
@@ -362,8 +365,7 @@ class UploadZipFileForm(forms.Form):
             max_length=50,
             required=True,
             label="Pfad",
-            help_text=
-            'Unterverzeichnis, in dem die Bilder gespeichert werden '
+            help_text='Unterverzeichnis, in dem die Bilder gespeichert werden '
             'sollen. Es muss ein Pfad angegeben werden. Zum Beispiel: '
             '<span style="font-family: courier, monospace;">ug2015-06</span> '
             'oder <span style="font-family: courier, monospace;">'
@@ -392,7 +394,7 @@ class UploadZipFileForm(forms.Form):
     def clean(self):
         cleaned_data = super(UploadZipFileForm, self).clean()
         for required_field in ['archive', 'path', ]:
-            if not required_field in cleaned_data:
+            if required_field not in cleaned_data:
                 return cleaned_data
 
         errors = []
@@ -455,7 +457,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     inlines = [SourcePictureInline, ]
 
     def get_changeform_initial_data(self, request):
-        return {'sites': [request.site, ] }
+        return {'sites': [request.site, ], }
 
     def image_thumbnail(self, obj):
         """Display thumbnail, to be used in django admin list_display."""
@@ -481,7 +483,6 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
     def handle_file_upload(self, filedata, path, create_objects):
         filename = convert_filename(os.path.basename(filedata.name))
         if filename[-4:].lower() in ['.jpg', '.png', ]:
-            uploaded_images = True
             target = 'images'
         elif filename[-4:].lower() in [
                 '.pdf', '.doc', '.rtf',
@@ -505,7 +506,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
             if not os.path.isdir(full_path):
                 raise
 
-        uploadedfile = default_storage.save(
+        default_storage.save(
                 os.path.join(full_path, filename),
                 filedata)
         if create_objects and filename[-4:].lower() in ['.jpg', '.png', ]:
@@ -526,8 +527,9 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
                 target = None
 
-                # check whether among all uploaded files there was at least one image
-                # (one document, resp.) (the final redirect will depend on this)
+                # check whether among all uploaded files there was at least one
+                # image (one document, resp.) (the final redirect will depend
+                # on this)
                 uploaded_images = False
                 uploaded_documents = False
 
@@ -560,11 +562,11 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
                     else:
                         target = 'images'
                 if not (uploaded_images or uploaded_documents):
-                    messages.warning(request,
+                    messages.warning(
+                            request,
                             'Es wurden keine Dateien hochgeladen. '
                             'Erlaubt: .jpg, .png, .pdf, .zip, '
-                            '.doc, .rtf, .docx, .mp3, .mp4'
-                            )
+                            '.doc, .rtf, .docx, .mp3, .mp4')
                     return HttpResponseRedirect(reverse('admin:uploadarchive'))
 
                 return HttpResponseRedirect(
@@ -575,7 +577,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
             initial_path += datetime.datetime.now().strftime('%Y/%m-%d')
             form = UploadZipFileForm(initial={'path': initial_path, })
         return render(request, 'customadmin/uploadarchive.html',
-                {'form': form, 'title': 'Bilder/Dokumente hochladen'})
+                      {'form': form, 'title': 'Bilder/Dokumente hochladen'})
 
     class Media:
         js = ('js/adminactions.js', )
@@ -590,7 +592,7 @@ class DocumentAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     fieldsets = (('', {'fields': ('name', 'description', 'doc', 'date', ), }),
                  ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
-                                    'fields': ('sites', ), }), )
+                                     'fields': ('sites', ), }), )
     raw_id_fields = ('sites', )
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     list_filter = ('sites', )
@@ -603,7 +605,6 @@ class DocumentAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 
     def filename(self, obj):
         return obj.doc.filename
-
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',

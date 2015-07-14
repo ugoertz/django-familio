@@ -3,15 +3,12 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
-import factory
 
-from accounts.models import UserProfile, UserSite
-from accounts.tests import UserProfileFactory, UserFactory
+from accounts.models import UserSite
+from accounts.tests import UserFactory
 from notaro.tests import NoteFactory, RST_WITH_ERRORS
 
 # pylint: disable=no-member
@@ -76,10 +73,11 @@ class LoginTest(StaticLiveServerTestCase):
         body = self.selenium.find_element_by_tag_name('body').text
         self.assertIn(self.note2.title, body)
 
-        self.selenium.get('%s/n%s'
-                % (self.live_server_url, self.note2.link))
+        self.selenium.get(
+                '%s/n%s' % (self.live_server_url, self.note2.link))
 
-        self.selenium.get('%s/notes/note-view/%d'
+        self.selenium.get(
+                '%s/notes/note-view/%d'
                 % (self.live_server_url, self.note2.id))
 
         body = self.selenium.find_element_by_tag_name('body').text
@@ -90,10 +88,12 @@ class LoginTest(StaticLiveServerTestCase):
         self.login(self.admin)
         self.note2 = NoteFactory(text=RST_WITH_ERRORS)
 
-        self.selenium.get('%s/notes/note-view/%d'
+        self.selenium.get(
+                '%s/notes/note-view/%d'
                 % (self.live_server_url, self.note2.id))
 
-        self.selenium.get('%s/n%s'
+        self.selenium.get(
+                '%s/n%s'
                 % (self.live_server_url, self.note2.link))
         body = self.selenium.find_element_by_tag_name('body').text
         self.assertIn('continuation of the', body)
@@ -122,28 +122,31 @@ class LoginTest(StaticLiveServerTestCase):
         user1 = UserFactory(is_staff=True)
 
         # make user1 a non-staff user on current site:
-        usersite = user1.userprofile.usersite_set.get(site=Site.objects.get_current())
+        usersite = user1.userprofile.usersite_set.get(
+                site=Site.objects.get_current())
         usersite.role = UserSite.USER
         usersite.save()
 
         # make user1 a staff user on a different site
         site = Site.objects.create(domain="new")
-        UserSite.objects.create(user=user1.userprofile, site=site, role=UserSite.STAFF)
+        UserSite.objects.create(
+                user=user1.userprofile, site=site, role=UserSite.STAFF)
 
         # login to current site should work
         self.login(user1)
         self.assertNotIn('korrekten Benutzername', self.selenium.page_source)
         self.assertIn(user1.username, self.selenium.page_source)
 
-        # but should not have staff status here (test for link to admin not being
-        # displayed in menu)
+        # but should not have staff status here (test for link to admin not
+        # being displayed in menu)
         self.assertNotIn("Verwaltungsbereich", self.selenium.page_source)
 
     def test_login_for_different_status_depending_on_usersite_success(self):
         user1 = UserFactory(is_staff=True)
 
         # since is_staff is True, user1 should have staff role for current site
-        usersite = user1.userprofile.usersite_set.get(site=Site.objects.get_current())
+        usersite = user1.userprofile.usersite_set.get(
+                site=Site.objects.get_current())
         self.assertEqual(usersite.role, UserSite.STAFF)
 
         # login to current site should work
