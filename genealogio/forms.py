@@ -5,6 +5,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import datetime
+
 from django import forms
 
 from crispy_forms.helper import FormHelper
@@ -18,10 +20,14 @@ def clean_date(d):
         return d
 
     try:
+        assert (len(d) == 4 or
+                (len(d) == 7 and d[4] == '-') or
+                (len(d) == 10 and d[4] == d[7] == '-'))
         args = [int(x) for x in d.split('-')]
         assert len(args) <= 3
         assert len(args) <= 1 or 1 <= args[1] <= 12
-        assert len(args) <= 2 or 1 <= args[2] <= 31
+        if len(args) == 3:
+            datetime.date(*args)
     except:
         raise forms.ValidationError(
                 'Bitte das Datum im Format JJJJ-MM-TT angeben.')

@@ -652,12 +652,15 @@ class AddParents(LoginRequiredMixin, FormView):
                     'first_name': form.cleaned_data['first_name_father'],
                     'datebirth': form.cleaned_data['date_birth_father'],
                     'datedeath': form.cleaned_data['date_death_father'],
+                    'gender_type': Person.MALE,
+                    'probably_alive': (
+                        form.cleaned_data['date_death_father'] == '' and
+                        (form.cleaned_data['date_birth_father'] == '' or
+                            int(form.cleaned_data['date_birth_father'][:4])
+                         >= 1915)),
                     }
 
             father_kwargs['handle'] = Person.get_handle(**father_kwargs)
-            father_kwargs['gender_type'] = Person.MALE
-            father_kwargs['probably_alive'] =\
-                form.cleaned_data['date_death_father'] == ''
             father = Person.objects.create(**father_kwargs)
 
             site = Site.objects.get_current()
@@ -687,14 +690,17 @@ class AddParents(LoginRequiredMixin, FormView):
                     'first_name': form.cleaned_data['first_name_mother'],
                     'datebirth': form.cleaned_data['date_birth_mother'],
                     'datedeath': form.cleaned_data['date_death_mother'],
+                    'gender_type': Person.FEMALE,
+                    'probably_alive': (
+                        form.cleaned_data['date_death_mother'] == '' and
+                        (form.cleaned_data['date_birth_mother'] == '' or
+                            int(form.cleaned_data['date_birth_mother'][:4])
+                         >= 1915)),
                     }
 
             mother_kwargs['handle'] = Person.get_handle(
                     married_name=form.cleaned_data['married_name_mother'],
                     **mother_kwargs)
-            mother_kwargs['gender_type'] = Person.FEMALE
-            mother_kwargs['probably_alive'] =\
-                form.cleaned_data['date_death_mother'] == ''
             mother = Person.objects.create(**mother_kwargs)
 
             site = Site.objects.get_current()

@@ -661,24 +661,38 @@ class Person(PrimaryObject):
         return False
 
     @staticmethod
-    def get_handle(
-            last_name='', first_name='', married_name='',
-            datebirth=None, datedeath=None, id=None):
+    def get_handle(**kwargs):
+        """
+        kwargs may include (otherwise the default value specified below will be
+        used):
+            last_name='',
+            first_name='',
+            married_name='',
+            datebirth=None,
+            datedeath=None,
+            id=None            # if available, will be used as final part,
+                                 otherwise, append "random" number
+
+        Other items contained in kwargs will be ignored.
+        """
+
         handle = 'P_'
-        handle += cleanname(last_name)[:20]
-        handle += cleanname(married_name)[:20]
-        handle += cleanname(first_name)[:20]
+        handle += cleanname(kwargs.get('last_name', ''))[:20]
+        handle += cleanname(kwargs.get('married_name', ''))[:20]
+        handle += cleanname(kwargs.get('first_name', ''))[:20]
 
         try:
-            handle += unicode(datebirth.year)
+            handle += unicode(kwargs['datebirth'].year)
         except:
             pass
         try:
-            handle += unicode(datedeath.year)
+            handle += unicode(kwargs['datedeath'].year)
         except:
             pass
-        if id:
-            handle += '-' + unicode(id)
+        handle = handle[:44]
+
+        if 'id' in kwargs:
+            handle += '-' + unicode(kwargs['id'])
         else:
             handle += u'_' + unicode(datetime.now().microsecond)[:5]
 
@@ -693,8 +707,12 @@ class Person(PrimaryObject):
         except IndexError:
             married_name = ''
         self.handle = Person.get_handle(
-                self.last_name, self.first_name, married_name,
-                self.datebirth, self.datedeath, self.id)
+                last_name=self.last_name,
+                first_name=self.first_name,
+                married_name=married_name,
+                datebirth=self.datebirth,
+                datedeath=self.datedeath,
+                id=self.id)
         self.save()
 
     def as_tag(self):
