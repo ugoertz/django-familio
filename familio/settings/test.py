@@ -59,3 +59,4 @@ ADMIN_USERNAME = 'admin'
 DOCUMENTATION_URL =\
         os.path.join(PROJECT_ROOT, '/docs/_build/html/')
 
+MEDIA_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '../test_media/'))

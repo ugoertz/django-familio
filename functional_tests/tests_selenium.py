@@ -3,6 +3,9 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+import os
+import os.path
+
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
@@ -223,8 +226,9 @@ class LoginTest(StaticLiveServerTestCase):
         self.assertNotIn('unbekannt', self.selenium.page_source)
 
         self.selenium.get(
-                '%s' % self.live_server_url +
-                reverse('person-detail', kwargs={'pk': grandfather_f.pk}))
+                '%s%s' % (
+                    self.live_server_url,
+                    reverse('person-detail', kwargs={'pk': grandfather_f.pk})))
 
         # father, mother should be unknown
         self.assertIn('unbekannt', self.selenium.page_source)
@@ -264,5 +268,21 @@ class LoginTest(StaticLiveServerTestCase):
         self.selenium.get('%s/' % self.live_server_url)
         self.assertIn(child2.get_primary_name(), self.selenium.page_source)
         self.assertIn('Die neuesten Kommentare', self.selenium.page_source)
+
+    def test_upload_picture(self):
+        user1 = UserFactory(is_staff=True)
+        self.login(user1)
+
+        self.selenium.get(
+                '%s%s' % (self.live_server_url, reverse('picture-list')))
+        self.assertIn('0 Einträge', self.selenium.page_source)
+
+        inpt = self.selenium.find_element_by_css_selector('input#id_archive')
+        inpt.send_keys(os.path.abspath('./functional_tests/static/white.png'))
+        self.selenium.find_element_by_id('id_submit_upload').click()
+
+        self.selenium.get(
+                '%s%s' % (self.live_server_url, reverse('picture-list')))
+        self.assertIn('1 Eintr', self.selenium.page_source)
 
 
