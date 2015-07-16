@@ -55,8 +55,8 @@ def home(request):
 
     if request.user.is_authenticated():
         # pylint: disable=no-member
-        dates = [datetime.date.today() + (i-4) * datetime.timedelta(days=1)
-                 for i in range(20)]
+        dates = [datetime.date.today() + (i-3) * datetime.timedelta(days=1)
+                 for i in range(15)]
         birthdeathdays = [
                 (d,
                  Person.objects
