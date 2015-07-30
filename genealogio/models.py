@@ -994,8 +994,8 @@ class TimelineItem(models.Model):
             Family,
             blank=True,
             verbose_name="Familien",
-            help_text="Sind hier Familien ausgewählt, so wird der Eintrag nur"
-                      "bei den ausgewählten Familien angezeigt, "
+            help_text="Sind hier Familien ausgewählt, so wird der Eintrag "
+                      "nur bei den ausgewählten Familien angezeigt, "
                       "sonst bei allen Familien")
 
     all_objects = GenManager()
