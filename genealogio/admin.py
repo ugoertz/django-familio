@@ -268,22 +268,21 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         if not obj.handle:
             last_name, first_name, married_name = '', '', ''
             for k in request.POST:
-                if not k.startswith('name_set-') and k.endswith('-name'):
+                if not (k.startswith('name_set-') and k.endswith('-name')):
                     continue
+                print k
                 try:
                     _, i, _ = k.split('-')
                     i = int(i)
                 except:
                     continue
 
-                if request.POST.get(
-                        'name_set-%d-typ' % i, -2) == Name.BIRTHNAME:
+                typ = int(request.POST.get('name_set-%d-typ' % i, -2))
+                if typ == Name.BIRTHNAME:
                     last_name = request.POST['name_set-%d-name' % i]
-                elif request.POST.get(
-                        'name_set-%d-typ' % i, -2) == Name.FIRSTNAME:
+                elif typ == Name.FIRSTNAME:
                     first_name = request.POST['name_set-%d-name' % i]
-                elif request.POST.get(
-                        'name_set-%d-typ' % i, -2) == Name.MARRIEDNAME:
+                elif typ == Name.MARRIEDNAME:
                     married_name = request.POST['name_set-%d-name' % i]
 
             obj.handle = Person.get_handle(
