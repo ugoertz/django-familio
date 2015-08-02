@@ -511,20 +511,21 @@ class Person(PrimaryObject):
 
         name = self.first_name
 
-        if fmt:
-            try:
-                rufname = self.name_set.filter(typ=Name.RUFNAME)[0].name
-                if fmt == "rst":
-                    name = name.replace(
-                            rufname,
-                            ':underline:`%s`' % rufname)
-                elif fmt == "html":
-                    name = name.replace(
-                            rufname,
-                            '<span style="text-decoration :underline;">'
-                            '%s</span>' % rufname)
-            except IndexError:
-                pass
+        if fmt == "rst":
+            template_rufname = ':underline:`%s`'
+        elif fmt == "html":
+            template_rufname =\
+                    '<span style="text-decoration :underline;">%s</span>'
+        else:
+            template_rufname = '_%s_'
+
+        try:
+            rufname = self.name_set.filter(typ=Name.RUFNAME)[0].name
+            name = name.replace(
+                    rufname,
+                    template_rufname % rufname)
+        except IndexError:
+            pass
 
         try:
             if name:
