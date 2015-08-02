@@ -266,15 +266,30 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 
     def save_model(self, request, obj, form, change):
         if not obj.handle:
-            # FIXME We assume here that last_name is in the inline field
-            # name_set-1-name, etc.
+            last_name, first_name, married_name = '', '', ''
+            for k in request.POST:
+                if not k.startswith('name_set-') and k.endswith('-name'):
+                    continue
+                try:
+                    _, i, _ = k.split('-')
+                    i = int(i)
+                except:
+                    continue
+
+                if request.POST.get(
+                        'name_set-%d-typ' % i, -2) == Name.BIRTHNAME:
+                    last_name = request.POST['name_set-%d-name' % i]
+                elif request.POST.get(
+                        'name_set-%d-typ' % i, -2) == Name.FIRSTNAME:
+                    first_name = request.POST['name_set-%d-name' % i]
+                elif request.POST.get(
+                        'name_set-%d-typ' % i, -2) == Name.MARRIEDNAME:
+                    married_name = request.POST['name_set-%d-name' % i]
+
             obj.handle = Person.get_handle(
-                    last_name=cleanname(
-                        request.POST.get('name_set-1-name', ''))[:20],
-                    first_name=cleanname(
-                        request.POST.get('name_set-0-name', ''))[:20],
-                    married_name=cleanname(
-                        request.POST.get('name_set-2-name', ''))[:20],
+                    last_name=last_name,
+                    first_name=first_name,
+                    married_name=married_name,
                     datebirth=obj.datebirth,
                     datedeath=obj.datedeath)
         super(PersonAdmin, self).save_model(request, obj, form, change)
@@ -283,14 +298,17 @@ class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
         super(PersonAdmin, self).save_related(request, form, formset, change)
         obj = form.instance
         try:
-            obj.last_name = obj.name_set.filter(typ__in=[Name.BIRTHNAME,
-                                                         Name.MARRIEDNAME,
-                                                         Name.TAKEN, ])[0].name
+            obj.last_name = obj.name_set.filter(
+                    typ__in=[Name.BIRTHNAME,
+                             Name.MARRIEDNAME,
+                             Name.TAKEN, ]).order_by('typ')[0].name
         except:
             pass
         try:
+            # Use reverse() here because we want the most recent marriedname
+            # (in case there is more than one).
             obj.last_name_current = obj.name_set.filter(
-                    typ=Name.MARRIEDNAME)[0].name
+                    typ=Name.MARRIEDNAME).reverse()[0].name
         except:
             obj.last_name_current = obj.last_name
         try:
