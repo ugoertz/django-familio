@@ -4,7 +4,9 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from django import template
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.loading import get_model
+from django.http import Http404
 
 from ..models import CustomTag
 
@@ -40,5 +42,9 @@ def get_tag_list(app, model, tag):
 
 @register.filter
 def as_tag_text(slug):
-    tag = CustomTag.objects.get(slug=slug)
-    return tag.as_tag_text()
+    try:
+        tag = CustomTag.objects.get(slug=slug)
+        return tag.as_tag_text()
+    except ObjectDoesNotExist:
+        raise Http404
+
