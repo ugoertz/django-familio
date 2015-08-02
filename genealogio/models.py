@@ -727,9 +727,6 @@ class Person(PrimaryObject):
     def __unicode__(self):
         return u"%s %s" % (self.get_primary_name(), self.handle)
 
-    # def get_selection_string(self):
-    #     return self.name_set.get(preferred=True).get_selection_string()
-
     class Meta:
         ordering = ('handle', 'datebirth', )
         verbose_name = 'Person'
@@ -892,10 +889,6 @@ class Event(PrimaryObject):
                                      through=EventSource,
                                      verbose_name='Quellen')
     notes = models.ManyToManyField(Note, blank=True, through=EventNote)
-
-#    references = generic.GenericRelation('EventRef', related_name="refs",
-#                                         content_type_field="object_type",
-#                                         object_id_field="object_id")
 
     @staticmethod
     def autocomplete_search_fields():
