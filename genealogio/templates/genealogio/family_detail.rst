@@ -25,9 +25,9 @@
 ({{object.get_family_rel_type_display }})
 {% endif %}
 
-**Vater:** {% include "genealogio/person_snippet_full.rst" with person=object.father %}
+{% include "genealogio/person_snippet_full.rst" with person=object.father label="**Vater:** " %}
 
-**Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.mother %}
+{% include "genealogio/person_snippet_full.rst" with person=object.mother label="**Mutter:** " %}
 
 {% if object.person_set.count %}**Kinder:**
 

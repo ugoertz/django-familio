@@ -175,8 +175,8 @@ $(document).ready(function() {
         <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
         <div class="col-md-10">
             <p style="margin-bottom: 40px;">
-            Vater: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" %} -
-            Mutter: {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" %}
+            {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" label="Vater: " %} -
+            {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" label="Mutter: " %}
             </p>
         </div>
         <div class="col-md-2">

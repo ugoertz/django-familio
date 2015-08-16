@@ -223,7 +223,8 @@ class LoginTest(StaticLiveServerTestCase):
                 '%s' % self.live_server_url +
                 reverse('person-detail', kwargs={'pk': child1.pk}))
 
-        self.assertNotIn('unbekannt', self.selenium.page_source)
+        self.assertIn('Vater', self.selenium.page_source)
+        self.assertIn('Mutter', self.selenium.page_source)
 
         self.selenium.get(
                 '%s%s' % (
@@ -231,7 +232,8 @@ class LoginTest(StaticLiveServerTestCase):
                     reverse('person-detail', kwargs={'pk': grandfather_f.pk})))
 
         # father, mother should be unknown
-        self.assertIn('unbekannt', self.selenium.page_source)
+        self.assertNotIn('Vater', self.selenium.page_source)
+        self.assertNotIn('Mutter', self.selenium.page_source)
 
         # No comments so far
         self.assertIn(

@@ -26,9 +26,9 @@
 
 {% if object.datebirth or object.placebirth %}geboren {{ object.datebirth|partial_date:"d.m.Y" }}{% if object.placebirth %} in `{{ object.placebirth }} <{% url "place-detail" object.placebirth.id %}>`__ {% endif %}{% if object.datedeath or object.placedeath %} - {% endif %}{% endif %}{% if object.datedeath or object.placedeath %}gestorben {{ object.datedeath|partial_date:"d.m.Y" }}{% if object.placedeath %} in `{{ object.placedeath }} <{% url "place-detail" object.placedeath.id %}>`__ {% endif %}{% endif %}
 
-**Vater:** {% include "genealogio/person_snippet_full.rst" with person=object.get_father %}
+{% include "genealogio/person_snippet_full.rst" with person=object.get_father label="**Vater:** " %}
 
-**Mutter:** {% include "genealogio/person_snippet_full.rst" with person=object.get_mother %}
+{% include "genealogio/person_snippet_full.rst" with person=object.get_mother label="**Mutter:** " %}
 
 {% with allchildren=object.get_children %}
 {% for partner, children, family in allchildren %}

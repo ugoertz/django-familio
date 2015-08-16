@@ -1,5 +1,5 @@
 
-{% if person %}
+{% if person %}{{ label }}
 <span style="white-space: nowrap"><a href="{{ person.get_absolute_url }}"><span class="glyphicon glyphicon-info-sign control" style="font-size: 80%; margin-left: 10px; margin-right: 3px;"></a> <a href="{% url target person.pk %}" class="popoverlink-header">{{ person.get_primary_name }}</a></span>
-{% else %}Unbekannt{% endif %}
+{% endif %}
 
