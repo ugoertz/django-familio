@@ -205,6 +205,11 @@ class Family(PrimaryObject):
     def get_children(self):
         return self.person_set(manager='objects').all().order_by('datebirth')
 
+    def get_children_as_personfamily(self):
+        return self.personfamily_set.filter(
+                person__sites=Site.objects.get_current()
+                ).order_by('person__datebirth')
+
     def get_grandchildren(self):
         qslist = []
         for c in self.get_children():
@@ -755,6 +760,14 @@ class PersonFamily(models.Model):
     child_type = models.IntegerField(choices=CHILD_REF_TYPE,
                                      default=2, verbose_name="Typ")
     position = models.PositiveIntegerField(default=1)
+
+    def get_child_type(self):
+        if self.child_type == PersonFamily.ADOPTED:
+            return " (adoptiert)"
+        elif self.child_type == PersonFamily.STEPCHILD:
+            return " (Stiefkind)"
+        elif self.child_type == PersonFamily.FOSTER:
+            return " (Pflegekind)"
 
     class Meta:
         ordering = ['position', ]

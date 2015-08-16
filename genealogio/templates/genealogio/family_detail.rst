@@ -31,8 +31,8 @@
 
 {% if object.person_set.count %}**Kinder:**
 
-{% for child in object.get_children %}
-* {% include "genealogio/person_snippet_full.rst" with person=child %}
+{% for child in object.get_children_as_personfamily %}
+* {% include "genealogio/person_snippet_full.rst" with person=child.person show_child_type=child.get_child_type %}
 {% endfor %}
 {% endif %}
 
