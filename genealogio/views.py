@@ -754,7 +754,8 @@ class AddPersonView(CreateView):
                 datedeath=form.cleaned_data['datedeath'])
         person = Person.objects.create(
                 first_name=form.cleaned_data['first_name'],
-                last_name=form.cleaned_data['last_name'],
+                last_name=form.cleaned_data['last_name']
+                or form.cleaned_data['marriedname'],
                 last_name_current=form.cleaned_data['marriedname']
                 or form.cleaned_data['last_name'],
                 probably_alive=(form.cleaned_data['datedeath'] == ''),
@@ -850,7 +851,7 @@ class AddSpouseView(AddPersonView):
 
         p = Person.objects.get(pk=form.cleaned_data['attach_to'])
         form.cleaned_data['gender_type'] =\
-            Person.MALE if p.gender_type == Person.FEMALE else Person.MALE
+            Person.MALE if p.gender_type == Person.FEMALE else Person.FEMALE
 
         # save person
         spouse = self.save_person(form)
