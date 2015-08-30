@@ -283,15 +283,16 @@ class Family(PrimaryObject):
         if self.name:
             n += self.name
         try:
-            f = self.father.get_primary_name()
+            f = '%s %s' % (self.father.first_name, self.father.last_name)
         except AttributeError:
             f = '?'
         try:
-            m = self.mother.get_primary_name()
+            m = '%s %s' % (self.mother.first_name, self.mother.last_name)
         except AttributeError:
             m = '?'
         if n:
-            n = "%s (%s und %s)" % (n, f, m)
+            if f != '?' and m != '?':
+                n = "%s (%s und %s)" % (n, f, m)
         elif (f != '?' or m != '?'):
             n = "%s und %s" % (f, m)
         if n:

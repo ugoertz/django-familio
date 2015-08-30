@@ -10,9 +10,13 @@
 
 <p>{% if person.datebirth or person.placebirth %}geboren {{ person.datebirth|partial_date:"d.m.Y" }}{% if person.placebirth %} in {{ person.placebirth }} {% endif %}{% endif %}{% if person.datedeath or person.placedeath %} - gestorben {{ person.datedeath|partial_date:"d.m.Y" }}{% if person.placedeath %} in {{ person.placedeath }}{% endif %}{% endif %}</p>
 
-<p><b>Vater:</b> {% firstof person.get_father.get_primary_name "Unbekannt" %}</p>
+{% with father=person.get_father.get_primary_name %}
+{% if father %}<p><b>Vater:</b> {{ father }}</p>{% endif %}
+{% endwith %}
 
-<p><b>Mutter:</b> {% firstof person.get_mother.get_primary_name "Unbekannt" %}</p>
+{% with mother=person.get_mother.get_primary_name %}
+{% if mother %}<p><b>Mutter:</b> {{ mother }}</p>{% endif %}
+{% endwith %}
 
 {% with allchildren=person.get_children %}
 {% for partner, children, family in allchildren %}
