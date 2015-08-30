@@ -565,7 +565,7 @@ class Person(PrimaryObject):
         # FIXME: incorporate further names (other types + several names
         # of the same type)
 
-        return name
+        return name.strip()
 
     def get_short_name(self):
         """
@@ -585,22 +585,23 @@ class Person(PrimaryObject):
             first = ' '.join(fsplit[:1] + [x[0]+'.' for x in fsplit[1:]])
         if len(first) + len(name) > 22:
             first = first[0] + '.'
-        return '%s %s' % (first, name)
+        return ('%s %s' % (first, name)).strip()
 
     def get_primary_name(self):
         """
         Return the preferred name of a person.
         """
 
-        return '%s %s' % (self.first_name, self.get_last_name())
+        return ('%s %s' % (self.first_name, self.get_last_name())).strip()
 
     def get_primary_name_br(self):
         """
         Return the preferred name of a person.
         """
 
-        return '%s %s' % (self.first_name,
-                          self.get_last_name(separator='|br| '))
+        n = '%s %s' % (self.first_name,
+                       self.get_last_name(separator='|br| '))
+        return n.strip()
 
     def get_father(self):
         try:

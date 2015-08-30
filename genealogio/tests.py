@@ -48,7 +48,7 @@ class PersonTest(TestCase):
 
     def test_add_person(self):
         p = PersonFactory()
-        self.assertEqual(unicode(p), '  %s' % p.handle)
+        self.assertEqual(unicode(p), ' %s' % p.handle)
 
     def test_get_children(self):
         father = PersonFactory()
