@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Custom fields for the genealogio models.
 
 - PartialDateField: as DateField, but allow for "partial dates", i.e., year
@@ -164,10 +166,19 @@ class PartialDateField(models.CharField):
         try:
             args = [int(x) for x in value.split('-')]
         except:
-            raise ValidationError("Invalid input for a PartialDate instance")
+            raise ValidationError(
+                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                    "Monat und/oder Tag können ausgelassen werden.")
         if len(args) < 1 or len(args) > 3:
-            raise ValidationError("Invalid input for a PartialDate instance")
-        return PartialDate(*args)
+            raise ValidationError(
+                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                    "Monat und/oder Tag können ausgelassen werden.")
+        try:
+            return PartialDate(*args)
+        except ValueError:
+            raise ValidationError(
+                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                    "Monat und/oder Tag können ausgelassen werden.")
 
     def get_prep_value(self, value):
         """Return the string value of the PartialDate"""
