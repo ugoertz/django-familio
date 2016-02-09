@@ -3,7 +3,7 @@ import json
 from django.contrib.contenttypes.models import ContentType
 
 from dajaxice.decorators import dajaxice_register
-import watson
+from watson import search as watson
 
 from genealogio.models import Person, Family
 

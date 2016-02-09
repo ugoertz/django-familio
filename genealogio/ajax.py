@@ -10,7 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import render_to_string
 
 from dajaxice.decorators import dajaxice_register
-import watson
+from watson import search as watson
 
 from maps.models import Place
 from notaro.models import Document, Source

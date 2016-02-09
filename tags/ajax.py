@@ -7,7 +7,7 @@ from __future__ import division
 import json
 
 from dajaxice.decorators import dajaxice_register
-import watson
+from watson import search as watson
 
 from maps.models import Place
 from genealogio.models import Person, Event, Family
