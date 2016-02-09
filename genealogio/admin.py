@@ -493,33 +493,9 @@ class NoteFInline(GrappelliSortableHiddenMixin,
         return obj.note
 
 
-class FamilyAdminForm(forms.ModelForm):
-    class Meta:
-        model = Family
-
-    def cl_date(self, d):
-        if d:
-            try:
-                args = [int(x) for x in d.split('-')]
-                assert 1 <= len(args) <= 3
-                PartialDate(*args)
-            except:
-                raise forms.ValidationError(
-                        'Datum bitte in der Form JJJJ-MM-TT angeben.' +
-                        'Monat und/oder Tag können ausgelassen werden.')
-        return d
-
-    def clean_start_date(self):
-        return self.cl_date(self.cleaned_data['start_date'])
-
-    def clean_end_date(self):
-        return self.cl_date(self.cleaned_data['end_date'])
-
-
 class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
     """The FamilyAdmin class."""
 
-    form = FamilyAdminForm
     fieldsets = (
         ('', {'fields': ('name',
                          ('father', 'father_os', ),
