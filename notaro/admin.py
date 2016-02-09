@@ -27,7 +27,7 @@ from django.utils.http import urlquote
 from filebrowser.settings import ADMIN_THUMBNAIL
 from filebrowser.utils import convert_filename
 from grappelli.forms import GrappelliSortableHiddenMixin
-import reversion
+from reversion.admin import VersionAdmin
 
 from base.fields import MultiFileField
 from base.models import SiteProfile
@@ -233,7 +233,7 @@ class UploadFileForm(forms.Form):
                      ('html', 'HTML'),))
 
 
-class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Note model."""
 
     fieldsets = (('', {'fields': ('title', 'link', 'text',
@@ -324,7 +324,7 @@ class NoteAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 admin.site.register(Note, NoteAdmin)
 
 
-class SourceAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class SourceAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Source model."""
 
     fieldsets = (('', {'fields':
@@ -444,7 +444,7 @@ class SourcePictureInline(admin.TabularInline):
     verbose_name_plural = "Quellenangaben"
 
 
-class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Picture model."""
 
     fieldsets = (('', {'fields': ('caption', 'image', 'date', ), }),
@@ -587,7 +587,7 @@ class PictureAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
 admin.site.register(Picture, PictureAdmin)
 
 
-class DocumentAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Document model."""
 
     fieldsets = (('', {'fields': ('name', 'description', 'doc', 'date', ), }),

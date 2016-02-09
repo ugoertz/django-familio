@@ -7,13 +7,13 @@ from __future__ import absolute_import
 
 from django.contrib import admin
 
-import reversion
+from reversion.admin import VersionAdmin
 
 from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Book, Collection, Item, )
 
 
-class BookAdmin(reversion.VersionAdmin):
+class BookAdmin(VersionAdmin):
 
     class Meta:
         verbose_name = 'Buch'
@@ -22,7 +22,7 @@ class BookAdmin(reversion.VersionAdmin):
 admin.site.register(Book, BookAdmin)
 
 
-class CollectionAdmin(reversion.VersionAdmin):
+class CollectionAdmin(VersionAdmin):
 
     class Meta:
         verbose_name = 'Kollektion'
@@ -31,7 +31,7 @@ class CollectionAdmin(reversion.VersionAdmin):
 admin.site.register(Collection, CollectionAdmin)
 
 
-class ItemAdmin(reversion.VersionAdmin):
+class ItemAdmin(VersionAdmin):
 
     class Meta:
         verbose_name = 'Eintrag'

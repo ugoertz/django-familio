@@ -16,7 +16,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.utils.functional import curry
-import reversion
+from reversion.admin import VersionAdmin
 from filebrowser.settings import ADMIN_THUMBNAIL
 from grappelli.forms import GrappelliSortableHiddenMixin
 
@@ -190,7 +190,7 @@ class PPlaceInline(admin.StackedInline):
         return self.extra
 
 
-class PersonAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
+class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
     """The PersonAdmin class."""
 
     fieldsets = (
@@ -388,7 +388,7 @@ class NoteEInline(GrappelliSortableHiddenMixin,
         return obj.note
 
 
-class EventAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
+class EventAdmin(CurrentSiteGenAdmin, VersionAdmin):
     """The EventAdmin class."""
 
     fieldsets = (
@@ -516,7 +516,7 @@ class FamilyAdminForm(forms.ModelForm):
         return self.cl_date(self.cleaned_data['end_date'])
 
 
-class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
+class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
     """The FamilyAdmin class."""
 
     form = FamilyAdminForm
@@ -583,7 +583,7 @@ class FamilyAdmin(CurrentSiteGenAdmin, reversion.VersionAdmin):
 admin.site.register(Family, FamilyAdmin)
 
 
-class TimelineItemAdmin(CurrentSiteAdmin, reversion.VersionAdmin):
+class TimelineItemAdmin(CurrentSiteAdmin, VersionAdmin):
     fieldsets = (
         ('', {'fields': ('title', ('typ', 'start_date', 'end_date'),
                          'url', 'description', ), }),

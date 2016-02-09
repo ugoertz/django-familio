@@ -14,7 +14,7 @@ from django.contrib.sites.models import Site
 from django.forms import TextInput
 
 from grappelli.forms import GrappelliSortableHiddenMixin
-import reversion
+from reversion.admin import VersionAdmin
 
 from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Place, Url, PlaceNote, PlaceUrl, cleanname, CustomMap,
@@ -165,7 +165,7 @@ class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
 
 
 class CustomMapAdmin(
-        CurrentSiteAdmin, admin.OSMGeoAdmin, reversion.VersionAdmin):
+        CurrentSiteAdmin, admin.OSMGeoAdmin, VersionAdmin):
     """Admin class for CustomMap model."""
 
     fieldsets = (
