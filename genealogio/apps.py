@@ -1,5 +1,7 @@
 from django.apps import AppConfig
 from watson import search as watson
+from django_markup.markup import formatter
+
 
 
 class GenealogioConfig(AppConfig):
@@ -23,4 +25,7 @@ class GenealogioConfig(AppConfig):
 
         TimelineItemModel = self.get_model("TimelineItem")
         watson.register(TimelineItemModel.objects.all())
+
+        from .filter.rst_filter import GenRstMarkupFilter
+        formatter.register('genrestructuredtext', GenRstMarkupFilter)
 
