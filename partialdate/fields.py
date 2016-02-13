@@ -140,8 +140,6 @@ class PartialDateField(models.CharField):
     description = "A partially-specified date (e.g. year, year-month, " +\
                   "year-month-day)"
 
-    __metaclass__ = models.SubfieldBase
-
     def __init__(self, *args, **kwargs):
         """Create the PartialDateField"""
         # + 6 for "-xx-xx"
@@ -152,6 +150,11 @@ class PartialDateField(models.CharField):
         name, path, args, kwargs = super(PartialDateField, self).deconstruct()
         del kwargs["max_length"]
         return name, path, args, kwargs
+
+    def from_db_value(self, value, expression, connection, context):
+        if not value:
+            return value
+        return PartialDate(*[int(x) for x in value.split('-')])
 
     def to_python(self, value):
         """Return the PartialDate value of the input"""
