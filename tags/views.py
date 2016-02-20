@@ -3,11 +3,11 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from django.apps import apps
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.db.models.loading import get_model
 
 from braces.views import LoginRequiredMixin
 
@@ -25,7 +25,7 @@ class SaveTags(LoginRequiredMixin, View):
             return HttpResponseRedirect('/')
 
         # pylint: disable=no-member
-        model_class = get_model(app, model)
+        model_class = apps.get_model(app_label=app, model_name=model)
         obj = model_class.objects.get(pk=pk)
 
         taglist = []
