@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
+from django.contrib.postgres.fields import ArrayField
 from django.conf import settings
-import dbarray.fields
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('content', models.TextField()),
                 ('date', models.DateTimeField(auto_now_add=True)),
-                ('path', dbarray.fields.IntegerArrayField(unique=True, editable=False, blank=True)),
+                ('path', ArrayField(size=None, base_field=models.IntegerField(), unique=True, editable=False, blank=True)),
                 ('object_pk', models.TextField(verbose_name='object ID')),
                 ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
                 ('content_type', models.ForeignKey(related_name='content_type_set_for_comment', verbose_name='content type', to='contenttypes.ContentType')),

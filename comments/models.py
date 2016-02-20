@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.managers import CurrentSiteManager
-from dbarray import IntegerArrayField
+from django.contrib.postgres.fields import ArrayField
 
 from notaro.managers import GenManager
 
@@ -14,7 +14,8 @@ class Comment(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL)
     content = models.TextField(verbose_name="Dein Kommentar")
     date = models.DateTimeField(auto_now_add=True)
-    path = IntegerArrayField(blank=True, editable=False, unique=True)
+    path = ArrayField(
+            models.IntegerField(), blank=True, editable=False, unique=True)
 
     # Content-object field
     content_type = models.ForeignKey(
