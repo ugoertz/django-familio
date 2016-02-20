@@ -19,7 +19,9 @@ class CommentForm(forms.ModelForm):
             'content_type': str(self.target_object._meta),
             'object_pk': str(self.target_object._get_pk_val()),
             })
-        super(CommentForm, self).__init__(data=data, initial=initial)
+        auto_id = 'id_' + str(target_object.id) + '_%s'
+        super(CommentForm, self).__init__(
+            data=data, initial=initial, auto_id=auto_id)
 
     def get_comment_create_data(self):
         """
