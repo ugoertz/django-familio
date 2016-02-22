@@ -499,7 +499,8 @@ class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
     fieldsets = (
         ('', {'fields': ('name',
                          ('father', 'father_os', ),
-                         ('mother', 'mother_os', ), )}),
+                         ('mother', 'mother_os', ),
+                         'comments', )}),
         ('Daten', {'classes': ('grp-collapse grp-open', ),
                    'fields': ('family_rel_type',
                               ('start_date', 'end_date', ), )}),

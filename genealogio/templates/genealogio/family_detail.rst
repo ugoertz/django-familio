@@ -45,6 +45,8 @@
 {% endif %}
 {% endwith %}
 
+{{ object.comments|safe }}
+
 {% include "genealogio/events.rst" %}
 
 {% include "genealogio/notes.rst" %}

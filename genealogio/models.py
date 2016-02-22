@@ -163,6 +163,7 @@ class Family(PrimaryObject):
 
     name = models.CharField(verbose_name='Familienname', max_length=200,
                             blank=True, null=True)
+    comments = models.TextField(blank=True, verbose_name="Kommentar")
 
     notes = models.ManyToManyField(Note, blank=True, through=FamilyNote)
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
