@@ -9,6 +9,7 @@ import os.path
 import re
 import tempfile
 import urllib
+from PIL import Image
 
 from celery import shared_task, chain, Celery
 
@@ -80,8 +81,8 @@ class Collector(object):
 
 @shared_task(name="maps.create_custom_map", queue="render")
 def create_custom_map(
-        geojson, bbox, style=None, ppi=300,
-        size=(170, 0)):
+        geojson, bbox, style=None, ppi=300, size=(170, 0),
+        norotate=False):
 
     gf, geojsonfilename = tempfile.mkstemp(suffix='.geojson', dir='/tmp')
     with open(geojsonfilename, 'w') as f:
@@ -91,9 +92,8 @@ def create_custom_map(
     # https://github.com/Zverik/Nik4 by Ilya Zverev
 
     p3857 = mapnik.Projection(
-            '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 '
-            '+lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m '
-            '+nadgrids=@null +no_defs +over')
+            '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 ' +
+            '+x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs +over')
     p4326 = mapnik.Projection(
             '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
     transform = mapnik.ProjTransform(p4326, p3857)
@@ -106,6 +106,7 @@ def create_custom_map(
             'mapnik.xml')).encode('utf-8')
     options.ppi = ppi
     options.size = size
+    options.norotate = norotate
     options.vars = {
             'geojsonfilename': geojsonfilename,
             }
@@ -114,7 +115,7 @@ def create_custom_map(
     size = None
     bbox = None
 
-    fmt = 'png256'
+    fmt = 'PNG'
 
     # get image size in millimeters
     if options.size:
@@ -149,15 +150,22 @@ def create_custom_map(
         raise Exception('Bounding box was not specified in any way')
 
     if size[1] == 0:
-        size[1] = int(round(size[0] / (bbox.maxx - bbox.minx)
-                            * (bbox.maxy - bbox.miny)))
-    # print bbox.minx, bbox.maxx, bbox.miny, bbox.maxy
-    # print size
+        size[1] = int(round(size[0] / (bbox.maxx - bbox.minx) *
+                      (bbox.maxy - bbox.miny)))
 
     if max(size[0], size[1]) > 16384:
         raise Exception(
                 'Image size exceeds mapnik limit ({} > {}), use tiles'
                 .format(max(size[0], size[1]), 16384))
+
+    # if options.debug:
+    #     print 'scale={}'.format(scale)
+    #     print 'scale_factor={}'.format(scale_factor)
+    #     print 'size={},{}'.format(size[0], size[1])
+    #     print 'bbox={}'.format(bbox)
+    #     print 'bbox_wgs84={}'.format(
+    #         transform.backward(bbox) if bbox else None)
+    #     print 'layers=' + ','.join([l.name for l in m.layers if l.active])
 
     # export image
     m.aspect_fix_mode = mapnik.aspect_fix_mode.GROW_BBOX
@@ -173,16 +181,19 @@ def create_custom_map(
     mapnik.render(m, im, scale_factor)
 
     # add watermark
-    try:
-        watermark = mapnik.Image.open(settings.PATH_TO_WATERMARK)
-        x_offset = im.width() - watermark.width()
-        y_offset = im.height() - watermark.height()
-        opacity = 0.8
-        im.blend(x_offset, y_offset, watermark, opacity)
-    except:
-        pass
+    PILimg = Image.fromstring('RGBA', size, im.tostring())
+    watermark = Image.open(settings.PATH_TO_WATERMARK)
 
-    im.save(filename.encode('utf-8'), fmt)
+    x_offset = PILimg.size[0] - watermark.size[0]
+    y_offset = PILimg.size[1] - watermark.size[1]
+
+    PILimg.paste(
+            watermark,
+            box=(
+                x_offset, y_offset,
+                PILimg.size[0], PILimg.size[1]),
+            mask=watermark)
+    PILimg.save(filename.encode('utf-8'), fmt)
 
     return os.path.basename(filename)
 
