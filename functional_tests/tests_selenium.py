@@ -240,7 +240,8 @@ class LoginTest(StaticLiveServerTestCase):
                 'Es gibt noch keine Kommentare', self.selenium.page_source)
 
         # add a comment
-        inpt = self.selenium.find_element_by_id('id_content')
+        inpt = self.selenium.find_element_by_id(
+                'id_%d_content' % grandfather_f.pk)
         inpt.send_keys('This is the first comment.')
         inpt.submit()
         self.assertIn(
