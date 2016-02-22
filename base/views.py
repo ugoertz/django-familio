@@ -66,13 +66,22 @@ def home(request):
                 for d in dates]
         birthdeathdays = [(d, born, died)
                           for d, born, died in birthdeathdays if born or died]
+
+        two_weeks_ago = datetime.date.today() - datetime.timedelta(days=14)
         context = {
-                'personen': Person.objects.all().order_by('-date_added')[:5],
-                'comments': Comment.objects.all().order_by('-date')[:5],
+                'personen':
+                Person.objects.filter(date_changed__gt=two_weeks_ago)
+                .order_by('-date_added')[:5],
+                'comments': Comment.objects.filter(
+                    date__gt=two_weeks_ago).order_by('-date')[:5],
                 'birthdeathdays': birthdeathdays,
                 'today': datetime.date.today(),
-                'notes': Note.objects.filter(published=True)
-                .order_by('-date_added')[:5], }
+                'notes':
+                Note.objects.filter(
+                    published=True, date_changed__gt=two_weeks_ago)
+                .order_by('-date_added')[:5],
+                'pic_list': Picture.objects.all().order_by('?')[:9],
+                }
     else:
         context = {}
 
