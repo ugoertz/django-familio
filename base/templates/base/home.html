@@ -141,7 +141,7 @@ $(window).load(function(){
             <h2>Geburts- und Todestage</h2>
             <ul class="list-group">
                 {% for d, born, died in birthdeathdays %}
-                <li class="list-group-item" {% ifequal today d %}style="background-color: lightblue;"{% endifequal %}><p><b>{{ d|date:"j. F" }}</b></p>
+                <li class="list-group-item clearfix" {% ifequal today d %}style="background-color: lightblue;"{% endifequal %}><p><b>{{ d|date:"j. F" }}</b></p>
                 <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}
                 {% if person.userprofile_set.count %}<a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" style="font-size: 85%; float: right" class="cabin">Gratulieren</a>{% endif %}<br>
                 {% endfor %}</p>
@@ -155,7 +155,7 @@ $(window).load(function(){
             <h2>Die neuesten Texte</h2>
             <ul class="list-group">
                 {% for note in notes %}
-                <li class="list-group-item"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% ifequal note.date_added|date:"d.M.Y" note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"d. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"d. M." }}{% endifequal %}</span>
+                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }} das ist doch alles mich was meinst du t</a><span class="cabin small pull-right">{% ifequal note.date_added|date:"d.M.Y" note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"d. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"d. M." }}{% endifequal %}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -165,7 +165,7 @@ $(window).load(function(){
             <h2>Kürzlich aktualisierte Personen</h2>
             <ul class="list-group">
                 {% for person in personen %}
-                <li class="list-group-item">{% include "genealogio/person_snippet_full.html" %}
+                <li class="list-group-item clearfix">{% include "genealogio/person_snippet_full.html" %}
                 <span class="cabin small pull-right">{% ifequal person.date_added|date:"d.M.Y" person.date_changed|date:"d.M.Y" %}Hinzugefügt am {{ person.date_added|date:"d. M." }}{% else %}Aktualisiert am {{ person.date_changed|date:"d. M." }}{% endifequal %}</span></li>
                 {% endfor %}
             </ul>
@@ -175,7 +175,7 @@ $(window).load(function(){
             <h2>Die neuesten Kommentare</h2>
             <ul class="list-group">
                 {% for c in comments %}
-                <li class="list-group-item"><a href="{{ c.content_object.get_absolute_url }}"><span style="margin-right: 10px; font-size: 100%;" class="cabin">Von {% firstof c.author.get_full_name c.author.username %} bei</span> <b>{% firstof c.content_object.get_primary_name c.content_object.title c.content_object.name c.content_object %}</b></a>
+                <li class="list-group-item clearfix"><a href="{{ c.content_object.get_absolute_url }}"><span style="margin-right: 10px; font-size: 100%;" class="cabin">Von {% firstof c.author.get_full_name c.author.username %} bei</span> <b>{% firstof c.content_object.get_primary_name c.content_object.title c.content_object.name c.content_object %}</b></a>
                     <span class="cabin small pull-right">am {{ c.date|date:"d. M." }}</span>
                 </li>
                 {% endfor %}
@@ -186,7 +186,7 @@ $(window).load(function(){
                 {% pybb_get_latest_posts cnt=3 as posts %}
                 <ul class="list-group">
                 {% for p in posts %}
-                <li class="list-group-item"><a href="{{ p.get_absolute_url }}">{{ p.user.get_full_name }} - {{ p.topic }}:</br><span style="font-size: 80%;">{{ p }}</span></a>
+                <li class="list-group-item clearfix"><a href="{{ p.get_absolute_url }}">{{ p.user.get_full_name }} - {{ p.topic }}:</br><span style="font-size: 80%;">{{ p }}</span></a>
                 <span class="cabin small pull-right">am {{ p.created|date:"d. M." }}</span>
                 </li>
                 {% endfor %}
@@ -197,7 +197,7 @@ $(window).load(function(){
             {% include_if_exists "home_custom.html" %}
 
             {# display some pics #}
-            <div id="pic_list">
+            <div style="margin-left: auto; margin-right: auto; width: 480px;" id="pic_list">
             {% for obj in pic_list %}
             <div style="display: inline-block; margin: 5px;" class="masonry-item">
             <a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
