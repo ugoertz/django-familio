@@ -42,13 +42,15 @@ ROOT_URLCONF = 'familio.urls'
 # Application definition
 INSTALLED_APPS = (
     # place grappelli and filebrowser first because they need to override admin
-    # templates
+    # templates; grappelli.dashboard needs to come after contenttypes, but
+    # before grappelli.
+    'django.contrib.contenttypes',
+    'grappelli.dashboard',
     'grappelli',
     'filebrowser',
 
     # Django contrib apps
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.admin',
@@ -58,7 +60,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
 
     # Third-party apps, patches, fixes
-    'grappelli.dashboard',
     'reversion',
     'debug_toolbar',
     'compressor',

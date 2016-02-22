@@ -41,7 +41,6 @@ MANAGERS = ADMINS
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEBUG = True
-TEMPLATE_DEBUG = True
 
 # Is this a development instance? Set this to True on development/master
 # instances and False on stage/prod.
