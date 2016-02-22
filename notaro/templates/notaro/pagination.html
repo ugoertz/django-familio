@@ -1,18 +1,27 @@
 <div class="row" style="font-size: 120%;">
     <div class="col-md-7 cabin">
-    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Vorherige Seite</a>{% endif %}
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"><span class="small">Vorherige Seite</span></a>{% endif %}
 
     <span style="margin-left: 30px; margin-right: 30px;">
-        {% for i in page_obj.paginator.page_range %}
+        {% for i in page_obj.paginator.start_range %}
+        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px;">{{ i }}</a>
+        {% endfor %}
+        {% if page_obj.paginator.start_main_dots %}...{% endif %}
+        {% for i in page_obj.paginator.main_range %}
         {% ifequal i page_obj.number %}
-        <span style="margin-left: 5px; margin-right: 5px;">{{ i }}</span>
+        <span style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px; background-color: #dddddd;">{{ i }}</span>
         {% else %}
-        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="margin-left: 5px; margin-right: 5px;">{{ i }}</a>
+        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px;">{{ i }}</a>
         {% endifequal %}
+        {% endfor %}
+        {% if page_obj.paginator.main_end_dots %}...{% endif %}
+        {% for i in page_obj.paginator.end_range %}
+        <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px;">{{ i }}</a>
         {% endfor %}
     </span>
 
-    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Nächste Seite</a>{% endif %} <span style="margin-left:20px; font-size: 80%;">(Insgesamt {{ page_obj.paginator.count }} Einträge)</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}"><span class="small">Nächste Seite</span></a>{% endif %}
+    <div style="margin-top:20px; font-size: 80%;" class="cabin">(Insgesamt {{ page_obj.paginator.count }} Einträge)</div>
     </div>
     <div class="col-md-5">
 

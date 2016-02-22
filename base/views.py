@@ -40,6 +40,38 @@ class PaginateListView(ListView):
         except:
             return self.paginate_by
 
+    def get_paginator(self, *args, **kwargs):
+        paginator = super(PaginateListView, self).get_paginator(
+                *args, **kwargs)
+
+        page = int(self.request.GET.get('page', 1))
+
+        paginator.start_range = []
+        paginator.start_main_dots = False
+        paginator.main_range = range(1, paginator.num_pages+1)
+        paginator.main_end_dots = False
+        paginator.end_range = []
+
+        start_main = 1
+        end_main = paginator.num_pages
+
+        if paginator.num_pages > 11:
+            if page >= 7:
+                paginator.start_range = range(1, 4)
+                paginator.start_main_dots = True
+                start_main = page - 2
+                if page >= paginator.num_pages-2:
+                    start_main = paginator.num_pages-4
+            if page <= paginator.num_pages - 6:
+                paginator.end_range = range(
+                        paginator.num_pages-2, paginator.num_pages+1)
+                paginator.main_end_dots = True
+                end_main = page + 2
+                if page <= 3:
+                    end_main = 5
+            paginator.main_range = range(start_main, end_main+1)
+        return paginator
+
 
 class CurrentSiteMixin(object):
     def get_queryset(self):
