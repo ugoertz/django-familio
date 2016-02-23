@@ -9,7 +9,6 @@ from django.contrib import admin
 
 from reversion.admin import VersionAdmin
 
-from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Book, Collection, Item, )
 
 

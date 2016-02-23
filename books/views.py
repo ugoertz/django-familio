@@ -96,6 +96,7 @@ class BookCreateView(LoginRequiredMixin, CreateView):
 class CreatePDFView(LoginRequiredMixin, View):
 
     def get(self, *args, **kwargs):
+        # pylint: disable=unsubscriptable-object
         compile_book(int(self.kwargs['id']))
         return HttpResponseRedirect(
                 reverse('book-detail', kwargs={'pk': int(self.kwargs['id'])}))
@@ -165,11 +166,14 @@ class CollectionCreateView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         result = super(CollectionCreateView, self).get_initial()
+
+        # pylint: disable=unsubscriptable-object
         parent = Collection.objects.get(id=int(self.kwargs['parent']))
         result.update({
             'parent': self.kwargs['parent'],
             'c_flags': parent.get_flags_json(),
             })
+
         return result
 
 
@@ -211,6 +215,8 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 
     def get_initial(self):
         result = super(ItemCreateView, self).get_initial()
+
+        # pylint: disable=unsubscriptable-object
         parent = Collection.objects.get(id=int(self.kwargs['parent']))
         result.update({
             'parent': self.kwargs['parent'],

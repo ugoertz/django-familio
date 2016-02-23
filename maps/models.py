@@ -102,6 +102,8 @@ class Place(models.Model):
 
         self.handle += '-' + unicode(self.id)
         self.handle = self.handle[:49]
+
+        # pylint: disable=no-member
         self.save()
 
     def as_tag(self):
@@ -221,6 +223,7 @@ class CustomMap(models.Model):
         refresh = self.refresh
         self.refresh = False
 
+        # pylint: disable=no-member
         super(CustomMap, self).save(*args, **kwargs)
 
         # Now trigger rendering process

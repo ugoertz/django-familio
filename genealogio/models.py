@@ -201,6 +201,7 @@ class Family(PrimaryObject):
                          self.handle[:44],
                          unicode(datetime.now().microsecond)[:5])
 
+        # pylint: disable=no-member
         super(Family, self).save(*args, **kwargs)
 
     def get_children(self):
@@ -722,6 +723,8 @@ class Person(PrimaryObject):
                 datebirth=self.datebirth,
                 datedeath=self.datedeath,
                 id=self.id)
+
+        # pylint: disable=no-member
         self.save()
 
     def as_tag(self):

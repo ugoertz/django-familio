@@ -3,14 +3,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import json
-import os
-import os.path
-import tempfile
-
-from celery import shared_task, chain, Celery
-
-from django.conf import settings
+from celery import shared_task, chain
 
 from .models import Book
 

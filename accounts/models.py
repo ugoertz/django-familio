@@ -75,6 +75,8 @@ class UserProfile(UserenaBaseProfile, PybbProfile):
                 role = UserSite.USER
             us = UserSite(user=self, site=Site.objects.get_current(),
                           role=role)
+
+            # pylint: disable=no-member
             us.save()
 
     def get_absolute_url(self):

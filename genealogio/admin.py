@@ -11,7 +11,6 @@ from django.conf.urls import url
 from django.contrib.gis import admin
 from django.contrib.sites.models import Site
 from django.forms.models import BaseInlineFormSet
-import django.forms as forms
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 # from django.core.exceptions import ObjectDoesNotExist
@@ -23,7 +22,6 @@ from grappelli.forms import GrappelliSortableHiddenMixin
 from accounts.models import UserSite
 from maps.admin import OSitesMixin
 from maps.models import cleanname
-from partialdate.fields import PartialDate
 from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
 from .models import (Person, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent,

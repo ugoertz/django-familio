@@ -309,6 +309,7 @@ class Note(models.Model):
     def save(self, *args, **kwargs):
         if not self.id:
             self.slug = slugify(self.title)
+        # pylint: disable=no-member
         super(Note, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

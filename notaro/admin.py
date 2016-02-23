@@ -112,6 +112,7 @@ class CurrentSiteAdmin(object):
         return self.list_display + ('ositelist', )
 
     def get_queryset(self, request):
+        # pylint: disable=no-member
         qs = super(CurrentSiteAdmin, self).get_queryset(request)
         if request.user.is_superuser:
             return qs
@@ -171,7 +172,9 @@ class CurrentSiteAdmin(object):
         'Ausgewählte Objekte aus diesem Familienbaum entfernen'
 
     def get_actions(self, request):
+        # pylint: disable=no-member
         actions = super(CurrentSiteAdmin, self).get_actions(request)
+
         if not request.user.is_superuser:
             if 'delete_selected' in actions:
                 del actions['delete_selected']
