@@ -269,16 +269,15 @@
   \fbox{\TheSbox}
 }
 
-\newcommand{\py@lightbox}{{%
-  \setlength\parskip{0pt}\par
-  \noindent\rule[0ex]{\linewidth}{0.5pt}%
-  \par\noindent\vspace{-0.5ex}%
-  }}
-\newcommand{\py@endlightbox}{{%
-  \setlength{\parskip}{0pt}%
-  \par\noindent\rule[0.5ex]{\linewidth}{0.5pt}%
-  \par\vspace{-0.5ex}%
-  }}
+\newcommand{\py@lightbox}{%
+  \par\allowbreak
+  \noindent\rule{\linewidth}{0.5pt}\par\nobreak
+  {\parskip\z@skip\noindent}%
+  }
+\newcommand{\py@endlightbox}{%
+  \par\nobreak
+  {\parskip\z@skip\noindent\rule[.4\baselineskip]{\linewidth}{0.5pt}}\par
+  }
 
 % Some are quite plain:
 \newcommand{\py@noticestart@note}{\py@lightbox}
@@ -444,40 +443,16 @@
 \RequirePackage{hypcap}
 
 % From docutils.writers.latex2e
-% see https://github.com/sphinx-doc/sphinx/issues/1564
 \providecommand{\DUspan}[2]{%
-  {% Group ("span") to limit the scope of styling commands.
-    \texorpdfstring{% Hide formatting from strings used in PDF bookmarks.
-      % Reverse order of class-names (if more than one received).
-      \def\class@names{}%
-      \@for\node@class@name:=#1\do{%
-        \ifx \class@names \empty%
-          \edef\class@names{\node@class@name}%
-        \else%
-          \edef\class@names{\node@class@name,\class@names}%
-        \fi%
-      }%  
-      % Store the content for the class-names in a variable of its own and
-      % build up the nested command-chain to modify the content. However, make
-      % sure not to expand the content while building up the nested command
-      % chain!
-      \def\content@class@names{#2}%
-      \protected@edef\cmd@chain{\protect\content@class@names}%
-      \@for\node@class@name:=\class@names\do{%
-        \ifcsname docutilsrole\node@class@name\endcsname%
-          \protected@edef\cmd@chain{%
-            \csname docutilsrole\node@class@name\endcsname{\cmd@chain}%
-          }%
-        \fi%
-      }%  
-      % Now, the command chain is built up and we can call it
-      % (and thereby expand the content).
-      \cmd@chain%
-    }{#2}% Safe version for PDF strings.
-  }% Close "span".
+  {% group ("span") to limit the scope of styling commands
+    \@for\node@class@name:=#1\do{%
+    \ifcsname docutilsrole\node@class@name\endcsname%
+      \csname docutilsrole\node@class@name\endcsname%
+    \fi%
+    }%
+    {#2}% node content
+  }% close "span"
 }
-\RequirePackage{fixltx2e}
-\MakeRobust\DUspan
 
 \providecommand*{\DUprovidelength}[2]{
   \ifthenelse{\isundefined{#1}}{\newlength{#1}\setlength{#1}{#2}}{}
@@ -548,11 +523,18 @@
 \fi
 
 % Define literal-block environment
-\RequirePackage{float}
-\floatstyle{plaintop}
+\RequirePackage{newfloat}
+\DeclareFloatingEnvironment{literal-block}
 \ifx\thechapter\undefined
-  \newfloat{literal-block}{htbp}{loc}[section]
+  \SetupFloatingEnvironment{literal-block}{within=section,placement=h}
 \else
-  \newfloat{literal-block}{htbp}{loc}[chapter]
+  \SetupFloatingEnvironment{literal-block}{within=chapter,placement=h}
 \fi
-\floatname{literal-block}{List}
+\SetupFloatingEnvironment{literal-block}{name=List}
+% control caption around literal-block
+\RequirePackage{capt-of}
+\RequirePackage{needspace}
+% if the left page space is less than \literalblockneedsapce, insert page-break
+\newcommand{\literalblockneedspace}{5\baselineskip}
+% margin before the caption of literal-block
+\newcommand{\literalblockcaptiontopvspace}{0.5\baselineskip}
