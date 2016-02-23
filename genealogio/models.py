@@ -511,6 +511,8 @@ class Person(PrimaryObject):
               with the Rufname underlined (ReST-formatted)
           if fmt is "html":
               with the Rufname underlined (HTML-formatted)
+          if fmt if "gedcom":
+              with the surname in slashes
         - the nickname (if available), in parentheses
         - the last name (birthname or marriedname + birthname)
         - title (suffix)
@@ -518,12 +520,16 @@ class Person(PrimaryObject):
         """
 
         name = self.first_name
+        template_rufname = '%s'
+        lastname = '%s' % self.get_last_name()
 
         if fmt == "rst":
             template_rufname = ':underline:`%s`'
         elif fmt == "html":
             template_rufname =\
                     '<span style="text-decoration :underline;">%s</span>'
+        elif fmt == "gedcom":
+            lastname = '/%s/' % self.last_name
         else:
             template_rufname = '_%s_'
 
@@ -540,11 +546,14 @@ class Person(PrimaryObject):
                 name += ' (%s)'\
                         % self.name_set.filter(typ=Name.NICKNAME)[0].name
             else:
-                name = ' %s' % self.name_set.filter(typ=Name.NICKNAME)[0].name
+                name = '%s' % self.name_set.filter(typ=Name.NICKNAME)[0].name
         except IndexError:
             pass
 
-        name = '%s %s' % (name, self.get_last_name())
+        if name:
+            name += ' ' + lastname
+        else:
+            name = lastname
 
         try:
             name = '%s %s' % (

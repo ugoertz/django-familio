@@ -89,6 +89,18 @@ class Place(models.Model):
 
     objects = models.GeoManager()
 
+    @property
+    def latitude(self):
+        if self.location:
+            return self.location.y
+        return None
+
+    @property
+    def longitude(self):
+        if self.location:
+            return self.location.x
+        return None
+
     def reset_handle(self):
         """Recompute handle for a Place object which already has an id."""
 
