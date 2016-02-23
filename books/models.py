@@ -529,9 +529,7 @@ class Book(models.Model):
     def create_tex(self):
         """
         Compile tex file from the *.rst files (which must be created before).
-        Also create a zip archive containing the tex file and everything else
-        that is needed to run xelatex.
-        Copy zip file to destination directory
+        Also set up things in order to run xelatex.
         """
 
         shutil.rmtree(
@@ -552,11 +550,6 @@ class Book(models.Model):
                 os.path.join(
                     self.get_directory_tmp(), '_build/latex/Makefile'))
 
-        shutil.make_archive(
-                os.path.join(self.get_directory_dest(), 'chronik'), 'zip',
-                root_dir=os.path.join(self.get_directory_tmp(), '_build'),
-                base_dir='latex')
-
     def create_pdf(self):
         # FIXME set mogrify options, if required
         os.system(
@@ -574,6 +567,15 @@ class Book(models.Model):
             fn = 'c'
         else:
             fn = 'chronicle'
+
+        # create zip file (will include the final pdf ...) (should not be moved
+        # to create_tex because we want to have the sphinx.sty file used by
+        # xelatex which is copied to the build directory by "make pdf" above.)
+        shutil.make_archive(
+                os.path.join(self.get_directory_dest(), 'chronik'), 'zip',
+                root_dir=os.path.join(self.get_directory_tmp(), '_build'),
+                base_dir='latex')
+
         shutil.copy(
                 os.path.join(
                     self.get_directory_tmp(),
