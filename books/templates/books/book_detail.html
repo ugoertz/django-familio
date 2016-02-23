@@ -73,14 +73,7 @@ $(document).ready(function() {
         <div class="col-md-12 cabin">
             <h2><span style="color: gray;">Buchprojekt</span> {{ object.title }}</h2>
 
-            {% crispy form form.helper %}
-
-            {% if object.authors.all %}
-            <p style="margin-top: 20px;">Autoren:
-            {% for a in object.authors.all %}{{ a.get_full_name }}, {% endfor %}
-            </p>
-
-            <p>Download:
+            <div class="cabin" style="font-size: 120%; padding-bottom: 15px; margin-bottom: 20px; margin-top: 20px; border-bottom: 2px dashed black;">Download:
             {% with url=object.get_pdf_url %}
             {% if url %}
             <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">pdf-Datei</a>
@@ -94,13 +87,21 @@ $(document).ready(function() {
             <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">zip-Archiv der TeX-Datei</a>
             {% endif %}
             {% endwith %}
-            </p>
+            <span style="margin-left:30px;"><a href="{% url "export-gedcom" book.id %}">GEDCOM</a></span>
 
-            <p><a href="{% url "books-create-pdf" book.id %}" class="btn {% if book.render_status == 'RENDERED' or book.render_status == '' %}btn-primary{% else %}btn-warning{% endif %}">PDF erstellen</a>
+            <a href="{% url "books-create-pdf" book.id %}"  style="margin-left: 30px;" class="btn {% if book.render_status == 'RENDERED' or book.render_status == '' %}btn-primary{% else %}btn-warning{% endif %}">PDF erstellen</a>
+            </div>
+
+            {% crispy form form.helper %}
+
+            {% if object.authors.all %}
+            <p style="margin-top: 20px;">Autoren:
+            {% for a in object.authors.all %}{{ a.get_full_name }}, {% endfor %}
+            </p>
             {% endif %}
 
             {% if object.root %}
-            <h3><span style="color: gray;">Inhalt:</span> {% firstof book.root.title "Unsere Familiengeschichte" %}</h3>
+            <h3 style="margin-top: 20px;"><span style="color: gray;">Inhalt:</span> {% firstof book.root.title "Unsere Familiengeschichte" %}</h3>
             <a class="btn btn-default" href="{{ object.root.get_absolute_url }}">Bearbeiten</a>
 
             {% include "books/collection_snippet.html" with object=object.root recursive=True %}

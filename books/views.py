@@ -3,11 +3,12 @@
 from __future__ import unicode_literals
 from __future__ import division
 
+import datetime
 import json
 
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from braces.views import LoginRequiredMixin
 from django.views.generic import (
         CreateView, DetailView, UpdateView, View, )
@@ -20,6 +21,7 @@ from .forms import (
         ItemCreateForm, ItemForm, )
 from .models import Book, Collection, Item
 from .tasks import compile_book
+from .gedcom import GEDCOMWriter
 
 
 class PublicBookList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
@@ -225,7 +227,7 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         return result
 
 
-class ItemRetrieveText(DetailView):
+class ItemRetrieveText(LoginRequiredMixin, DetailView):
 
     model = Item
 
@@ -233,3 +235,28 @@ class ItemRetrieveText(DetailView):
         obj = self.get_object()
         obj.set_text_from_template()
         return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class ExportGEDCOMView(View):
+
+    def get(self, *args, **kwargs):
+        # pylint: disable=unsubscriptable-object
+        book = Book.objects.get(id=self.kwargs['id'])
+        data = {
+                'persons': set([]),
+                'families': set([]),
+                'notes': set([]),
+                'events': set([]),
+                }
+        book.root.get_gedcom_data(data)
+
+        writer = GEDCOMWriter(**data)
+
+        filename = 'data-{0:%Y}-{0:%m}-{0:%d}.ged'.format(
+                datetime.datetime.today())
+        response = HttpResponse(
+                writer.export(), content_type='text/plain; charset=utf8')
+        response['Content-Disposition'] =\
+            'attachment; filename="{fn}"'.format(fn=filename)
+
+        return response

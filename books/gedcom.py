@@ -57,7 +57,7 @@ def GEDCOM_line_breaks(f):
             try:
                 level = int(t.split(' ')[0])
             except:
-                print 'OOPS', t
+                # FIXME --- handle this more explicitly
                 continue
 
             # replace @'s

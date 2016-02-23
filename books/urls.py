@@ -4,7 +4,8 @@ from .views import (
         PublicBookList, UserBookList,
         BookCreateView, BookDetail, CreatePDFView,
         CollectionDetail, CollectionCreateView,
-        ItemDetail, ItemCreateView, ItemRetrieveText
+        ItemDetail, ItemCreateView, ItemRetrieveText,
+        ExportGEDCOMView,
         )
 
 
@@ -30,5 +31,7 @@ urlpatterns = patterns(
             ItemRetrieveText.as_view(), name='item-retrievetext'),
         url(r'^item-create/(?P<parent>\d+)/$',
             ItemCreateView.as_view(), name='item-create'),
+        url(r'^export-gedcom/(?P<id>\d+)/$',
+            ExportGEDCOMView.as_view(), name='export-gedcom'),
         )
 

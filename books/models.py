@@ -215,6 +215,12 @@ class Collection(models.Model):
                     for collection in self.collection_set.all()])
         return header + content + '\n\n'
 
+    def get_gedcom_data(self, data):
+        for item in self.item_set.all():
+            item.get_gedcom_data(data)
+        for collection in self.collection_set.all():
+            collection.get_gedcom_data(data)
+
     def get_flags_json(self, show_source=True):
         d = defaultdict(dict)
         for _, m, o in FLAGS_FLAT:
@@ -640,6 +646,20 @@ class Item(models.Model):
     active = models.BooleanField(default=True, verbose_name="Aktiv")
     position = models.IntegerField(default=1)
     site = models.ForeignKey(Site)
+
+    def get_gedcom_data(self, data):
+        if (self.obj_content_type
+                == ContentType.objects.get_for_model(Person)):
+            data['persons'].add(self.obj)
+        elif (self.obj_content_type
+                == ContentType.objects.get_for_model(Family)):
+            data['families'].add(self.obj)
+        elif (self.obj_content_type
+                == ContentType.objects.get_for_model(Event)):
+            data['events'].add(self.obj)
+        elif (self.obj_content_type
+                == ContentType.objects.get_for_model(Note)):
+            data['notes'].add(self.obj)
 
     def get_rst(self, force_from_template=False):
         """
