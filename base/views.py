@@ -103,7 +103,7 @@ def home(request):
         context = {
                 'personen':
                 Person.objects.filter(date_changed__gt=two_weeks_ago)
-                .order_by('-date_added')[:5],
+                .order_by('-date_changed')[:5],
                 'comments': Comment.objects.filter(
                     date__gt=two_weeks_ago).order_by('-date')[:5],
                 'birthdeathdays': birthdeathdays,
@@ -111,7 +111,7 @@ def home(request):
                 'notes':
                 Note.objects.filter(
                     published=True, date_changed__gt=two_weeks_ago)
-                .order_by('-date_added')[:5],
+                .order_by('-date_changed')[:5],
                 'pic_list': Picture.objects.all().order_by('?')[:9],
                 }
     else:
