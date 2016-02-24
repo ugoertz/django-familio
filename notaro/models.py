@@ -196,7 +196,7 @@ class Document(models.Model):
     @staticmethod
     def autocomplete_search_fields():
         """Used by grappelli."""
-        return ("name_icontains", "description__icontains", )
+        return ("name__icontains", "description__icontains", )
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
