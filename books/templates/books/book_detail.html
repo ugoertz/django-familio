@@ -73,6 +73,7 @@ $(document).ready(function() {
         <div class="col-md-12 cabin">
             <h2><span style="color: gray;">Buchprojekt</span> {{ object.title }}</h2>
 
+            {% if book.id %} {# check whether we already have a book, or whether we are creating one right now #}
             <div class="cabin" style="font-size: 120%; padding-bottom: 15px; margin-bottom: 20px; margin-top: 20px; border-bottom: 2px dashed black;">Download:
             {% with url=object.get_pdf_url %}
             {% if url %}
@@ -91,6 +92,7 @@ $(document).ready(function() {
 
             <a href="{% url "books-create-pdf" book.id %}"  style="margin-left: 30px;" class="btn {% if book.render_status == 'RENDERED' or book.render_status == '' %}btn-primary{% else %}btn-warning{% endif %}">PDF erstellen</a>
             </div>
+            {% endif %}
 
             {% crispy form form.helper %}
 
