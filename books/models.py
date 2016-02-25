@@ -85,7 +85,7 @@ Unsere Familiengeschichte
 =========================
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
 '''
 
