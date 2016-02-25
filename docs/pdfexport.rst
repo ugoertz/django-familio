@@ -61,6 +61,8 @@ können, sind vom Prinzip her folgendermaßen aufgebaut:
   Unterkapitel (Unterunterkapitel, ...), die jeweils gewisse Einträge und
   gegebenenfalls Unterkollektionen enthalten können.
 
+.. _collection-title:
+
 **Buchkapitel**
   Die Wurzel des "Kapitelbaums" bildet das Buchkapitel, das direkt dem Buch
   zugeordnet ist. Der Titel dieses Kapitels wird als Buchtitel verwendet.
@@ -90,7 +92,7 @@ Ein Buch anlegen
 ----------------
 
 **Titel**
-  Der an dieser Stelle eingegebene Titel dient dazu, um das Buchprojekt in der
+  Der an dieser Stelle eingegebene Titel dient dazu, das Buchprojekt in der
   Liste aller Buchprojekte kenntlich zu machen. Er wird als Voreinstellung für
   den Titel des Buchkapitels verwendet, der dann als Titel im pdf selbst
   angegeben wird. Dieser lässt sich aber ändern: siehe :ref:`Titelseite
@@ -425,4 +427,39 @@ weitere Veränderungen ganz feinkörnig vorzunehmen (oder auch Fehler im Prozess
 oder in den eigenen ReStructured-Text-Dateien zu suchen). Allerdings ist das
 eher etwas "für Fortgeschrittene", will sagen: erfordert zusätzliche
 Einarbeitung in das TeX-System und insbesondere die Installation von XeLaTeX.
+
+
+-----------------------
+Export als GEDCOM-Datei
+-----------------------
+
+Das `GEDCOM-Format <https://de.wikipedia.org/wiki/GEDCOM>`__ ist das
+Standard-Format für den Datenaustausch zwischen Genealogie-Programmen (auch wenn
+es leider schon ein bisschen veraltet ist und seine Schwachstellen hat).
+
+Aus einem Buchprojekt wie oben beschrieben kann man eine GEDCOM-Datei
+exportieren, indem man den Link *GEDCOM* in der Download-Zeile oben anklickt.
+
+Dadurch werden alle Datenbank-Objekte (Personen, Familien, Texte; Ereignisse aus
+dem Buchprojekt werden Personen bzw. Familien zugeordnet, wo das möglich ist) in
+die GEDCOM-Datei exportiert. Momentan ist das so gelöst, dass für den
+GEDCOM-Export die Informationen direkt aus der Datenbank ausgelesen werden,
+d.h.: Während es für die pdf-Datei möglich ist, individuelle Änderungen in den
+entsprechenden Textfeldern vorzunehmen oder weitere Einträge zu ergänzen,
+spiegeln sich diese Änderungen/Ergänzungen in der GEDCOM-Datei nicht wieder. Die
+Anbindung des GEDCOM-Exports an ein Buchprojekt dient also nur dazu, eine
+Auswahl eines Teils der Datenbank zu ermöglichen.
+
+Der GEDCOM-Export ist (ein bißchen aber) nicht sehr ausführlich getestet worden.
+Es kann gut sein, dass noch Fehler drin sind, also Vorsicht, wenn exportierte
+Daten mit Daten aus anderen Quellen kombiniert werden -- lieber einmal zu oft
+ein Backup machen. (Für Rückmeldungen über Fehler bin ich natürlich dankbar.)
+
+Es gibt auch noch ein paar Punkte, die man eventuell ändern sollte, zum Beispiel
+werden die Texte im Moment so exportiert, wie sie für die Webseite abgespeichert
+sind (also inklusive aller Formatierungen wie den Links auf Datenbankobjekte).
+Wenn hier jemand konkrete Änderungswünsche hat: Bitte melden.
+
+
+
 
