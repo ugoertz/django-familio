@@ -454,7 +454,7 @@ class Sparkline(LoginRequiredMixin, View):
                   fr=None, to=None, width=None, height=None):
         """
         If pk (== person's id) and fampk (== family's id) are both not None,
-        then return sparkling image for that person/family.
+        then return sparkline image for that person/family.
 
         If pk is None but fampk is not None, then return the headline image for
         that family.
