@@ -2,7 +2,9 @@
 
 from __future__ import unicode_literals
 
+from django.apps import apps
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from taggit.models import GenericTaggedItemBase, TagBase
 
@@ -87,6 +89,22 @@ class CustomTag(TagBase):
             return self.name[4:]
 
         return ' '.join(self.name.split(' ')[:-1])
+
+    def get_object_for_tag(self):
+        """
+        If the tag is attached to an object in the database, return that
+        object. Otherwise, raise an ObjectDoesNotExist exception.
+        """
+
+        if self.slug.startswith('tag-'):
+            raise ObjectDoesNotExist(
+                    'No database object is attached to this tag.')
+
+        # pylint: disable=no-member
+        tpe, pk = self.slug.split('-')
+        app, model = tpe.split('.')
+        model_class = apps.get_model(app_label=app, model_name=model)
+        return model_class.objects.get(pk=int(pk))
 
 
 class CustomTagThrough(GenericTaggedItemBase):

@@ -11,6 +11,8 @@ from django.core.urlresolvers import reverse
 
 from braces.views import LoginRequiredMixin
 
+from tags.models import CustomTag
+
 
 class TagSearch(LoginRequiredMixin, TemplateView):
 
@@ -43,8 +45,27 @@ class SaveTags(LoginRequiredMixin, View):
                             'Das Schlagwort "%s" kann ' % t[4:] +
                             'nicht gespeichert werden. '
                             'Erlaubte Zeichen in Schlagwörtern: '
-                            'Buchstaben, ",.;_+-:!" und Leerzeichen.')
+                            'Buchstaben, ".;_+-:!" und Leerzeichen.')
                     t = ''
+            elif not t.startswith('tag-'):
+                # This is a tag attached to an object in the database.  Check
+                # whether for this object, a tag exists already. If so, we
+                # need to make sure that the object.as_tag() representation has
+                # not changed in the meantime.  (This could happen, e.g., when
+                # a change to a person's name is made.)
+                try:
+                    tag = CustomTag.objects.get(slug=t.split(' ')[-1])
+
+                    # the current as_tag representation is the first part of t:
+                    t_text = ' '.join(t.split(' ')[:-1])
+
+                    if tag.name != t_text:
+                        # The as_tag representation has changed!  Update the
+                        # existing tag accordingly.
+                        tag.name = t
+                        tag.save()
+                except:
+                    pass
             if t:
                 taglist.append(t)
 
