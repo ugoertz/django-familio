@@ -105,7 +105,8 @@ $(document).ready(function() {
 
                 <div style="margin-top: 50px;">
                     <form method="POST" action="" enctype="multipart/form-data">
-                        {% crispy form %}
+                        {% csrf_token %}
+                        {{ form|crispy }}
                         <input type="submit" value="Beschreibung abspeichern" class="btn btn-success pull-right cabin" style="margin-top: 20px;">
                     </form>
                 </div>
