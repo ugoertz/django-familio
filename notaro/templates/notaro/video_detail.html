@@ -117,10 +117,10 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-md-8">
             <div style="margin-top: 20px;">
-                <video poster="{{ object.poster.url }}" width="700" height="550" controls preload> 
-                    <source src="{{ object.get_mp4_url }}"></source> 
-                    <source src="{{ object.get_webm_url }}"></source> 
-                    <source src="{{ object.get_ogv_url }}"></source> 
+                <video poster="{{ object.poster.url }}" width="700" height="550" controls>
+                    <source src="{{ object.get_mp4_url }}" type="video/mp4"></source>
+                    <source src="{{ object.get_webm_url }}" type="video/ogv"></source>
+                    <source src="{{ object.get_ogv_url }}" type="video/webm"></source>
                 </video>
             </div>
 
@@ -137,6 +137,13 @@ $(document).ready(function() {
 
         </div>
         <div class="col-md-3 col-md-offset-1">
+            <div style="margin-top: 40px;" class="cabin">
+                Download:<br>
+                <a href="{{ object.get_mp4_url }}">{{ object.video.filename_root }}.mp4</a><br>
+                {% if not object.video.extension == ".mp4" %}
+                <a href="{{ object.video.url }}">Original-Datei: {{ object.video.original_filename }}</a>
+                {% endif %}
+            </div>
             <div style="margin-top: 40px;">
             {% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}
             {% if user_is_admin %}
