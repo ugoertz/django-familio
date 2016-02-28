@@ -17,7 +17,7 @@ from filebrowser.base import FileListing
 
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
-from .models import Note, Picture, Source, Document
+from .models import Note, Picture, Source, Document, Video
 
 
 class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
@@ -32,6 +32,20 @@ class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
             messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
         return super(PictureDetail, self).post(request, *args, **kwargs)
+
+
+class VideoDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
+    """Display a video."""
+
+    model = Video
+    fields = ['caption', ]
+    template_name_suffix = '_detail'
+
+    def post(self, request, *args, **kwargs):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+        return super(VideoDetail, self).post(request, *args, **kwargs)
 
 
 class SourceDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
@@ -102,7 +116,7 @@ class SourceList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
 class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
-    """Display list of all notes."""
+    """Display list of all pictures."""
 
     model = Picture
 
@@ -110,6 +124,25 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
         context = super(PictureList, self).get_context_data(**kwargs)
         context.update({
             'size': self.kwargs.get('size', 'small'),
+            'tag_list':
+            CustomTag.objects
+                     .all()
+                     .annotate(num_times=Count('tags_customtagthrough_items'))
+                     .order_by('-num_times', 'name')[:50],
+            })
+
+        return context
+
+
+class VideoList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
+
+    """Display list of all pictures."""
+
+    model = Video
+
+    def get_context_data(self, **kwargs):
+        context = super(VideoList, self).get_context_data(**kwargs)
+        context.update({
             'tag_list':
             CustomTag.objects
                      .all()

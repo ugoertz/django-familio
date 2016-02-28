@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import os
 import os.path
 import re
+import tempfile
 
 from django.db import models
 from django.contrib.sites.models import Site
@@ -175,6 +176,128 @@ class Picture(models.Model):
         ordering = ('-id', )
         verbose_name = 'Bild'
         verbose_name_plural = 'Bilder'
+
+
+class VideoSource(models.Model):
+    picture = models.ForeignKey('Video', verbose_name="Video")
+    source = models.ForeignKey(Source, verbose_name="Quelle")
+    comment = models.CharField(
+            max_length=500,
+            blank=True,
+            verbose_name="Kommentar")
+
+
+class Video(models.Model):
+    video = FileBrowseField("Videodatei", max_length=200, directory="videos/",
+                            extensions=[".mp4", ".ogg", ".webm", ".vob", ],
+                            blank=True, null=True,
+                            help_text="Videodatei, " +
+                            "Formate: mp4, ogg, webm, vob.")
+    poster = FileBrowseField("Bilddatei", max_length=200, directory="videos/",
+                             extensions=[".jpg", ".png", ],
+                             blank=True, null=True,
+                             help_text="Angezeigte Bilddatei (.jpg/.png)")
+
+    # directory where the versions of the video are stored
+    directory = models.CharField(max_length=300, blank=True)
+
+    caption = models.TextField(blank=True, verbose_name='Beschreibung')
+    date = models.DateField(blank=True, null=True, verbose_name='Datum')
+    sources = models.ManyToManyField(Source, blank=True,
+                                     verbose_name="Quellen",
+                                     through=VideoSource)
+
+    sites = models.ManyToManyField(Site)
+    all_objects = GenManager()
+    objects = CurrentSiteManager()
+    tags = TaggableManager(
+            through=CustomTagThrough,
+            blank=True, help_text="")
+
+    def save(self, *args, **kwargs):
+        ctr = 0
+        while ctr < 5 and not self.directory:
+            ctr += 1
+            if not os.path.exists(os.path.join(
+                    settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                    'videos')):
+                os.makedirs(os.path.join(
+                    settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                    'videos'))
+            tmpdir = tempfile.mkdtemp(
+                    dir=os.path.join(
+                        settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                        'videos'),
+                    prefix=self.video.original_filename + '-')
+            os.chmod(tmpdir, 0775)
+            self.directory = os.path.basename(tmpdir)
+            print 'self.directory', self.directory
+        if not self.directory:
+            # something went wrong
+            raise Exception
+
+        # pylint: disable=no-member
+        super(Video, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        # pylint: disable=no-member
+        if self.poster:
+            return '[%d] %s <img src="%s">' %\
+                (self.id,
+                    self.caption[:25] or self.video.original_filename,
+                    self.poster.version_generate(ADMIN_THUMBNAIL).url)
+        else:
+            return '[%d] %s' %\
+                (self.id, self.caption[:25] or self.video.original_filename)
+
+    @staticmethod
+    def autocomplete_search_fields():
+        """Used by grappelli."""
+        return ("id__iexact", "caption__icontains",
+                "video__icontains", )
+
+    def related_label(self):
+        if Site.objects.get_current() in self.sites.all():
+            return self.__unicode__()
+        else:
+            return '[[ %s ]]' % self.__unicode__()
+
+    def get_absolute_url(self):
+        return reverse('video-detail', kwargs={'pk': self.id, })
+
+    def as_html_in_list(self):
+        """
+        HTML representing this picture (typically to be used to show a list of
+        pictures with a certain tag, e.g. in a detail view of a Person, ...
+        """
+
+        # pylint: disable=no-member
+        return '<img src="%s">' % self.poster.version_generate('small').url
+
+    def get_caption(self):
+        return self.caption
+        # return '\n'.join(['.. class:: cabin\n\n'] +
+        #                  ['    '+l for l in self.caption.splitlines()])
+
+    def get_mp4_url(self):
+        return os.path.join(
+                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.mp4'.format(dir=self.directory))
+
+    def get_ogv_url(self):
+        return os.path.join(
+                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.ogv'.format(dir=self.directory))
+
+    def get_webm_url(self):
+        return os.path.join(
+                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.webm'.format(dir=self.directory))
+
+    class Meta:
+        ordering = ('-id', )
+        verbose_name = 'Video'
+        verbose_name_plural = 'Videos'
 
 
 class Document(models.Model):

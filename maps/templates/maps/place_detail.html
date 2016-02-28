@@ -73,9 +73,8 @@ $(window).on('map:init', function (e) {
             </div>
 
             {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
-            <ul class="list-group">
+            {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
             {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
-            </ul>
 
 
             <div style="margin-top: 50px;">

@@ -33,7 +33,8 @@ from base.fields import MultiFileField
 from base.models import SiteProfile
 from accounts.models import UserSite
 from .models import (Note, Picture, Source, PictureNote, NoteSource,
-                     PictureSource, Document)
+                     PictureSource, Document, Video, VideoSource, )
+from .tasks import compile_video
 
 
 CODEMIRROR_CSS = (
@@ -489,8 +490,11 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
             target = 'images'
         elif filename[-4:].lower() in [
                 '.pdf', '.doc', '.rtf',
-                '.tif', '.mp3', '.mp4', 'docx']:
+                '.tif', '.mp3', 'docx']:
             target = 'documents'
+        elif filename[-4:].lower() in [
+                '.mp4', '.ogg', '.webm', '.vob', ]:
+            target = 'videos'
         else:
             return
 
@@ -512,12 +516,22 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
         default_storage.save(
                 os.path.join(full_path, filename),
                 filedata)
-        if create_objects and filename[-4:].lower() in ['.jpg', '.png', ]:
-            picture_path = os.path.join(
-                    settings.FILEBROWSER_DIRECTORY, target, path, filename)
-            # pylint: disable=no-member
-            picture = Picture.objects.create(image=picture_path)
-            picture.sites.add(Site.objects.get_current())
+        if create_objects:
+            if target == 'images':
+                picture_path = os.path.join(
+                        settings.FILEBROWSER_DIRECTORY, target, path, filename)
+                # pylint: disable=no-member
+                picture = Picture.objects.create(image=picture_path)
+                picture.sites.add(Site.objects.get_current())
+            if target == 'videos':
+                # create video object
+                video_path = os.path.join(
+                        settings.FILEBROWSER_DIRECTORY, target, path, filename)
+                # pylint: disable=no-member
+                video = Video.objects.create(video=video_path)
+                video.sites.add(Site.objects.get_current())
+
+                compile_video(video.id)
 
         # return information whether we uploaded an image or a document
         return target
@@ -535,6 +549,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                 # on this)
                 uploaded_images = False
                 uploaded_documents = False
+                uploaded_videos = False
 
                 for filedata in form.cleaned_data['archive']:
                     if filedata.name.endswith('.zip'):
@@ -548,6 +563,8 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                                 uploaded_images = True
                             elif target == 'documents':
                                 uploaded_documents = True
+                            elif target == 'videos':
+                                uploaded_videos = True
                         zipf.close()
                     else:
                         target = self.handle_file_upload(
@@ -558,18 +575,27 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                             uploaded_images = True
                         elif target == 'documents':
                             uploaded_documents = True
+                        elif target == 'videos':
+                            uploaded_videos = True
 
                 if uploaded_images:
                     if form.cleaned_data['create_objects']:
                         return HttpResponseRedirect(reverse('picture-list'))
                     else:
                         target = 'images'
-                if not (uploaded_images or uploaded_documents):
+                if uploaded_videos:
+                    if form.cleaned_data['create_objects']:
+                        return HttpResponseRedirect(reverse('video-list'))
+                    else:
+                        target = 'images'
+                if not (uploaded_images or
+                        uploaded_documents or
+                        uploaded_videos):
                     messages.warning(
                             request,
                             'Es wurden keine Dateien hochgeladen. '
                             'Erlaubt: .jpg, .png, .pdf, .zip, '
-                            '.doc, .rtf, .docx, .mp3, .mp4')
+                            '.doc, .rtf, .docx, .mp3, .mp4, .ogg, .webm, .vob')
                     return HttpResponseRedirect(reverse('admin:uploadarchive'))
 
                 return HttpResponseRedirect(
@@ -624,3 +650,60 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
 
 
 admin.site.register(Document, DocumentAdmin)
+
+
+class SourceVideoInline(admin.TabularInline):
+    """Inline class to put Video-Source into Video's detail page."""
+
+    # pylint: disable=no-member
+    model = VideoSource
+    extra = 0
+    raw_id_fields = ('source', )
+    autocomplete_lookup_fields = {'fk': ['source', ], }
+    verbose_name = "Quellenangabe"
+    verbose_name_plural = "Quellenangaben"
+
+
+class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
+    """Admin class for Video model."""
+
+    fieldsets = (('', {'fields': ('caption', 'video', 'poster', 'date', ), }),
+                 ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+                                     'fields': ('sites', ), }), )
+    raw_id_fields = ('sites', )
+    autocomplete_lookup_fields = {'m2m': ['sites', ], }
+    list_filter = ('sites', )
+    search_fields = ('caption', )
+    inlines = [SourceVideoInline, ]
+
+    def image_thumbnail(self, obj):
+        """Display thumbnail, to be used in django admin list_display."""
+
+        if obj.poster and obj.poster.filetype == "Image":
+            return '<img src="%s" />'\
+                   % obj.poster.version_generate(ADMIN_THUMBNAIL).url
+        else:
+            return ""
+    image_thumbnail.allow_tags = True
+    image_thumbnail.short_description = "Thumbnail"
+
+    list_display = ('id', 'caption', 'date', 'image_thumbnail', )
+
+    def filename(self, obj):
+        return obj.video.filename
+
+    class Media:
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js',
+              )
+
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except ImportError:
+            pass
+        js += ('codemirror/codemirror_conf_document.js', )
+        css = {'all': ('css/document_admin.css', ) + CODEMIRROR_CSS, }
+
+
+admin.site.register(Video, VideoAdmin)
