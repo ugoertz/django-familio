@@ -8,9 +8,11 @@
 <div class="container">
     <div class="row">
         <h1>Schlagwort {{ tag|as_tag_text }}</h1>
+        <div>
         {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
         {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
         {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+        </div>
     </div>
 </div>
 {% endblock %}
