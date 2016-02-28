@@ -59,6 +59,10 @@ button, .selectize-input {
 </style>
 {% endblock css %}
 
+{% block jsnocompress %}
+{{ block.super }}
+<script type="text/javascript" src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
+{% endblock jsnocompress %}
 {% block js %}
 {{ block.super  }}
 {% if user_is_admin %}
@@ -67,7 +71,6 @@ button, .selectize-input {
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
-<script type="text/javascript" src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
 <script>
 $(document).ready(function() {
     {% include "tags/selectize_tags.js" %}
