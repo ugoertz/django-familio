@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}">
 <link rel="stylesheet" href="{% static 'codemirror/show-hint.css' %}">
 <link rel="stylesheet" href="{% static 'codemirror/dialog.css' %}">
+<link rel="stylesheet" href="{% static 'mediaelement/mediaelementplayer.css' %}">
 
 <style>
 .help-block {
@@ -61,7 +62,6 @@ button, .selectize-input {
 
 {% block jsnocompress %}
 {{ block.super }}
-<script type="text/javascript" src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
 {% endblock jsnocompress %}
 {% block js %}
 {{ block.super  }}
@@ -71,6 +71,7 @@ button, .selectize-input {
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
+<script type="text/javascript" src="{% static 'mediaelement/mediaelement-and-player.min.js' %}"></script>
 <script>
 $(document).ready(function() {
     {% include "tags/selectize_tags.js" %}
@@ -117,7 +118,7 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-md-8">
             <div style="margin-top: 20px;">
-                <video poster="{{ object.poster.url }}" width="700" height="550" controls>
+                <video poster="{{ object.poster.url }}" width="600" height="480" class="mejs-player" data-mejsoptions='{"alwaysShowControls": true}'>
                     <source src="{{ object.get_mp4_url }}" type="video/mp4"></source>
                     <source src="{{ object.get_webm_url }}" type="video/ogv"></source>
                     <source src="{{ object.get_ogv_url }}" type="video/webm"></source>
