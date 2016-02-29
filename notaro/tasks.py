@@ -53,7 +53,7 @@ def create_video_version(video_id, fmt):
             '-codec:v libx264 -profile:v main -level 3.0 -preset slow',
             '-b:v 400k',
             '-maxrate 400k -bufsize 800k -vf scale=-1:720',
-            '-crf 22 -movflags faststart',
+            '-movflags faststart',
             '-codec:a aac -b:a 192k',
             ])
 
