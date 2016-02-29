@@ -49,10 +49,11 @@ def create_video_version(video_id, fmt):
     elif fmt == 'webm':
         options = '-c:v libvpx -crf 8 -b:v 1M -c:a libvorbis'
     elif fmt == 'mp4':
-        options = '-c:v libx264 -profile:v baseline -level 3.0 ' +\
-                  '-preset slow -crf 22 ' +\
-                  '-c:a aac -strict experimental -ar 44100 -ac 2 -b:a 256k' +\
-                  '-movflags faststart'
+        options = ' '.join([
+            '-c:v libx264 -profile:v baseline -level 3.0',
+            '-preset slow -crf 22 -movflags faststart',
+            '-c:a aac -strict experimental -ar 44100 -ac 2 -b:a 256k',
+            ]
 
     os.system('ffmpeg -i {fn} {options} -y {tgt}.{fmt}'.format(
         fn=fn, options=options, tgt=target, fmt=fmt))
