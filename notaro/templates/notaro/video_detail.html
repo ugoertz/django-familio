@@ -140,10 +140,10 @@ $(document).ready(function() {
         <div class="col-md-3 col-md-offset-1">
             <div style="margin-top: 40px;" class="cabin">
                 Download:<br>
-                <a href="{{ object.get_mp4_url }}">{{ object.video.filename_root }}.mp4</a><br>
-                {% if not object.video.extension == ".mp4" %}
-                <a href="{{ object.video.url }}">Original-Datei: {{ object.video.original_filename }}</a>
-                {% endif %}
+                <a href="{{ object.get_mp4_url }}">{{ object.video.filename_root }}.mp4</a> ({{ object.get_mp4_size }} MB)<br>
+                <a href="{{ object.get_ogv_url }}">{{ object.video.filename_root }}.ogv</a> ({{ object.get_ogv_size }} MB)<br>
+                <a href="{{ object.get_webm_url }}">{{ object.video.filename_root }}.webm</a> ({{ object.get_webm_size }} MB)<br>
+                <a href="{{ object.video.url }}">Original-Datei: {{ object.video.original_filename }}</a> ({{ object.video.filesize|filesizeformat }})
             </div>
             <div style="margin-top: 40px;">
             {% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}

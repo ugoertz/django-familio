@@ -279,6 +279,24 @@ class Video(models.Model):
         # return '\n'.join(['.. class:: cabin\n\n'] +
         #                  ['    '+l for l in self.caption.splitlines()])
 
+    def get_mp4_size(self):
+        sz = os.path.getsize(os.path.join(
+            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+            'videos/{dir}/video.mp4'.format(dir=self.directory)))
+        return (sz / 100000) / 10.0
+
+    def get_ogv_size(self):
+        sz = os.path.getsize(os.path.join(
+            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+            'videos/{dir}/video.ogv'.format(dir=self.directory)))
+        return (sz / 100000) / 10.0
+
+    def get_webm_size(self):
+        sz = os.path.getsize(os.path.join(
+            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+            'videos/{dir}/video.webm'.format(dir=self.directory)))
+        return (sz / 100000) / 10.0
+
     def get_mp4_url(self):
         return os.path.join(
                 settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
