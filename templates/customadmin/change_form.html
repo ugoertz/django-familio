@@ -5,6 +5,9 @@
 {% if user.is_superuser and original.handle %}
 <li><a href="{{ request.path_info }}resethandle/">Handle neu setzen</a></li>
 {% endif %}
+{% if original.video %}
+<li><a href="{{ request.path_info }}recompile/">Video neu kompilieren</a></li>
+{% endif %}
 <li><a href="{{ request.path_info }}remove/">Entfernen</a></li>
 {% url opts|admin_urlname:'history' original.pk|admin_urlquote as history_url %}
 <li><a href="{% add_preserved_filters history_url %}">{% trans "History" %}</a></li>

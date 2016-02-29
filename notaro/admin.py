@@ -692,6 +692,21 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
     def filename(self, obj):
         return obj.video.filename
 
+    def recompile_video(self, request, pk):
+        compile_video(pk)
+        self.message_user(request,
+                          'Die Videodateien werden neu erstellt.')
+        return HttpResponseRedirect(reverse(
+            'admin:%s_%s_changelist' %
+            (self.model._meta.app_label, self.model._meta.model_name)))
+
+    def get_urls(self):
+        # pylint: disable=no-member
+        urls = super(VideoAdmin, self).get_urls()
+        return [url(r'^(?P<pk>\d+)/recompile/$',
+                    self.admin_site.admin_view(self.recompile_video)),
+                ] + urls
+
     class Media:
         js = ('codemirror/codemirror-compressed.js',
               'dajaxice/dajaxice.core.js',
