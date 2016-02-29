@@ -54,7 +54,7 @@ def create_video_version(video_id, fmt):
             '-b:v 400k',
             '-maxrate 400k -bufsize 800k -vf scale=-1:720',
             '-crf 22 -movflags faststart',
-            '-codec:a libfdk_aac -b:a 192k',
+            '-codec:a aac -b:a 192k',
             ])
 
     os.system('ffmpeg -i {fn} {options} -y {tgt}.{fmt}'.format(
