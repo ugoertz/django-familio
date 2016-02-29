@@ -50,10 +50,12 @@ def create_video_version(video_id, fmt):
         options = '-c:v libvpx -crf 8 -b:v 1M -c:a libvorbis'
     elif fmt == 'mp4':
         options = ' '.join([
-            '-c:v libx264 -profile:v baseline -level 3.0',
-            '-preset slow -crf 22 -movflags faststart',
-            '-c:a aac -strict experimental -ar 44100 -ac 2 -b:a 256k',
-            ]
+            '-codec:v libx264 -profile:v main -level 3.0 -preset slow',
+            '-b:v 400k',
+            '-maxrate 400k -bufsize 800k -vf scale=-1:720',
+            '-crf 22 -movflags faststart',
+            '-codec:a libfdk_aac -b:a 192k',
+            ])
 
     os.system('ffmpeg -i {fn} {options} -y {tgt}.{fmt}'.format(
         fn=fn, options=options, tgt=target, fmt=fmt))
