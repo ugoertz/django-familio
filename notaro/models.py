@@ -280,37 +280,55 @@ class Video(models.Model):
         #                  ['    '+l for l in self.caption.splitlines()])
 
     def get_mp4_size(self):
-        sz = os.path.getsize(os.path.join(
-            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
-            'videos/{dir}/video.mp4'.format(dir=self.directory)))
-        return (sz / 100000) / 10.0
+        try:
+            sz = os.path.getsize(os.path.join(
+                settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.mp4'.format(dir=self.directory)))
+            return (sz / 100000) / 10.0
+        except OSError:
+            return None
 
     def get_ogv_size(self):
-        sz = os.path.getsize(os.path.join(
-            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
-            'videos/{dir}/video.ogv'.format(dir=self.directory)))
-        return (sz / 100000) / 10.0
+        try:
+            sz = os.path.getsize(os.path.join(
+                settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.ogv'.format(dir=self.directory)))
+            return (sz / 100000) / 10.0
+        except OSError:
+            return None
 
     def get_webm_size(self):
-        sz = os.path.getsize(os.path.join(
-            settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
-            'videos/{dir}/video.webm'.format(dir=self.directory)))
-        return (sz / 100000) / 10.0
+        try:
+            sz = os.path.getsize(os.path.join(
+                settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
+                'videos/{dir}/video.webm'.format(dir=self.directory)))
+            return (sz / 100000) / 10.0
+        except OSError:
+            return None
 
     def get_mp4_url(self):
-        return os.path.join(
-                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+        f = os.path.join(
+                settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.mp4'.format(dir=self.directory))
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, f)):
+            return os.path.join(settings.MEDIA_URL, f)
+        return None
 
     def get_ogv_url(self):
-        return os.path.join(
-                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+        f = os.path.join(
+                settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.ogv'.format(dir=self.directory))
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, f)):
+            return os.path.join(settings.MEDIA_URL, f)
+        return None
 
     def get_webm_url(self):
-        return os.path.join(
-                settings.MEDIA_URL, settings.FILEBROWSER_DIRECTORY,
+        f = os.path.join(
+                settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.webm'.format(dir=self.directory))
+        if os.path.exists(os.path.join(settings.MEDIA_ROOT, f)):
+            return os.path.join(settings.MEDIA_URL, f)
+        return None
 
     class Meta:
         ordering = ('-id', )
