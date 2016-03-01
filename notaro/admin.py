@@ -609,8 +609,16 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                       {'form': form, 'title': 'Bilder/Dokumente hochladen'})
 
     class Media:
-        js = ('js/adminactions.js', )
-        css = {'all': ('css/picture_admin.css', ), }
+        js = ('codemirror/codemirror-compressed.js',
+              'dajaxice/dajaxice.core.js',
+              'js/adminactions.js',
+              )
+        try:
+            js += settings.NOTARO_SETTINGS['autocomplete_helper']
+        except ImportError:
+            pass
+        js += ('codemirror/codemirror_conf_pic_vid.js', )
+        css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
 
 
 admin.site.register(Picture, PictureAdmin)
@@ -687,7 +695,8 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
     image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
-    list_display = ('id', 'caption', 'date', 'image_thumbnail', )
+    list_display = ('id', 'caption', 'date', 'image_thumbnail',
+                    'view_on_site_link')
 
     def filename(self, obj):
         return obj.video.filename
@@ -712,13 +721,12 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
               'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
-
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except ImportError:
             pass
-        js += ('codemirror/codemirror_conf_document.js', )
-        css = {'all': ('css/document_admin.css', ) + CODEMIRROR_CSS, }
+        js += ('codemirror/codemirror_conf_pic_vid.js', )
+        css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
 
 
 admin.site.register(Video, VideoAdmin)
