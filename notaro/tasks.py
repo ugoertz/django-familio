@@ -51,8 +51,8 @@ def create_video_version(video_id, fmt):
     elif fmt == 'mp4':
         options = ' '.join([
             '-codec:v libx264 -profile:v main -level 3.0 -preset slow',
-            '-crf 19 -movflags faststart',
-            '-codec:a aac -b:a 192k',
+            '-crf 22 -movflags faststart',
+            '-codec:a aac -b:a 128k',
             ])
 
     os.system(
