@@ -44,21 +44,21 @@ def create_video_version(video_id, fmt):
 
     options = ''
     if fmt == 'ogv':
-        options = '-codec:v libtheora -qscale:v 7 ' +\
-                  '-codec:a libvorbis -qscale:a 5'
+        options = '-codec:v libtheora -qscale:v 6 ' +\
+                  '-codec:a libvorbis -qscale:a 4'
     elif fmt == 'webm':
-        options = '-c:v libvpx -crf 8 -b:v 1M -c:a libvorbis'
+        options = '-c:v libvpx -crf 6 -b:v 2M -c:a libvorbis'
     elif fmt == 'mp4':
         options = ' '.join([
             '-codec:v libx264 -profile:v main -level 3.0 -preset slow',
-            '-b:v 400k',
-            '-maxrate 400k -bufsize 800k',
-            '-movflags faststart',
+            '-crf 19 -movflags faststart',
             '-codec:a aac -b:a 192k',
             ])
 
-    os.system('ffmpeg -i {fn} {options} -y {tgt}.{fmt}'.format(
-        fn=fn, options=options, tgt=target, fmt=fmt))
+    os.system(
+            ('ffmpeg -i {fn} -filter:v "scale=min(720\, iw):-2" ' +
+             '{options} -y {tgt}.{fmt}').format(
+                 fn=fn, options=options, tgt=target, fmt=fmt))
 
 
 @shared_task(name="notaro.compile_video", queue="video")
