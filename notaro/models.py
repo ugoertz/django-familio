@@ -141,7 +141,7 @@ class Picture(models.Model):
         return '[%d] %s <img src="%s">' %\
                (self.id,
                 self.caption[:25] or self.image.original_filename,
-                self.image.version_generate(ADMIN_THUMBNAIL).url)
+                self.image.version_generate(ADMIN_THUMBNAIL).url.decode('utf8'))
 
     @staticmethod
     def autocomplete_search_fields():
@@ -245,7 +245,8 @@ class Video(models.Model):
             return '[%d] %s <img src="%s">' %\
                 (self.id,
                     self.caption[:25] or self.video.original_filename,
-                    self.poster.version_generate(ADMIN_THUMBNAIL).url)
+                    self.poster.version_generate(
+                        ADMIN_THUMBNAIL).url.decode('utf8'))
         else:
             return '[%d] %s' %\
                 (self.id, self.caption[:25] or self.video.original_filename)
