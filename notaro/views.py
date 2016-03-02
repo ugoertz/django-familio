@@ -54,10 +54,18 @@ class SourceDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
     model = Source
 
 
-class DocumentDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
+class DocumentDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     """Display a source."""
 
     model = Document
+    fields = ['name', 'description', ]
+    template_name_suffix = '_detail'
+
+    def post(self, request, *args, **kwargs):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+        return super(DocumentDetail, self).post(request, *args, **kwargs)
 
 
 class NoteDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):

@@ -641,8 +641,20 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
     autocomplete_lookup_fields = {'m2m': ['sites', ], }
     list_filter = ('sites', )
     search_fields = ('description', )
-    list_display = ('id', 'description_truncated', 'filename',
-                    'date', 'view_on_site_link')
+
+    def image_thumbnail(self, obj):
+        """Display thumbnail, to be used in django admin list_display."""
+
+        if obj.image and obj.image.filetype == "Image":
+            return '<img src="%s" />'\
+                   % obj.image.version_generate(ADMIN_THUMBNAIL).url
+        else:
+            return ""
+    image_thumbnail.allow_tags = True
+    image_thumbnail.short_description = "Thumbnail"
+
+    list_display = ('id', 'name', 'description_truncated', 'filename',
+                    'date', 'image_thumbnail', 'view_on_site_link')
 
     def description_truncated(self, obj):
         return obj.description[:50]

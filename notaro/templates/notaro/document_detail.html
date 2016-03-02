@@ -4,14 +4,54 @@
 {% load markup_tags %}
 {% load typogrify_tags %}
 {% load fb_versions %}
+{% load crispy_forms_tags %}
 
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/show-hint.css' %}">
+<link rel="stylesheet" href="{% static 'codemirror/dialog.css' %}">
 
 <style>
 button, .selectize-input {
     font-family: Cabin, helvetica, sans;
+}
+.CodeMirror {
+    /* Bootstrap Settings */
+    box-sizing: border-box;
+    margin: 0;
+    font: inherit;
+    overflow: auto;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    /* Code Mirror Settings */
+    font-family: monospace;
+    position: relative;
+    overflow: hidden;
+}
+
+.CodeMirror-focused {
+    /* Bootstrap Settings */
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, .6);
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.CodeMirror div {
+    font-family: monospace;
 }
 </style>
 {% endblock css %}
@@ -19,11 +59,25 @@ button, .selectize-input {
 {% block js %}
 {{ block.super  }}
 {% if user_is_admin %}
+<script type="text/javascript" src="{% static 'js/showhide.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
 <script>
 $(document).ready(function() {
     {% include "tags/selectize_tags.js" %}
+    show_hide_button('#admin_panel_title', '#admin_panel', 'admin_panel');
+    if ($("#id_description").size()) {
+        CodeMirror.commands.autocomplete = function(cm) {
+            cm.showHint({hint: CodeMirror.hint.genrst });
+        }
+        var editor = new CodeMirror.fromTextArea($("#id_description")[0],
+                { width: "600px", height: "200px", lineWrapping: true, mode: 'rst',
+                    extraKeys: {"Ctrl-Space": "autocomplete"}, });
+
+        window.editor = editor;
+    }
 });
 </script>
 {% endif %}
@@ -32,14 +86,26 @@ $(document).ready(function() {
 
 {% block content %}
 <div class="container">
+    {% if user_is_admin %}
     <div class="row" style="margin-top: 50px;">
         <div class="col-md-8">
-            {% if user_is_admin %}
+            <h2 id="admin_panel_title">Bearbeiten</h2>
+            <div id = "admin_panel">
                 {% url "save-tags" "notaro" "document" object.pk as action %}
                 {% include "tags/tags_form.html" %}
-            {% endif %}
+
+                <div style="margin-top: 50px;">
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <input type="submit" value="Name und Beschreibung abspeichern" class="btn btn-success pull-right cabin" style="margin-top: 20px;">
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
+    {% endif %}
+
     <div class="row">
         <div class="col-md-8">
             <h1>{{ object.name|safe }}</h1>
@@ -48,9 +114,13 @@ $(document).ready(function() {
 {{ object.description|safe }}
 {% endfilter %}
 
+{% if object.date %}<p>{{ object.date|date:"d. M Y" }}</p>{% endif %}
+
             {% if object.image %}
             <div style="margin: 20px;">
-                <img src="{% version object.image "large" %}">
+                <a href="{{ object.image.url  }}">
+                    <img src="{% version object.image "large" %}">
+                </a>
             </div>
             {% endif %}
 
