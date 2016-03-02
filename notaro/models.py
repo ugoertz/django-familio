@@ -140,8 +140,9 @@ class Picture(models.Model):
         # pylint: disable=no-member
         return '[%d] %s <img src="%s">' %\
                (self.id,
-                self.caption[:25] or self.image.original_filename,
-                self.image.version_generate(ADMIN_THUMBNAIL).url.decode('utf8'))
+                self.caption[:25] or
+                self.image.original_filename,
+                self.image.version_generate(ADMIN_THUMBNAIL).url)
 
     @staticmethod
     def autocomplete_search_fields():
@@ -244,9 +245,9 @@ class Video(models.Model):
         if self.poster:
             return '[%d] %s <img src="%s">' %\
                 (self.id,
-                    self.caption[:25] or self.video.original_filename,
-                    self.poster.version_generate(
-                        ADMIN_THUMBNAIL).url.decode('utf8'))
+                 self.caption[:25]
+                 or self.video.original_filename,
+                 self.poster.version_generate(ADMIN_THUMBNAIL).url)
         else:
             return '[%d] %s' %\
                 (self.id, self.caption[:25] or self.video.original_filename)
