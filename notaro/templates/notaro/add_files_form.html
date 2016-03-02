@@ -4,6 +4,7 @@
     <span class="file-wrapper"><span class="button cabin">Datei auswählen (Klick oder Drag-and-drop)</span><input class=" js-multi with-preview" id="id_archive" multiple="multiple" name="archive" type="file" /></span><div id="filelist" style="margin-top: 10px;"></div>
 
     <input id="id_path" maxlength="50" name="path" style="width: 100%;" type="hidden" value="{{ user.username }}/{% now "Y/m-d" %}" />
+    <input id="id_target" maxlength="50" name="target" style="width: 100%;" type="hidden" value="{{ target }}" />
     <input value="True" id="id_create_objects" name="create_objects" type="hidden" />
 <input id="id_submit_upload" class="cabin btn btn-success btn-sm" style="margin-top: 20px;" value="Abschicken" type="submit">
 </form>

@@ -95,7 +95,7 @@ $(function() {
         <div class="col-md-2">
             {% if user_is_admin %}
             <div style="margin-bottom: 50px;" class="adminbox">
-                {% include "notaro/add_files_form.html" %}
+                {% include "notaro/add_files_form.html" with target="images" %}
             </div>
             {% endif %}
             {% for tag in tag_list %}

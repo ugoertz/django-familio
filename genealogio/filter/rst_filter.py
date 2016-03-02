@@ -30,18 +30,24 @@ genrst_roles = {
     'e': {'model': Event, },
     'f': {'model': Family, },
     's': {'model': Source, },
-    'd': {'model': Document, },
+    'd': {'model': Document, },   # link to document detail page
+    'di': {'model': Document, },  # document + medium image
+    'dit': {'model': Document, },  # document + thumbnail image
+    'dis': {'model': Document, },  # document + small image
+    'dim': {'model': Document, },  # document + medium image
+    'dib': {'model': Document, },  # document + big image
+    'dil': {'model': Document, },  # document + large image
     'i': {'model': Picture, },
-    'it': {'model': Picture, }, # second letter determines image size
+    'it': {'model': Picture, },  # second letter determines image size
     'is': {'model': Picture, },
     'im': {'model': Picture, },
     'ib': {'model': Picture, },
     'il': {'model': Picture, },
     'm': {'model': CustomMap, },
-    'mt': {'model': CustomMap, },  # t: include title
-    'md': {'model': CustomMap, },  # d: include description
-    'ml': {'model': CustomMap, },  # l: include legend
-    'mdl': {'model': CustomMap, }, # dl, ld: include both, etc.
+    'mt': {'model': CustomMap, },   # t: include title
+    'md': {'model': CustomMap, },   # d: include description
+    'ml': {'model': CustomMap, },   # l: include legend
+    'mdl': {'model': CustomMap, },  # dl, ld: include both, etc.
     'mld': {'model': CustomMap, },
     'mtd': {'model': CustomMap, },
     'mdt': {'model': CustomMap, },
@@ -170,9 +176,34 @@ def get_text(name, rawtext, text, lineno, inliner,
                     p = model.objects.get(handle=handle)
                 for f in extra:
                     t += f(p)
-                nodelist = [nodes.reference(
-                                rawtext, t,
-                                refuri=p.get_absolute_url(), **options), ]
+                if name[0:2] != 'di':
+                    nodelist = [nodes.reference(
+                                    rawtext, t,
+                                    refuri=p.get_absolute_url(), **options), ]
+                elif name[0:2] == 'di':
+                    if p.image:
+                        if len(name) > 2:
+                            version = {
+                                    't': 'thumbnail',
+                                    's': 'small',
+                                    'm': 'medium',
+                                    'b': 'big',
+                                    'l': 'large', }[name[2]]
+                        else:
+                            version = 'medium'
+                        reference = nodes.reference('', '')
+                        reference['refuri'] = p.get_absolute_url()
+                        image_node = nodes.image(
+                            uri=p.image.version_generate(version).url,
+                            **options)
+                        reference.append(image_node)
+                        nodelist = [reference, ]
+                        if t:
+                            nodelist.append(nodes.paragraph(
+                                rawtext, t, **options))
+                    else:
+                        nodelist = [nodes.inline(rawtext, t, **options), ]
+
             except ObjectDoesNotExist:
                 # for now, assume that this is because that object exists only
                 # on another site; so fail silently

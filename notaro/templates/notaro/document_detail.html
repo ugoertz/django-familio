@@ -43,17 +43,28 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-md-8">
             <h1>{{ object.name|safe }}</h1>
+
 {% filter apply_markup:"genrestructuredtext" %}
 {{ object.description|safe }}
 {% endfilter %}
 
-Download: <a href="{{ object.doc.url }}">{{ object.doc.extension|cut:"." }} ({{ object.doc.filesize|filesizeformat }})</a>
+            {% if object.image %}
+            <div style="margin: 20px;">
+                <img src="{% version object.image "large" %}">
+            </div>
+            {% endif %}
 
             <hr>
             {% include "comments/comments.html" %}
         </div>
         <div class="col-md-3 col-md-offset-1">
+            <div style="margin-top: 40px;" class="cabin">
+                Download: <a href="{{ object.doc.url }}">{{ object.doc.extension|cut:"." }} ({{ object.doc.filesize|filesizeformat }})</a>
+            </div>
+
+            <div style="margin-top: 40px;" class="cabin">
             {% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}
+            </div>
             {% if user_is_admin %}
                 <div class="cabin adminbox">
                     {% include "notaro/admin_links.html" with admin_edit_link="notaro/document" doc_link="dokumente.html" %}

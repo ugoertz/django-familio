@@ -365,6 +365,13 @@ class UploadZipFileForm(forms.Form):
             label="Bilddateien (.jpg, .png), "
                   "pdf-Dateien, Archiv-Dateien (.zip)",
             required=True)
+    target = forms.ChoiceField(
+            choices=(
+                ('documents', 'Dokumente'),
+                ('images', 'Bilder'),
+                ('videos', 'Videos'), ),
+            required=True,
+            label="Art der Dateien")
     path = forms.CharField(
             max_length=50,
             required=True,
@@ -376,7 +383,7 @@ class UploadZipFileForm(forms.Form):
             'personen/mast/123</span>.',
             widget=forms.TextInput(attrs={'style': 'width: 100%;', }))
     create_objects = forms.BooleanField(
-            label="Automatisch Bildobjekte erstellen",
+            label="Automatisch in Datenbank einbinden",
             required=False,
             initial=True)
 
@@ -484,19 +491,34 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     name="uploadarchive"),
                 ] + urls
 
-    def handle_file_upload(self, filedata, path, create_objects):
+    def handle_file_upload(
+            self, request, filedata, path, target, create_objects):
+
         filename = convert_filename(os.path.basename(filedata.name))
-        if filename[-4:].lower() in ['.jpg', '.png', ]:
-            target = 'images'
-        elif filename[-4:].lower() in [
-                '.pdf', '.doc', '.rtf',
-                '.tif', '.mp3', 'docx']:
-            target = 'documents'
-        elif filename[-4:].lower() in [
-                '.mp4', '.ogg', '.webm', '.vob', ]:
-            target = 'videos'
-        else:
-            return
+        if target == 'images':
+            if filename[-4:].lower() not in ['.jpg', '.png', ]:
+                messages.warning(
+                        request,
+                        'Es wurden keine Dateien hochgeladen. '
+                        'Erlaubt: .jpg, .png')
+                return
+        elif target == 'videos':
+            if filename[-4:].lower() not in ['.mp4', '.ogv', 'webm', '.vob']:
+                messages.warning(
+                        request,
+                        'Es wurden keine Dateien hochgeladen. '
+                        'Erlaubt: .mp4, .ogv, .webm, .vob')
+                return
+        elif target == 'documents':
+            if filename[-4:].lower() not in [
+                    '.pdf', '.doc', '.rtf', '.jpg', '.png',
+                    '.tif', '.mp3', '.mp4', 'docx', '.odt']:
+                messages.warning(
+                        request,
+                        'Es wurden keine Dateien hochgeladen. '
+                        'Erlaubt: .pdf, .doc(x), .rtf, .jpg, '
+                        '.png, .tif, .mp3/4')
+                return
 
         full_path = os.path.join(
                 settings.MEDIA_ROOT,
@@ -517,86 +539,70 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                 os.path.join(full_path, filename),
                 filedata)
         if create_objects:
+            obj_path = os.path.join(
+                    settings.FILEBROWSER_DIRECTORY, target, path, filename)
             if target == 'images':
-                picture_path = os.path.join(
-                        settings.FILEBROWSER_DIRECTORY, target, path, filename)
                 # pylint: disable=no-member
-                picture = Picture.objects.create(image=picture_path)
+                picture = Picture.objects.create(image=obj_path)
                 picture.sites.add(Site.objects.get_current())
-            if target == 'videos':
-                # create video object
-                video_path = os.path.join(
-                        settings.FILEBROWSER_DIRECTORY, target, path, filename)
+            elif target == 'videos':
                 # pylint: disable=no-member
-                video = Video.objects.create(video=video_path)
+                video = Video.objects.create(video=obj_path)
                 video.sites.add(Site.objects.get_current())
 
                 compile_video(video.id)
+            elif target == 'documents':
+                # pylint: disable=no-member
+                doc = Document.objects.create(doc=obj_path)
+                doc.sites.add(Site.objects.get_current())
+                doc.name = doc.doc.filename_root
 
-        # return information whether we uploaded an image or a document
-        return target
+                # can we "generate" a thumbnail?
+                # (could use imagemagick to generate thumbnail for pdfs, but it
+                # seems that only rarely the first page is the desired
+                # thumbnail, and it seems hard to automatically find a more
+                # suitable one)
+                if filename[-4:].lower() in ['.jpg', '.png', '.tif', ]:
+                    doc.image = doc.doc
+
+                doc.save()
 
     def upload_archive(self, request):
         if request.method == 'POST':
             form = UploadZipFileForm(request.POST, request.FILES)
             if form.is_valid():
                 path = form.cleaned_data['path']
-
-                target = None
-
-                # check whether among all uploaded files there was at least one
-                # image (one document, resp.) (the final redirect will depend
-                # on this)
-                uploaded_images = False
-                uploaded_documents = False
-                uploaded_videos = False
+                target = form.cleaned_data['target']
 
                 for filedata in form.cleaned_data['archive']:
                     if filedata.name.endswith('.zip'):
                         zipf = zipfile.ZipFile(filedata, 'r')
                         for fn in zipf.infolist():
-                            target = self.handle_file_upload(
+                            self.handle_file_upload(
+                                    request,
                                     zipf.open(fn),
                                     path,
-                                    form.cleaned_data['create_objects'])
-                            if target == 'images':
-                                uploaded_images = True
-                            elif target == 'documents':
-                                uploaded_documents = True
-                            elif target == 'videos':
-                                uploaded_videos = True
+                                    target,
+                                    create_objects=form.cleaned_data[
+                                        'create_objects'])
                         zipf.close()
                     else:
-                        target = self.handle_file_upload(
+                        self.handle_file_upload(
+                                request,
                                 filedata,
                                 path,
-                                form.cleaned_data['create_objects'])
-                        if target == 'images':
-                            uploaded_images = True
-                        elif target == 'documents':
-                            uploaded_documents = True
-                        elif target == 'videos':
-                            uploaded_videos = True
+                                target,
+                                create_objects=form.cleaned_data[
+                                    'create_objects'])
 
-                if uploaded_images:
-                    if form.cleaned_data['create_objects']:
-                        return HttpResponseRedirect(reverse('picture-list'))
-                    else:
-                        target = 'images'
-                if uploaded_videos:
-                    if form.cleaned_data['create_objects']:
-                        return HttpResponseRedirect(reverse('video-list'))
-                    else:
-                        target = 'images'
-                if not (uploaded_images or
-                        uploaded_documents or
-                        uploaded_videos):
-                    messages.warning(
-                            request,
-                            'Es wurden keine Dateien hochgeladen. '
-                            'Erlaubt: .jpg, .png, .pdf, .zip, '
-                            '.doc, .rtf, .docx, .mp3, .mp4, .ogg, .webm, .vob')
-                    return HttpResponseRedirect(reverse('admin:uploadarchive'))
+                if form.cleaned_data['create_objects']:
+                    tgt = {
+                            'images': 'picture',
+                            'videos': 'video',
+                            'documents': 'document',
+                            }[target]
+                    return HttpResponseRedirect(
+                            reverse('%s-list' % tgt))
 
                 return HttpResponseRedirect(
                             '/admin/filebrowser/browse/?&dir=' +
@@ -627,7 +633,8 @@ admin.site.register(Picture, PictureAdmin)
 class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Document model."""
 
-    fieldsets = (('', {'fields': ('name', 'description', 'doc', 'date', ), }),
+    fieldsets = (('', {'fields': ('name', 'description',
+                                  'doc', 'image', 'date', ), }),
                  ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
                                      'fields': ('sites', ), }), )
     raw_id_fields = ('sites', )

@@ -189,10 +189,10 @@ class VideoSource(models.Model):
 
 class Video(models.Model):
     video = FileBrowseField("Videodatei", max_length=200, directory="videos/",
-                            extensions=[".mp4", ".ogg", ".webm", ".vob", ],
+                            extensions=[".mp4", ".ogv", ".webm", ".vob", ],
                             blank=True, null=True,
                             help_text="Videodatei, " +
-                            "Formate: mp4, ogg, webm, vob.")
+                            "Formate: mp4, ogv, webm, vob.")
     poster = FileBrowseField("Bilddatei", max_length=200, directory="videos/",
                              extensions=[".jpg", ".png", ],
                              blank=True, null=True,
@@ -337,11 +337,18 @@ class Video(models.Model):
 
 
 class Document(models.Model):
-    doc = FileBrowseField("Document", max_length=200, directory="documents/",
-                          extensions=[".pdf", ".doc", ".docx", ".rtf", ".jpg",
-                                      ".tif", ".mp3", ".mp4", ],
-                          blank=True, null=True,
-                          help_text=".pdf, .doc, .rtf, .jpg, .tif, .mp3, .mp4")
+    doc = FileBrowseField(
+            "Document", max_length=200, directory="documents/",
+            extensions=[".pdf", ".doc", ".docx", ".rtf", ".jpg",
+                        ".png", ".tif", ".mp3", ".mp4", ],
+            blank=True, null=True,
+            help_text=".pdf, .doc(x), .odt, .rtf, .jpg, .png, .tif, .mp3/4")
+    image = FileBrowseField(
+            "Bilddatei", max_length=200,
+            directory="documents/",
+            extensions=[".jpg", ".png", ],
+            blank=True, null=True,
+            help_text="Bilddatei im jpg- oder png-Format")
     name = models.CharField(max_length=500, verbose_name="Name")
     description = models.TextField(blank=True, verbose_name="Beschreibung")
     date = models.DateField(blank=True, null=True, verbose_name="Datum")
@@ -371,7 +378,10 @@ class Document(models.Model):
 
         # pylint: disable=no-member
         return ''.join([
-            '<li class="list-group-item" style="font-size: 140%%;">',
+            '<li class="list-group-item clearfix" style="font-size: 130%;">',
+            ('<img src="%s" style="float:left; margin-right: 20px;">'
+                % self.image.version_generate('thumbnail').url)
+            if self.image else '',
             '%s<br>' % self.name,
             '<span style="font-family: courier, monospace; font-size: 70%">',
             '%s, Objekt-ID: %d</span></li>' % (

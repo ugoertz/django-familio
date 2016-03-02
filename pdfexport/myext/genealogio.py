@@ -24,7 +24,7 @@ from maps.models import CustomMap
 from genealogio.models import Person
 from genealogio.views import Sparkline
 from genealogio.filter.rst_filter import genrst_roles
-from notaro.models import Picture
+from notaro.models import Document, Picture
 
 
 class includepdf(nodes.image, nodes.Element):
@@ -67,18 +67,26 @@ def get_text(name, rawtext, text, lineno, inliner,
 
     # pylint: disable=no-member
     try:
-        if name.startswith('i'):
-            if len(name) > 1:  # check for size parameter
-                version = {'t': 'thumbnail',
-                           's': 'small',
-                           'm': 'medium',
-                           'b': 'big',
-                           'l': 'large', }[name[1]]
-            else:
-                version = 'medium'
+        if name.startswith('i') or name.startswith('di'):
 
             try:
-                img = Picture.objects.get(id=int(text))
+                if name.startswith('i'):
+                    version_param = 1
+                    obj = Picture.objects.get(id=int(text))
+                elif name.startswith('di'):
+                    version_param = 2
+                    handle = text.split(' ')[-1]
+                    obj = Document.objects.get(pk=handle)
+                if len(name) > version_param:  # check for size parameter
+                    version = {
+                            't': 'thumbnail',
+                            's': 'small',
+                            'm': 'medium',
+                            'b': 'big',
+                            'l': 'large', }[name[version_param]]
+                else:
+                    version = 'medium'
+
                 img_options = {}
                 img_options.update(options)
                 try:
@@ -90,18 +98,21 @@ def get_text(name, rawtext, text, lineno, inliner,
                 except KeyError:
                     pass
                 nodelist = [nodes.image(
-                    uri='/../../../' + img.image.__unicode__(),
+                    uri='/../../../' + obj.image.__unicode__(),
                     **img_options), ]
-                if img.caption:
+                if name.startswith('i') and obj.caption:
                     settgs = OptionParser(components=(Parser,))\
                             .get_default_values()
                     parser = Parser()
                     document = new_document('caption', settgs)
                     try:
-                        parser.parse(img.get_caption(), document)
+                        parser.parse(obj.get_caption(), document)
                         nodelist[0].children.extend(document.children)
                     except:
                         pass
+                elif name.startswith('di'):
+                    nodelist.append(nodes.paragraph(rawtext, t, **options))
+
             except ObjectDoesNotExist:
                 nodelist = []
         elif name.startswith('m'):
