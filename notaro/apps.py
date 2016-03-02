@@ -14,4 +14,7 @@ class NotaroConfig(AppConfig):
         watson.register(SourceModel.objects.all())
 
         DocumentModel = self.get_model("Document")
-        watson.register(DocumentModel.objects.all(), exclude=('doc'))
+        watson.register(DocumentModel.objects.all(), exclude=('doc', 'image'))
+
+        PictureModel = self.get_model("Picture")
+        watson.register(PictureModel.objects.all(), exclude=('image'))
