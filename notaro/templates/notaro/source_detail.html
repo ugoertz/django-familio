@@ -33,6 +33,37 @@
             </table>
             {% endif %}
             {% endwith %}
+
+            <h3>Verweise auf diese Quelle</h3>
+            <ul class="list-group">
+            {% for ps in source.personsource_set.all %}
+                {% with person=ps.person %} 
+                <li class="list-group-item clearfix">{% if person.portrait.image %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% endif %}{% include "genealogio/person_snippet.html" %}
+                    <span class="pull-right">{{ ps.comment }}</span>
+                </li>
+                {% endwith %}
+            {% endfor %}
+            {% for fs in source.familysource_set.all %}
+                <li class="list-group-item clearfix"><a href="{{ fs.family.get_absolute_url }}">{{ fs.family }}</a>
+                    <span class="pull-right">{{ fs.comment }}</span>
+                </li>
+            {% endfor %}
+            {% for es in source.eventsource_set.all %}
+                <li class="list-group-item clearfix"><a href="{{ es.event.get_absolute_url }}">{{ es.event }}</a>
+                    <span class="pull-right">{{ es.comment }}</span>
+                </li>
+            {% endfor %}
+            {% for ps in source.picturesource_set.all %}
+            <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ ps.picture.get_absolute_url }}"><img src="{% version ps.picture.image 'thumbnail' %}"></a> {{ ps.picture.caption|truncatewords:15 }}
+                    <span class="pull-right">{{ ps.comment }}</span>
+                </li>
+            {% endfor %}
+            {% for vs in source.videosource_set.all %}
+            <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ vs.video.get_absolute_url }}"><img src="{% version vs.video.poster 'thumbnail' %}"></a> {{ vs.video.caption|truncatewords:15 }}
+                    <span class="pull-right">{{ vs.comment }}</span>
+                </li>
+            {% endfor %}
+            </ul>
             <hr>
             {% include "comments/comments.html" %}
         </div>
