@@ -854,7 +854,7 @@ class EventNote(models.Model):
 
 
 class EventSource(models.Model):
-    person = models.ForeignKey('Event', verbose_name="Ereignis")
+    event = models.ForeignKey('Event', verbose_name="Ereignis")
     source = models.ForeignKey(Source, verbose_name="Quelle")
     comment = models.CharField(
             max_length=500,
