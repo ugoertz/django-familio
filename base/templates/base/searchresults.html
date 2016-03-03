@@ -7,7 +7,7 @@
 
     <ul class="list-group">
         {% for object in object_list %}
-        <li class="list-group-item"><a href="{{ object.object.get_absolute_url }}">{% firstof object.object.get_primary_name object.object %}</a></li>
+        <li class="list-group-item"><a href="{{ object.object.get_absolute_url }}">{% firstof object.object.get_primary_name object.object|safe %}</a></li>
         {% endfor %}
     </ul>
     {% include "notaro/pagination.html" with hide_individual_pagination=True %}
