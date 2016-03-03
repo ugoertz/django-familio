@@ -180,7 +180,7 @@ class Picture(models.Model):
 
 
 class VideoSource(models.Model):
-    picture = models.ForeignKey('Video', verbose_name="Video")
+    video = models.ForeignKey('Video', verbose_name="Video")
     source = models.ForeignKey(Source, verbose_name="Quelle")
     comment = models.CharField(
             max_length=500,
