@@ -5,13 +5,25 @@ from __future__ import unicode_literals
 
 from django.apps import apps
 from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView, View, ListView
 from django.contrib import messages
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 
 from braces.views import LoginRequiredMixin
 
 from tags.models import CustomTag
+
+
+class TagList(LoginRequiredMixin, ListView):
+    model = CustomTag
+
+    def get_queryset(self):
+        return CustomTag.objects\
+                        .all()\
+                        .annotate(num_times=Count(
+                            'tags_customtagthrough_items'))\
+                        .order_by('-num_times', 'name')
 
 
 class TagSearch(LoginRequiredMixin, TemplateView):

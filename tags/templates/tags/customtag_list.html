@@ -1,0 +1,29 @@
+{% extends "_layouts/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10">
+            <h1>Schlagwörter</h1>
+            {% for ctr in '01' %}
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        {% for object in object_list %}
+                        {% if ctr == '0' and not forloop.counter|divisibleby:2 or ctr == '1' and forloop.counter|divisibleby:2 %}
+                        <li class="list-group-item">
+                            {{ object.as_span|safe }} <span style="margin-left: 20px" class="cabin">{{ object.num_times }} Verweise</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+
+        </div>
+        <div class="col-md-2">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

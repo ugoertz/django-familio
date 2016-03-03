@@ -114,6 +114,18 @@ class DocumentList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     model = Document
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentList, self).get_context_data(**kwargs)
+        context.update({
+            'tag_list':
+            CustomTag.objects
+                     .all()
+                     .annotate(num_times=Count('tags_customtagthrough_items'))
+                     .order_by('-num_times', 'name')[:50],
+            })
+
+        return context
+
 
 class SourceList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 

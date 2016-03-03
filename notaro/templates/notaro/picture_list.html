@@ -101,6 +101,7 @@ $(function() {
             {% for tag in tag_list %}
             {{ tag.as_span|safe }}
             {% endfor %}
+            <p style="margin-top: 10px;"><a class="cabin btn btn-sm btn-default" href="{% url 'tag-list' %}">Alle Schlagwörter</a></p>
         </div>
     </div>
 
