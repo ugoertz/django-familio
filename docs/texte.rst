@@ -294,6 +294,26 @@ auch die folgenden Größen verwenden:
 * ``:ib:`` Big
 * ``:il:`` Large
 
+.. _dokumente-einbinden:
+
+....................
+Dokumente einbinden
+....................
+
+Dokumente können ähnlich eingebunden werden wie Bilder. Wieder muss die
+ID-Nummer bekannt sein. Dann fügt ``:d:Linktext `id``` einen Link auf das
+Dokument ein.
+
+Es kann auch mit ``:di:Linktext `id``` die Bilddatei des Dokuments (mit dem
+"Linktext" als Untertitel) eingebunden werden. Gegebenenfalls kann nach dem
+``i`` noch die Größe spezifiziert werden:
+
+* ``:dit:`` Thumbnail
+* ``:dis:`` Small
+* ``:dim:`` Medium
+* ``:dib:`` Big
+* ``:dil:`` Large
+
 .. _karten-einbinden:
 
 ................
@@ -301,7 +321,7 @@ Karten einbinden
 ................
 
 Ähnlich wie Bilder können auch :ref:`eigene Landkarten <karten-chapter>` in
-Texte eingebunden werden: ``:m:`id```. Dabei ist ``id`` 
+Texte eingebunden werden: ``:m:`id```. Dabei ist ``id``
 die Zahl, die der Karte in der Datenbank zugeordnet ist. Dies ist die Zahl, die
 in der Liste der Karten im Admin-Bereich in der linken Spalte angezeigt wird.
 Sie wird auch auf der Detail-Seite der Karte in der Box in der rechten Spalte

@@ -49,6 +49,10 @@ Die Kategorien, die zurzeit für Namen zur Verfügung stehen, sind *unbekannt*,
 (nachgestellt)*. Im Moment werden davon *Geburtsname*, *Ehename*, *Vorname*,
 *Rufname*, *Spitzname* und die Titel auf der Webseite angezeigt.
 
+Der *Rufname* muss einer der Namen des Vornamens sein und wird dann
+unterstrichen dargestellt. Der *Spitzname* wird hinter dem Vornamen in Klammern
+angegeben.
+
 Bei den *Titeln* wird unterschieden zwischen Titeln, die vor dem Namen
 (*vorangestellt*) geführt werden (z.B. *Sir*, *Prof.*, *Dr.*), und solchen, die
 nach dem Namen geführt werden (z.B. *PhD*). Abgesehen von dieser Unterscheidung

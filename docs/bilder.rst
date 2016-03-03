@@ -1,54 +1,34 @@
 .. _bilder-chapter:
 
 ============================
-Bilder
+Bilder, Videos und Dokumente
 ============================
-
-Ein Bildobjekt (*Picture*) besteht aus mehreren Daten (auch, aber nicht nur, die
-Bilddatei selbst):
-
-:Bilddatei (*image*): Bilddatei in einem der gängigen Formate: jpg, png, gif, ...
-
-:Beschreibung: Dieser Text wird (zum Beispiel in :ref:`Texten
-               <texte-chapter>`)als Untertitel des Bildes angezeigt.
-
-:Datum: Das Datum, an dem das Bild aufgenommen wurde.
 
 .. _bilder-hinzufuegen:
 
------------------
-Bilder hinzufügen
------------------
+-------------------
+Objekte hinzufügen
+-------------------
 
-Beim Hinzufügen von Bildern ist es wichtig, den Unterschied zwischen Bildobjekt
-und Bilddatei im Kopf zu behalten - sonst ist der Prozess womöglich etwas
-verwirrend.
+Bilder lassen sich am einfachsten auf der Seite, die alle Bilder auflistet,
+hinzufügen (im Menü "Mehr ..." der Eintrag "Bilder"). Dort ist oben in der
+rechten Spalte (für Redakteure) ein graues Rechteck zu sehen, in das man mit
+Drag-and-drop (oder durch Anklicken und Auswahl von Dateien) zum Heraufladen
+"einfügen" kann. Man kann mehrere Dateien nacheinander hochladen. Es besteht
+auch die Möglichkeit, zip-Archive hochzuladen. (Damit die Zuordnung zu den
+entsprechenden Listen möglich bleibt, kann man aber die Kategorien nicht
+mischen, also nicht gleichzeitig Bilder und Dokumente hochladen.) Durch
+Anklicken des "Abschicken"-Buttons wird der Upload gestartet.
 
-Um ein Bildobjekt hinzuzufügen,
+Die Bilder erscheinen dann in der Liste der Bilder. Durch Anklicken gelangt man
+auf die Seite des einzelnen Bildes. Dort kann man die Beschreibung editieren und
+Schlagwörter hinzufügen. (Für Änderungen, die darüber hinaus gehen, zum Beispiel
+um Quellenangaben oder das Datum einzugeben, kann man den Verwaltungsbereich
+benutzen, den man mit dem "Bearbeiten"-Button in der rechten Spalte erreicht.)
 
-#. klickt man zuerst auf ``Bild hinzufügen`` - entweder direkt im Admin, oder zum
-   Beispiel, nachdem man die Liste aller vorhandenen Bilder mit dem Lupensymbol
-   in der Porträt-Zeile einer Person aufgerufen hat.
+Analog kann man auf der Dokumente-Seite Dokumente und auf der Video-Seite Videos
+hinzufügen.
 
-#. nun kann man zu diesem Bild Beschreibung und Datum eintragen, falls
-   gewünscht, und
-
-#. die *Bilddatei* hinzufügen, indem man auf das Lupensymbol des entsprechenden
-   Feldes klickt. Es öffnet sich die Liste aller Bilddateien, die schon auf dem
-   Server gespeichert sind. Wenn man dort fündig wird, wählt man einfach die
-   entsprechende Datei aus.
-
-#. Sonst kann man eine neue Bilddatei hochladen (``Upload`` rechts oben). Nach
-   Klicken des Upload-Buttons auf der sich öffnenden Seite kann man eine
-   Bilddatei auf der Festplatte auswählen und hochladen. Sobald die Datei
-   komplett hochgelagen wurde, kommt man durch Klicken auf ``Images`` in der
-   oberen Zeile links zurück zur Liste der Bilddateien, die nun auch die neu
-   hochgeladene Datei enthält. Durch ``Auswählen`` wird sie für das anzulegende
-   Bildobjekt übernommen.
-
-#. Schließlich kann das Bildobjekt abgespeichert werden (unten rechts), und man
-   kehrt zurück zur Liste aller Bildobjekte bzw. zum Auswahlfenster, von dem man
-   gestartet ist (zum Beispiel Porträt einer Person).
 
 .. _schlagwoerter-bilder:
 
@@ -57,9 +37,9 @@ Schlagwörter
 ------------
 
 Um die Bilder etwas zu ordnen, können sie mit Schlagwörtern versehen werden (in
-der Ansicht des entsprechenden Bildes, die man in der Regel durch Anklicken des
-Bildes erreicht; oder in der Liste aller Bilder). Um die Schlagwörter zu
-bearbeiten, muss man als Redakteur eingetragen sein.
+der Ansicht des entsprechenden Bildes, die man durch Anklicken des Bildes
+erreicht; oder in der Liste aller Bilder). Um die Schlagwörter zu bearbeiten,
+muss man als Redakteur eingetragen sein.
 
 Als "Schlagwörter" können einerseits Objekte der Datenbank (Personen, Familien,
 Ereignisse, Orte) vewendet werden. Das Bild wird dann mit dem entsprechenden
@@ -90,49 +70,52 @@ Abspeichern ändern).
 Erlaubte Zeichen in Schlagwörtern: Buchstaben, Leerzeichen, ``,.;_+-:!``.
 
 
---------------------------------
-Bilder (und Dokumente) hochladen
---------------------------------
+----------------------------
+Besonderheiten von Videos
+----------------------------
 
-Neue Bilder können am einfachsten mit der "Box" in der rechten Spalte der Liste
-aller Bilder hochgeladen werden.  Hier kann man auch mehrere Bilddateien auf
-einmal hochladen. Es besteht auch die Möglichkeit, zip-Archive hochzuladen. In
-modernen Browsern (getestet mit Firefox und Chrome) lassen sich Dateien einfach
-per "drag and drop" auf die entsprechend markierte Fläche ziehen. In jedem Fall
-kann man die Fläche anklicken und dann eine oder mehrere Dateien auswählen (und
-gegebenenfalls danach erneut klicken und zusätzliche Dateien auswählen).
+In Firefox und Chrome funktioniert das Abspielen ganz gut (wenigstens bei mir),
+in Safari und auf (einigen) Mobilgeräten leider nicht (man kann allerdings die
+Download-Links auf der rechten Seite benutzen.) An weiteren
+Erfolgs-/Misserfolgsmeldungen wäre ich interessiert, damit ich das weiter
+verbessern kann.
 
-Auf diese Art und Weise werden direkt Bildobjekte in der Datenbank zu den
-hochgeladenen Dateien angelegt.
-
-Gegebenenfalls kann man noch genauer Einfluss nehmen, indem man das Formular zum
-Hochladen im Verwaltungsbereich verwendet, siehe
-
-  http://www.....unserefamilie.net/admin/notaro/picture/uploadarchive/
-
-Die weiteren Einstellungen ("Pfad", "Automatisch Bildobjekte anlegen") können in
-der Regel unverändert bleiben. Bei Bedarf kann hier genau eingestellt werden, wo
-die Bilder abgelegt werden sollen, und ob automatisch zu allen hochgeladenen
-Bilddateien ein Bildobjekt in der Datenbank angelegt wird (das dann zum Beispiel
-in der Liste aller Bilder angezeigt wird).
+Das Einstellen von Videos funktioniert ähnlich wie bei den Bildern: Redakteure
+sehen in der rechten Spalte ein Feld, in das sie Video-Dateien zum Heraufladen
+ziehen können. Zu den Videos kann man wie bei Bildern Schlagworte und eine
+Beschreibung angeben. Nachdem ein Video hochgeladen wurde, wird der Film
+automatisch in verschiedene Formate (mp4, ogv, webm) konvertiert, damit er in
+möglichst vielen Browsern angezeigt werden kann (wie gesagt, momentan leider
+noch mit mittelgutem Erfolg ...). Es kann daher etwas dauern, bis das Video
+tatsächlich zur Verfügung steht.
 
 
-------------------------------------
-Bildobjekte zu neuen Dateien anlegen
-------------------------------------
+Beim Heraufladen wird aus dem Film automatisch ein Vorschaubild erzeugt, das
+dann auf der Webseite angezeigt wird. Dieses Bild ist manchmal ganz passend und
+oft nicht optimal. Im Verwaltungsbereich kann man es durch ein beliebiges Bild,
+das man hochlädt, ersetzen.
 
-In der Startseite des Verwaltungsbereichs ist ein Link auf eine Liste aller
-Bilddateien, die noch keinem Bildobjekt zugeordnet sind. Aus dieser Liste lässt
-sich durch Anklicken des entsprechenden Buttons ein Bildobjekt zu der
-entsprechenden Datei erzeugen und direkt bearbeiten. (Ab dann ist das Bild, zum
-Beispiel in der Liste aller Bilder, auch für alle Benutzer sichtbar.)
+
+------------------------------
+Besonderheiten von Dokumenten
+------------------------------
+
+Als Dokumente können Dateien in verschiedenen Formaten hinzugefügt werden (pdf,
+doc, docx, rtf, jpg, png, mp3, mp4, ...). Zusätzlich zu der Datei des Dokuments
+kann eine Bilddatei abgespeichert werden, die dann als kleines Vorschaubild in
+der Liste der Dokumente und als großes Bild auf der Seite des Dokuments
+angezeigt wird. Ist das Dokument selbst eine Bilddatei, so wird diese Datei beim
+Upload übernommen. Für andere Dateien kann die Bilddatei nachträglich im
+Verwaltungsbereich hochgeladen werden (für pdf-Dateien könnte dies eine
+jpg-Version der Titelseite des pdf-Dokuments sein).
 
 
 --------------------
 Andere Familienbäume
 --------------------
 
-Siehe :ref:`familienbaeume-chapter`\ .
+Bilder, Dokumente und Videos können Familienbäumen zugeordnet werden. Siehe
+:ref:`familienbaeume-chapter`\ .
 
 
 
