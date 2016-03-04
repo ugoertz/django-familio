@@ -137,6 +137,11 @@ $(document).ready(function() {
             </div>
             {% if user_is_admin %}
                 <div class="cabin adminbox">
+                    <div style="margin-bottom: 100px;">
+                    <form method="POST" action="{% url "document-thumbnail" %}">
+                        {% crispy thumbnail_form %}
+                    </form>
+                    </div>
                     {% include "notaro/admin_links.html" with admin_edit_link="notaro/document" doc_link="dokumente.html" %}
                 </div>
             {% endif %}

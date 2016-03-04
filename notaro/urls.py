@@ -5,7 +5,7 @@ from .views import (
         VideoDetail, VideoList,
         SourceDetail,
         DocumentList, DocumentDetail, SourceList,
-        UnboundImagesView,
+        UnboundImagesView, CreateThumbnail,
         )
 
 
@@ -34,6 +34,9 @@ urlpatterns = patterns('notaro.views',
                            PictureList.as_view(), name='picture-list'),
                        url(r'^picture-list/(?P<size>\w+)/$',
                            PictureList.as_view(), name='picture-list'),
+                       url(r'^create-thumbnail/$',
+                           CreateThumbnail.as_view(),
+                           name='document-thumbnail'),
                        )
 
 

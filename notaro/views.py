@@ -1,3 +1,5 @@
+# -*- coding: utf8 -*-
+
 from __future__ import unicode_literals
 
 import os
@@ -10,6 +12,7 @@ from django.views.generic import (
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.db.models import Count
 
 from braces.views import LoginRequiredMixin
@@ -18,6 +21,8 @@ from filebrowser.base import FileListing
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
 from .models import Note, Picture, Source, Document, Video
+from .forms import ThumbnailForm
+from .tasks import create_document_thumbnail
 
 
 class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
@@ -61,11 +66,56 @@ class DocumentDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     fields = ['name', 'description', ]
     template_name_suffix = '_detail'
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentDetail, self).get_context_data(**kwargs)
+        context['thumbnail_form'] = ThumbnailForm(
+                initial={'pk': self.get_object().pk, })
+        return context
+
     def post(self, request, *args, **kwargs):
         if not self.request.user.userprofile.is_staff_for_site:
             messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
         return super(DocumentDetail, self).post(request, *args, **kwargs)
+
+
+class CreateThumbnail(LoginRequiredMixin, View):
+
+    def post(self, request, *args, **kwargs):
+        form = ThumbnailForm(request.POST)
+        if form.is_valid():
+            # pylint: disable=no-member
+            doc = Document.objects.get(pk=form.cleaned_data['pk'])
+
+            if not (doc.doc and doc.doc.filename[-4:].lower() == '.pdf'):
+                messages.warning(
+                        request,
+                        'Vorschaubilder können nur für pdf-Dateien '
+                        'erstellt werden.')
+                return HttpResponseRedirect(
+                        reverse(
+                            'document-detail',
+                            kwargs={'pk': form.cleaned_data['pk'], }))
+            create_document_thumbnail.delay(
+                    form.cleaned_data['pk'],
+                    form.cleaned_data['page'])
+            messages.success(
+                    request,
+                    'Das Vorschaubild wird nun erstellt. '
+                    '(Bitte die Seite in ein, zwei Minuten neu laden.)')
+            return HttpResponseRedirect(
+                    reverse(
+                        'document-detail',
+                        kwargs={'pk': form.cleaned_data['pk'], }))
+        else:
+            messages.error(request, 'Bitte eine Seitenzahl angeben')
+        try:
+            return HttpResponseRedirect(
+                    reverse(
+                        'document-detail',
+                        kwargs={'pk': request.POST['pk'], }))
+        except:
+            return HttpResponseRedirect(reverse('document-list'))
 
 
 class NoteDetail(LoginRequiredMixin, CurrentSiteMixin, DetailView):
