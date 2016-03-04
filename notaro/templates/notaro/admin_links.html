@@ -5,7 +5,7 @@
 </div>
 <div class="cabin" style="width="100%;">
 <p style="font-size: 85%;">
-{% firstof object.handle object.id %}
+{% if object.handle %}{{ object.handle }}{% else %}ID: {{ object.id }}{% endif %}
 </p>
 <p>
 <a class="btn btn-default" href="/admin/{{ admin_edit_link }}/{{ object.id }}/">Bearbeiten</a>
