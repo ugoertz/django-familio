@@ -11,6 +11,7 @@ from django.views.generic import (
         DetailView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -169,9 +170,11 @@ class DocumentList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
         context.update({
             'tag_list':
             CustomTag.objects
-                     .all()
+                     .filter(
+                         tags_customtagthrough_items__content_type_id=
+                         ContentType.objects.get_for_model(Document))
                      .annotate(num_times=Count('tags_customtagthrough_items'))
-                     .order_by('-num_times', 'name')[:50],
+                     .order_by('-num_times', 'name')[:25],
             })
 
         return context
@@ -196,7 +199,9 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
             'size': self.kwargs.get('size', 'small'),
             'tag_list':
             CustomTag.objects
-                     .all()
+                     .filter(
+                         tags_customtagthrough_items__content_type_id=
+                         ContentType.objects.get_for_model(Picture))
                      .annotate(num_times=Count('tags_customtagthrough_items'))
                      .order_by('-num_times', 'name')[:50],
             })
@@ -215,7 +220,9 @@ class VideoList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
         context.update({
             'tag_list':
             CustomTag.objects
-                     .all()
+                     .filter(
+                         tags_customtagthrough_items__content_type_id=
+                         ContentType.objects.get_for_model(Video))
                      .annotate(num_times=Count('tags_customtagthrough_items'))
                      .order_by('-num_times', 'name')[:50],
             })
