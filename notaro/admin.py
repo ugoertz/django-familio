@@ -605,7 +605,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                         return HttpResponseRedirect(
                                 reverse(
                                     'document-list-ordered',
-                                    kwargs={'order_by': 'dateadded'}))
+                                    kwargs={'order_by': 'added'}))
                     else:
                         tgt = {
                                 'images': 'picture',
