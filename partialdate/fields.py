@@ -17,6 +17,34 @@ from django.db import models
 from django.core.exceptions import ValidationError
 
 
+def string_to_partialdate(value):
+    """Return the PartialDate value of the input"""
+    if isinstance(value, PartialDate):
+        return value
+    elif isinstance(value, datetime.date):
+        return PartialDate.fromdate(value)
+    elif not value:
+        return None
+
+    # It's a string.
+    try:
+        args = [int(x) for x in value.split('-')]
+    except:
+        raise ValidationError(
+                "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                "Monat und/oder Tag können ausgelassen werden.")
+    if len(args) < 1 or len(args) > 3:
+        raise ValidationError(
+                "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                "Monat und/oder Tag können ausgelassen werden.")
+    try:
+        return PartialDate(*args)
+    except ValueError:
+        raise ValidationError(
+                "Datum bitte im Format JJJJ-MM-TT angeben, " +
+                "Monat und/oder Tag können ausgelassen werden.")
+
+
 class PartialDate(object):
     """
     Like datetime.date, except that it may represent a
@@ -158,30 +186,7 @@ class PartialDateField(models.CharField):
 
     def to_python(self, value):
         """Return the PartialDate value of the input"""
-        if isinstance(value, PartialDate):
-            return value
-        elif isinstance(value, datetime.date):
-            return PartialDate.fromdate(value)
-        elif not value:
-            return None
-
-        # It's a string.
-        try:
-            args = [int(x) for x in value.split('-')]
-        except:
-            raise ValidationError(
-                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
-                    "Monat und/oder Tag können ausgelassen werden.")
-        if len(args) < 1 or len(args) > 3:
-            raise ValidationError(
-                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
-                    "Monat und/oder Tag können ausgelassen werden.")
-        try:
-            return PartialDate(*args)
-        except ValueError:
-            raise ValidationError(
-                    "Datum bitte im Format JJJJ-MM-TT angeben, " +
-                    "Monat und/oder Tag können ausgelassen werden.")
+        return string_to_partialdate(value)
 
     def get_prep_value(self, value):
         """Return the string value of the PartialDate"""
@@ -189,4 +194,12 @@ class PartialDateField(models.CharField):
         try:
             return value.isoformat()
         except:
+            pass
+
+        # maybe value is a string containing a PartialDate?
+        try:
+            pd = string_to_partialdate(value)
+            return pd.isoformat()
+        except:
             return ''
+

@@ -23,6 +23,7 @@ from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin, PaginateListView
 from maps.models import Place
+from partialdate.fields import string_to_partialdate
 
 from .forms import AddParentForm, AddPersonForm, AddSpouseForm
 from .models import (
@@ -635,12 +636,12 @@ class AddParents(LoginRequiredMixin, FormView):
             messages.error(self.request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
 
-        print form.cleaned_data
         family_kwargs = {
                 'name': form.cleaned_data['family_name']
                 or form.cleaned_data['last_name_father'],
                 'family_rel_type': form.cleaned_data['family_rel_type'],
-                'start_date': form.cleaned_data['start_date'],
+                'start_date': string_to_partialdate(
+                    form.cleaned_data['start_date']),
                 }
 
         if (
@@ -650,8 +651,10 @@ class AddParents(LoginRequiredMixin, FormView):
                     'last_name': form.cleaned_data['last_name_father'],
                     'last_name_current': form.cleaned_data['last_name_father'],
                     'first_name': form.cleaned_data['first_name_father'],
-                    'datebirth': form.cleaned_data['date_birth_father'],
-                    'datedeath': form.cleaned_data['date_death_father'],
+                    'datebirth': string_to_partialdate(
+                        form.cleaned_data['date_birth_father']),
+                    'datedeath': string_to_partialdate(
+                        form.cleaned_data['date_death_father']),
                     'gender_type': Person.MALE,
                     'probably_alive': (
                         form.cleaned_data['date_death_father'] == '' and
@@ -688,8 +691,10 @@ class AddParents(LoginRequiredMixin, FormView):
                     'last_name_current':
                     form.cleaned_data['married_name_mother'],
                     'first_name': form.cleaned_data['first_name_mother'],
-                    'datebirth': form.cleaned_data['date_birth_mother'],
-                    'datedeath': form.cleaned_data['date_death_mother'],
+                    'datebirth': string_to_partialdate(
+                        form.cleaned_data['date_birth_mother']),
+                    'datedeath': string_to_partialdate(
+                        form.cleaned_data['date_death_mother']),
                     'gender_type': Person.FEMALE,
                     'probably_alive': (
                         form.cleaned_data['date_death_mother'] == '' and
@@ -750,8 +755,10 @@ class AddPersonView(CreateView):
                 last_name=form.cleaned_data['last_name'],
                 first_name=form.cleaned_data['first_name'],
                 married_name=form.cleaned_data['marriedname'],
-                datebirth=form.cleaned_data['datebirth'],
-                datedeath=form.cleaned_data['datedeath'])
+                datebirth=string_to_partialdate(
+                    form.cleaned_data['datebirth']),
+                datedeath=string_to_partialdate(
+                    form.cleaned_data['datedeath']))
         person = Person.objects.create(
                 first_name=form.cleaned_data['first_name'],
                 last_name=form.cleaned_data['last_name']
@@ -760,8 +767,10 @@ class AddPersonView(CreateView):
                 or form.cleaned_data['last_name'],
                 probably_alive=(form.cleaned_data['datedeath'] == ''),
                 gender_type=form.cleaned_data['gender_type'],
-                datebirth=form.cleaned_data['datebirth'],
-                datedeath=form.cleaned_data['datedeath'],
+                datebirth=string_to_partialdate(
+                    form.cleaned_data['datebirth']),
+                datedeath=string_to_partialdate(
+                    form.cleaned_data['datedeath']),
                 handle=handle
                 )
 
@@ -866,7 +875,8 @@ class AddSpouseView(AddPersonView):
                 father=father, mother=mother,
                 family_rel_type=form.cleaned_data['family_rel_type'],
                 name=form.cleaned_data['family_name'],
-                start_date=form.cleaned_data['start_date'],
+                start_date=string_to_partialdate(
+                    form.cleaned_data['start_date']),
                 )
         site = Site.objects.get_current()
         family.sites.add(site)
