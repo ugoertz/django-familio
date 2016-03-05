@@ -47,7 +47,7 @@ $(function() {
             </div>
             <ul class="list-group">
                 {% for object in object_list %}
-                <li class="list-group-item">{% if object.image %}<img style="margin-right: 20px;" src="{% version object.image "thumbnail" %}">{% endif %}<a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {% firstof object.date '' %}  ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})
+                <li class="list-group-item clearfix">{% if object.image %}<img style="margin-right: 20px;" src="{% version object.image "thumbnail" %}">{% endif %}<a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {% firstof object.date '' %}  ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})
                     <span class="pull-right">{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
                 </li>
             {% endfor %}
