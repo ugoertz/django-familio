@@ -24,6 +24,7 @@ from tags.models import CustomTag
 from .models import Note, Picture, Source, Document, Video
 from .forms import ThumbnailForm
 from .tasks import create_document_thumbnail
+# flake8: noqa
 
 
 class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
@@ -165,8 +166,30 @@ class DocumentList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     model = Document
 
+    def get_queryset(self):
+        qs = super(DocumentList, self).get_queryset()
+
+        # pylint: disable=all
+        if 'order_by' in self.kwargs:
+            if self.kwargs['order_by'] == 'date':
+                qs = qs.order_by('date', 'id', )
+            elif self.kwargs['order_by'] == 'datedesc':
+                qs = qs.order_by('-date', '-id', )
+            elif self.kwargs['order_by'] == 'added':
+                qs = qs.order_by('-date_added', '-id', )
+            elif self.kwargs['order_by'] == 'addeddesc':
+                qs = qs.order_by('date_added', 'id', )
+            elif self.kwargs['order_by'] == 'changed':
+                qs = qs.order_by('-date_changed', '-id', )
+            elif self.kwargs['order_by'] == 'changeddesc':
+                qs = qs.order_by('date_changed', 'id', )
+            elif self.kwargs['order_by'] == 'name':
+                qs = qs.order_by('name', 'date', 'id', )
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super(DocumentList, self).get_context_data(**kwargs)
+
         context.update({
             'tag_list':
             CustomTag.objects

@@ -355,6 +355,8 @@ class Document(models.Model):
     description = models.TextField(blank=True, verbose_name="Beschreibung")
     date = models.DateField(blank=True, null=True, verbose_name="Datum")
     sites = models.ManyToManyField(Site)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_changed = models.DateTimeField(auto_now=True)
     all_objects = GenManager()
     objects = CurrentSiteManager()
     tags = TaggableManager(

@@ -601,8 +601,18 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                             'videos': 'video',
                             'documents': 'document',
                             }[target]
-                    return HttpResponseRedirect(
-                            reverse('%s-list' % tgt))
+                    if target == 'documents':
+                        return HttpResponseRedirect(
+                                reverse(
+                                    'document-list-ordered',
+                                    kwargs={'order_by': 'dateadded'}))
+                    else:
+                        tgt = {
+                                'images': 'picture',
+                                'videos': 'video',
+                                }[target]
+                        return HttpResponseRedirect(
+                                reverse('%s-list' % tgt))
 
                 return HttpResponseRedirect(
                             '/admin/filebrowser/browse/?&dir=' +

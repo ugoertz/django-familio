@@ -34,9 +34,20 @@ $(function() {
     <div class="row">
         <div class="col-md-10">
             <h1>Dokumente</h1>
+            <div class="row"><div style="margin-bottom: 20px;" class="col-md-12">
+            <div class="pull-right cabin"><span style="font-size: 60%; font-weight: normal;">Sortiere nach</span>
+                <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Sortierungskriterium">
+                    {% url "document-list" as url_document_list %}
+                    <a href="{% if not "date" in request.path or "datedesc" in request.path %}{% url "document-list-ordered" "date" %}{% else %}{% url "document-list-ordered" "datedesc" %}{% endif %}" class="btn btn-default {% if request.path == url_document_list or "date" in request.path %}active{% endif %}">Datum <span class="glyphicon glyphicon-chevron-{% if not "date" in request.path %}down{% else %}{% if "datedesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                    <a href="{% if not "added" in request.path or "addeddesc" in request.path %}{% url "document-list-ordered" "added" %}{% else %}{% url "document-list-ordered" "addeddesc" %}{% endif %}" class="btn btn-default {% if "added" in request.path %}active{% endif %}">Hinzugefügt <span class="glyphicon glyphicon-chevron-{% if not "added" in request.path %}down{% else %}{% if "addeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                    <a href="{% if not "changed" in request.path or "changeddesc" in request.path %}{% url "document-list-ordered" "changed" %}{% else %}{% url "document-list-ordered" "changeddesc" %}{% endif %}" class="btn btn-default {% if "changed" in request.path %}active{% endif %}">Letzte Änderung <span class="glyphicon glyphicon-chevron-{% if not "changed" in request.path %}down{% else %}{% if "changeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                    <a href="{% url "document-list-ordered" "name" %}" class="btn btn-default {% if "name" in request.path %}active{% endif %}">Name</a>
+                </div>
+            </div></div>
+            </div>
             <ul class="list-group">
                 {% for object in object_list %}
-                <li class="list-group-item">{% if object.image %}<img style="margin-right: 20px;" src="{% version object.image "thumbnail" %}">{% endif %}<a href="{{ object.get_absolute_url }}">{{ object.name }} ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})</a>
+                <li class="list-group-item">{% if object.image %}<img style="margin-right: 20px;" src="{% version object.image "thumbnail" %}">{% endif %}<a href="{{ object.get_absolute_url }}">{{ object.name }}</a> {% firstof object.date '' %}  ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})
                     <span class="pull-right">{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
                 </li>
             {% endfor %}
