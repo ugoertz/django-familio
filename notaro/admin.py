@@ -11,6 +11,7 @@ import os
 import os.path
 import tempfile
 import zipfile
+import pyclamd
 
 from django import forms
 from django.conf import settings
@@ -489,7 +490,35 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
         return [url(r'^uploadarchive/$',
                     self.admin_site.admin_view(self.upload_archive),
                     name="uploadarchive"),
+                url(r'^virusscanall/$',
+                    self.admin_site.admin_view(self.scan_all),
+                    name="scanall"),
                 ] + urls
+
+    def scan_all(self, request):
+        results = ''
+
+        try:
+            cd = pyclamd.ClamdAgnostic()
+        except:
+            messages.error(
+                    request,
+                    'Verbindung zum Virenscanner fehlgeschlagen')
+            return render(
+                    request,
+                    'customadmin/scanall.html',
+                    {'results': results, })
+
+        if not cd.ping():
+            messages.error(request, 'Ping zum Virenscanner fehlgeschlagen')
+        else:
+            results = cd.multiscan_file(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        settings.FILEBROWSER_DIRECTORY))
+
+        return render(request, 'customadmin/scanall.html',
+                      {'results': results, })
 
     def handle_file_upload(
             self, request, filedata, path, target, create_objects):
@@ -541,6 +570,38 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
         if create_objects:
             obj_path = os.path.join(
                     settings.FILEBROWSER_DIRECTORY, target, path, filename)
+
+            # virus scan
+            try:
+                cd = pyclamd.ClamdAgnostic()
+            except:
+                messages.error(
+                        request,
+                        'Verbindung zum Virenscanner fehlgeschlagen')
+            else:
+                if not cd.ping():
+                    messages.error(
+                            request,
+                            'Ping zum Virenscanner fehlgeschlagen')
+                else:
+                    result = cd.multiscan_file(
+                            os.path.join(
+                                settings.MEDIA_ROOT,
+                                obj_path.encode('utf8')))
+                    if result:
+                        # we scanned only one file, so this must be it
+                        fn = result.keys()[0]
+                        info = result[fn]
+                        f = os.path.basename(fn)
+                        messages.error(
+                                request,
+                                ('In der Datei %s wurde der Virus ' % f) +
+                                ('%s gefunden.\n' % ', '.join(info)) +
+                                'Die Datei ist auf dem Server, wurde aber '
+                                'nicht in die Datenbank eingefügt. Das kann '
+                                'gegebenenfalls manuell im Verwaltungsbereich '
+                                'durchgeführt werden.')
+                        return
             if target == 'images':
                 # pylint: disable=no-member
                 picture = Picture.objects.create(image=obj_path)

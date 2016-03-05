@@ -4,10 +4,8 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
 
 from grappelli.dashboard import modules, Dashboard
-from grappelli.dashboard.utils import get_admin_site_name
 
 
 class CustomIndexDashboard(Dashboard):
@@ -22,7 +20,7 @@ class CustomIndexDashboard(Dashboard):
             _('Verwaltung der Datenbank'),
             column=1,
             collapsible=True,
-            children = [
+            children=[
                 modules.AppList(
                     _('Administration'),
                     column=1,
@@ -54,7 +52,8 @@ class CustomIndexDashboard(Dashboard):
                     'external': False,
                 },
                 {
-                    'title': _('Bilddateien, die keinem Bildobjekt zugeordnet sind'),
+                    'title': _('Bilddateien, '
+                               'die keinem Bildobjekt zugeordnet sind'),
                     'url': '/notes/unbound-images/',
                     'external': False,
                 },
@@ -68,9 +67,13 @@ class CustomIndexDashboard(Dashboard):
                     'url': '/admin/notaro/picture/uploadarchive',
                     'external': False,
                 },
+                {
+                    'title': _('Virusscanner'),
+                    'url': '/admin/notaro/picture/virusscanall',
+                    'external': False,
+                },
             ]
         ))
-
 
         # append another link list module for "support".
         self.children.append(modules.LinkList(

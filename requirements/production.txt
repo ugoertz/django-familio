@@ -74,3 +74,6 @@ celery==3.1.20
 amqp==1.4.9
 
 pyinotify==0.9.6
+
+pyclamd==0.3.17
+
