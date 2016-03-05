@@ -564,12 +564,11 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
             if not os.path.isdir(full_path):
                 raise
 
-        default_storage.save(
+        final_path = default_storage.save(
                 os.path.join(full_path, filename),
                 filedata)
         if create_objects:
-            obj_path = os.path.join(
-                    settings.FILEBROWSER_DIRECTORY, target, path, filename)
+            obj_path = os.path.relpath(final_path, settings.MEDIA_ROOT)
 
             # virus scan
             try:
