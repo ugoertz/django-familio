@@ -86,9 +86,14 @@ def home(request):
     """ Default view for the root """
 
     if request.user.is_authenticated():
+        try:
+            calendar_range = settings.CALENDAR_RANGE
+        except:
+            calendar_range = 15
+
         # pylint: disable=no-member
         dates = [datetime.date.today() + (i-3) * datetime.timedelta(days=1)
-                 for i in range(15)]
+                 for i in range(calendar_range)]
         birthdeathdays = [
                 (d,
                  Person.objects
