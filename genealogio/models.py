@@ -584,9 +584,19 @@ class Person(PrimaryObject):
         descendant trees.
         """
 
+        first = ''
         try:
-            first = self.name_set.filter(typ=Name.RUFNAME)[0].name
+            first = self.name_set.filter(typ=Name.NICKNAME)[0].name
         except IndexError:
+            pass
+
+        if not first:
+            try:
+                first = self.name_set.filter(typ=Name.RUFNAME)[0].name
+            except IndexError:
+                pass
+
+        if not first:
             first = self.first_name
 
         name = self.last_name

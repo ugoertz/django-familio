@@ -67,9 +67,7 @@ class SaveTags(LoginRequiredMixin, View):
                 # a change to a person's name is made.)
                 try:
                     tag = CustomTag.objects.get(slug=t.split(' ')[-1])
-
-                    # the current as_tag representation is the first part of t:
-                    t_text = ' '.join(t.split(' ')[:-1])
+                    t_text = tag.get_object_for_tag().as_tag()[0]
 
                     if tag.name != t_text:
                         # The as_tag representation has changed!  Update the
