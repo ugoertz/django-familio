@@ -22,7 +22,7 @@ pylint==1.5.4
 pylint-django==0.7.1
 pylint-plugin-utils==0.2.3
 flake8==2.5.4
-pyflakes==1.0.0
+pyflakes==1.1.0
 selenium==2.52.0
 factory-boy==2.6.1
 
