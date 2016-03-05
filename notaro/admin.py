@@ -495,12 +495,27 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     name="scanall"),
                 ] + urls
 
+    def get_clamav_conn(self):
+        try:
+            cd = pyclamd.ClamdNetworkSocket(host="clamav")  # for docker
+        except:
+            cd = None
+
+        if not cd:
+            try:
+                cd = pyclamd.ClamdAgnostic()
+            except:
+                cd = None
+
+        if cd and cd.ping():
+            return cd
+        return None
+
     def scan_all(self, request):
         results = ''
 
-        try:
-            cd = pyclamd.ClamdAgnostic()
-        except:
+        cd = self.get_clamav_conn()
+        if cd is None:
             messages.error(
                     request,
                     'Verbindung zum Virenscanner fehlgeschlagen')
@@ -509,13 +524,9 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     'customadmin/scanall.html',
                     {'results': results, })
 
-        if not cd.ping():
-            messages.error(request, 'Ping zum Virenscanner fehlgeschlagen')
-        else:
-            results = cd.multiscan_file(
-                    os.path.join(
-                        settings.MEDIA_ROOT,
-                        settings.FILEBROWSER_DIRECTORY))
+        results = cd.multiscan_file(os.path.join(
+            settings.MEDIA_ROOT,
+            settings.FILEBROWSER_DIRECTORY))
 
         return render(request, 'customadmin/scanall.html',
                       {'results': results, })
@@ -571,36 +582,31 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
             obj_path = os.path.relpath(final_path, settings.MEDIA_ROOT)
 
             # virus scan
-            try:
-                cd = pyclamd.ClamdAgnostic()
-            except:
-                messages.error(
+            cd = self.get_clamav_conn()
+            if cd is None:
+                messages.warning(
                         request,
-                        'Verbindung zum Virenscanner fehlgeschlagen')
+                        'Verbindung zum Virenscanner fehlgeschlagen.')
             else:
-                if not cd.ping():
+                result = cd.multiscan_file(
+                        os.path.join(
+                            settings.MEDIA_ROOT,
+                            obj_path.encode('utf8')))
+                if result:
+                    # we scanned only one file, so this must be it
+                    fn = result.keys()[0]
+                    info = result[fn]
+                    f = os.path.basename(fn)
                     messages.error(
                             request,
-                            'Ping zum Virenscanner fehlgeschlagen')
-                else:
-                    result = cd.multiscan_file(
-                            os.path.join(
-                                settings.MEDIA_ROOT,
-                                obj_path.encode('utf8')))
-                    if result:
-                        # we scanned only one file, so this must be it
-                        fn = result.keys()[0]
-                        info = result[fn]
-                        f = os.path.basename(fn)
-                        messages.error(
-                                request,
-                                ('In der Datei %s wurde der Virus ' % f) +
-                                ('%s gefunden.\n' % ', '.join(info)) +
-                                'Die Datei ist auf dem Server, wurde aber '
-                                'nicht in die Datenbank eingefügt. Das kann '
-                                'gegebenenfalls manuell im Verwaltungsbereich '
-                                'durchgeführt werden.')
-                        return
+                            ('In der Datei %s wurde der Virus ' % f) +
+                            ('%s gefunden.\n' % ', '.join(info)) +
+                            'Die Datei ist auf dem Server gespeichert, '
+                            'wurde aber '
+                            'nicht in die Datenbank eingefügt. Das kann '
+                            'gegebenenfalls manuell im Verwaltungsbereich '
+                            'durchgeführt werden.')
+                    return
             if target == 'images':
                 # pylint: disable=no-member
                 picture = Picture.objects.create(image=obj_path)
