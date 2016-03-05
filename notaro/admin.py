@@ -497,7 +497,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
 
     def get_clamav_conn(self):
         try:
-            cd = pyclamd.ClamdNetworkSocket(host="clamav")  # for docker
+            cd = pyclamd.ClamdNetworkSocket(host=b"clamav")  # for docker
         except:
             cd = None
 
