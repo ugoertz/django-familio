@@ -119,7 +119,7 @@ $(document).ready(function() {
             {% if object.image %}
             <div style="margin: 20px;">
                 <a href="{{ object.image.url  }}">
-                    <img src="{% version object.image "large" %}">
+                    <img style="border: 1px solid black;" src="{% version object.image "large" %}">
                 </a>
             </div>
             {% endif %}
