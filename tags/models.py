@@ -35,7 +35,8 @@ class CustomTag(TagBase):
       or similar names).
     """
 
-    SPAN_TEMPLATE = '<a href="%s" class="btn btn-default btn-xs cabin" ' +\
+    SPAN_TEMPLATE = '<a href="%s" ' +\
+                    'class="tag-%s btn btn-default btn-xs cabin" ' +\
                     'style="margin: 3px; background-color: %s;">%s</a>'
 
     def slugify(self, tag, i=None):
@@ -64,6 +65,7 @@ class CustomTag(TagBase):
         if self.slug.startswith('tag-'):
             return CustomTag.SPAN_TEMPLATE % (
                     reverse('tag-search', kwargs={'tag': self.slug}),
+                    'txt',
                     '#eeeeee',
                     self.name[4:])
 
@@ -80,9 +82,9 @@ class CustomTag(TagBase):
                     '%s-detail' % model,
                     kwargs={'pk': int(self.slug.split('-')[1])})
 
-            return CustomTag.SPAN_TEMPLATE % (url, bg_color, tag)
+            return CustomTag.SPAN_TEMPLATE % (url, model, bg_color, tag)
         except:
-            return '<span>%s</span>' % self.name
+            return '<span class="tag-unknown">%s</span>' % self.name
 
     def as_tag_text(self):
         if self.slug.startswith('tag-'):

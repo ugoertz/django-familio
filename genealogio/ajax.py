@@ -34,6 +34,7 @@ def popover_data(request, link):
             ('/gen/person-view/', Person, 'person_mouseover.html'),
             ('/gen/pedigree/', Person, 'person_mouseover.html'),
             ('/gen/descendants/', Person, 'person_mouseover.html'),
+            ('/gen/family-view/', Family, 'family_mouseover.html'),
             ]:
         i = link.find(linktext)
         if i != -1:
@@ -44,7 +45,7 @@ def popover_data(request, link):
                 return "Unbekannt"
             return render_to_string(
                     'genealogio/%s' % template,
-                    {'person': p, 'request': request, })
+                    {'object': p, 'request': request, })
 
 
 @dajaxice_register(method="GET")

@@ -59,6 +59,7 @@
   <script>
   $(document).ready(function() {
   {% include "base/popover.js" with selector='a[href*="/gen/person-view/"]' fct="Dajaxice.genealogio.popover_data" %}
+  {% include "base/popover.js" with selector='.tag-family' fct="Dajaxice.genealogio.popover_data" %}
   });
   </script>
   {% endblock %}

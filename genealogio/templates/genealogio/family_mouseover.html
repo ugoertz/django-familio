@@ -1,0 +1,39 @@
+{% load static %}
+{% load fb_versions %}
+{% load partialdate_tags %}
+{% load markup_tags %}
+
+<div style="width: 400px;">
+    <div style="margin-bottom: 15px;">{% include "genealogio/thumbnail_or_dummy.html" with person=object.father %}
+    {% include "genealogio/thumbnail_or_dummy.html" with person=object.mother %}
+    </div><div>
+    {% for person in object.get_children %}
+    {% include "genealogio/thumbnail_or_dummy.html" %}
+    {% endfor %}
+    </div>
+<h4>
+Familie {{ object }}
+</h4>
+
+{% filter apply_markup:"genrestructuredtext" %}
+{% if object.start_date or object.end_date %}
+{{ object.start_date|partial_date:"j.n.Y" }} - {{ object.end_date|partial_date:"j.n.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
+{% else %}
+({{object.get_family_rel_type_display }})
+{% endif %}
+
+{% include "genealogio/person_snippet_full.rst" with person=object.father label="**Vater:** " %}
+
+{% include "genealogio/person_snippet_full.rst" with person=object.mother label="**Mutter:** " %}
+
+{% if object.person_set.count %}**Kinder:**
+
+{% for child in object.get_children_as_personfamily %}
+* {% include "genealogio/person_snippet_full.rst" with person=child.person show_child_type=child.get_child_type %}
+{% endfor %}
+{% endif %}
+{% endfilter %}
+
+<p>{{ object.comments|apply_markup:"genrestructuredtext" }}</p>
+</div>
+

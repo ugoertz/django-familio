@@ -4,24 +4,24 @@
 
 <div style="width: 400px;">
 <h4>
-    {% if person.portrait %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' style="margin-right: 10px;" src="{% version person.portrait.image 'thumbnail' %}">{% endif %}{% endif %}
-{{ person.get_full_name_html }}
+    {% if object.portrait %}{% if request.site in object.portrait.sites.all %}<img onerror='this.style.display = "none"' style="margin-right: 10px;" src="{% version object.portrait.image 'thumbnail' %}">{% endif %}{% endif %}
+{{ object.get_full_name_html }}
 </h4>
 
-<p>{% if person.datebirth or person.placebirth %}geboren {{ person.datebirth|partial_date:"j.n.Y" }}{% if person.placebirth %} in {{ person.placebirth }} {% endif %}{% endif %}{% if person.datedeath or person.placedeath %} - gestorben {{ person.datedeath|partial_date:"j.n.Y" }}{% if person.placedeath %} in {{ person.placedeath }}{% endif %}{% endif %}</p>
+<p>{% if object.datebirth or object.placebirth %}geboren {{ object.datebirth|partial_date:"j.n.Y" }}{% if object.placebirth %} in {{ object.placebirth }} {% endif %}{% endif %}{% if object.datedeath or object.placedeath %} - gestorben {{ object.datedeath|partial_date:"j.n.Y" }}{% if object.placedeath %} in {{ object.placedeath }}{% endif %}{% endif %}</p>
 
-{% with father=person.get_father.get_primary_name %}
+{% with father=object.get_father.get_primary_name %}
 {% if father %}<p><b>Vater:</b> {{ father }}</p>{% endif %}
 {% endwith %}
 
-{% with mother=person.get_mother.get_primary_name %}
+{% with mother=object.get_mother.get_primary_name %}
 {% if mother %}<p><b>Mutter:</b> {{ mother }}</p>{% endif %}
 {% endwith %}
 
-{% with allchildren=person.get_children %}
+{% with allchildren=object.get_children %}
 {% for partner, children, family in allchildren %}
 
-<p>{{ family.get_relation_text }} {{ partner.get_primary_name }} — Familie {% firstof family.name family.father.last_name person.last_name %}</p>
+<p>{{ family.get_relation_text }} {{ partner.get_primary_name }} — Familie {% firstof family.name family.father.last_name object.last_name %}</p>
 
 {% if children %}
 <p><b>Kinder:</b></br>
@@ -36,6 +36,6 @@
 {% endfor %}
 {% endwith %}
 
-<p>{{ person.comments|apply_markup:"genrestructuredtext" }}</p>
+<p>{{ object.comments|apply_markup:"genrestructuredtext" }}</p>
 </div>
 
