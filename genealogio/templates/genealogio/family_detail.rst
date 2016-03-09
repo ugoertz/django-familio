@@ -20,7 +20,7 @@
 ======================================================================================================================================================================================
 
 {% if object.start_date or object.end_date %}
-{{ object.start_date|partial_date:"d.m.Y" }} - {{ object.end_date|partial_date:"d.m.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
+{{ object.start_date|partial_date:"j.n.Y" }} - {{ object.end_date|partial_date:"j.n.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
 {% else %}
 ({{object.get_family_rel_type_display }})
 {% endif %}

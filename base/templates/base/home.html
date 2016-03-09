@@ -155,7 +155,7 @@ $(window).load(function(){
             <h2>Die neuesten Texte</h2>
             <ul class="list-group">
                 {% for note in notes %}
-                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% ifequal note.date_added|date:"d.M.Y" note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"d. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"d. M." }}{% endifequal %}</span>
+                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% ifequal note.date_added|date:"d.M.Y" note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"j. M." }}{% endifequal %}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -166,7 +166,7 @@ $(window).load(function(){
             <ul class="list-group">
                 {% for person in personen %}
                 <li class="list-group-item clearfix">{% include "genealogio/person_snippet_full.html" %}
-                <span class="cabin small pull-right">{% ifequal person.date_added|date:"d.M.Y" person.date_changed|date:"d.M.Y" %}Hinzugefügt am {{ person.date_added|date:"d. M." }}{% else %}Aktualisiert am {{ person.date_changed|date:"d. M." }}{% endifequal %}</span></li>
+                <span class="cabin small pull-right">{% ifequal person.date_added|date:"d.M.Y" person.date_changed|date:"d.M.Y" %}Hinzugefügt am {{ person.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ person.date_changed|date:"j. M." }}{% endifequal %}</span></li>
                 {% endfor %}
             </ul>
             <p><a href="{% url "person-list" %}">Alle Personen</a></p>
@@ -176,7 +176,7 @@ $(window).load(function(){
             <ul class="list-group">
                 {% for c in comments %}
                 <li class="list-group-item clearfix"><a href="{{ c.content_object.get_absolute_url }}"><span style="margin-right: 10px; font-size: 100%;" class="cabin">Von {% firstof c.author.get_full_name c.author.username %} bei</span> <b>{% firstof c.content_object.get_primary_name c.content_object.title c.content_object.name c.content_object %}</b></a>
-                    <span class="cabin small pull-right">am {{ c.date|date:"d. M." }}</span>
+                    <span class="cabin small pull-right">am {{ c.date|date:"j. M." }}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -187,7 +187,7 @@ $(window).load(function(){
                 <ul class="list-group">
                 {% for p in posts %}
                 <li class="list-group-item clearfix"><a href="{{ p.get_absolute_url }}">{{ p.user.get_full_name }} - {{ p.topic }}:</br><span style="font-size: 80%;">{{ p }}</span></a>
-                <span class="cabin small pull-right">am {{ p.created|date:"d. M." }}</span>
+                <span class="cabin small pull-right">am {{ p.created|date:"j. M." }}</span>
                 </li>
                 {% endfor %}
                 </ul>

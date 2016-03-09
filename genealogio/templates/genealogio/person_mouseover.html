@@ -8,7 +8,7 @@
 {{ person.get_full_name_html }}
 </h4>
 
-<p>{% if person.datebirth or person.placebirth %}geboren {{ person.datebirth|partial_date:"d.m.Y" }}{% if person.placebirth %} in {{ person.placebirth }} {% endif %}{% endif %}{% if person.datedeath or person.placedeath %} - gestorben {{ person.datedeath|partial_date:"d.m.Y" }}{% if person.placedeath %} in {{ person.placedeath }}{% endif %}{% endif %}</p>
+<p>{% if person.datebirth or person.placebirth %}geboren {{ person.datebirth|partial_date:"j.n.Y" }}{% if person.placebirth %} in {{ person.placebirth }} {% endif %}{% endif %}{% if person.datedeath or person.placedeath %} - gestorben {{ person.datedeath|partial_date:"j.n.Y" }}{% if person.placedeath %} in {{ person.placedeath }}{% endif %}{% endif %}</p>
 
 {% with father=person.get_father.get_primary_name %}
 {% if father %}<p><b>Vater:</b> {{ father }}</p>{% endif %}

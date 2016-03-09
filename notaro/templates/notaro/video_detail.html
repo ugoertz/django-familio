@@ -129,7 +129,7 @@ $(document).ready(function() {
             {{ object.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
             </div>
 
-            {% if object.date %}<p>{{ object.date }}</p>{% endif %}
+            {% if object.date %}<p>{{ object.date|date:"j. M. Y" }}</p>{% endif %}
 
 
             {% filter apply_markup:"genrestructuredtext" %}
