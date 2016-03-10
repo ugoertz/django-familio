@@ -156,7 +156,7 @@ def get_text(name, rawtext, text, lineno, inliner,
         else:
             # for now, ignore links to database objects here
             nodelist = [nodes.inline(rawtext, t, **options), ]
-    except ImportError:
+    except:
         msg = inliner.reporter.error(
                 'Problem when evaluating handle: %s %s' % (text, rawtext, ),
                 line=lineno)

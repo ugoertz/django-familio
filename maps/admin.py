@@ -196,7 +196,7 @@ class CustomMapAdmin(
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf_custommap.js', )
 

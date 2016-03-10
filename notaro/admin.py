@@ -321,7 +321,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf.js', )
         css = {'all': ('css/note_admin.css', ) + CODEMIRROR_CSS, }
@@ -351,7 +351,7 @@ class SourceAdmin(CurrentSiteAdmin, VersionAdmin):
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf_source.js', )
         css = {'all': ('css/source_admin.css', ) + CODEMIRROR_CSS, }
@@ -697,7 +697,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
               )
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf_pic_vid.js', )
         css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
@@ -746,7 +746,7 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf_document.js', )
         css = {'all': ('css/document_admin.css', ) + CODEMIRROR_CSS, }
@@ -818,7 +818,7 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
               )
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except ImportError:
+        except:
             pass
         js += ('codemirror/codemirror_conf_pic_vid.js', )
         css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
