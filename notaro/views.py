@@ -21,6 +21,7 @@ from filebrowser.base import FileListing
 
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
+from partialdate.fields import PartialDate
 from .models import Note, Picture, Source, Document, Video
 from .forms import ThumbnailForm
 from .tasks import create_document_thumbnail
@@ -293,3 +294,30 @@ class UnboundImagesView(LoginRequiredMixin, View):
         picture.sites.add(request.site)
 
         return HttpResponseRedirect(picture.get_absolute_url())
+
+class SetDateFromEXIF(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+        if not self.request.user.userprofile.is_staff_for_site:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+            return HttpResponseRedirect('/')
+
+        try:
+            pic = Picture.objects.get(pk=pk)
+            d = pic.get_exif_data()[0].split(' ')[0]
+            year = int(d[0:4])
+            month = int(d[5:7])
+            day = int(d[8:10])
+            pic.date = PartialDate(year, month, day)
+            pic.save()
+            return HttpResponseRedirect(pic.get_absolute_url())
+        except:
+            messages.error(request, 'Es ist ein Fehler aufgetreten.')
+
+        try:
+            return HttpResponseRedirect(pic.get_absolute_url())
+        except:
+            pass
+        return HttpResponseRedirect('/')
+
+
