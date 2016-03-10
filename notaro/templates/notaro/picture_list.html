@@ -1,6 +1,7 @@
 {% extends "_layouts/base.html" %}
 {% load static %}
 {% load markup_tags %}
+{% load notaro_tags %}
 {% load fb_versions %}
 
 {% block css %}
@@ -74,7 +75,7 @@ $(function() {
                                     </div>
                                 </div>
 
-                                <div style="margin-bottom: 20px;">{% for tag in picture.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
+                                <div style="margin-bottom: 20px;">{{ picture.date.year|datebadge }}{% for tag in picture.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
 
                                 {% if user_is_admin %}
                                 {% url "save-tags" "notaro" "picture" picture.pk as action %}
