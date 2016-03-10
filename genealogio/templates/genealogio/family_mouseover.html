@@ -16,6 +16,13 @@ Familie {{ object }}
 </h4>
 
 {% filter apply_markup:"genrestructuredtext" %}
+
+.. role:: marginleft30
+    :class: marginleft30
+
+.. role:: cabin
+    :class: cabin
+
 {% if object.start_date or object.end_date %}
 {{ object.start_date|partial_date:"j.n.Y" }} - {{ object.end_date|partial_date:"j.n.Y" }} :marginleft30:`({{object.get_family_rel_type_display }})`
 {% else %}
