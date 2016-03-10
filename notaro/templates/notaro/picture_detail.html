@@ -125,7 +125,8 @@ $(document).ready(function() {
         </div>
         <div class="col-md-3 col-md-offset-1">
             <div style="margin-top: 40px;">
-            {% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}
+                {% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}
+                <div class="cabin" style="margin-bottom: 20px; margin-top: 20px; padding: 20px; background-color: lightyellow;">{% for s in object.get_exif_data %}{{ s }}<br>{% endfor %}{{ object.image.width }} x {{ object.image.height }}</div>
             {% if user_is_admin %}
                 <div class="cabin adminbox">
                     {% include "notaro/admin_links.html" with admin_edit_link="notaro/picture" doc_link="bilder.html" %}

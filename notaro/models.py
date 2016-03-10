@@ -6,6 +6,7 @@ import os
 import os.path
 import re
 import tempfile
+from PIL import ExifTags, Image
 
 from django.db import models
 from django.contrib.sites.models import Site
@@ -173,6 +174,16 @@ class Picture(models.Model):
         return self.caption
         # return '\n'.join(['.. class:: cabin\n\n'] +
         #                  ['    '+l for l in self.caption.splitlines()])
+
+    def get_exif_data(self):
+        try:
+            p = Image.open(open(self.image.path_full))
+            raw_exif = p._getexif()
+            exif = {ExifTags.TAGS.get(k, k): raw_exif[k] for k in raw_exif}
+            return [exif.get(k, '')
+                    for k in ['DateTimeOriginal', 'Make', 'Model', ]]
+        except:
+            return ['Keine EXIF-Daten gefunden.', ]
 
     class Meta:
         ordering = ('-id', )
