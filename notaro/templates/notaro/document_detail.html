@@ -114,7 +114,7 @@ $(document).ready(function() {
 {{ object.description|safe }}
 {% endfilter %}
 
-{% if object.date %}<p>{{ object.date|date:"j. M Y" }}</p>{% endif %}
+{% if object.date %}<p>{{ object.date|partial_date:"j. M. Y" }}</p>{% endif %}
 
             {% if object.image %}
             <div style="margin: 20px;">

@@ -17,6 +17,7 @@ from filebrowser.fields import FileBrowseField
 from filebrowser.settings import ADMIN_THUMBNAIL
 from taggit.managers import TaggableManager
 
+from partialdate.fields import PartialDateField
 from .managers import GenManager
 from tags.models import CustomTagThrough
 
@@ -124,7 +125,7 @@ class Picture(models.Model):
                             blank=True, null=True,
                             help_text="Bilddatei im jpg- oder png-Format")
     caption = models.TextField(blank=True, verbose_name='Beschreibung')
-    date = models.DateField(blank=True, null=True, verbose_name='Datum')
+    date = PartialDateField(blank=True, null=True, verbose_name='Datum')
     sources = models.ManyToManyField(Source, blank=True,
                                      verbose_name="Quellen",
                                      through=PictureSource)
@@ -203,7 +204,7 @@ class Video(models.Model):
     directory = models.CharField(max_length=300, blank=True)
 
     caption = models.TextField(blank=True, verbose_name='Beschreibung')
-    date = models.DateField(blank=True, null=True, verbose_name='Datum')
+    date = PartialDateField(blank=True, null=True, verbose_name='Datum')
     sources = models.ManyToManyField(Source, blank=True,
                                      verbose_name="Quellen",
                                      through=VideoSource)
@@ -353,7 +354,7 @@ class Document(models.Model):
             help_text="Bilddatei im jpg- oder png-Format")
     name = models.CharField(max_length=500, verbose_name="Name")
     description = models.TextField(blank=True, verbose_name="Beschreibung")
-    date = models.DateField(blank=True, null=True, verbose_name="Datum")
+    date = PartialDateField(blank=True, null=True, verbose_name="Datum")
     sites = models.ManyToManyField(Site)
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)

@@ -4,6 +4,7 @@
 {% load typogrify_tags %}
 {% load fb_versions %}
 {% load crispy_forms_tags %}
+{% load partialdate_tags %}
 
 {% block css %}
 {{ block.super }}
@@ -129,7 +130,7 @@ $(document).ready(function() {
             {{ object.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
             </div>
 
-            {% if object.date %}<p>{{ object.date|date:"j. M. Y" }}</p>{% endif %}
+            {% if object.date %}<p>{{ object.date|partial_date:"j. M. Y" }}</p>{% endif %}
 
 
             {% filter apply_markup:"genrestructuredtext" %}
