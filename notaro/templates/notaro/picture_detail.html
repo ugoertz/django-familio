@@ -3,6 +3,7 @@
 {% load markup_tags %}
 {% load typogrify_tags %}
 {% load fb_versions %}
+{% load crispy_forms_tags %}
 {% load partialdate_tags %}
 
 {% block css %}
@@ -99,7 +100,7 @@ $(document).ready(function() {
                 <div style="margin-top: 50px;">
                     <form method="POST" action="">
                         {% csrf_token %}
-                        {{ form }}
+                        {{ form|crispy }}
                         <input type="submit" value="Beschreibung abspeichern" class="btn btn-success pull-right cabin" style="margin-top: 20px;">
                     </form>
                 </div>

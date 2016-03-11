@@ -32,7 +32,7 @@ class PictureDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     """Display a picture."""
 
     model = Picture
-    fields = ['caption', ]
+    fields = ['date', 'caption', ]
     template_name_suffix = '_detail'
 
     def post(self, request, *args, **kwargs):
@@ -46,7 +46,7 @@ class VideoDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     """Display a video."""
 
     model = Video
-    fields = ['caption', ]
+    fields = ['date', 'caption', ]
     template_name_suffix = '_detail'
 
     def post(self, request, *args, **kwargs):
@@ -66,7 +66,7 @@ class DocumentDetail(LoginRequiredMixin, CurrentSiteMixin, UpdateView):
     """Display a source."""
 
     model = Document
-    fields = ['name', 'description', ]
+    fields = ['name', 'date', 'description', ]
     template_name_suffix = '_detail'
 
     def get_context_data(self, **kwargs):
