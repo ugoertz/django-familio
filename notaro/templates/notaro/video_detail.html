@@ -136,6 +136,8 @@ $(document).ready(function() {
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "notaro/sources.rst" with all_sources=object.videosource_set.all %}
             {% endfilter %}
+            <hr>
+            {% include "comments/comments.html" %}
 
         </div>
         <div class="col-md-3 col-md-offset-1">

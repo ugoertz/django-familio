@@ -14,6 +14,8 @@ from django.template.defaultfilters import slugify
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.sites.managers import CurrentSiteManager
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from filebrowser.fields import FileBrowseField
 from filebrowser.settings import ADMIN_THUMBNAIL
 from taggit.managers import TaggableManager
@@ -140,11 +142,9 @@ class Picture(models.Model):
 
     def __unicode__(self):
         # pylint: disable=no-member
-        return '[%d] %s <img src="%s">' %\
-               (self.id,
-                self.caption[:25] or
-                self.image.original_filename,
-                self.image.version_generate(ADMIN_THUMBNAIL).url)
+        return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
+            escape(self.caption[:25] or self.image.original_filename),
+            self.image.version_generate(ADMIN_THUMBNAIL).url))
 
     @staticmethod
     def autocomplete_search_fields():
@@ -255,11 +255,9 @@ class Video(models.Model):
     def __unicode__(self):
         # pylint: disable=no-member
         if self.poster:
-            return '[%d] %s <img src="%s">' %\
-                (self.id,
-                 self.caption[:25]
-                 or self.video.original_filename,
-                 self.poster.version_generate(ADMIN_THUMBNAIL).url)
+            return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
+                escape(self.caption[:25] or self.video.original_filename),
+                self.poster.version_generate(ADMIN_THUMBNAIL).url))
         else:
             return '[%d] %s' %\
                 (self.id, self.caption[:25] or self.video.original_filename)
@@ -405,7 +403,7 @@ class Document(models.Model):
 
     def __unicode__(self):
         # pylint: disable=no-member
-        return '%d: %s' % (self.id, self.name)
+        return self.name
 
     def get_absolute_url(self):
         return reverse('document-detail', kwargs={'pk': self.pk, })

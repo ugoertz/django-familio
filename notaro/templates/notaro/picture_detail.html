@@ -122,6 +122,9 @@ $(document).ready(function() {
             {% include "notaro/sources.rst" with all_sources=object.picturesource_set.all %}
             {% endfilter %}
 
+            <hr>
+            {% include "comments/comments.html" %}
+
         </div>
         <div class="col-md-3 col-md-offset-1">
             <div style="margin-top: 40px;">
