@@ -20,8 +20,13 @@ ul.simple li {
     font-size: 110%;
 }
 
-td.label {
-    color: black;   /* fix conflict between ReST and Bootstrap */
+/* fix conflict between ReST and Bootstrap */
+table.docutils td {
+    text-align: left;
+}
+
+table.docutils td.label {
+    color: black;
 }
 </style>
 {% endblock css %}
