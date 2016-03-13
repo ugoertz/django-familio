@@ -166,7 +166,11 @@ def download(request, fname):
     # currently, this concerns filebrowser files attached to Picture or
     # Document objects
     for model, field, path in [(Picture, 'image', 'images'),
-                               (Document, 'doc', 'documents')]:
+                               (Document, 'doc', 'documents'),
+                               (Document, 'doc', 'images'),
+                               (Document, 'image', 'documents'),
+                               (Document, 'image', 'images'),
+                               ]:
         if fname[fname.find('_'):].startswith('_versions/'):
             # if the file sits in a versions directory, remove the version
             # suffix
