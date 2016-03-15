@@ -51,7 +51,7 @@ def notify_topic_subscribers(instance, **kwargs):
                                                         topic.name) +\
                 'von %s ' % post.user.get_full_name() +\
                 'ein neuer Beitrag veröffentlicht worden.\n\n' +\
-                'Anschauen: http://%s%s\n\nAbo löschen: http://%s%s' % (
+                'Anschauen: https://%s%s\n\nAbo löschen: http://%s%s' % (
                    site.domain,
                    reverse('pybb:topic', kwargs={'pk': topic.pk}) +\
                            '?first-unread=1',
