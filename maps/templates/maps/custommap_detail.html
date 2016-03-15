@@ -38,21 +38,21 @@ ul.simple li {
 <script type="text/javascript">
 
 $(window).on('map:init', function (e) {
-        var redMarker = L.AwesomeMarkers.icon({
-            icon: 'plus',
-            markerColor: 'red' });
+    var redMarker = L.AwesomeMarkers.icon({
+        icon: 'plus',
+        markerColor: 'red' });
 
-        var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
-        console.log(detail.map._container.id);
-        {% with bbox=object.bbox.extent %}
-        detail.map.fitBounds([[{{ bbox.1 }}, {{ bbox.0 }}],
-                              [{{ bbox.3  }}, {{ bbox.2  }}]]);
-        {% endwith %}
-        {% for m in object.custommapmarker_set.all %}
-        L.marker([{{ m.place.location.y }} + {{ m.label_offset_y }},
-                  {{ m.place.location.x }} + {{ m.label_offset_x }}]).addTo(detail.map);
-        {% endfor %}
-        });
+    var detail = e.originalEvent ?  e.originalEvent.detail : e.detail;
+    console.log(detail.map._container.id);
+    {% with bbox=object.bbox.extent %}
+    detail.map.fitBounds([[{{ bbox.1 }}, {{ bbox.0 }}],
+                          [{{ bbox.3  }}, {{ bbox.2  }}]]);
+    {% endwith %}
+    {% for m in object.custommapmarker_set.all %}
+    L.marker([{{ m.place.location.y }} + {{ m.label_offset_y }},
+              {{ m.place.location.x }} + {{ m.label_offset_x }}]).addTo(detail.map);
+    {% endfor %}
+});
 </script>
 {% endlocalize %}
 {% endblock %}

@@ -81,9 +81,9 @@ $(window).on('map:init', function (e) {
             </div>
 
             <div>
-            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
-            {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
-            {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+                {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
+                {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
+                {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
             </div>
 
             {% if person.places.count %}
@@ -91,7 +91,6 @@ $(window).on('map:init', function (e) {
 
             {% leaflet_map "places" %}
             {% endif %}
-
 
             <hr>
             {% include "comments/comments.html" %}
@@ -123,5 +122,4 @@ $(window).on('map:init', function (e) {
     </div>
 </div>
 {% endblock %}
-
 

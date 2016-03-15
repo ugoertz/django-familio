@@ -11,14 +11,13 @@
 {% if obj_list %}
 <h2 id="tagged_objs_{{ model }}" style="clear: both; padding-top: 20px;">{{ title }}</h2>
 
-
 <div id="obj_list_{{ model }}">
-{% for obj in obj_list %}
-<div style="display: inline-block; {% if model == "document" %}width: 100%; {% endif %}margin: 5px;" {% if masonry %}class="masonry-item"{% endif %}>
-<a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
-{% if show_id %}<br><span class="cabin">Objekt-ID: {{ obj.id }}</span>{% endif %}
-</div>
-{% endfor %}
+    {% for obj in obj_list %}
+    <div style="display: inline-block; {% if model == "document" %}width: 100%; {% endif %}margin: 5px;" {% if masonry %}class="masonry-item"{% endif %}>
+        <a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
+        {% if show_id %}<br><span class="cabin">Objekt-ID: {{ obj.id }}</span>{% endif %}
+    </div>
+    {% endfor %}
 </div>
 {% endif %}
 
@@ -26,10 +25,10 @@
 <script type="text/javascript" src="{% static 'js/libs/masonry.pkgd.min.js' %}"></script>
 <script type="text/javascript">
 $(window).load(function(){
-  $('#obj_list_{{ model }}').masonry({
+    $('#obj_list_{{ model }}').masonry({
         itemSelector: '.masonry-item',
         columnWidth: 10
-  });
+    });
 });
 </script>
 {% endif %}

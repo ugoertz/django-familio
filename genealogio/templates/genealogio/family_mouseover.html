@@ -5,15 +5,14 @@
 
 <div style="width: 400px;">
     <div style="margin-bottom: 15px;">{% include "genealogio/thumbnail_or_dummy.html" with person=object.father %}
-    {% include "genealogio/thumbnail_or_dummy.html" with person=object.mother %}
-    </div><div>
-    {% for person in object.get_children %}
-    {% include "genealogio/thumbnail_or_dummy.html" %}
-    {% endfor %}
+        {% include "genealogio/thumbnail_or_dummy.html" with person=object.mother %}
     </div>
-<h4>
-Familie {{ object }}
-</h4>
+    <div>
+        {% for person in object.get_children %}
+        {% include "genealogio/thumbnail_or_dummy.html" %}
+        {% endfor %}
+    </div>
+    <h4>Familie {{ object }}</h4>
 
 {% filter apply_markup:"genrestructuredtext" %}
 
@@ -41,6 +40,6 @@ Familie {{ object }}
 {% endif %}
 {% endfilter %}
 
-<p>{{ object.comments|apply_markup:"genrestructuredtext" }}</p>
+    <p>{{ object.comments|apply_markup:"genrestructuredtext" }}</p>
 </div>
 

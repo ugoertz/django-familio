@@ -1,4 +1,8 @@
 {% load fb_versions %}
 
-{% if person.portrait and request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' style="margin-right: 10px; margin-bottom: 15px; vertical-align: -100%;" src="{% version person.portrait.image 'thumbnail' %}">{% else %}<i class="glyphicon glyphicon-user" style="color: {% if person.gender_type == 1 %}blue{% else %}{% if person.gender_type == 0 %}red{% else %}black{% endif %}{% endif %}; font-size: 300%;  margin-left: 10px; margin-right: 15px; margin-bottom: 15px;"></i>{% endif %}
+{% if person.portrait and request.site in person.portrait.sites.all %}
+    <img onerror='this.style.display = "none"' style="min-height: 60px; margin-right: 10px; margin-bottom: 15px; vertical-align: -100%;" src="{% version person.portrait.image 'thumbnail' %}">
+{% else %}
+    <i class="glyphicon glyphicon-user" style="color: {% if person.gender_type == 1 %}blue{% else %}{% if person.gender_type == 0 %}red{% else %}black{% endif %}{% endif %}; font-size: 300%;  margin-left: 10px; margin-right: 15px; margin-bottom: 15px;"></i>
+{% endif %}
 

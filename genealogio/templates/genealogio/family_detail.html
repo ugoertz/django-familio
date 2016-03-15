@@ -24,9 +24,9 @@ $(document).ready(function() {
             </div>
 
             <div>
-            {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
-            {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
-            {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
+                {% include "tags/objects_for_tag.html" with title="Bilder" app="notaro" model="picture" masonry=True %}
+                {% include "tags/objects_for_tag.html" with title="Videos" app="notaro" model="video" masonry=True %}
+                {% include "tags/objects_for_tag.html" with title="Dokumente" app="notaro" model="document" %}
             </div>
 
             <hr>
@@ -35,8 +35,8 @@ $(document).ready(function() {
         <div class="col-md-3 col-md-offset-1">
         {% if user_is_admin %}
             <div class="cabin adminbox">
-            {% include "notaro/admin_links.html" with admin_edit_link="genealogio/family" doc_link="familien.html" %}
-            <a href="{% url "add_child" family.pk %}" class="btn btn-default">Kind hinzufügen</a>
+                {% include "notaro/admin_links.html" with admin_edit_link="genealogio/family" doc_link="familien.html" %}
+                <a href="{% url "add_child" family.pk %}" class="btn btn-default">Kind hinzufügen</a>
             </div>
         {% endif %}
         </div>

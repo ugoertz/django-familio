@@ -1,30 +1,30 @@
-    $('#id_tags{{ object.id }}').selectize({
-        valueField: 'id',
-        searchField: ['label'],
-        closeAfterSelect: true,
-        maxItems: 25,
-        preload: true,
-        searchField: ['id', 'label'],
-        render: {
-            option:
-                function (item, escape) {
-                    if (item.id.slice(0,4) == "new-") {
-                        return "<div class=\"cabin\">" + escape(item.label) + " als neues Schlagwort hinzufügen</div>";
-                    } else {
-                        return "<div class=\"cabin\">" + escape(item.label) + "</div>";
-                    }
-                },
-            item:
-                function (item, escape) {
-                    return '<div style="background-color: ' + item.bg_color + ';" class="cabin">' + escape(item.tag) + "</div>";
+$('#id_tags{{ object.id }}').selectize({
+    valueField: 'id',
+    searchField: ['label'],
+    closeAfterSelect: true,
+    maxItems: 25,
+    preload: true,
+    searchField: ['id', 'label'],
+    render: {
+        option:
+            function (item, escape) {
+                if (item.id.slice(0,4) == "new-") {
+                    return "<div class=\"cabin\">" + escape(item.label) + " als neues Schlagwort hinzufügen</div>";
+                } else {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
                 }
-        },
-        create: false,
-        load: function(query, callback) {
-            Dajaxice.tags.get_tags(callback,
-                    {"query": query });
-        }
-    });
+            },
+        item:
+            function (item, escape) {
+                return '<div style="background-color: ' + item.bg_color + ';" class="cabin">' + escape(item.tag) + "</div>";
+            }
+    },
+    create: false,
+    load: function(query, callback) {
+        Dajaxice.tags.get_tags(callback,
+                {"query": query });
+    }
+});
 
 {% for tag in object.tags.all %}
 if ("{{ tag.name }}".slice(0,4) == "tag-") {

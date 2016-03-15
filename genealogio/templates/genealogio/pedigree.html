@@ -43,7 +43,7 @@ p, li {
 {% block size %}
 var margin = {top: 0, right: 270, bottom: 0, left: 0},
     width = margin.right * ({{ generations }} - 1),
-    height = 550 - margin.top - margin.bottom + 110 * {{ generations }};
+    height = 550 - margin.top - margin.bottom + 115 * {{ generations }};
 {% endblock %}
 
 var tree = d3.layout.tree()
@@ -131,30 +131,31 @@ $(document).ready(function() {
     <h2>Ahnentafel für {% include "genealogio/person_snippet_full.html" %}</h2>
     <div class="row">
         <div class="col-md-10">
-    {% with allchildren=person.get_children %}
-    <p>
-    <ul class="list-group">
-    {% for partner, children, family in allchildren %}
+            {% with allchildren=person.get_children %}
+            <p>
+                <ul class="list-group">
+                {% for partner, children, family in allchildren %}
+                    <li class="list-group-item">
+                        {{ family.get_relation_text }} {% include "genealogio/person_snippet_pedigree.html" with person=partner target="pedigree" %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
 
-    <li class="list-group-item">
-        {{ family.get_relation_text }} {% include "genealogio/person_snippet_pedigree.html" with person=partner target="pedigree" %} — <a href="{{ family.get_absolute_url }}">Familie {% firstof family.name family.father.last_name person.last_name %}</a>
-
-    {% if children %}
-    </br><b>Kinder:</b>
-    {% for child in children %}
-    {% spaceless %}
-    {% include "genealogio/person_snippet_pedigree.html" with person=child target="pedigree" %}<span>{% if not forloop.last %},{% else %}.{% endif %}</span>
-    {% endspaceless %}
-    {% endfor %}
-    {% endif %}
-    </li>
-    {% endfor %}
-    </ul>
-    </p>
-    {% endwith %}
+                        {% if children %}
+                        </br><b>Kinder:</b>
+                        {% for child in children %}
+                        {% spaceless %}
+                        {% include "genealogio/person_snippet_pedigree.html" with person=child target="pedigree" %}<span>{% if not forloop.last %},{% else %}.{% endif %}</span>
+                        {% endspaceless %}
+                        {% endfor %}
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </p>
+            {% endwith %}
         </div>
         <div class="col-md-2">
-            <p style="margin-bottom: 30px;"><a href="{% url "descendants" person.pk %}">Nachkommen</a></p>
+            <p style="margin-bottom: 30px;">
+                <a href="{% url "descendants" person.pk %}">Nachkommen</a>
+            </p>
             {% include "genealogio/choose_number_generations.html" with base_url="pedigree-level" %}
         </div>
     </div>

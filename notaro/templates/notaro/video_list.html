@@ -1,109 +1,65 @@
-{% extends "_layouts/base.html" %}
-{% load static %}
+{% extends "notaro/list_view.html" %}
 {% load markup_tags %}
 {% load notaro_tags %}
 {% load fb_versions %}
 
 {% block css %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
-<link rel="stylesheet" href="{% static 'css/file_upload.css' %}">
-
-<style>
-button, .selectize-input {
-    font-family: Cabin, helvetica, sans;
-}
-
-</style>
+{% include "notaro/selectize_css.html" %}
 {% endblock css %}
 
 {% block js %}
 {{ block.super  }}
-{% if user_is_admin %}
-<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
-<script>
-$(document).ready(function() {
-    {% for object in object_list %}
-    {% include "tags/selectize_tags.js" %}
-    {% endfor %}
-});
-</script>
-
-<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
-<script type="text/javascript">
-$(function() {
-    $('.js-multi').MultiFile({
-        list: '#filelist',
-        STRING: {
-            remove: '<span class="glyphicon glyphicon-remove" style="font-size: 120%; color: red;"></i> ',
-            file: '<span class="cabin" style="font-size: 120%; margin: 10px;">$file</span>'
-        }
-    });
-});
-</script>
-
-{% endif %}
+{% include "notaro/selectize_js.html" %}
 {% endblock js %}
 
+{% block content_main %}
+<h1>Videos</h1>
+<div class="row" style="margin-bottom: 30px;">
+    {% for ctr in '01' %}
+    <div class="col-md-6">
+        <ul class="list-group">
+            {% for object in object_list %}
+            {% if ctr == '0' and not forloop.counter|divisibleby:2 or ctr == '1' and forloop.counter|divisibleby:2 %}
+            <li class="list-group-item" style="margin-bottom: 10px;">
+                <a name="obj{{ object.id }}"></a>
 
-{% block content %}
-<div class="container">
-    <h2>Videos</h2>
-    <div class="row" style="margin-bottom: 30px;">
-        <div class="col-md-10">
-            <div class="row">
-                {% for ctr in '01' %}
-                <div class="col-md-6">
-                    <ul class="list-group">
-                        {% for object in object_list %}
-                            {% if ctr == '0' and not forloop.counter|divisibleby:2 or ctr == '1' and forloop.counter|divisibleby:2 %}
-                            <li class="list-group-item" style="margin-bottom: 10px;">
-                                <a name="obj{{ object.id }}"></a>
-
-                                <div style="margin-bottom: 20px;">
-                                    <a href="{{ object.get_absolute_url }}">
-                                        {% if object.poster %}<img width="400" src="{{ object.poster.url }}">
-                                        {% else %}Die Videodatei wird jetzt verarbeitet ...
-                                        {% endif %}
-                                    </a>
-
-                                    <div>
-                                        {{ object.caption|apply_markup:"genrestructuredtext" }}
-                                    </div>
-                                </div>
-
-                                <div style="margin-bottom: 20px;">{{ object.date.year|datebadge }}{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
-
-                                {% if user_is_admin %}
-                                {% url "save-tags" "notaro" "video" object.id as action %}
-                                {% with id_as_string=object.id|slugify %}
-                                {% with next=request.get_full_path|add:"#obj"|add:id_as_string %}
-                                {% include "tags/tags_form.html" %}
-                                {% endwith %}
-                                {% endwith %}
-                                {% endif %}
-                            </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+                <div style="margin-bottom: 20px;">
+                    <a href="{{ object.get_absolute_url }}">
+                        {% if object.poster %}<img width="400" src="{{ object.poster.url }}">
+                        {% else %}Die Videodatei wird jetzt verarbeitet ...
+                        {% endif %}
+                    </a>
+                    <div>
+                        {{ object.caption|apply_markup:"genrestructuredtext" }}
+                    </div>
                 </div>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="col-md-2">
-            {% if user_is_admin %}
-            <div style="margin-bottom: 50px;" class="adminbox">
-                {% include "notaro/add_files_form.html" with target="videos" %}
-            </div>
-            {% endif %}
-            {% for tag in tag_list %}
-            {{ tag.as_span|safe }}
-            {% endfor %}
-            <p style="margin-top: 10px;"><a class="cabin btn btn-sm btn-default" href="{% url 'tag-list' %}">Alle Schlagwörter</a></p>
-        </div>
-    </div>
 
-    {% include "notaro/pagination.html" %}
+                <div style="margin-bottom: 20px;">{{ object.date.year|datebadge }}{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</div>
+
+                {% if user_is_admin %}
+                {% url "save-tags" "notaro" "video" object.id as action %}
+                {% with id_as_string=object.id|slugify %}
+                {% with next=request.get_full_path|add:"#obj"|add:id_as_string %}
+                {% include "tags/tags_form.html" %}
+                {% endwith %}
+                {% endwith %}
+                {% endif %}
+            </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
 </div>
+{% endblock %}
+
+{% block content-right %}
+{% if user_is_admin %}
+<div style="margin-bottom: 50px;" class="adminbox">
+    {% include "notaro/add_files_form.html" with target="videos" %}
+</div>
+{% endif %}
+{{ block.super }}
 {% endblock %}
 

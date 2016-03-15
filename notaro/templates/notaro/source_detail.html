@@ -1,9 +1,7 @@
 {% extends "_layouts/base.html" %}
 {% load static %}
 {% load markup_tags %}
-{% load typogrify_tags %}
 {% load fb_versions %}
-
 
 {% block js %}
 {{ block.super  }}
@@ -14,7 +12,6 @@
 
 {% block content %}
 <div class="container">
-
     <div class="row">
         <div class="col-md-8">
             {% filter apply_markup:"genrestructuredtext" %}
@@ -24,49 +21,54 @@
             {% if documents %}
             <h3>Zugehörige Dokumente</h3>
             <table class="table">
-            {% for d in documents %}
-            <tr>
-                <td style="text-align: left;"><a href="{{ d.get_absolute_url }}">{{ d.name }}</a></td>
-                <td><a href="{{ d.doc.url }}">{{ d.doc.extension|cut:"." }} ({{ d.doc.filesize|filesizeformat }})</a></td>
-            </tr>
-            {% endfor %}
+                {% for d in documents %}
+                <tr>
+                    <td style="text-align: left;"><a href="{{ d.get_absolute_url }}">{{ d.name }}</a></td>
+                    <td><a href="{{ d.doc.url }}">{{ d.doc.extension|cut:"." }} ({{ d.doc.filesize|filesizeformat }})</a></td>
+                </tr>
+                {% endfor %}
             </table>
             {% endif %}
             {% endwith %}
 
             <h3>Verweise auf diese Quelle</h3>
             <ul class="list-group">
-            {% for ps in source.personsource_set.all %}
-                {% with person=ps.person %} 
+                {% for ps in source.personsource_set.all %}
+                {% with person=ps.person %}
                 <li class="list-group-item clearfix">{% if person.portrait.image %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% endif %}{% include "genealogio/person_snippet.html" %}
                     <span class="pull-right">{{ ps.comment }}</span>
                 </li>
                 {% endwith %}
-            {% endfor %}
-            {% for fs in source.familysource_set.all %}
+                {% endfor %}
+
+                {% for fs in source.familysource_set.all %}
                 <li class="list-group-item clearfix"><a href="{{ fs.family.get_absolute_url }}">{{ fs.family }}</a>
                     <span class="pull-right">{{ fs.comment }}</span>
                 </li>
-            {% endfor %}
-            {% for es in source.eventsource_set.all %}
+                {% endfor %}
+
+                {% for es in source.eventsource_set.all %}
                 <li class="list-group-item clearfix"><a href="{{ es.event.get_absolute_url }}">{{ es.event }}</a>
                     <span class="pull-right">{{ es.comment }}</span>
                 </li>
-            {% endfor %}
-            {% for ps in source.picturesource_set.all %}
-            <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ ps.picture.get_absolute_url }}"><img src="{% version ps.picture.image 'thumbnail' %}"></a> {{ ps.picture.caption|truncatewords:15 }}
+                {% endfor %}
+
+                {% for ps in source.picturesource_set.all %}
+                <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ ps.picture.get_absolute_url }}"><img src="{% version ps.picture.image 'thumbnail' %}"></a> {{ ps.picture.caption|truncatewords:15 }}
                     <span class="pull-right">{{ ps.comment }}</span>
                 </li>
-            {% endfor %}
-            {% for vs in source.videosource_set.all %}
-            <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ vs.video.get_absolute_url }}"><img src="{% version vs.video.poster 'thumbnail' %}"></a> {{ vs.video.caption|truncatewords:15 }}
+                {% endfor %}
+
+                {% for vs in source.videosource_set.all %}
+                <li class="list-group-item clearfix"><a style="margin-right: 20px;" href="{{ vs.video.get_absolute_url }}"><img src="{% version vs.video.poster 'thumbnail' %}"></a> {{ vs.video.caption|truncatewords:15 }}
                     <span class="pull-right">{{ vs.comment }}</span>
                 </li>
-            {% endfor %}
+                {% endfor %}
             </ul>
             <hr>
             {% include "comments/comments.html" %}
         </div>
+
         {% if user_is_admin %}
         <div class="col-md-3 col-md-offset-1">
             <div class="cabin adminbox">
@@ -77,6 +79,4 @@
     </div>
 </div>
 {% endblock %}
-
-
 

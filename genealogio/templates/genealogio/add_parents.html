@@ -14,9 +14,16 @@
 <div style="margin-top: 30px;" class="container">
     <div class="row">
         <div class="col-md-10">
-            <p style="margin-bottom: 20px;" class="cabin">Dieses Formular kann benutzt werden, um die Eltern einer Person als Familie hinzuzufügen. <i>Das Formular kann nur benutzt werden, wenn weder Vater noch Mutter schon in der Datenbank angelegt wurden!</i> Außerdem wird angenommen, dass Vater bzw. Mutter noch leben, sofern kein Todesdatum angegeben wird. In Fällen, in denen diese Annahmen nicht korrekt sind, sollte die Familie im <a href="/admin/">Verwaltungsbereich</a> angelegt werden.</p>
+            <p style="margin-bottom: 20px;" class="cabin">
+            Dieses Formular kann benutzt werden, um die Eltern einer Person als Familie hinzuzufügen.
+            <i>Das Formular kann nur benutzt werden, wenn weder Vater noch Mutter schon in der
+                Datenbank angelegt wurden!</i> Außerdem wird angenommen, dass Vater bzw. Mutter noch
+            leben, sofern kein Todesdatum angegeben wird. In Fällen, in denen diese Annahmen nicht
+            korrekt sind, sollte die Familie im <a href="/admin/">Verwaltungsbereich</a>
+            angelegt werden.
+            </p>
 
-{% crispy form form.helper %}
+            {% crispy form form.helper %}
         </div>
     </div>
 </div>

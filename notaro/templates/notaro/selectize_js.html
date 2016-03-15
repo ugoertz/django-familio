@@ -1,0 +1,12 @@
+{% load static %}
+
+{% if user_is_admin %}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    {% for object in object_list %}
+    {% include "tags/selectize_tags.js" %}
+    {% endfor %}
+});
+</script>
+{% endif %}

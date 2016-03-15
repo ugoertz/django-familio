@@ -5,7 +5,9 @@
     <h2>Familien</h2>
     <ul class="list-group">
         {% for family in object_list %}
-        <li class="list-group-item"><a href="{{ family.get_absolute_url }}">{{ family }}</a></li>
+        <li class="list-group-item">
+            <a href="{{ family.get_absolute_url }}">{{ family }}</a>
+        </li>
         {% endfor %}
     </ul>
 

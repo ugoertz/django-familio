@@ -10,16 +10,16 @@
         <p>Sobald Du die Daten abgeschickt hast, wirst Du angemeldet und kannst auf den Webseiten herumstöbern. Wenn Du oben in der Mitte auf Deinen Namen klickst und <i>Nachrichten</i> auswählst, kannst Du Dir die Willkommensnachricht mit einigen weiteren Erklärungen anschauen.</p>
 
         <div class="cabin" style="margin-top: 30px;">
-<form method="POST" action="">
-    <table class="table">
-        {{ form.as_table }}
-    </table>
-    <input type="submit" class="btn btn-default" value="Abschicken">
-    {% csrf_token %}
-</form>
-</div>
-</div>
-</div>
+            <form method="POST" action="">
+                <table class="table">
+                    {{ form.as_table }}
+                </table>
+                <input type="submit" class="btn btn-default" value="Abschicken">
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    </div>
 </div>
 
 {% endblock %}

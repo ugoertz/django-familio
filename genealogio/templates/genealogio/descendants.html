@@ -175,13 +175,13 @@ $(document).ready(function() {
         <h2>Nachkommen von {% include "genealogio/person_snippet_full.html" %}</h2>
         <div class="col-md-10">
             <p style="margin-bottom: 40px;">
-            {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" label="Vater: " %} -
-            {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" label="Mutter: " %}
+                {% include "genealogio/person_snippet_pedigree.html" with person=person.get_father target="descendants" label="Vater: " %} -
+                {% include "genealogio/person_snippet_pedigree.html" with person=person.get_mother target="descendants" label="Mutter: " %}
             </p>
         </div>
         <div class="col-md-2">
             <p style="margin-bottom: 30px;">
-            <a href="{% url "pedigree" person.pk %}">Ahnentafel</a>
+                <a href="{% url "pedigree" person.pk %}">Ahnentafel</a>
             </p>
 
             {% include "genealogio/choose_number_generations.html" with base_url="descendants-level" %}

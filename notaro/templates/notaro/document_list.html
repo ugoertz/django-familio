@@ -1,74 +1,46 @@
-
-{% extends "_layouts/base.html" %}
+{% extends "notaro/list_view.html" %}
 {% load static %}
 {% load notaro_tags %}
 {% load markup_tags %}
 {% load fb_versions %}
 
-{% block css %}
-{{ block.super }}
-<link rel="stylesheet" href="{% static 'css/file_upload.css' %}">
-{% endblock css %}
-
-
-{% block js %}
-{{ block.super  }}
-{% if user_is_admin %}
-<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
-<script type="text/javascript">
-$(function() {
-    $('.js-multi').MultiFile({
-        list: '#filelist',
-        STRING: {
-            remove: '<span class="glyphicon glyphicon-remove" style="font-size: 120%; color: red;"></i> ',
-            file: '<span class="cabin" style="font-size: 120%; margin: 10px;">$file</span>'
-        }
-    });
-});
-</script>
-{% endif %}
-{% endblock js %}
-
-
-{% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-10">
-            <h1>Dokumente</h1>
-            <div class="row"><div style="margin-bottom: 20px;" class="col-md-12">
-            <div class="pull-right cabin"><span style="font-size: 60%; font-weight: normal;">Sortiere nach</span>
-                <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Sortierungskriterium">
-                    {% url "document-list" as url_document_list %}
-                    <a href="{% if not "date" in request.path or "datedesc" in request.path %}{% url "document-list-ordered" "date" %}{% else %}{% url "document-list-ordered" "datedesc" %}{% endif %}" class="btn btn-default {% if request.path == url_document_list or "date" in request.path %}active{% endif %}">Datum <span class="glyphicon glyphicon-chevron-{% if not "date" in request.path %}down{% else %}{% if "datedesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
-                    <a href="{% if not "added" in request.path or "addeddesc" in request.path %}{% url "document-list-ordered" "added" %}{% else %}{% url "document-list-ordered" "addeddesc" %}{% endif %}" class="btn btn-default {% if "added" in request.path %}active{% endif %}">Hinzugefügt <span class="glyphicon glyphicon-chevron-{% if not "added" in request.path %}down{% else %}{% if "addeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
-                    <a href="{% if not "changed" in request.path or "changeddesc" in request.path %}{% url "document-list-ordered" "changed" %}{% else %}{% url "document-list-ordered" "changeddesc" %}{% endif %}" class="btn btn-default {% if "changed" in request.path %}active{% endif %}">Letzte Änderung <span class="glyphicon glyphicon-chevron-{% if not "changed" in request.path %}down{% else %}{% if "changeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
-                    <a href="{% url "document-list-ordered" "name" %}" class="btn btn-default {% if "name" in request.path %}active{% endif %}">Name</a>
-                </div>
-            </div></div>
+{% block content_main %}
+<h1>Dokumente</h1>
+<div class="row">
+    <div style="margin-bottom: 20px;" class="col-md-12">
+        <div class="pull-right cabin">
+            <span style="font-size: 60%; font-weight: normal;">Sortiere nach</span>
+            <div class="btn-group cabin" style="margin-left: 10px; margin-right: 10px; display: inline-block;" role="group" aria-label="Wähle Sortierungskriterium">
+                {% url "document-list" as url_document_list %}
+                <a href="{% if not "date" in request.path or "datedesc" in request.path %}{% url "document-list-ordered" "date" %}{% else %}{% url "document-list-ordered" "datedesc" %}{% endif %}" class="btn btn-default {% if request.path == url_document_list or "date" in request.path %}active{% endif %}">Datum <span class="glyphicon glyphicon-chevron-{% if not "date" in request.path %}down{% else %}{% if "datedesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                <a href="{% if not "added" in request.path or "addeddesc" in request.path %}{% url "document-list-ordered" "added" %}{% else %}{% url "document-list-ordered" "addeddesc" %}{% endif %}" class="btn btn-default {% if "added" in request.path %}active{% endif %}">Hinzugefügt <span class="glyphicon glyphicon-chevron-{% if not "added" in request.path %}down{% else %}{% if "addeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                <a href="{% if not "changed" in request.path or "changeddesc" in request.path %}{% url "document-list-ordered" "changed" %}{% else %}{% url "document-list-ordered" "changeddesc" %}{% endif %}" class="btn btn-default {% if "changed" in request.path %}active{% endif %}">Letzte Änderung <span class="glyphicon glyphicon-chevron-{% if not "changed" in request.path %}down{% else %}{% if "changeddesc" in request.path %}up{% else %}down{% endif %}{% endif %}"></span></a>
+                <a href="{% url "document-list-ordered" "name" %}" class="btn btn-default {% if "name" in request.path %}active{% endif %}">Name</a>
             </div>
-            <ul class="list-group">
-                {% for object in object_list %}
-                <li class="list-group-item clearfix">{% if object.image %}<img style="border: 1px solid black; margin-right: 20px;" src="{% version object.image "thumbnail" %}">{% endif %}<a href="{{ object.get_absolute_url }}">{{ object.name }}</a> ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})
-                    <span class="pull-right">{{ object.date.year|datebadge }}{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
-                </li>
-            {% endfor %}
-            </ul>
-
-        </div>
-        <div class="col-md-2">
-            {% if user_is_admin %}
-            <div style="margin-bottom: 50px;" class="adminbox">
-                {% include "notaro/add_files_form.html" with target="documents" %}
-            </div>
-            {% endif %}
-            {% for tag in tag_list %}
-            {{ tag.as_span|safe }}
-            {% endfor %}
-            <p style="margin-top: 10px;"><a class="cabin btn btn-sm btn-default" href="{% url 'tag-list' %}">Alle Schlagwörter</a></p>
         </div>
     </div>
-    {% include "notaro/pagination.html" %}
 </div>
-{% endblock %}
 
+<ul class="list-group">
+    {% for object in object_list %}
+    <li class="list-group-item clearfix">
+        {% if object.image %}
+        <img style="border: 1px solid black; margin-right: 20px;" src="{% version object.image "thumbnail" %}">
+        {% endif %}
+        <a href="{{ object.get_absolute_url }}">{{ object.name }}</a>
+        ({{ object.doc.extension|cut:"." }}, {{ object.doc.filesize|filesizeformat }})
+        <span class="pull-right">{{ object.date.year|datebadge }}{% for tag in object.tags.all %}{{ tag.as_span|safe }}{% endfor %}</span>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content_main %}
+
+{% block content_right %}
+{% if user_is_admin %}
+<div style="margin-bottom: 30px;" class="adminbox">
+    {% include "notaro/add_files_form.html" with target="documents" %}
+</div>
+{% endif %}
+{{ block.super }}  {# tags #}
+{% endblock %}
 

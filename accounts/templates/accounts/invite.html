@@ -3,20 +3,20 @@
 {% block content %}
 <div class="container" style="margin-top: 10px;">
     <div class="row">
-    <div class="col-md-10 cabin">
-        <p>Bitte gib die Email-Adresse und Vor- und Nachnamen der Person ein, die Du gerne einladen möchtest. Außerdem kannst Du den Text der Einladungsemail anpassen - Du solltest mindestens die Anrede ändern. Bitte achte aber darauf, nicht den Aktivierungslink zu verändern oder zu löschen! (Der Aktivierungscode wird hinterher automatisch an der entsprechenden Stelle eingefügt.)</p>
+        <div class="col-md-10 cabin">
+            <p>Bitte gib die Email-Adresse und Vor- und Nachnamen der Person ein, die Du gerne einladen möchtest. Außerdem kannst Du den Text der Einladungsemail anpassen - Du solltest mindestens die Anrede ändern. Bitte achte aber darauf, nicht den Aktivierungslink zu verändern oder zu löschen! (Der Aktivierungscode wird hinterher automatisch an der entsprechenden Stelle eingefügt.)</p>
 
-        <div style="margin-top: 30px;" class="cabin">
-<form method="POST" action="">
-    <table class="table">
-        {{ form.as_table }}
-    </table>
-    <input type="submit" id="id_submit_invitation" class="btn btn-default" value="Abschicken">
-    {% csrf_token %}
-</form>
-</div>
-</div>
-</div>
+            <div style="margin-top: 30px;" class="cabin">
+                <form method="POST" action="">
+                    <table class="table">
+                        {{ form.as_table }}
+                    </table>
+                    <input type="submit" id="id_submit_invitation" class="btn btn-default" value="Abschicken">
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
