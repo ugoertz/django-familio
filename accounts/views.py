@@ -26,18 +26,18 @@ wir sind dabei, eine Familienchronik unserer (Groß)-Familie anzulegen.
 Vielleicht hast Du Lust, es Dir mal anzuschauen oder sogar mitzumachen?
 
 Die Chronik befindet sich auf der Webseite
-http://%s
+https://%s
 
 Damit die Inhalte nicht öffentlich zugänglich sind, muss man einen
 Benutzeraccount anlegen, um auf die Seite zugreifen zu können. Wenn Du auf den
 folgenden Link klickst, kannst Du Dich registrieren:
 
-http://%s/accounts/register/%s/
+https://%s/accounts/register/%s/
 
 Dieser Link ist für Dich personalisiert. Du kannst aber gerne weitere Personen
 einladen, nachdem Du Dich selbst angemeldet hast. Gehe dazu nach Deiner
 Anmeldung auf
-http://%s/accounts/invite/
+https://%s/accounts/invite/
 
 
 Viele Grüße
@@ -66,7 +66,7 @@ http://%s/impressum/
 
 Du kannst gerne auch noch weitere Familienmitglieder auf die Webseite einladen.
 Gehe dazu einfach auf
-http://%s/accounts/invite/
+https://%s/accounts/invite/
 
 Wenn Du noch Fragen hast oder es Probleme gibt, kannst Du einfach auf diese
 Nachricht antworten oder mir eine Email schreiben.

@@ -110,7 +110,7 @@ PASSWORD_HASHERS = (
 SESSION_COOKIE_HTTPONLY = True
 
 # Set this to true if you are using https
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 STATIC_URL = '/static/'  # override in local settings files if required
@@ -317,7 +317,7 @@ USERENA_DISABLE_SIGNUP = True
 USERENA_USE_MESSAGES = False
 USERENA_REGISTER_PROFILE = False
 USERENA_ACTIVATION_DAYS = 150
-
+USERENA_USE_HTTPS = True
 
 GRAPPELLI_ADMIN_TITLE = '<a href="/">Unsere Familiengeschichte</a>'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 100
