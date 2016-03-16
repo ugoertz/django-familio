@@ -74,6 +74,16 @@ $(window).load(function(){
                 {% endif %}
             </div>
 
+            {% if events %}
+            <h2>Ereignisse</h2>
+            <ul id="obj_list_document" class="list-group">
+                {% for obj in events %}
+                <li class="list-group-item">
+                    <a href="{{ obj.get_absolute_url }}">{{ obj }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
             {% if pics %}
             <h2>Bilder</h2>

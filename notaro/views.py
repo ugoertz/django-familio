@@ -25,7 +25,7 @@ from filebrowser.base import FileListing
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
 from partialdate.fields import PartialDate
-from genealogio.models import Person
+from genealogio.models import Person, Event
 from .models import Note, Picture, Source, Document, Video
 from .forms import ThumbnailForm
 from .tasks import create_document_thumbnail
@@ -343,6 +343,7 @@ class SearchForDateRange(LoginRequiredMixin, View):
                 .exclude(datedeath__lt=frval)
                 .exclude(datedeath__gte=toval)
                 )
+        events = Event.objects.exclude(date__lt=frval).exclude(date__gte=toval)
         pics = Picture.objects.exclude(date__lt=frval).exclude(date__gte=toval)
         videos = Video.objects.exclude(date__lt=frval).exclude(date__gte=toval)
         documents = Document.objects.exclude(
@@ -354,6 +355,7 @@ class SearchForDateRange(LoginRequiredMixin, View):
             deaths = list(chain(
                 deaths,
                 Person.objects.filter(datedeath='', probably_alive=False)))
+            events = list(chain(events, Event.objects.filter(date='')))
             pics = list(chain(pics, Picture.objects.filter(date='')))
             videos = list(chain(videos, Video.objects.filter(date='')))
             documents = list(chain(
@@ -370,6 +372,7 @@ class SearchForDateRange(LoginRequiredMixin, View):
                     'undated': undated=='Y',
                     'births': births,
                     'deaths': deaths,
+                    'events': events,
                     'pics': pics,
                     'videos': videos,
                     'documents': documents,
