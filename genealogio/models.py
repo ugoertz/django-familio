@@ -956,7 +956,7 @@ class Event(PrimaryObject):
         return "%s (%s)" % (self.title, self.get_event_type_display())
 
     class Meta:
-        ordering = ('event_type', )
+        ordering = ('date', 'event_type', )
         verbose_name = 'Ereignis'
         verbose_name_plural = 'Ereignisse'
 
