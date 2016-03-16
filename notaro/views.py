@@ -2,8 +2,10 @@
 
 from __future__ import unicode_literals
 
+import datetime
 import os
 import os.path
+from itertools import chain
 
 from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
@@ -326,6 +328,8 @@ class SetDateFromEXIF(LoginRequiredMixin, View):
 class SearchForDateRange(LoginRequiredMixin, View):
 
     template_name = 'notaro/date_range.html'
+    minimum_date = 1780
+    maximum_date = datetime.datetime.today().year
 
     def get(self, request, fr=None, to=None, undated='N'):
         frval = fr or '1900'
@@ -338,18 +342,22 @@ class SearchForDateRange(LoginRequiredMixin, View):
         deaths = (Person.objects
                 .exclude(datedeath__lt=frval)
                 .exclude(datedeath__gte=toval)
-                # .exclude(datedeath__isnull=True, probably_alive=True)
                 )
         pics = Picture.objects.exclude(date__lt=frval).exclude(date__gte=toval)
         videos = Video.objects.exclude(date__lt=frval).exclude(date__gte=toval)
         documents = Document.objects.exclude(
                 date__lt=frval).exclude(date__gte=toval)
-        if undated != 'Y':
-            births = births.exclude(datebirth__isnull=True).exclude(datebirth='')
-            deaths = deaths.exclude(datedeath__isnull=True).exclude(datedeath='')
-            pics = pics.exclude(date__isnull=True).exclude(date='')
-            videos = videos.exclude(date__isnull=True).exclude(date='')
-            documents = documents.exclude(date__isnull=True).exclude(date='')
+        if undated == 'Y':
+            births = list(chain(
+                births,
+                Person.objects.filter(datebirth='')))
+            deaths = list(chain(
+                deaths,
+                Person.objects.filter(datedeath='', probably_alive=False)))
+            pics = list(chain(pics, Picture.objects.filter(date='')))
+            videos = list(chain(videos, Video.objects.filter(date='')))
+            documents = list(chain(
+                documents, Document.objects.filter(date='')))
 
         return render(
                 request,
@@ -357,6 +365,8 @@ class SearchForDateRange(LoginRequiredMixin, View):
                 {
                     'fr': fr,
                     'to': to,
+                    'minimum_date': self.minimum_date,
+                    'maximum_date': self.maximum_date,
                     'undated': undated=='Y',
                     'births': births,
                     'deaths': deaths,
@@ -371,10 +381,10 @@ class SearchForDateRange(LoginRequiredMixin, View):
         undated = 'Y' if ('showundated' in request.POST
                 and request.POST['showundated']) else 'N'
 
-        if int(fr) <= 1700:
+        if int(fr) <= 1780:
             fr = '0'
-            if int(to) <= 1700:
-                to = '1700'
+            if int(to) <= 1780:
+                to = '1780'
 
         return HttpResponseRedirect(
                 reverse(

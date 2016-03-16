@@ -1,0 +1,6 @@
+{% load fb_versions %}
+{% load notaro_tags %}
+
+{% if person.portrait.image %}{% if request.site in person.portrait.sites.all %}<img onerror='this.style.display = "none"' src="{% version person.portrait.image 'thumbnail' %}" style="margin-right:20px;">{% endif %}{% endif %}
+{% include "genealogio/person_snippet.html" %}
+{% if person.datebirth or person.datedeath %}<span style="margin-left: 50px;">{{ person.datebirth.year|datebadge }} - {{ person.datedeath.year|datebadge }}</span>{% endif %}

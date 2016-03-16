@@ -4,9 +4,16 @@
 <div class="container">
     <h2>Familien</h2>
     <ul class="list-group">
-        {% for family in object_list %}
+        {% for object in object_list %}
         <li class="list-group-item">
-            <a href="{{ family.get_absolute_url }}">{{ family }}</a>
+            <a href="{{ object.get_absolute_url }}">{{ object }}</a>
+            <span style="margin-left: 25px;">{% include "genealogio/thumbnail_or_dummy.html" with person=object.father %}
+                {% include "genealogio/thumbnail_or_dummy.html" with person=object.mother %}
+                <span style="margin-left: 20px"></span>
+                {% for person in object.get_children %}
+                {% include "genealogio/thumbnail_or_dummy.html" %}
+                {% endfor %}
+            </span>
         </li>
         {% endfor %}
     </ul>
