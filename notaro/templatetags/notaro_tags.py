@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from __future__ import division
 
 from django import template
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
 register = template.Library()
@@ -47,8 +48,11 @@ def datebadge(year):
     color = '#ffffff' if brightness(gr) > 0.5 else '#000000'
 
     return mark_safe(' '.join([
+            '<a href="%s">' % reverse(
+                'date-range',
+                kwargs={'fr': year, 'to': year, 'undated': 'N', }),
             '<span class="badge cabin"',
             'style="background-color: %s; ' % gr,
-            'color: %s;">%d</span>' % (color, year),
+            'color: %s;">%d</span></a>' % (color, year),
             ]))
 

@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
+from django.shortcuts import render
 
 from braces.views import LoginRequiredMixin
 from filebrowser.base import FileListing
@@ -22,6 +23,7 @@ from filebrowser.base import FileListing
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
 from partialdate.fields import PartialDate
+from genealogio.models import Person
 from .models import Note, Picture, Source, Document, Video
 from .forms import ThumbnailForm
 from .tasks import create_document_thumbnail
@@ -320,4 +322,62 @@ class SetDateFromEXIF(LoginRequiredMixin, View):
             pass
         return HttpResponseRedirect('/')
 
+
+class SearchForDateRange(LoginRequiredMixin, View):
+
+    template_name = 'notaro/date_range.html'
+
+    def get(self, request, fr=None, to=None, undated='N'):
+        frval = fr or '1900'
+        toval = to or '1950'
+
+        toval = str(int(toval)+1)
+
+        births = Person.objects.exclude(
+                datebirth__lt=frval).exclude(datebirth__gte=toval)
+        deaths = (Person.objects
+                .exclude(datedeath__lt=frval)
+                .exclude(datedeath__gte=toval)
+                # .exclude(datedeath__isnull=True, probably_alive=True)
+                )
+        pics = Picture.objects.exclude(date__lt=frval).exclude(date__gte=toval)
+        videos = Video.objects.exclude(date__lt=frval).exclude(date__gte=toval)
+        documents = Document.objects.exclude(
+                date__lt=frval).exclude(date__gte=toval)
+        if undated != 'Y':
+            births = births.exclude(datebirth__isnull=True).exclude(datebirth='')
+            deaths = deaths.exclude(datedeath__isnull=True).exclude(datedeath='')
+            pics = pics.exclude(date__isnull=True).exclude(date='')
+            videos = videos.exclude(date__isnull=True).exclude(date='')
+            documents = documents.exclude(date__isnull=True).exclude(date='')
+
+        return render(
+                request,
+                self.template_name,
+                {
+                    'fr': fr,
+                    'to': to,
+                    'undated': undated=='Y',
+                    'births': births,
+                    'deaths': deaths,
+                    'pics': pics,
+                    'videos': videos,
+                    'documents': documents,
+                    }
+                )
+
+    def post(self, request, fr=None, to=None, undated=None):
+        fr, to  = request.POST['slider'].split(',')
+        undated = 'Y' if ('showundated' in request.POST
+                and request.POST['showundated']) else 'N'
+
+        if int(fr) <= 1700:
+            fr = '0'
+            if int(to) <= 1700:
+                to = '1700'
+
+        return HttpResponseRedirect(
+                reverse(
+                    'date-range',
+                    kwargs={'fr': fr, 'to': to, 'undated': undated, }))
 

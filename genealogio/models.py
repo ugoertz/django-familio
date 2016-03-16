@@ -168,11 +168,11 @@ class Family(PrimaryObject):
     notes = models.ManyToManyField(Note, blank=True, through=FamilyNote)
     events = models.ManyToManyField('Event', through="FamilyEvent", blank=True)
     start_date = PartialDateField(
-            blank=True, null=True,
+            blank=True, default='',
             verbose_name="Anfangsdatum",
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     end_date = PartialDateField(
-            blank=True, null=True, verbose_name="Enddatum",
+            blank=True, default='', verbose_name="Enddatum",
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     sources = models.ManyToManyField(Source, blank=True,
                                      verbose_name="Quellen",
@@ -331,10 +331,10 @@ class PersonPlace(models.Model):
     person = models.ForeignKey('Person')
     place = models.ForeignKey(Place, verbose_name='Ort')
     start = PartialDateField(
-            blank=True, null=True, verbose_name='Beginn',
+            blank=True, default='', verbose_name='Beginn',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     end = PartialDateField(
-            blank=True, null=True, verbose_name='Ende',
+            blank=True, default='', verbose_name='Ende',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     typ = models.IntegerField(choices=PP_TYPE, default=OTHER)
     comment = models.CharField(max_length=500, blank=True, default='',
@@ -421,10 +421,10 @@ class Person(PrimaryObject):
                                     verbose_name="Ereignisse")
 
     datebirth = PartialDateField(
-            "Geburtsdatum", blank=True, null=True,
+            "Geburtsdatum", blank=True, default='',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     datedeath = PartialDateField(
-            "Todesdatum", blank=True, null=True,
+            "Todesdatum", blank=True, default='',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
 
     places = models.ManyToManyField(Place, blank=True, through=PersonPlace,
@@ -917,7 +917,7 @@ class Event(PrimaryObject):
                                      verbose_name='Typ')
     title = models.CharField(max_length=200, verbose_name='Titel')
     date = PartialDateField(
-            blank=True, null=True, verbose_name='Datum',
+            blank=True, default='', verbose_name='Datum',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     description = models.TextField(blank=True,
                                    verbose_name='Beschreibung')
@@ -1004,16 +1004,16 @@ class TimelineItem(models.Model):
     url = models.CharField(max_length=200, verbose_name='URL',
                            blank=True)
     start_date = PartialDateField(
-            verbose_name='Startdatum',
+            verbose_name='Startdatum', blank=True, default='',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
     end_date = PartialDateField(
-            blank=True, null=True,
+            blank=True, default='',
             verbose_name='Enddatum',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich); "
                       "kann freibleiben"
             )
     description = models.TextField(
-            blank=True, null=True,
+            blank=True, default='',
             verbose_name="Beschreibung",
             help_text="Wird beim pdf-Export verwendet, kann als ReST "
                       "formattiert werden, mit Links auf Objekte der "

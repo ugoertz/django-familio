@@ -7,6 +7,7 @@ from .views import (
         DocumentList, DocumentDetail, SourceList,
         UnboundImagesView, CreateThumbnail,
         SetDateFromEXIF,
+        SearchForDateRange,
         )
 
 
@@ -44,6 +45,13 @@ urlpatterns = patterns('notaro.views',
                        url(r'^date-from-exif/(?P<pk>\d+)/$',
                            SetDateFromEXIF.as_view(),
                            name='set-date-from-exif'),
+                       url(r'^date-range/$',
+                           SearchForDateRange.as_view(),
+                           name='date-range'),
+                       url(r'^date-range/(?P<fr>\d+)/(?P<to>\d+)/' +
+                           r'(?P<undated>[YN])/$',
+                           SearchForDateRange.as_view(),
+                           name='date-range'),
                        )
 
 
