@@ -385,7 +385,7 @@ class SearchForDateRange(LoginRequiredMixin, View):
                 and request.POST['showundated']) else 'N'
 
         if int(fr) <= 1780:
-            fr = '0'
+            fr = '0001'
             if int(to) <= 1780:
                 to = '1780'
 
