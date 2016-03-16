@@ -365,6 +365,8 @@ class SearchForDateRange(LoginRequiredMixin, View):
                 request,
                 self.template_name,
                 {
+                    'slider_fr': max(fr, self.minimum_date),
+                    'slider_to': min(to, self.maximum_date),
                     'fr': fr,
                     'to': to,
                     'minimum_date': self.minimum_date,

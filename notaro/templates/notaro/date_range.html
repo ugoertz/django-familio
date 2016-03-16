@@ -33,7 +33,7 @@ $(window).load(function(){
             <div style="margin-top: 60px; margin-bottom: 60px;">
                 <form method="POST" action="">
                     {% csrf_token %}
-                    {{ minimum_date }}<span style="margin-left: 30px; margin-right: 30px;"><input id="dateslider" name="slider" type="text" data-provide="slider" data-slider-min="{{ minimum_date }}" data-slider-max="{{ maximum_date }}" data-slider-step="1" data-slider-value="[{% firstof fr 1900 %}, {% firstof to 1950 %}]" style="width: 600px;" /></span> {{ maximum_date }}
+                    {{ minimum_date }}<span style="margin-left: 30px; margin-right: 30px;"><input id="dateslider" name="slider" type="text" data-provide="slider" data-slider-min="{{ minimum_date }}" data-slider-max="{{ maximum_date }}" data-slider-step="1" data-slider-value="[{% firstof slider_fr 1900 %}, {% firstof slider_to 1950 %}]" style="width: 600px;" /></span> {{ maximum_date }}
                     <input type="checkbox" name="showundated" {% if undated %}checked {% endif %} style="margin-left: 20px;">
                     <span class="cabin" style="margin.left: 15px;">Undatierte zeigen</span>
                     <input style="margin-left: 50px;" class="btn btn-default btn-sm" value="Aktualisieren" type="submit" />
