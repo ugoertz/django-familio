@@ -380,9 +380,12 @@ class SearchForDateRange(LoginRequiredMixin, View):
                 )
 
     def post(self, request, fr=None, to=None, undated=None):
-        fr, to  = request.POST['slider'].split(',')
-        undated = 'Y' if ('showundated' in request.POST
-                and request.POST['showundated']) else 'N'
+        try:
+            fr, to  = request.POST['slider'].split(',')
+            undated = 'Y' if ('showundated' in request.POST
+                    and request.POST['showundated']) else 'N'
+        except:
+            return HttpResponseRedirect(reverse('date-range'))
 
         if int(fr) <= 1780:
             fr = '0001'
