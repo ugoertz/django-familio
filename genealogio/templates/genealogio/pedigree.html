@@ -43,7 +43,7 @@ p, li {
 {% block size %}
 var margin = {top: 0, right: 270, bottom: 0, left: 0},
     width = margin.right * ({{ generations }} - 1),
-    height = 550 - margin.top - margin.bottom + 115 * {{ generations }};
+    height = -350 - margin.top - margin.bottom + 295 * {{ generations }};
 {% endblock %}
 
 var tree = d3.layout.tree()
