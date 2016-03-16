@@ -7,6 +7,11 @@
 {% block css %}
 {{ block.super }}
 {% include "notaro/selectize_css.html" %}
+<style>
+ul, ol {
+    overflow: auto;
+}
+</style>
 {% endblock css %}
 
 {% block js %}
