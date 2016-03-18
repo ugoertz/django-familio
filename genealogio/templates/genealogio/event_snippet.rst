@@ -6,7 +6,9 @@
 {% if event.place %}in `{{ event.place }} <{% url "place-detail" event.place.id %}>`__ {% endif %}
 
 {% if not latexmode %}
-{{ event.description }}
+.. class:: small
+
+{{ event.description_indented }}
 {% endif %}
 {% else %}
 {{ event.title }}

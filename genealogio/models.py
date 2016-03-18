@@ -955,6 +955,9 @@ class Event(PrimaryObject):
     def __unicode__(self):
         return "%s (%s)" % (self.title, self.get_event_type_display())
 
+    def description_indented(self):
+        return '    ' + '\n    '.join(self.description.splitlines()) + '\n'
+
     class Meta:
         ordering = ('date', 'event_type', )
         verbose_name = 'Ereignis'
