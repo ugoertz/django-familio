@@ -270,7 +270,6 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
             for k in request.POST:
                 if not (k.startswith('name_set-') and k.endswith('-name')):
                     continue
-                print k
                 try:
                     _, i, _ = k.split('-')
                     i = int(i)
@@ -284,6 +283,8 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
                     first_name = request.POST['name_set-%d-name' % i]
                 elif typ == Name.MARRIEDNAME:
                     married_name = request.POST['name_set-%d-name' % i]
+                    if last_name == '':
+                        last_name = married_name
 
             obj.handle = Person.get_handle(
                     last_name=last_name,
