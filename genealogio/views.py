@@ -687,9 +687,12 @@ class AddParents(LoginRequiredMixin, FormView):
                 form.cleaned_data['last_name_mother'] or
                 form.cleaned_data['first_name_mother']):
             mother_kwargs = {
-                    'last_name': form.cleaned_data['last_name_mother'],
-                    'last_name_current':
+                    'last_name':
+                    form.cleaned_data['last_name_mother'] or
                     form.cleaned_data['married_name_mother'],
+                    'last_name_current':
+                    form.cleaned_data['married_name_mother'] or
+                    form.cleaned_data['last_name_mother'],
                     'first_name': form.cleaned_data['first_name_mother'],
                     'datebirth': string_to_partialdate(
                         form.cleaned_data['date_birth_mother']),
