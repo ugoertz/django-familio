@@ -5,10 +5,11 @@
 {% if event.date %}am {{ event.date|partial_date:"j.n.Y" }}{% endif %}
 {% if event.place %}in `{{ event.place }} <{% url "place-detail" event.place.id %}>`__ {% endif %}
 
-{% if not latexmode %}
+{% if event.description and not latexmode %}
 .. class:: small marginleft30
 
 {{ event.description_indented }}
+
 {% endif %}
 {% else %}
 {{ event.title }}
