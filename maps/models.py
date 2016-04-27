@@ -92,12 +92,14 @@ class Place(models.Model):
     @property
     def latitude(self):
         if self.location:
+            # pylint: disable=no-member
             return self.location.y
         return None
 
     @property
     def longitude(self):
         if self.location:
+            # pylint: disable=no-member
             return self.location.x
         return None
 

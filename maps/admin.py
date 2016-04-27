@@ -88,6 +88,9 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     search_fields = ('title', )
     inlines = [UrlInline, NotePlaceInline, ]
 
+    openlayers_url = 'https://cdnjs.cloudflare.com/ajax/libs/' +\
+                     'openlayers/2.13.1/OpenLayers.js'
+
     pnt = Point(8, 50.5, srid=4326)
     pnt.transform(3857)
     default_lon, default_lat = pnt.coords
@@ -182,6 +185,8 @@ class CustomMapAdmin(
     search_fields = ('title', 'description', )
     change_list_template = "admin/change_list_filter_sidebar.html"
 
+    openlayers_url = 'https://cdnjs.cloudflare.com/ajax/libs/' +\
+                     'openlayers/2.13.1/OpenLayers.js'
     pnt = Point(8, 50.5, srid=4326)
     pnt.transform(3857)
     default_lon, default_lat = pnt.coords
