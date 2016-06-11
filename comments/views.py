@@ -9,7 +9,7 @@ from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils.html import escape
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from braces.views import LoginRequiredMixin
 
@@ -88,17 +88,17 @@ das %s-Team
                 # (if desired)
                 if node.author.userprofile.email_on_comment_answer:
                     site = Site.objects.get_current()
-                    send_mail('%s: Dein Kommentar wurde beantwortet'
-                              % site.domain,
-                              PostComment.EMAIL_TEMPLATE % (
-                                  node.author.first_name,
-                                  comment.author.get_full_name(),
-                                  request.META['HTTP_REFERER'],
-                                  comment.content,
-                                  site.domain),
-                              'ug@geometry.de',
-                              [node.author.email, ],
-                              fail_silently=True)
+                    EmailMessage(
+                            '%s: Dein Kommentar wurde beantwortet'
+                            % site.domain,
+                            PostComment.EMAIL_TEMPLATE % (
+                                node.author.first_name,
+                                comment.author.get_full_name(),
+                                request.META['HTTP_REFERER'],
+                                comment.content,
+                                site.domain),
+                            settings.DEFAULT_FROM_EMAIL,
+                            [node.author.email, ]).send(fail_silently=True)
 
                 comment.path = node.path
                 comment.path.append(comment.id)

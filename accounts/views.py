@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.hashers import make_password
@@ -118,11 +118,15 @@ class InviteView(LoginRequiredMixin, View):
             email_text = form.cleaned_data['message'].replace(
                     'AKTIVIERUNGCODE',
                     UserenaSignup.objects.get(user=new_user).activation_key, )
-            send_mail('Einladung von %s' % site.domain,
-                      email_text,
-                      request.user.email,
-                      [form.cleaned_data['email'], ],
-                      fail_silently=True)
+            EmailMessage(
+                    'Einladung von %s' % site.domain,
+                    email_text,
+                    '%s/%s <%s>' % (
+                        request.user.get_full_name(),
+                        site.domain,
+                        settings.DEFAULT_FROM_EMAIL),
+                    [form.cleaned_data['email'], ],
+                    reply_to=[request.user.email, ]).send(fail_silently=True)
 
             messages.success(request,
                              "Die Einladungsemail wurde verschickt." +
