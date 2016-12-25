@@ -35,6 +35,7 @@ SUPPORTED_NONLOCALES = ['media', 'admin', 'static']
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'de'
+LANGUAGES = [(b'de', b'German'), ]  # used by pybbm
 
 # Defines the views served for root URLs.
 ROOT_URLCONF = 'familio.urls'
