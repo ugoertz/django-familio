@@ -9,6 +9,7 @@ from django.contrib.sites.models import Site
 from django.views.generic import TemplateView
 from filebrowser.sites import site
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
+import debug_toolbar
 
 from base.views import CustomAutocompleteLookup
 from accounts.models import UserSite
@@ -72,6 +73,12 @@ urlpatterns = patterns('',
                        url(dajaxice_config.dajaxice_url,
                            include('dajaxice.urls')),
                        url(r'^' + settings.MEDIA_URL[1:] + r'(?P<fname>.*)$',
-                           'base.views.download', name="download"), )\
-    + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+                           'base.views.download', name="download"),
+                       )
+
+if settings.DEBUG:
+    urlpatterns += patterns(
+            '',
+            url(r'^__debug__/', include(debug_toolbar.urls)),
+            )
 

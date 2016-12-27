@@ -62,7 +62,6 @@ INSTALLED_APPS = (
 
     # Third-party apps, patches, fixes
     'reversion',
-    'debug_toolbar',
     'compressor',
     'django_extensions',
     'braces',
@@ -162,7 +161,6 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'pybb.middleware.PybbMiddleware',
     'watson.middleware.SearchContextMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'notaro.middleware.NotaroMiddleware',
 ]
 
@@ -198,34 +196,6 @@ TEMPLATES = [
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-DEBUG_TOOLBAR_PATCH_SETTINGS = True
-
-
-def custom_show_toolbar(request):
-    """ Only show the debug toolbar to users with the superuser flag. """
-    return request.user.is_superuser
-
-DEBUG_TOOLBAR_CONFIG = {
-    'SHOW_TOOLBAR_CALLBACK': 'familio.settings.base.custom_show_toolbar',
-    'SHOW_COLLAPSED': True,
-    'SHOW_TEMPLATE_CONTEXT': True,
-    'ENABLE_STACKTRACES': True,
-    'JQUERY_URL': '',
-}
-
-
-# DEBUG_TOOLBAR_PANELS = (
-#     #'debug_toolbar_user_panel.panels.UserPanel',
-#     'debug_toolbar.panels.version.VersionDebugPanel',
-#     'debug_toolbar.panels.timer.TimerDebugPanel',
-#     'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-#     'debug_toolbar.panels.headers.HeaderDebugPanel',
-#     'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-#     'debug_toolbar.panels.template.TemplateDebugPanel',
-#     'debug_toolbar.panels.sql.SQLDebugPanel',
-#     'debug_toolbar.panels.signals.SignalDebugPanel',
-#     'debug_toolbar.panels.logger.LoggingPanel',
-# )
 
 
 AUTHENTICATION_BACKENDS = {
