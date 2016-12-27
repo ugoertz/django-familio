@@ -323,7 +323,6 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
     class Media:
         css = {'all': ('css/person_admin.css', ) + CODEMIRROR_CSS, }
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js', )
 
         try:
@@ -419,7 +418,6 @@ class EventAdmin(CurrentSiteGenAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js', )
 
         try:
@@ -578,7 +576,6 @@ class TimelineItemAdmin(CurrentSiteAdmin, VersionAdmin):
     class Media:
         css = {'all': ('css/timelineitem_admin.css', ) + CODEMIRROR_CSS, }
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js', )
 
         try:

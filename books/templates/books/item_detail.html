@@ -1,6 +1,5 @@
 {% extends "_layouts/base.html" %}
 {% load static %}
-{% load dajaxice_templatetags %}
 {% load crispy_forms_tags %}
 
 {% block css %}
@@ -24,7 +23,6 @@ label, input {
 
 {% block jsnocompress %}
 {{ block.super }}
-{% dajaxice_js_import %}
 {% endblock %}
 
 {% block js %}
@@ -83,8 +81,10 @@ $(document).ready(function() {
         create: false,
         load: function(query, callback) {
             if (!query.length) return callback();
-            Dajaxice.books.get_instances(callback,
-                    {"query": query, "model": $('#id_obj_content_type').val() });
+            $.get(
+                    "{% url "get-instances" %}",
+                    {query: query, model: $('#id_obj_content_type').val()},
+                    callback);
         }
     });
 

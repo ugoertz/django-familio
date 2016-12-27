@@ -1,6 +1,5 @@
 {% load compress %}
 {% load staticfiles %}
-{% load dajaxice_templatetags %}
 {% load base_tags %}
 {% load accounts_tags %}
 
@@ -53,12 +52,11 @@
             <script src="{% static 'js/libs/modernizr-2.6.2-respond-1.1.0.min.js' %}"></script>
             <script src="{% static 'js/libs/jquery.min.js' %}"></script>
             <script src="{% static 'js/libs/bootstrap.min.js' %}"></script>
-            {% dajaxice_js_import %}
             {% block popover %}
             <script>
 $(document).ready(function() {
-    {% include "base/popover.js" with selector='a[href*="/gen/person-view/"]' fct="Dajaxice.genealogio.popover_data" %}
-    {% include "base/popover.js" with selector='.tag-family' fct="Dajaxice.genealogio.popover_data" %}
+    {% include "base/popover.js" with selector='a[href*="/gen/person-view/"]' urldata='popover-data' %}
+    {% include "base/popover.js" with selector='.tag-family' urldata='popover-data' %}
 });
             </script>
             {% endblock %}

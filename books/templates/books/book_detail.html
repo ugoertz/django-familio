@@ -44,8 +44,10 @@ $(document).ready(function() {
         create: false,
         load: function(query, callback) {
             if (!query.length) return callback();
-            Dajaxice.books.get_persons_families(callback,
-                    {"query": query });
+            $.get(
+                    "{% url 'get-persons-families' %}",
+                    {query: query},
+                    callback);
         }
     });
 

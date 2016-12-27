@@ -62,9 +62,11 @@ $(window).on('map:init', function (e) {
         if (data.features.length > 1) detail.map.fitBounds(layer.getBounds());
         else if (data.features.length) detail.map.setView([data.features[0].geometry.coordinates[1], data.features[0].geometry.coordinates[0]], 10);
     });
-    Dajaxice.genealogio.pplaces_lines(function (data) {
-        layer.addData(data);
-    }, {person_id: {{ person.id }} });
+    $.get(
+            "{% url 'pplaces-lines' person.id %}",
+            function (data) {
+                layer.addData(data);
+            });
 });
 </script>
 {% endblock %}

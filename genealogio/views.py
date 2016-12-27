@@ -10,6 +10,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.models import Site
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
@@ -18,7 +19,6 @@ from django.views.generic import (
         CreateView, DetailView, FormView, View)
 from django.shortcuts import render
 
-from braces.views import LoginRequiredMixin
 from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin, PaginateListView

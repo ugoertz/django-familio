@@ -4,6 +4,7 @@ from django import template
 from django.conf import settings
 from django.utils.functional import allow_lazy
 from django.utils.encoding import force_unicode
+from django.utils.safestring import mark_safe
 from django.template import Node
 from django.template.defaulttags import CommentNode
 from django.template.loader_tags import do_include
@@ -57,7 +58,7 @@ gapless = register.tag(gapless)
 @register.simple_tag
 def settings_value(name):
     if name in getattr(settings, 'ALLOWABLE_VALUES', []):
-        return getattr(settings, name, '')
+        return mark_safe(getattr(settings, name, ''))
     return ''
 
 

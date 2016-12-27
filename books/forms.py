@@ -56,6 +56,9 @@ class FlagWidget(forms.widgets.MultiWidget):
             return [FLAGS[x[1]][x[2]]['default'] for x in FLAGS_FLAT] +\
                     ([False] * len(FLAGS_FLAT))
 
+    def use_required_attribute(self, initial):
+        return False
+
     def format_output(self, rendered_widgets):
         """
         Given a list of rendered widgets (as strings), returns a Unicode string

@@ -1,10 +1,11 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from .views import PostComment
 
 
-urlpatterns = patterns('comments.views',
-                       url(r'^post/$', PostComment.as_view(),
-                           name='post-comment'), )
+urlpatterns = (
+        url(r'^post/$', PostComment.as_view(),
+            name='post-comment'),
+        )
 
 

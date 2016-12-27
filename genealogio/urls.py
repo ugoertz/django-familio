@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from .views import (
         PersonList, PersonDetail, EventDetail, FamilyList,
@@ -8,10 +8,12 @@ from .views import (
         HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
         AddParents, AddChildView, AddSpouseView,
         )
+from ajax import (
+        PPlacesLines, AutocompleteView, PopoverData,
+        )
 
 
-urlpatterns = patterns(
-        'genealogio.views',
+urlpatterns = (
         url(r'^persons/$', PersonList.as_view(),
             name='person-list'),
         url(r'^persons/(?P<order_by>\w+)/$', PersonList.as_view(),
@@ -62,13 +64,24 @@ urlpatterns = patterns(
             Sparkline.as_view(),
             name='sparkline-tlitem'),
         url(r'^add-parents/(?P<pk>\d+)/',
-            AddParents.as_view(),
-            name="add_parents"),
+                AddParents.as_view(),
+                name="add_parents"),
         url(r'^add-child/(?P<pk>\d+)/',
-            AddChildView.as_view(),
-            name="add_child"),
+                AddChildView.as_view(),
+                name="add_child"),
         url(r'^add-spouse/(?P<pk>\d+)/',
-            AddSpouseView.as_view(),
-            name="add_spouse"),
+                AddSpouseView.as_view(),
+                name="add_spouse"),
+
+        # ajax
+        url(r'^pplaces-lines/(?P<person_id>\d+)/$',
+                PPlacesLines.as_view(),
+                name="pplaces-lines"),
+        url(r'^autocomplete/$',
+                AutocompleteView.as_view(),
+                name="autocomplete"),
+        url(r'^popoverdata/$',
+                PopoverData.as_view(),
+                name="popover-data"),  # use when link is filled in by js
         )
 

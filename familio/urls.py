@@ -1,6 +1,6 @@
 """ Default urlconf for familio """
 
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
@@ -8,14 +8,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.views.generic import TemplateView
 from filebrowser.sites import site
-from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 import debug_toolbar
 
-from base.views import CustomAutocompleteLookup
+from base.views import CustomAutocompleteLookup, download
 from accounts.models import UserSite
 from genealogio.models import Place
 
-dajaxice_autodiscover()
 
 
 def bad(request):
@@ -37,48 +35,45 @@ class ImpressumView(TemplateView):
         return context
 
 
-urlpatterns = patterns('',
-                       url(r'^grappelli/lookup/autocomplete/$',
-                           CustomAutocompleteLookup.as_view(),
-                           name="grp_autocomplete_lookup"),
-                       (r'^admin/filebrowser/', include(site.urls)),
-                       (r'^grappelli/', include('grappelli.urls')),
-                       url(r'^admin/', include(admin.site.urls)),
-                       (r'^forum/', include('pybb.urls', namespace='pybb')),
-                       (r'^comments/', include('comments.urls')),
-                       (r'^accounts/', include('accounts.urls')),
-                       (r'^accounts/', include('userena.urls')),
-                       (r'^tags/', include('tags.urls')),
-                       (r'^messages/',
-                           include('userena.contrib.umessages.urls')),
-                       url(r"^search/", include("watson.urls",
-                                                namespace="watson"),
-                           {'template_name': 'base/searchresults.html',
-                            'paginate_by': 15,
-                            'context_object_name': 'object_list',
-                            'exclude': (Place, ),
-                            }),
-                       url(r'^bad/$', bad),
-                       url(r'impressum/$',
-                           ImpressumView.as_view(),
-                           name='impressum'),
-                       url(r'robots\.txt$',
-                           TemplateView.as_view(template_name="robots.txt",
-                                                content_type='plain/text')),
-                       url(r'', include('base.urls')),
-                       url(r'^maps/', include('maps.urls')),
-                       url(r'^books/', include('books.urls')),
-                       url(r'^gen/', include('genealogio.urls')),
-                       url(r'^notes/', include('notaro.urls')),
-                       url(dajaxice_config.dajaxice_url,
-                           include('dajaxice.urls')),
-                       url(r'^' + settings.MEDIA_URL[1:] + r'(?P<fname>.*)$',
-                           'base.views.download', name="download"),
-                       )
+urlpatterns = (
+        url(r'^grappelli/lookup/autocomplete/$',
+            CustomAutocompleteLookup.as_view(),
+            name="grp_autocomplete_lookup"),
+        url(r'^admin/filebrowser/', include(site.urls)),
+        url(r'^grappelli/', include('grappelli.urls')),
+        url(r'^admin/', include(admin.site.urls)),
+        url(r'^forum/', include('pybb.urls', namespace='pybb')),
+        url(r'^comments/', include('comments.urls')),
+        url(r'^accounts/', include('accounts.urls')),
+        url(r'^accounts/', include('userena.urls')),
+        url(r'^tags/', include('tags.urls')),
+        url(r'^messages/',
+            include('userena.contrib.umessages.urls')),
+        url(r"^search/", include("watson.urls",
+            namespace="watson"),
+            {'template_name': 'base/searchresults.html',
+                'paginate_by': 15,
+                'context_object_name': 'object_list',
+                'exclude': (Place, ),
+                }),
+        url(r'^bad/$', bad),
+        url(r'impressum/$',
+            ImpressumView.as_view(),
+            name='impressum'),
+        url(r'robots\.txt$',
+            TemplateView.as_view(template_name="robots.txt",
+                content_type='plain/text')),
+        url(r'', include('base.urls')),
+        url(r'^maps/', include('maps.urls')),
+        url(r'^books/', include('books.urls')),
+        url(r'^gen/', include('genealogio.urls')),
+        url(r'^notes/', include('notaro.urls')),
+        url(r'^' + settings.MEDIA_URL[1:] + r'(?P<fname>.*)$',
+            download, name="download"),
+        )
 
 if settings.DEBUG:
-    urlpatterns += patterns(
-            '',
+    urlpatterns += (
             url(r'^__debug__/', include(debug_toolbar.urls)),
             )
 

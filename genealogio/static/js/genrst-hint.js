@@ -23,11 +23,14 @@
       start = matchResult.index
       var role = matchResult[1];  // could check here whether this is a genealogio role
                                   // in order to save ajax calls
-      Dajaxice.genealogio.autocomplete(function(result) {
-        var list = [], seen = {};
-        list = result;
-        callback({list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)});
-      }, {q: matchResult[2], role: role});
+      django.jQuery.get(
+              "/gen/autocomplete/",
+              {q: matchResult[2], role: role},
+              function(result) {
+                  var list = [], seen = {};
+                  list = result;
+                  callback({list: list, from: CodeMirror.Pos(cur.line, start), to: CodeMirror.Pos(cur.line, end)});
+              });
     }
   });
   CodeMirror.hint.genrst.async = true

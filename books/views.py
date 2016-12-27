@@ -6,10 +6,10 @@ from __future__ import division
 import datetime
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from braces.views import LoginRequiredMixin
 from django.views.generic import (
         CreateView, DetailView, UpdateView, View, )
 

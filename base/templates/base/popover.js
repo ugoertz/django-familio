@@ -14,16 +14,19 @@ function() {
             source.popover('show');
             return
         }
-        {{ fct }}(function (data) {
-            source.popover({
-                placement: "auto left",
-                html: true,
-                show: true,
-                container: 'body',
-                content: data
-            }).popover('show');
-            source.attr('has_popover', true);
-        }, {link: source[0].{% firstof get_href "href" %} });
+        $.get(
+                "{% url urldata %}",
+                { link: source[0].{% firstof get_href "href" %} },
+                function (data) {
+                    source.popover({
+                        placement: "auto left",
+                        html: true,
+                        show: true,
+                        container: 'body',
+                        content: data
+                    }).popover('show');
+                    source.attr('has_popover', true);
+                });
     }, 400);
 },
 function() {

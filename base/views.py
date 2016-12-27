@@ -10,6 +10,7 @@ import os.path
 import re
 
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.models import Site
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -18,7 +19,6 @@ from django.utils.translation import ungettext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, View
 
-from braces.views import LoginRequiredMixin
 from django_transfer import TransferHttpResponse
 from grappelli.views.related import (AutocompleteLookup, get_label,
                                      ajax_response, never_cache, )

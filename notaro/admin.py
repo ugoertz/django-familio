@@ -315,7 +315,6 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
 
@@ -345,7 +344,6 @@ class SourceAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
 
@@ -692,7 +690,6 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
         try:
@@ -740,7 +737,6 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
 
@@ -813,8 +809,6 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
-              'js/adminactions.js',
               )
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']

@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from .views import (
         PublicBookList, UserBookList,
@@ -7,10 +7,11 @@ from .views import (
         ItemDetail, ItemCreateView, ItemRetrieveText,
         ExportGEDCOMView,
         )
+from .ajax import (
+        GetInstances, GetPersonsFamilies,
+        )
 
-
-urlpatterns = patterns(
-        'books.views',
+urlpatterns = (
         url(r'^publicbooks/$', PublicBookList.as_view(),
             name='public-book-list'),
         url(r'^mybooks/$', UserBookList.as_view(),
@@ -33,5 +34,13 @@ urlpatterns = patterns(
             ItemCreateView.as_view(), name='item-create'),
         url(r'^export-gedcom/(?P<id>\d+)/$',
             ExportGEDCOMView.as_view(), name='export-gedcom'),
+
+        #ajax
+        url(r'^getinstances/$',
+            GetInstances.as_view(),
+            name="get-instances"),
+        url(r'^getperfam/$',
+            GetPersonsFamilies.as_view(),
+            name="get-persons-families"),
         )
 

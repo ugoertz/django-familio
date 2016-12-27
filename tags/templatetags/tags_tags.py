@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from django import template
+from django.apps import apps
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.loading import get_model
 from django.http import Http404
 
 from ..models import CustomTag
@@ -21,7 +21,7 @@ def get_obj_list(app, model, obj):
     '''
 
     try:
-        return get_model(app, model).objects.filter(
+        return apps.get_model(app, model).objects.filter(
                 tags__slug='%s.%s-%d' % (
                     obj._meta.app_label, obj._meta.model_name, obj.id))
     except:
@@ -35,7 +35,7 @@ def get_tag_list(app, model, tag):
     '''
 
     try:
-        return get_model(app, model).objects.filter(tags__slug='%s' % tag)
+        return apps.get_model(app, model).objects.filter(tags__slug='%s' % tag)
     except:
         return []
 

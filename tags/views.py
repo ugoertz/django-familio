@@ -7,10 +7,9 @@ from django.apps import apps
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View, ListView
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.urlresolvers import reverse
 from django.db.models import Count
-
-from braces.views import LoginRequiredMixin
 
 from tags.models import CustomTag
 

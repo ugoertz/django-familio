@@ -13,13 +13,13 @@ from django.views.generic import (
         DetailView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.shortcuts import render
 
-from braces.views import LoginRequiredMixin
 from filebrowser.base import FileListing
 
 from base.views import CurrentSiteMixin, PaginateListView

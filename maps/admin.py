@@ -195,7 +195,6 @@ class CustomMapAdmin(
     class Media:
         css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
         js = ('codemirror/codemirror-compressed.js',
-              'dajaxice/dajaxice.core.js',
               'js/adminactions.js',
               )
 

@@ -4,14 +4,14 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 from random import randint
+from django.apps import apps
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db import models
 from django.utils.html import escape
 from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
-from braces.views import LoginRequiredMixin
 
 from .models import Comment
 from .forms import CommentForm
@@ -45,7 +45,7 @@ das %s-Team
             return HttpResponseBadRequest(
                     "Missing content_type or object_pk field.")
         try:
-            model = models.get_model(*ctype.split(".", 1))
+            model = apps.get_model(*ctype.split(".", 1))
             target = model._default_manager.using(None).get(pk=object_pk)
         except TypeError:
             return HttpResponseBadRequest(

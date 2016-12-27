@@ -12,7 +12,7 @@ from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.hashers import make_password
-from braces.views import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from userena.models import UserenaSignup
 from userena.contrib.umessages.models import Message
 

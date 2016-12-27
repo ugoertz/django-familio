@@ -21,8 +21,7 @@ $('#id_tags{{ object.id }}').selectize({
     },
     create: false,
     load: function(query, callback) {
-        Dajaxice.tags.get_tags(callback,
-                {"query": query });
+        $.get("{% url 'get-tags' %}", {query: query}, callback);
     }
 });
 

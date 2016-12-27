@@ -64,9 +64,7 @@ INSTALLED_APPS = (
     'reversion',
     'compressor',
     'django_extensions',
-    'braces',
     'taggit',
-    'dajaxice',
     'crispy_forms',
     'django_markup',
     'typogrify',
@@ -143,7 +141,6 @@ TIME_ZONE = 'Europe/Berlin'
 # List of finder classes that know how to find static files in
 # various locations.
 STATICFILES_FINDERS = (
-    'dajaxice.finders.DajaxiceFinder',
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
@@ -187,7 +184,6 @@ TEMPLATES = [
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
-                'django.template.loaders.eggs.Loader',
             ]
         },
     },
@@ -274,8 +270,6 @@ LOGGING = {
 }
 
 
-DAJAXICE_XMLHTTPREQUEST_JS_IMPORT = False
-
 
 ANONYMOUS_USER_ID = -1
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
@@ -290,7 +284,7 @@ USERENA_REGISTER_PROFILE = False
 USERENA_ACTIVATION_DAYS = 150
 USERENA_USE_HTTPS = True
 
-GRAPPELLI_ADMIN_TITLE = '<a href="/">Unsere Familiengeschichte</a>'
+GRAPPELLI_ADMIN_TITLE = 'Unsere Familiengeschichte'
 GRAPPELLI_AUTOCOMPLETE_LIMIT = 100
 GRAPPELLI_AUTOCOMPLETE_SEARCH_FIELDS = {
         "sites": {

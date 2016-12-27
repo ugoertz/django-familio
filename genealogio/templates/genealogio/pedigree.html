@@ -119,8 +119,8 @@ function elbow(d, i) {
 {% block popover %}
 <script>
 $(document).ready(function() {
-{% include "base/popover.js" with selector='.popoverlink' fct="Dajaxice.genealogio.popover_data" get_href="href.baseVal" %}
-{% include "base/popover.js" with selector='.popoverlink-header' fct="Dajaxice.genealogio.popover_data" get_href="href" %}
+{% include "base/popover.js" with selector='.popoverlink' urldata="popover-data" get_href="href.baseVal" %}
+{% include "base/popover.js" with selector='.popoverlink-header' urldata="popover-data" get_href="href" %}
 });
 </script>
 {% endblock %}

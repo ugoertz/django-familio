@@ -1,7 +1,6 @@
 {% extends 'umessages/base_message.html' %}
 {% load static %}
 {% load i18n %}
-{% load dajaxice_templatetags %}
 
 {% block css %}
 {{ block.super }}
@@ -10,7 +9,6 @@
 
 {% block jsnocompress %}
 {{ block.super }}
-{% dajaxice_js_import %}
 {% endblock %}
 
 {% block js %}
@@ -35,7 +33,10 @@ $('select').selectize({
     create: false,
     load: function(query, callback) {
             if (!query.length) return callback();
-            Dajaxice.base.getuser(callback, {"query": query});
+            $.get(
+                    "{% url 'getuser' %}",
+                    { query: query },
+                    callback);
     }
 });
 });
