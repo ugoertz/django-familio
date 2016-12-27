@@ -70,7 +70,7 @@ $(document).ready(function() {
 
             {{ object.get_caption|apply_markup:"genrestructuredtext"|typogrify }}
 
-            {% if object.date %}<p>{{ object.date|partial_date:"j. M. Y" }}</p>{% endif %}
+            {% if object.date %}<p>{{ object.date|partial_date:"j. M Y" }}</p>{% endif %}
 
             {% filter apply_markup:"genrestructuredtext" %}
             {% include "notaro/sources.rst" with all_sources=object.picturesource_set.all %}
