@@ -23,7 +23,9 @@ from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.utils.html import format_html
 from django.utils.http import urlquote
+from django.utils.safestring import mark_safe
 
 from filebrowser.settings import ADMIN_THUMBNAIL
 from filebrowser.utils import convert_filename
@@ -76,8 +78,9 @@ class CurrentSiteAdmin(object):
 
     def view_on_site_link(self, obj):
         '''Put link to detail view into changelist.'''
-        return '<a href="%s">Seite ansehen</a>' % self.view_on_site(obj)
-    view_on_site_link.allow_tags = True
+        return format_html(
+                '<a href="{}">Seite ansehen</a>',
+                self.view_on_site(obj))
     view_on_site_link.short_description = 'Link'
 
     def get_urls(self):
@@ -103,10 +106,10 @@ class CurrentSiteAdmin(object):
                               for s in obj.sites.exclude(
                                   id=Site.objects.get_current().id)])
         if not Site.objects.get_current() in obj.sites.all():
-            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
-                    sitelist
+            sitelist = mark_safe(
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist)
         return sitelist or '-'
-    ositelist.allow_tags = True
     ositelist.short_description = 'Andere Familienbäume'
 
     def get_list_display(self, request):
@@ -473,11 +476,11 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
         """Display thumbnail, to be used in django admin list_display."""
 
         if obj.image and obj.image.filetype == "Image":
-            return '<img src="%s" />'\
-                   % obj.image.version_generate(ADMIN_THUMBNAIL).url
+            return format_html(
+                    '<img src="{}" />',
+                    obj.image.version_generate(ADMIN_THUMBNAIL).url)
         else:
             return ""
-    image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
     list_display = ('id', 'caption', 'date', 'image_thumbnail', )
@@ -719,11 +722,11 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
         """Display thumbnail, to be used in django admin list_display."""
 
         if obj.image and obj.image.filetype == "Image":
-            return '<img src="%s" />'\
-                   % obj.image.version_generate(ADMIN_THUMBNAIL).url
+            return format_html(
+                    '<img src="{}" />',
+                    obj.image.version_generate(ADMIN_THUMBNAIL).url)
         else:
             return ""
-    image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
     list_display = ('id', 'name', 'description_truncated', 'filename',
@@ -779,11 +782,11 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
         """Display thumbnail, to be used in django admin list_display."""
 
         if obj.poster and obj.poster.filetype == "Image":
-            return '<img src="%s" />'\
-                   % obj.poster.version_generate(ADMIN_THUMBNAIL).url
+            return format_html(
+                    '<img src="{}" />',
+                    obj.poster.version_generate(ADMIN_THUMBNAIL).url)
         else:
             return ""
-    image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Thumbnail"
 
     list_display = ('id', 'caption', 'date', 'image_thumbnail',

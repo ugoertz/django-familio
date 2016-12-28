@@ -10,9 +10,11 @@ from django.conf import settings
 from django.conf.urls import url
 from django.contrib.gis import admin
 from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
 from django.forms.models import BaseInlineFormSet
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 # from django.core.exceptions import ObjectDoesNotExist
 # from django.utils.functional import curry
 from reversion.admin import VersionAdmin
@@ -229,11 +231,11 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
 
         if obj.portrait and obj.portrait.image and\
                 obj.portrait.image.filetype == "Image":
-            return '<img src="%s" />'\
-                   % obj.portrait.image.version_generate(ADMIN_THUMBNAIL).url
+            return format_html(
+                    '<img src="{}" />',
+                    obj.portrait.image.version_generate(ADMIN_THUMBNAIL).url)
         else:
             return ""
-    image_thumbnail.allow_tags = True
     image_thumbnail.short_description = "Portrait"
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
@@ -244,14 +246,15 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
                 db_field, request, **kwargs)
 
     def portrait_os(self, obj):
-        sitelist = ', '.join([s.siteprofile.short_name
-                              for s in obj.portrait.sites.exclude(
-                                  id=Site.objects.get_current().id)])
+        sitelist = ', '.join(
+                s.siteprofile.short_name
+                for s in obj.portrait.sites.exclude(
+                    id=Site.objects.get_current().id))
         if not Site.objects.get_current() in obj.portrait.sites.all():
-            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
-                    sitelist
+            sitelist = mark_safe(
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist)
         return sitelist or '-'
-    portrait_os.allow_tags = True
     portrait_os.short_description = 'Andere Familienbäume'
 
     def get_readonly_fields(self, request, obj=None):
@@ -532,10 +535,10 @@ class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
                               for s in obj.father.sites.exclude(
                                   id=Site.objects.get_current().id)])
         if not Site.objects.get_current() in obj.father.sites.all():
-            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
-                    sitelist
+            sitelist = mark_safe(
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist)
         return sitelist or '-'
-    father_os.allow_tags = True
     father_os.short_description = 'Andere Familienbäume'
 
     def mother_os(self, obj):
@@ -543,10 +546,10 @@ class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
                               for s in obj.mother.sites.exclude(
                                   id=Site.objects.get_current().id)])
         if not Site.objects.get_current() in obj.mother.sites.all():
-            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
-                    sitelist
+            sitelist = mark_safe(
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist)
         return sitelist or '-'
-    mother_os.allow_tags = True
     mother_os.short_description = 'Andere Familienbäume'
 
     class Media:

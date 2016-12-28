@@ -12,6 +12,8 @@ from django.contrib.gis import admin
 from django.contrib.gis.geos import Point
 from django.contrib.sites.models import Site
 from django.forms import TextInput
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from grappelli.forms import GrappelliSortableHiddenMixin
 from reversion.admin import VersionAdmin
@@ -41,10 +43,10 @@ class OSitesMixin(object):
                               for s in self.osite_field(obj).sites.exclude(
                                   id=Site.objects.get_current().id)])
         if not Site.objects.get_current() in self.osite_field(obj).sites.all():
-            sitelist = '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
-                    sitelist
+            sitelist = mark_safe(
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    sitelist)
         return sitelist or '-'
-    osites.allow_tags = True
     osites.short_description = 'Andere Familienbäume'
 
 
@@ -107,9 +109,8 @@ class PlaceAdmin(admin.OSMGeoAdmin):
         except:
             return ''
 
-        return '<a href="%s">%s</a>' % (url.link, url.title)
+        return format_html('<a href="{}">{}</a>', url.link, url.title)
 
-    first_url.allow_tags = True
     first_url.short_description = "URL"
 
     def has_delete_permission(self, request, obj=None):
