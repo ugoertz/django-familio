@@ -7,16 +7,17 @@ import json
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 
 from filebrowser.fields import FileBrowseField
 from taggit.managers import TaggableManager
 
+from notaro.managers import GenManager
 from notaro.models import Note
 from tags.models import CustomTagThrough
 
-from .managers import CurrentSiteGeoManager, GenGeoManager
 from .tasks import render_map
 
 
@@ -94,8 +95,6 @@ class Place(models.Model):
             blank=True,
             through=PlaceNote,
             verbose_name="Texte")
-
-    objects = models.GeoManager()
 
     @property
     def latitude(self):
@@ -237,8 +236,8 @@ class CustomMap(models.Model):
 
     sites = models.ManyToManyField(Site)
 
-    all_objects = GenGeoManager()
-    objects = CurrentSiteGeoManager()
+    all_objects = GenManager()
+    objects = CurrentSiteManager()
     tags = TaggableManager(
             through=CustomTagThrough,
             blank=True, help_text="")

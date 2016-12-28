@@ -15,7 +15,6 @@ from django.utils.safestring import mark_safe
 from partialdate.fields import PartialDateField
 
 from notaro.managers import GenManager
-from maps.managers import CurrentSiteGeoManager, GenGeoManager
 
 from maps.models import Place, cleanname
 from notaro.models import Source, Note, Picture
@@ -36,8 +35,8 @@ class PrimaryObject(models.Model):
     public = models.BooleanField('public', default=False)
 
     sites = models.ManyToManyField(Site)
-    all_objects = GenGeoManager()
-    objects = CurrentSiteGeoManager()
+    all_objects = GenManager()
+    objects = CurrentSiteManager()
 
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)
@@ -349,8 +348,6 @@ class PersonPlace(models.Model):
     typ = models.IntegerField(choices=PP_TYPE, default=OTHER)
     comment = models.CharField(max_length=500, blank=True, default='',
                                verbose_name='Kommentar')
-
-    objects = models.GeoManager()
 
     def save(self, *args, **kwargs):
         # pylint: disable=no-member
