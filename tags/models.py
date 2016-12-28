@@ -112,7 +112,8 @@ class CustomTag(TagBase):
 class CustomTagThrough(GenericTaggedItemBase):
     tag = models.ForeignKey(
             CustomTag,
-            related_name="%(app_label)s_%(class)s_items")
+            related_name="%(app_label)s_%(class)s_items",
+            on_delete=models.CASCADE)
 
 
 

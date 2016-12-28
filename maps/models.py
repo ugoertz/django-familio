@@ -46,8 +46,12 @@ class Url(models.Model):
 
 
 class PlaceUrl(models.Model):
-    url = models.ForeignKey(Url, verbose_name="URL")
-    place = models.ForeignKey('Place', verbose_name="Ort")
+    url = models.ForeignKey(
+            Url,
+            verbose_name="URL", on_delete=models.CASCADE)
+    place = models.ForeignKey(
+            'Place',
+            verbose_name="Ort", on_delete=models.CASCADE)
     position = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -57,8 +61,12 @@ class PlaceUrl(models.Model):
 
 
 class PlaceNote(models.Model):
-    place = models.ForeignKey('Place', verbose_name="Ort")
-    note = models.ForeignKey(Note, verbose_name="Text")
+    place = models.ForeignKey(
+            'Place',
+            verbose_name="Ort", on_delete=models.CASCADE)
+    note = models.ForeignKey(
+            Note,
+            verbose_name="Text", on_delete=models.CASCADE)
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -146,8 +154,12 @@ class Place(models.Model):
 
 
 class CustomMapMarker(models.Model):
-    custommap = models.ForeignKey('CustomMap', verbose_name="Karte")
-    place = models.ForeignKey(Place, verbose_name="Ort")
+    custommap = models.ForeignKey(
+            'CustomMap',
+            verbose_name="Karte", on_delete=models.CASCADE)
+    place = models.ForeignKey(
+            Place,
+            verbose_name="Ort", on_delete=models.CASCADE)
     label = models.CharField(max_length=30, blank=True)
     description = models.CharField(max_length=200, blank="True",
                                    verbose_name="Beschreibung")

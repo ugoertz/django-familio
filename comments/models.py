@@ -11,7 +11,8 @@ from notaro.managers import GenManager
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    author = models.ForeignKey(
+            settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField(verbose_name="Dein Kommentar")
     date = models.DateTimeField(auto_now_add=True)
     path = ArrayField(
@@ -21,13 +22,15 @@ class Comment(models.Model):
     content_type = models.ForeignKey(
                        ContentType,
                        verbose_name=_('content type'),
-                       related_name="content_type_set_for_%(class)s")
+                       related_name="content_type_set_for_%(class)s",
+                       on_delete=models.CASCADE)
     object_pk = models.TextField(_('object ID'))
     content_object = GenericForeignKey(
                          ct_field="content_type",
                          fk_field="object_pk")
 
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey(
+            Site, on_delete=models.CASCADE)
     all_objects = GenManager()
     objects = CurrentSiteManager()
 

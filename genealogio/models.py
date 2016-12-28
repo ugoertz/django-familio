@@ -99,7 +99,7 @@ class Name(models.Model):
 
     name = models.CharField(max_length=200)
     typ = models.IntegerField(choices=NAME_TYPE)
-    person = models.ForeignKey('Person')
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
     position = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -109,8 +109,8 @@ class Name(models.Model):
 
 
 class FamilyNote(models.Model):
-    family = models.ForeignKey('Family')
-    note = models.ForeignKey(Note)
+    family = models.ForeignKey('Family', on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -119,8 +119,14 @@ class FamilyNote(models.Model):
 
 
 class FamilySource(models.Model):
-    family = models.ForeignKey('Family', verbose_name="Familie")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    family = models.ForeignKey(
+            'Family',
+            verbose_name="Familie",
+            on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle",
+            on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,
@@ -153,10 +159,12 @@ class Family(PrimaryObject):
 
     father = models.ForeignKey('Person', related_name="father_ref",
                                null=True, blank=True,
-                               verbose_name='Vater')
+                               verbose_name='Vater',
+                               on_delete=models.CASCADE)
     mother = models.ForeignKey('Person', related_name="mother_ref",
                                null=True, blank=True,
-                               verbose_name='Mutter')
+                               verbose_name='Mutter',
+                               on_delete=models.CASCADE)
     family_rel_type = models.IntegerField(choices=FAMILY_REL_TYPE,
                                           default=3,
                                           verbose_name="Art der Beziehung")
@@ -328,8 +336,10 @@ class PersonPlace(models.Model):
                (BURIAL, 'Grabstätte'),
                )
 
-    person = models.ForeignKey('Person')
-    place = models.ForeignKey(Place, verbose_name='Ort')
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    place = models.ForeignKey(
+            Place,
+            verbose_name='Ort', on_delete=models.CASCADE)
     start = PartialDateField(
             blank=True, default='', verbose_name='Beginn',
             help_text="Datum im Format JJJJ-MM-TT (Teilangaben möglich)")
@@ -363,8 +373,8 @@ class PersonPlace(models.Model):
 
 
 class PersonNote(models.Model):
-    person = models.ForeignKey('Person')
-    note = models.ForeignKey(Note)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -373,8 +383,12 @@ class PersonNote(models.Model):
 
 
 class PersonSource(models.Model):
-    person = models.ForeignKey('Person', verbose_name="Person")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    person = models.ForeignKey(
+            'Person',
+            verbose_name="Person", on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle", on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,
@@ -430,7 +444,8 @@ class Person(PrimaryObject):
     places = models.ManyToManyField(Place, blank=True, through=PersonPlace,
                                     verbose_name='Orte')
     portrait = models.ForeignKey(Picture, blank=True, null=True,
-                                 verbose_name='Portrait')
+                                 verbose_name='Portrait',
+                                 on_delete=models.CASCADE)
 
     notes = models.ManyToManyField(Note, blank=True, through=PersonNote)
     family = models.ManyToManyField(Family, through="PersonFamily",
@@ -780,8 +795,10 @@ class PersonFamily(models.Model):
                       (STEPCHILD, 'Stiefkind'),
                       (FOSTER, 'Pflegekind'), )
 
-    person = models.ForeignKey(Person)
-    family = models.ForeignKey(Family, verbose_name='Familie')
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    family = models.ForeignKey(
+            Family,
+            verbose_name='Familie', on_delete=models.CASCADE)
     child_type = models.IntegerField(choices=CHILD_REF_TYPE,
                                      default=2, verbose_name="Typ")
     position = models.PositiveIntegerField(default=1)
@@ -821,8 +838,10 @@ class PersonEvent(models.Model):
                        (WITNESS, 'Trauzeuge'),
                        (FAMILY, 'Familienmitglied'), )
 
-    person = models.ForeignKey('Person')
-    event = models.ForeignKey('Event', verbose_name='Ereignis')
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
+    event = models.ForeignKey(
+            'Event',
+            verbose_name='Ereignis', on_delete=models.CASCADE)
     role = models.IntegerField(choices=EVENT_ROLE_TYPE, default=-1,
                                verbose_name='Rolle')
 
@@ -842,8 +861,12 @@ class FamilyEvent(models.Model):
                        (OTHER, 'andere'),
                        (PRIMARY, 'Hauptperson'),
                        (FAMILY, 'Familienmitglied'), )
-    family = models.ForeignKey('Family', verbose_name='Familie')
-    event = models.ForeignKey('Event', verbose_name='Ereignis')
+    family = models.ForeignKey(
+            'Family',
+            verbose_name='Familie', on_delete=models.CASCADE)
+    event = models.ForeignKey(
+            'Event',
+            verbose_name='Ereignis', on_delete=models.CASCADE)
     role = models.IntegerField(choices=EVENT_ROLE_TYPE, default=-1,
                                verbose_name='Rolle')
     position = models.PositiveIntegerField(default=1)
@@ -854,8 +877,8 @@ class FamilyEvent(models.Model):
 
 
 class EventNote(models.Model):
-    event = models.ForeignKey('Event')
-    note = models.ForeignKey(Note)
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    note = models.ForeignKey(Note, on_delete=models.CASCADE)
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -864,8 +887,12 @@ class EventNote(models.Model):
 
 
 class EventSource(models.Model):
-    event = models.ForeignKey('Event', verbose_name="Ereignis")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    event = models.ForeignKey(
+            'Event',
+            verbose_name="Ereignis", on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle", on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,
@@ -922,7 +949,8 @@ class Event(PrimaryObject):
     description = models.TextField(blank=True,
                                    verbose_name='Beschreibung')
     place = models.ForeignKey(Place, null=True, blank=True,
-                              verbose_name='Ort')
+                              verbose_name='Ort',
+                              on_delete=models.CASCADE)
     sources = models.ManyToManyField(Source, blank=True,
                                      through=EventSource,
                                      verbose_name='Quellen')

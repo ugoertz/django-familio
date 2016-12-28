@@ -114,8 +114,14 @@ class Source(models.Model):
 
 
 class PictureSource(models.Model):
-    picture = models.ForeignKey('Picture', verbose_name="Bild")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    picture = models.ForeignKey(
+            'Picture',
+            verbose_name="Bild",
+            on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle",
+            on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,
@@ -192,8 +198,14 @@ class Picture(models.Model):
 
 
 class VideoSource(models.Model):
-    video = models.ForeignKey('Video', verbose_name="Video")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    video = models.ForeignKey(
+            'Video',
+            verbose_name="Video",
+            on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle",
+            on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,
@@ -415,8 +427,14 @@ class Document(models.Model):
 
 
 class PictureNote(models.Model):
-    note = models.ForeignKey('Note', verbose_name="Text")
-    picture = models.ForeignKey(Picture, verbose_name="Bild")
+    note = models.ForeignKey(
+            'Note',
+            verbose_name="Text",
+            on_delete=models.CASCADE)
+    picture = models.ForeignKey(
+            Picture,
+            verbose_name="Bild",
+            on_delete=models.CASCADE)
     position = models.IntegerField(default=1)
 
     class Meta:
@@ -424,8 +442,14 @@ class PictureNote(models.Model):
 
 
 class NoteSource(models.Model):
-    note = models.ForeignKey('Note', verbose_name="Text")
-    source = models.ForeignKey(Source, verbose_name="Quelle")
+    note = models.ForeignKey(
+            'Note',
+            verbose_name="Text",
+            on_delete=models.CASCADE)
+    source = models.ForeignKey(
+            Source,
+            verbose_name="Quelle",
+            on_delete=models.CASCADE)
     comment = models.CharField(
             max_length=500,
             blank=True,

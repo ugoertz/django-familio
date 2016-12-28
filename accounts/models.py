@@ -23,8 +23,8 @@ class UserSite(models.Model):
                  (STAFF, 'Redakteur', ),
                  (SUPERUSER, 'Administrator', ),
                  )
-    user = models.ForeignKey('UserProfile')
-    site = models.ForeignKey(Site)
+    user = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
     role = models.IntegerField(choices=ROLE_TYPE, default=0)
 
 
@@ -37,10 +37,14 @@ class UserProfile(UserenaBaseProfile, PybbProfile):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 unique=True,
                                 verbose_name=_('Benutzer'),
-                                related_name='userprofile')
+                                related_name='userprofile',
+                                on_delete=models.CASCADE)
     sites = models.ManyToManyField(Site, through=UserSite, blank=True)
 
-    person = models.ForeignKey(Person, blank=True, null=True)
+    person = models.ForeignKey(
+            Person,
+            blank=True, null=True,
+            on_delete=models.CASCADE)
     email_on_message = models.BooleanField(
             default=False,
             verbose_name="Email-Benachrichtigung bei Nachrichten")

@@ -4,7 +4,7 @@ from django.contrib.sites.models import Site
 
 class SiteProfile(models.Model):
 
-    site = models.OneToOneField(Site)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
 
     # Person, Family and Event objects created on the current site will by
     # default be added to the following sites as well:

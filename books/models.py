@@ -93,7 +93,9 @@ INDEX_TEMPLATE_FOOTER = '\n'
 
 
 class Collection(models.Model):
-    book = models.ForeignKey('Book', verbose_name="Zugehöriges Buch")
+    book = models.ForeignKey(
+            'Book',
+            verbose_name="Zugehöriges Buch", on_delete=models.CASCADE)
     title = models.CharField(
             max_length=50,
             blank=True,
@@ -105,17 +107,21 @@ class Collection(models.Model):
     active = models.BooleanField(default=True, verbose_name="Aktiv")
 
     level = models.IntegerField(default=0)
-    parent = models.ForeignKey('Collection', blank=True, null=True)
+    parent = models.ForeignKey(
+            'Collection',
+            blank=True, null=True, on_delete=models.CASCADE)
 
     position = models.IntegerField(default=0)
 
-    model = models.ForeignKey(ContentType, blank=True, null=True)
+    model = models.ForeignKey(
+            ContentType,
+            blank=True, null=True, on_delete=models.CASCADE)
     order_by = models.CharField(
             max_length=100,
             help_text='Durch Kommata getrennte Datenbank-Felder,'
                       ' nach denen sortiert werden soll.',
             blank=True)
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
     def parents(self):
         if self.level == 0:
@@ -294,7 +300,9 @@ class Book(models.Model):
     authors = models.ManyToManyField(
             settings.AUTH_USER_MODEL,
             verbose_name="Autoren")
-    site = models.ForeignKey(Site, verbose_name="Familienbaum")
+    site = models.ForeignKey(
+            Site,
+            verbose_name="Familienbaum", on_delete=models.CASCADE)
     directory = models.CharField(max_length=300, blank=True)
     render_status = models.CharField(
             max_length=800,
@@ -302,8 +310,9 @@ class Book(models.Model):
             verbose_name="Status")
 
     # root collection:
-    root = models.ForeignKey(Collection, blank=True, null=True,
-                             related_name='book_root')
+    root = models.ForeignKey(
+            Collection, blank=True, null=True,
+            related_name='book_root', on_delete=models.CASCADE)
 
     sphinx_conf = models.TextField(blank=True)
     mogrify_options = models.CharField(max_length=300, blank=True)
@@ -616,11 +625,12 @@ class Book(models.Model):
 
 
 class Item(models.Model):
-    parent = models.ForeignKey(Collection)
+    parent = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
     obj_content_type = models.ForeignKey(
             ContentType, blank=True, null=True,
-            verbose_name='Typ des zugeordneten Objekts')
+            verbose_name='Typ des zugeordneten Objekts',
+            on_delete=models.CASCADE)
     obj_id = models.IntegerField(
             blank=True, null=True,
             verbose_name='Zugeordnetes Objekt')
@@ -647,7 +657,7 @@ class Item(models.Model):
 
     active = models.BooleanField(default=True, verbose_name="Aktiv")
     position = models.IntegerField(default=1)
-    site = models.ForeignKey(Site)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE)
 
     def get_gedcom_data(self, data):
         if (self.obj_content_type
