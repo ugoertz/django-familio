@@ -41,10 +41,24 @@ from .tasks import compile_video
 
 
 CODEMIRROR_CSS = (
-        'codemirror/codemirror.css',
-        'codemirror/show-hint.css',
-        'codemirror/dialog.css',
-        'codemirror/custom.css', )
+        'codemirror/lib/codemirror.css',
+        'codemirror/addon/hint/show-hint.css',
+        'codemirror/addon/dialog/dialog.css',
+        'codemirror-custom/custom.css', )
+
+CODEMIRROR_JS = (
+        'codemirror/lib/codemirror.js',
+        'codemirror/mode/clike/clike.js',
+        'codemirror/mode/python/python.js',
+        'codemirror/mode/rst/rst.js',
+        'codemirror/mode/stex/stex.js',
+        'codemirror/addon/dialog/dialog.js',
+        'codemirror/addon/edit/matchbrackets.js',
+        'codemirror/addon/mode/overlay.js',
+        'codemirror/addon/search/searchcursor.js',
+        'codemirror/addon/hint/show-hint.js',
+        'codemirror/keymap/vim.js',
+        )
 
 
 class UpdateActionForm(ActionForm):
@@ -317,7 +331,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
         return initial
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js',
               )
 
@@ -325,7 +339,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf.js', )
+        js += ('codemirror-custom/codemirror_conf.js', )
         css = {'all': ('css/note_admin.css', ) + CODEMIRROR_CSS, }
 
 admin.site.register(Note, NoteAdmin)
@@ -346,7 +360,7 @@ class SourceAdmin(CurrentSiteAdmin, VersionAdmin):
     change_list_template = "admin/change_list_filter_sidebar.html"
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js',
               )
 
@@ -354,7 +368,7 @@ class SourceAdmin(CurrentSiteAdmin, VersionAdmin):
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_source.js', )
+        js += ('codemirror-custom/codemirror_conf_source.js', )
         css = {'all': ('css/source_admin.css', ) + CODEMIRROR_CSS, }
 
 
@@ -692,14 +706,14 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                       {'form': form, 'title': 'Bilder/Dokumente hochladen'})
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js',
               )
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_pic_vid.js', )
+        js += ('codemirror-custom/codemirror_conf_pic_vid.js', )
         css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
 
 
@@ -739,7 +753,7 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
         return obj.doc.filename
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js',
               )
 
@@ -747,7 +761,7 @@ class DocumentAdmin(CurrentSiteAdmin, VersionAdmin):
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_document.js', )
+        js += ('codemirror-custom/codemirror_conf_document.js', )
         css = {'all': ('css/document_admin.css', ) + CODEMIRROR_CSS, }
 
 
@@ -811,13 +825,13 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
                 ] + urls
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               )
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_pic_vid.js', )
+        js += ('codemirror-custom/codemirror_conf_pic_vid.js', )
         css = {'all': ('css/picture_admin.css', ) + CODEMIRROR_CSS, }
 
 

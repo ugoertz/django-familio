@@ -6,10 +6,7 @@
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
 <link rel="stylesheet" href="{% static 'css/bootstrap-switch.min.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/show-hint.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/dialog.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/custom2.css' %}">
+{% include "notaro/codemirror-loadcss.html" %}
 <style>
 div.bootstrap-switch span {
     font-family: cabin, helvetica, sans;
@@ -29,7 +26,7 @@ label, input {
 {{ block.super }}
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap-switch.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
+{% include "notaro/codemirror-loadjs.html" %}
 <script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function() {

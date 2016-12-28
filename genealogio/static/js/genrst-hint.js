@@ -23,7 +23,8 @@
       start = matchResult.index
       var role = matchResult[1];  // could check here whether this is a genealogio role
                                   // in order to save ajax calls
-      django.jQuery.get(
+      var jquery = (typeof($) === "undefined") ? django.jQuery : $;
+      jquery.get(
               "/gen/autocomplete/",
               {q: matchResult[2], role: role},
               function(result) {

@@ -24,7 +24,7 @@ from grappelli.forms import GrappelliSortableHiddenMixin
 from accounts.models import UserSite
 from maps.admin import OSitesMixin
 from maps.models import cleanname
-from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
+from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS, CODEMIRROR_JS
 from .models import (Person, Event, Family, Name, PersonEvent,
                      PersonFamily, FamilyEvent,
                      PersonPlace, PersonNote, FamilyNote, EventNote,
@@ -325,14 +325,14 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
 
     class Media:
         css = {'all': ('css/person_admin.css', ) + CODEMIRROR_CSS, }
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js', )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_person.js', )
+        js += ('codemirror-custom/codemirror_conf_person.js', )
 
 
 admin.site.register(Person, PersonAdmin)
@@ -420,14 +420,14 @@ class EventAdmin(CurrentSiteGenAdmin, VersionAdmin):
         super(EventAdmin, self).save_model(request, obj, form, change)
 
     class Media:
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js', )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_event.js', )
+        js += ('codemirror-custom/codemirror_conf_event.js', )
         css = {'all': ('css/event_admin.css', ) + CODEMIRROR_CSS, }
 
 
@@ -578,14 +578,14 @@ class TimelineItemAdmin(CurrentSiteAdmin, VersionAdmin):
 
     class Media:
         css = {'all': ('css/timelineitem_admin.css', ) + CODEMIRROR_CSS, }
-        js = ('codemirror/codemirror-compressed.js',
+        js = CODEMIRROR_JS + (
               'js/adminactions.js', )
 
         try:
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_tlitem.js', )
+        js += ('codemirror-custom/codemirror_conf_tlitem.js', )
 
 
 admin.site.register(TimelineItem, TimelineItemAdmin)

@@ -18,7 +18,7 @@ from django.utils.safestring import mark_safe
 from grappelli.forms import GrappelliSortableHiddenMixin
 from reversion.admin import VersionAdmin
 
-from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS
+from notaro.admin import CurrentSiteAdmin, CODEMIRROR_CSS, CODEMIRROR_JS
 from .models import (Place, Url, PlaceNote, PlaceUrl, cleanname, CustomMap,
                      CustomMapMarker, )
 
@@ -195,7 +195,7 @@ class CustomMapAdmin(
 
     class Media:
         css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
-        js = ('codemirror/codemirror-compressed.js',
+        js =  CODEMIRROR_JS + (
               'js/adminactions.js',
               )
 
@@ -203,7 +203,7 @@ class CustomMapAdmin(
             js += settings.NOTARO_SETTINGS['autocomplete_helper']
         except:
             pass
-        js += ('codemirror/codemirror_conf_custommap.js', )
+        js += ('codemirror-custom/codemirror_conf_custommap.js', )
 
 admin.site.register(CustomMap, CustomMapAdmin)
 

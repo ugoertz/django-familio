@@ -9,10 +9,7 @@
 {% block css %}
 {{ block.super }}
 <link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/codemirror.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/show-hint.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/dialog.css' %}">
-<link rel="stylesheet" href="{% static 'codemirror/custom2.css' %}">
+{% include "notaro/codemirror-loadcss.html" %}
 
 <style>
 button, .selectize-input {
@@ -27,7 +24,7 @@ button, .selectize-input {
 <script type="text/javascript" src="{% static 'js/showhide.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/rsterrors.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'codemirror/codemirror-compressed.js' %}"></script>
+{% include "notaro/codemirror-loadjs.html" %}
 <script type="text/javascript" src="{% static 'js/genrst-hint.js' %}"></script>
 <script>
 $(document).ready(function() {
