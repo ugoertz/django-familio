@@ -5,12 +5,16 @@ from __future__ import unicode_literals
 
 import os
 import os.path
+import time
+
+from contextlib import contextmanager
 
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
 from django.core.urlresolvers import reverse
 from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
+from selenium import webdriver
 
 from accounts.models import UserSite
 from accounts.tests import UserFactory
@@ -20,6 +24,11 @@ from notaro.tests import NoteFactory, RST_WITH_ERRORS
 
 # pylint: disable=no-member
 
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.expected_conditions import (
+    staleness_of,
+)
+
 
 class LoginTest(StaticLiveServerTestCase):
 
@@ -27,13 +36,16 @@ class LoginTest(StaticLiveServerTestCase):
     def setUpClass(cls):
         super(LoginTest, cls).setUpClass()
 
+        capabilities = webdriver.DesiredCapabilities().FIREFOX
+        capabilities['acceptSslCerts'] = True
         profile = FirefoxProfile()
         profile.set_preference('intl.accept_languages', 'de')
-        cls.selenium = WebDriver(profile)
+        profile.accept_untrusted_certs = True
+
+        cls.selenium = WebDriver(profile, capabilities=capabilities)
         cls.selenium.implicitly_wait(3)
 
     def setUp(self):
-        # TODO: In Django 1.8, will be able to use setUpTestData
         self.user = UserFactory()
         self.admin = UserFactory(is_superuser=True)
 
@@ -41,6 +53,14 @@ class LoginTest(StaticLiveServerTestCase):
     def tearDownClass(cls):
         cls.selenium.quit()
         super(LoginTest, cls).tearDownClass()
+
+    @contextmanager
+    def wait_for_page_load(self, timeout=30):
+        old_page = self.selenium.find_element_by_tag_name('html')
+        yield
+        WebDriverWait(self.selenium, timeout).until(
+            staleness_of(old_page)
+        )
 
     def login(self, u):
         self.selenium.get('%s%s' % (self.live_server_url, '/'))
@@ -50,7 +70,8 @@ class LoginTest(StaticLiveServerTestCase):
         username_input.send_keys(u.username)
         password_input = self.selenium.find_element_by_id("id_password")
         password_input.send_keys('password')
-        self.selenium.find_element_by_id('id_submitbutton').click()
+        with self.wait_for_page_load(timeout=10):
+            self.selenium.find_element_by_id('id_submitbutton').click()
 
     def test_failed_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/'))
@@ -61,12 +82,13 @@ class LoginTest(StaticLiveServerTestCase):
         username_input.send_keys('myuser')
         password_input = self.selenium.find_element_by_id("id_password")
         password_input.send_keys('secret')
-        self.selenium.find_element_by_id('id_submitbutton').click()
-        self.assertIn('korrekten Benutzername', self.selenium.page_source)
+        with self.wait_for_page_load(timeout=10):
+            self.selenium.find_element_by_id('id_submitbutton').click()
+        self.assertIn('Passwort vergessen', self.selenium.page_source)
 
     def test_successful_login(self):
         self.login(self.user)
-        self.assertNotIn('korrekten Benutzername', self.selenium.page_source)
+        self.assertNotIn('Passwort vergessen', self.selenium.page_source)
         self.assertIn(self.user.username, self.selenium.page_source)
 
     def test_note_with_rst_errors_user(self):
@@ -167,6 +189,7 @@ class LoginTest(StaticLiveServerTestCase):
 
     def test_send_invitation_email(self):
         self.login(self.user)
+        self.assertEqual(len(mail.outbox), 0)
 
         self.selenium.get('%s/accounts/invite/' % self.live_server_url)
         self.assertIn('mindestens die Anrede', self.selenium.page_source)
@@ -181,15 +204,14 @@ class LoginTest(StaticLiveServerTestCase):
         input.send_keys('Reinhardt')
 
         submit = self.selenium.find_element_by_id('id_submit_invitation')
-        submit.click()
+        with self.wait_for_page_load(timeout=10):
+            submit.click()
 
         self.assertIn('verschickt', self.selenium.page_source)
 
-        self.assertEqual(len(mail.outbox), 1)
-
         site = Site.objects.get_current()
         self.assertEqual(
-                mail.outbox[0].subject,
+                mail.outbox[-1].subject,
                 'Einladung von %s' % site.domain)
 
     def test_some_genealogio_views(self):
@@ -243,7 +265,8 @@ class LoginTest(StaticLiveServerTestCase):
         inpt = self.selenium.find_element_by_id(
                 'id_%d_content' % grandfather_f.pk)
         inpt.send_keys('This is the first comment.')
-        inpt.submit()
+        with self.wait_for_page_load(timeout=10):
+            inpt.submit()
         self.assertIn(
                 'This is the first comment.', self.selenium.page_source)
         self.assertNotIn(

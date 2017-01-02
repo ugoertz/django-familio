@@ -13,10 +13,10 @@ from .base import *
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'djfdbtest',
-        'USER': 'djftest',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
-        'HOST': '',
+        'HOST': 'db',
         'PORT': '',
     },
 }
@@ -58,4 +58,8 @@ ADMIN_USERNAME = 'admin'
 DOCUMENTATION_URL =\
         os.path.join(PROJECT_ROOT, '/docs/_build/html/')
 
-MEDIA_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '../test_media/'))
+MEDIA_ROOT = os.path.abspath(os.path.join(PROJECT_ROOT, '../media/'))
+
+# test without ssl
+SESSION_COOKIE_SECURE = False
+USERENA_USE_HTTPS = False
