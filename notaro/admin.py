@@ -27,8 +27,10 @@ from django.utils.html import format_html
 from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 
+from filebrowser.base import FileObject
 from filebrowser.settings import ADMIN_THUMBNAIL
 from filebrowser.utils import convert_filename
+
 from grappelli.forms import GrappelliSortableHiddenMixin
 from reversion.admin import VersionAdmin
 
@@ -121,7 +123,7 @@ class CurrentSiteAdmin(object):
                                   id=Site.objects.get_current().id)])
         if not Site.objects.get_current() in obj.sites.all():
             sitelist = mark_safe(
-                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +\
+                    '<i class="fa fa-lock" style="font-size: 150%"></i> ' +
                     sitelist)
         return sitelist or '-'
     ositelist.short_description = 'Andere Familienbäume'
@@ -341,6 +343,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
             pass
         js += ('codemirror-custom/codemirror_conf.js', )
         css = {'all': ('css/note_admin.css', ) + CODEMIRROR_CSS, }
+
 
 admin.site.register(Note, NoteAdmin)
 
@@ -624,17 +627,19 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     return
             if target == 'images':
                 # pylint: disable=no-member
-                picture = Picture.objects.create(image=obj_path)
+                picture = Picture.objects.create(
+                        image=FileObject(obj_path))
+                # assert Picture.objects.all().count() == pl + 1
                 picture.sites.add(Site.objects.get_current())
             elif target == 'videos':
                 # pylint: disable=no-member
-                video = Video.objects.create(video=obj_path)
+                video = Video.objects.create(video=FileObject(obj_path))
                 video.sites.add(Site.objects.get_current())
 
                 compile_video(video.id)
             elif target == 'documents':
                 # pylint: disable=no-member
-                doc = Document.objects.create(doc=obj_path)
+                doc = Document.objects.create(doc=FileObject(obj_path))
                 doc.sites.add(Site.objects.get_current())
                 doc.name = doc.doc.filename_root
 

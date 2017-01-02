@@ -9,6 +9,8 @@ from celery import shared_task, chain
 
 from django.conf import settings
 
+from filebrowser.base import FileObject
+
 from .models import Video, Document
 
 
@@ -26,7 +28,7 @@ def create_poster(video_id):
              '-y {out}').format(
                  infile=v.video.path_full,
                  out=os.path.join(settings.MEDIA_ROOT, out)))
-    v.poster = out
+    v.poster = FileObject(out)
     v.save()
     print 'saved poster', v.poster
 
@@ -95,7 +97,7 @@ def create_document_thumbnail(document_id, page):
     if success != 0 or not os.path.exists(out.name + '.png'):
         print('An error occurred')
     else:
-        doc.image = os.path.relpath(
-                out.name + '.png', os.path.join(settings.MEDIA_ROOT))
+        doc.image = FileObject(os.path.relpath(
+                out.name + '.png', os.path.join(settings.MEDIA_ROOT)))
         doc.save()
 
