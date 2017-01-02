@@ -14,6 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.models import Site
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ungettext
 from django.views.decorators.csrf import csrf_exempt
@@ -92,7 +93,7 @@ def home(request):
             calendar_range = 15
 
         # pylint: disable=no-member
-        dates = [datetime.date.today() + (i-3) * datetime.timedelta(days=1)
+        dates = [timezone.now().date() + (i-3) * timezone.timedelta(days=1)
                  for i in range(calendar_range)]
         birthdeathdays = [
                 (d,
@@ -104,7 +105,8 @@ def home(request):
         birthdeathdays = [(d, born, died)
                           for d, born, died in birthdeathdays if born or died]
 
-        two_weeks_ago = datetime.date.today() - datetime.timedelta(days=14)
+        two_weeks_ago = timezone.now() - timezone.timedelta(days=14)
+        assert timezone.is_aware(two_weeks_ago)
         context = {
                 'personen':
                 Person.objects.filter(date_changed__gt=two_weeks_ago)
@@ -112,7 +114,7 @@ def home(request):
                 'comments': Comment.objects.filter(
                     date__gt=two_weeks_ago).order_by('-date')[:5],
                 'birthdeathdays': birthdeathdays,
-                'today': datetime.date.today(),
+                'today': timezone.now().date(),
                 'notes':
                 Note.objects.filter(
                     published=True, date_changed__gt=two_weeks_ago)
