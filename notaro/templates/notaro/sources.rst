@@ -6,12 +6,12 @@ Quellenangaben
 
 {% if s.source.on_current_site %}
 {% if latexmode %}
-:ref:`{{ s.source.name }} <source-{{ s.source.id }}>` {% if s.comment %}({{ s.comment }}){% endif %}
+:ref:`{{ s.source.name }} <source-{{ s.source.id }}>` {% if s.comment %}({{ s.comment|safe }}){% endif %}
 {% else %}
-`{{ s.source.name }} <{% url "source-detail" s.source.id %}>`__ {% if s.comment %}({{ s.comment }}){% endif %}
+`{{ s.source.name }} <{% url "source-detail" s.source.id %}>`__ {% if s.comment %}({{ s.comment|safe }}){% endif %}
 {% endif %}
 {% else %}
-{{ s.source.name }} {% if s.comment %}({{ s.comment }}){% endif %}
+{{ s.source.name }} {% if s.comment %}({{ s.comment|safe }}){% endif %}
 {% endif %}
 {% endfor %}
 {% endif %}
