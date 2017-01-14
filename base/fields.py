@@ -22,6 +22,10 @@ class MultiFileInput(forms.FileInput):
             return files.getlist(name)
         else:
             return [files.get(name)]
+
+    def use_required_attribute(self, initial):
+        return False
+
  
 class MultiFileField(forms.FileField):
     widget = MultiFileInput
