@@ -5,8 +5,6 @@ FILES =$(wildcard *.jpg)
 
 pdf:
 	for f in $(FILES) ; do mogrify $(MOGRIFY_OPTIONS) $$f ; done
-	rm -f sphinx.sty
-	cp ../../sphinx.sty .
 	xelatex -interaction=nonstopmode chronicle.tex
 	xelatex -interaction=nonstopmode chronicle.tex
 
