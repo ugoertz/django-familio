@@ -19,7 +19,12 @@ function() {
                 { link: source[0].{% firstof get_href "href" %} },
                 function (data) {
                     source.popover({
-                        placement: "auto left",
+                        // placement: "auto left",
+                        placement: function (context, source) {
+                            // var position = $(source).position();
+                            // console.log($(source).position());
+                            return "auto left";
+                        },
                         html: true,
                         show: true,
                         container: 'body',

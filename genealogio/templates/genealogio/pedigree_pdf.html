@@ -43,15 +43,13 @@ var margin = {top: 0, right: 270, bottom: 0, left: 0},
 
 {% block svg_name %}
 node.append("svg:a")
-    .filter(function(d) { return d && "name" in d && "name" != ""; })
-    .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp; })
+    .filter(function(d) { return d && "name" in d.data && d.data.name != undefined && d.data.name != ""; })
     .append("text")
     .attr("class", "name")
     .attr("x", 8)
     .attr("y", -6)
     .attr("dy", "-.5em")
-    .text(function(d) { return d.name; });
+    .text(function(d) { return d.data.name; });
 {% endblock %}
 
 {% block svg_icon %}{% endblock %}

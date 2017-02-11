@@ -34,7 +34,7 @@ p, li {
 {% endblock css %}
 
 {% block jsnocompress %}
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="{% static 'js/libs/d3.min.js' %}"></script>
 {% endblock %}
 
 {% block js %}
@@ -46,10 +46,11 @@ var margin = {top: 0, right: 270, bottom: 0, left: 0},
     height = -350 - margin.top - margin.bottom + 295 * {{ generations }};
 {% endblock %}
 
-var tree = d3.layout.tree()
-    .separation(function(a, b) { return a.parent === b.parent ? 0.7 : 1; })
-    .children(function(d) { return d.parents; })
-    .size([height, width]);
+json = {{ data|safe }}
+
+var tree = d3.tree();
+tree.separation(function(a, b) { return a.parent === b.parent ? 0.7 : 1; });
+tree.size([height, width]);
 
 var svg = d3.select("#familytree_svg").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -57,38 +58,37 @@ var svg = d3.select("#familytree_svg").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-json = {{ data|safe }}
-
-var nodes = tree.nodes(json);
+root = d3.hierarchy(json, function(d) { return d.parents; });
 
 var link = svg.selectAll(".link")
-    .data(tree.links(nodes))
+    .data(tree(root).descendants().slice(1))
     .enter().append("path")
+    .filter(function(d) { return d.data.name != undefined; })
     .attr("class", "link")
     .attr("d", elbow);
 
 var node = svg.selectAll(".node")
-    .data(nodes)
+    .data(tree(root).descendants())
     .enter().append("g")
     .attr("class", "node")
-    .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+    .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
 {% block svg_name %}
 node.append("svg:a")
-    .filter(function(d) { return d && "name" in d && "name" != ""; })
     .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp; })
+    .attr("xlink:href", function(d) { return d.data.urlp; })
     .append("text")
     .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-.5em")
-    .text(function(d) { return d.name; });
+    .text(function(d) { return d.data.name; });
 {% endblock %}
 
 {% block svg_icon %}
 node.append("svg:a")
-    .attr("xlink:href", function(d) { return d.url;  })
+    .filter(function(d) { return d.data.name != undefined; })
+    .attr("xlink:href", function(d) { return d.data.url;  })
     .append("svg:foreignObject")
     .attr("width", 25)
     .attr("height", 25)
@@ -96,7 +96,7 @@ node.append("svg:a")
     .attr("y", -26)
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
-    .style("display", function(d) { return d.url == "" ? "none" : null; });
+    .style("display", function(d) { return d.data.url == "" ? "none" : null; });
 {% endblock %}
 
 node.append("text")
@@ -104,11 +104,11 @@ node.append("text")
     .attr("y", 8)
     .attr("dy", ".7em")
     .attr("class", "about")
-    .text(function(d) { if (d.born || d.died) return d.born + "–" + d.died; });
+    .text(function(d) { if (d.data.born || d.data.died) return d.data.born + "–" + d.data.died; });
 
-function elbow(d, i) {
-    return "M" + d.source.y + "," + d.source.x
-        + "H" + d.target.y + "V" + d.target.x
+function elbow(d) {
+    return "M" + d.parent.y + "," + d.parent.x
+        + "H" + d.y + "V" + d.x
         + "h" + margin.right;
 }
 

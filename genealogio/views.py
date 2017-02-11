@@ -357,38 +357,44 @@ def get_dict_descendants(p, level=0):
     father or mother."""
 
     if level < 0:
-        return 1, None
+        return 1, level, None
     if p is None:
-        return 0, {}
+        return 0, 100, {}  # do not decrease level
 
     data = [p_dict_descendants(p, '1')]
     fams = p.get_children()
     height = 0
+    new_level = level
 
     def add_family(data, family):
         height = 0
         partner, children, _family = family
         data[-1].update(p_dict_descendants(partner, '2'))
+        new_level = level
 
         if level > 0:
             data[-1]['parents'] = []
             for ch in children:
-                h, d = get_dict_descendants(ch, level-1)
+                h, nl, d = get_dict_descendants(ch, level-1)
                 height += h
+                new_level = min(new_level, nl)
                 data[-1]['parents'].extend(d)
             else:
                 height += 1
-        return height
+        return height, new_level
 
     if fams:
-        height += add_family(data, fams[0])
+        ht, new_level = add_family(data, fams[0])
+        height += ht
     for family in fams[1:]:
         # Now handle other families
         # Here, replace name of p by '...'
         data.append(p_dict_descendants('...', '1'))
-        height += add_family(data, family)
+        ht, nl = add_family(data, family)
+        height += ht
+        new_level = min(new_level, nl)
 
-    return height+2, data
+    return height+2, new_level, data
 
 
 class Descendants(LoginRequiredMixin, View):
@@ -400,18 +406,20 @@ class Descendants(LoginRequiredMixin, View):
         height = 0
 
         if person.get_children():
-            height, d = get_dict_descendants(
+            height, nl, d = get_dict_descendants(
                     person,
                     level=int(level)-1)
+            new_level = min(int(level), nl)
             data = {'parents': d, }
         else:
             data = []
+            new_level = int(level)
         # print json.dumps(data, indent=4)
 
         return render(request, 'genealogio/descendants.html',
                       {'person': person,
                        'height': height * 30,
-                       'generations': int(level),
+                       'generations': int(level) - new_level,
                        'data': json.dumps(data), })
 
 
@@ -424,7 +432,7 @@ class DescendantsPDF(LoginRequiredMixin, View):
         height = 0
 
         if person.get_children():
-            height, d = get_dict_descendants(person, level=int(generations))
+            height, _, d = get_dict_descendants(person, level=int(generations))
             data = {'parents': d, }
         else:
             data = []

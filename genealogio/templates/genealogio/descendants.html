@@ -37,7 +37,7 @@ p, li {
 {% endblock css %}
 
 {% block jsnocompress %}
-<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="{% static 'js/libs/d3.min.js' %}"></script>
 {% endblock %}
 
 {% block js %}
@@ -45,14 +45,14 @@ p, li {
 <script>
 {% block size %}
 var margin = {top: 0, right: 320, bottom: 0, left: 0},
-    width = 320*{{ generations }} - margin.left,
+    width = 50 + 220*{{ generations }} - margin.left,
     height = {{ height }} - margin.top - margin.bottom; // FIXME compute height from json data?!
+
 {% endblock size %}
 
-var tree = d3.layout.tree()
-    .separation(function(a, b) { return a.parent === b.parent ? 0.9 : 1; })
-    .children(function(d) { return d.parents; })
-    .size([height, width]);
+var tree = d3.tree()
+tree.separation(function(a, b) { return a.parent === b.parent ? 0.9 : 1; });
+tree.size([height, width]);
 
 var svg = d3.select("#familytree_svg").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -61,19 +61,18 @@ var svg = d3.select("#familytree_svg").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 json = {{ data|safe }}
+if ("parents" in json) json = json.parents[0];
 
-var nodes = tree.nodes(json);
-nodes.shift();
-nodes.forEach(function(d) { d.y -= 280;  });
+root = d3.hierarchy(json, function(d) { return d.parents; });
 
 var link = svg.selectAll(".link")
-    .data(tree.links(nodes))
+    .data(tree(root).descendants().slice(1))
     .enter().append("path")
     .attr("class", "link")
     .attr("d", elbow);
 
 var node = svg.selectAll(".node")
-    .data(nodes)
+    .data(tree(root).descendants())
     .enter().append("g")
     .attr("class", "node")
     .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
@@ -81,18 +80,18 @@ var node = svg.selectAll(".node")
 {% block svg_name1 %}
 node.append("svg:a")
     .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp1 ? d.urlp1 : ""; })
+    .attr("xlink:href", function(d) { return d.data.urlp1 ? d.data.urlp1 : ""; })
     .append("text")
     .attr("class", "name")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dy", "-1.5em")
-    .text(function(d) { return d.name1; });
+    .text(function(d) { return d.data.name1; });
 {% endblock svg_name1 %}
 
 {% block svg_icon1 %}
 node.append("svg:a")
-    .attr("xlink:href", function(d) { return d.url1;  })
+    .attr("xlink:href", function(d) { return d.data.url1;  })
     .append("svg:foreignObject")
     .attr("width", 25)
     .attr("height", 25)
@@ -100,7 +99,7 @@ node.append("svg:a")
     .attr("y", -40)
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
-    .style("display", function(d) { return d.url1 == "" ? "none" : null; });
+    .style("display", function(d) { return d.data.url1 == "" ? "none" : null; });
 {% endblock svg_icon1 %}
 
 {% block svg_about1 %}
@@ -110,27 +109,27 @@ node.append("text")
     .attr("dx", "1.21em")
     .attr("dy", "1.8em")
     .attr("class", "about lifespan")
-    .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
+    .text(function(d) { if ("name2" in d.data && (d.data.born2 || d.data.died2)) return d.data.born2 + "–" + d.data.died2; });
 {% endblock svg_about1 %}
 
 {% block svg_name2 %}
 node.append("svg:a")
-    .filter(function(d) { return "name2" in d; })
+    .filter(function(d) { return "name2" in d.data; })
     .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp2; })
+    .attr("xlink:href", function(d) { return d.data.urlp2; })
     .append("text")
     .attr("class", "name2")
     .attr("x", 28)
     .attr("y", -6)
     .attr("dx", "1.21em")
     .attr("dy", "1.51em")
-    .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
+    .text(function(d) { if ("name2" in d.data) return d.data.name2; else return ""; });
 {% endblock svg_name2 %}
 
 
 {% block svg_icon2 %}
 node.append("svg:a")
-    .attr("xlink:href", function(d) { return d.url2;  })
+    .attr("xlink:href", function(d) { return d.data.url2;  })
     .append("svg:foreignObject")
     .attr("width", 25)
     .attr("height", 25)
@@ -138,7 +137,7 @@ node.append("svg:a")
     .attr("y", 3)
     .append("xhtml:span")
     .attr("class", "control glyphicon glyphicon-info-sign")
-    .style("display", function(d) { return (!("url2" in d) || d.url2 == "") ? "none" : null; });
+    .style("display", function(d) { return (!("url2" in d.data) || d.data.url2 == "") ? "none" : null; });
 {% endblock svg_icon2 %}
 
 {% block svg_about2 %}
@@ -147,13 +146,13 @@ node.append("text")
     .attr("y", 8)
     .attr("dy", "-1.25em")
     .attr("class", "about lifespan")
-    .text(function(d) { if (d.name1 != "..." && (d.born1 || d.died1)) return d.born1 + "–" + d.died1; else return ""; });
+    .text(function(d) { if (d.data.name1 != "..." && (d.data.born1 || d.data.died1)) return d.data.born1 + "–" + d.data.died1; else return ""; });
 {% endblock svg_about2 %}
 
 function elbow(d, i) {
-    return "M" + (d.source.name1=="..." ? d.source.y+15 : d.source.y) + "," + d.source.x
-        + "H" + d.target.y + "V" + d.target.x
-        + (d.target.children ? "" : "h" + 0.7*margin.right);
+    return "M" + (d.parent.name1=="..." ? d.parent.y+15 : d.parent.y) + "," + d.parent.x
+        + "H" + d.y + "V" + d.x
+        + (d.children ? "" : "h" + 0.7*margin.right);
 }
 
 </script>

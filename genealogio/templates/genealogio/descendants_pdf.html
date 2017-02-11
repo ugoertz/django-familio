@@ -51,14 +51,12 @@ var margin = {top: 0, right: 320, bottom: 0, left: 0},
 
 {% block svg_name1 %}
 node.append("svg:a")
-    .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp1 ? d.urlp1 : ""; })
     .append("text")
     .attr("class", "name")
     .attr("x", 8)
     .attr("y", -2)
     .attr("dy", "-1.5em")
-    .text(function(d) { return d.name1; });
+    .text(function(d) { return d.data.name1; });
 {% endblock svg_name1 %}
 
 {% block svg_about1 %}
@@ -68,23 +66,21 @@ node.append("text")
     .attr("dx", "1.21em")
     .attr("dy", "1.8em")
     .attr("class", "about lifespan")
-    .text(function(d) { if ("name2" in d && (d.born2 || d.died2)) return d.born2 + "–" + d.died2; });
+    .text(function(d) { if ("name2" in d.data && (d.data.born2 || d.data.died2)) return d.data.born2 + "–" + d.data.died2; });
 {% endblock svg_about1 %}
 
 
 
 {% block svg_name2 %}
 node.append("svg:a")
-    .filter(function(d) { return "name2" in d; })
-    .attr("class", "popoverlink")
-    .attr("xlink:href", function(d) { return d.urlp2; })
+    .filter(function(d) { return "name2" in d.data; })
     .append("text")
     .attr("class", "name2")
     .attr("x", 8)
     .attr("y", -6)
     .attr("dx", "1.21em")
     .attr("dy", "1.51em")
-    .text(function(d) { if ("name2" in d) return d.name2; else return ""; });
+    .text(function(d) { if ("name2" in d.data) return d.data.name2; else return ""; });
 {% endblock svg_name2 %}
 
 {% block svg_about2 %}
@@ -93,7 +89,7 @@ node.append("text")
     .attr("y", 8)
     .attr("dy", "-1.25em")
     .attr("class", "about lifespan")
-    .text(function(d) { if (d.name1 != "..." && (d.born1 || d.died1)) return d.born1 + "–" + d.died1; else return ""; });
+    .text(function(d) { if (d.data.name1 != "..." && (d.data.born1 || d.data.died1)) return d.data.born1 + "–" + d.data.died1; else return ""; });
 {% endblock svg_about2 %}
 
 {% block svg_icon1 %}{% endblock %}
