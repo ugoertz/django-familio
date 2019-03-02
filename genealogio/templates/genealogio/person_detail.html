@@ -105,7 +105,7 @@ $(window).on('map:init', function (e) {
             {% if person.family.exists %}
             <p style="margin-top:30px;"><a href="{% url "family-detail" person.family.first.id %}">Familie</a></p>
             {% endif %}
-            {% if person.userprofile_set.exists %}
+            {% if person.userprofile_set.exists and person.userprofile_set.first.user.is_active %}
             <p style="margin-top:50px; font-size: 80%;" class="cabin">{{ person.first_name }} benutzt auch diese Webseite.</p>
             <p><a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" class="btn-sm btn btn-default cabin">Nachricht schreiben</a></p>
             {% endif %}
