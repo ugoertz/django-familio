@@ -223,7 +223,7 @@ class FamilyTreePDF(Directive):
                     'handle': handle,
                     'generations':
                     self.options.get('generations', generations_default), }))
-        os.system("phantomjs %s '%s' %s"
+        os.system("QT_QPA_PLATFORM=offscreen phantomjs %s '%s' %s"
                   % (os.path.join(
                       settings.PROJECT_ROOT,
                       'pdfexport/misc/rasterize.js'),
