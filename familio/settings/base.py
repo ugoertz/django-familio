@@ -71,6 +71,7 @@ INSTALLED_APPS = (
     'watson',
     'leaflet',
     'djgeojson',
+    'guardian',
     'userena',
     'userena.contrib.umessages',
     'easy_thumbnails',
@@ -196,6 +197,8 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 AUTHENTICATION_BACKENDS = {
     'base.auth_backend.SiteBackend',
+    'userena.backends.UserenaAuthenticationBackend',
+    'guardian.backends.ObjectPermissionBackend',
     #  'django.contrib.auth.backends.ModelBackend',
 }
 
@@ -271,7 +274,7 @@ LOGGING = {
 
 
 
-ANONYMOUS_USER_ID = -1
+ANONYMOUS_USER_NAME = -1
 AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 USERENA_SIGNIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
