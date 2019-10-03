@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from functools import partial
 from docutils import nodes
 from docutils.utils import new_document

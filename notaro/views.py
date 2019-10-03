@@ -1,7 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals, print_function
-
 import datetime
 import os
 import os.path

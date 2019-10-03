@@ -13,7 +13,7 @@ class SiteProfile(models.Model):
 
     short_name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.short_name, self.site.domain)
 
     class Meta:

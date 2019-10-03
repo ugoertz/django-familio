@@ -8,7 +8,7 @@ from .views import (
         HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
         AddParents, AddChildView, AddSpouseView,
         )
-from ajax import (
+from .ajax import (
         PPlacesLines, AutocompleteView, PopoverData,
         )
 

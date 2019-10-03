@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
@@ -62,5 +59,3 @@ def notify_topic_subscribers(instance, **kwargs):
                    site.domain,
                    reverse('pybb:delete_subscription', args=[post.topic.id]))
             Message.objects.send_message(admin, [user, ], message)
-
-

@@ -2,9 +2,6 @@
 
 """The models of the books app."""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from collections import defaultdict
 import json
 import os
@@ -262,7 +259,7 @@ class Collection(models.Model):
     def get_absolute_url(self):
         return reverse('collection-detail', kwargs={'pk': self.pk, })
 
-    def __unicode__(self):
+    def __str__(self):
         # pylint: disable=no-member
         return '%s' % (self.title, )
 
@@ -336,13 +333,13 @@ class Book(models.Model):
                         settings.MEDIA_ROOT,
                         'tmp',
                         settings.PDF_DIRECTORY))
-            os.chmod(tmpdir, 0775)
+            os.chmod(tmpdir, 0o775)
             d = os.path.basename(tmpdir)
             dest = os.path.join(
                     settings.MEDIA_ROOT, settings.PDF_DIRECTORY, d)
             if not os.path.exists(dest):
                 os.mkdir(dest)
-                os.chmod(dest, 0775)
+                os.chmod(dest, 0o775)
                 self.directory = d
         if not self.directory:
             # something went wrong
@@ -614,7 +611,7 @@ class Book(models.Model):
     def get_absolute_url(self):
         return reverse('book-detail', kwargs={'pk': self.pk, })
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s. Von %s' % (
                 self.title,
                 ', '.join([u.get_full_name() for u in self.authors.all()]))
@@ -778,10 +775,10 @@ class Item(models.Model):
             self.site = Site.objects.get_current()
 
         if not self.title and self.obj:
-            self.title = self.obj.__unicode__()
+            self.title = self.obj.__str__()
         super(Item, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: %s' % (
                 self.obj_content_type.name if self.obj_content_type else '',
                 self.title)

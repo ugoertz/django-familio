@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import os
 import tempfile
 from celery import shared_task, chain
@@ -30,7 +27,7 @@ def create_poster(video_id):
                  out=os.path.join(settings.MEDIA_ROOT, out)))
     v.poster = FileObject(out)
     v.save()
-    print 'saved poster', v.poster
+    # print('saved poster', v.poster)
 
 
 @shared_task(

@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from __future__ import division
-
 import datetime
 import math
 import cairocffi as cairo
@@ -843,7 +840,7 @@ class AddChildView(AddPersonView):
         f = Family.objects.get(pk=self.kwargs['pk'])
         context.update({
             'info_text':
-            'Füge ein Kind zur Familie <b>%s</b> hinzu.' % unicode(f)
+            'Füge ein Kind zur Familie <b>%s</b> hinzu.' % f
             })
 
         return context
@@ -903,7 +900,7 @@ class AddSpouseView(AddPersonView):
         p = Person.objects.get(pk=self.kwargs['pk'])
         context.update({
             'info_text':
-            'Füge den Ehepartner von <b>%s</b> hinzu.' % unicode(p)
+            'Füge den Ehepartner von <b>%s</b> hinzu.' % p
             })
 
         return context

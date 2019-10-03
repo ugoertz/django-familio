@@ -2,8 +2,6 @@
 
 """Admin classes for genealogio.models."""
 
-from __future__ import unicode_literals
-from __future__ import absolute_import
 from datetime import datetime
 
 from django.conf import settings
@@ -412,11 +410,11 @@ class EventAdmin(CurrentSiteGenAdmin, VersionAdmin):
             obj.handle = 'E_'
             obj.handle += cleanname(obj.title)[:20]
             if obj.date:
-                obj.handle += unicode(obj.date.year)
+                obj.handle += str(obj.date.year)
             if obj.place:
                 obj.handle += cleanname(obj.place.title)[:20]
             obj.handle = obj.handle[:44]
-            obj.handle += u'_' + unicode(datetime.now().microsecond)[:5]
+            obj.handle += u'_' + str(datetime.now().microsecond)[:5]
         super(EventAdmin, self).save_model(request, obj, form, change)
 
     class Media:
@@ -512,7 +510,7 @@ class FamilyAdmin(CurrentSiteGenAdmin, VersionAdmin):
     autocomplete_lookup_fields = {
             'fk': ['father', 'mother', ],
             'm2m': ['sites', ], }
-    list_display = ('__unicode__', 'handle', 'view_on_site_link')
+    list_display = ('__str__', 'handle', 'view_on_site_link')
     search_fields = ('handle', 'name',
                      'father__name__name', 'mother__name__name', )
     list_filter = ('sites', )
@@ -569,7 +567,7 @@ class TimelineItemAdmin(CurrentSiteAdmin, VersionAdmin):
         )
     raw_id_fields = ('families', 'sites', )
     autocomplete_lookup_fields = {'m2m': ['sites', 'families', ], }
-    list_display = ('__unicode__', 'show_families', )
+    list_display = ('__str__', 'show_families', )
     search_fields = ('title', 'start_date', 'end_date', )
 
     def show_families(self, obj):

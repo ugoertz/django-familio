@@ -4,7 +4,6 @@ Use this settings file when running tests.
 These settings overrides what's in settings/base.py
 """
 
-from __future__ import absolute_import
 import os
 
 from .base import *

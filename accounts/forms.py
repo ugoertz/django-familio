@@ -1,7 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-
 import re
 
 from django.contrib.auth import get_user_model

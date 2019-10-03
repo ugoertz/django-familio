@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals, print_function
+import sys
 
 
 def eprint(*args, **kwargs):
@@ -8,7 +8,8 @@ def eprint(*args, **kwargs):
     Print to stderr. Use for debugging.
     '''
 
-    print(*args, file=sys.stderr, **kwargs)
+    kwargs.update({'file': sys.stderr, })
+    print(*args, **kwargs)
 
 
 

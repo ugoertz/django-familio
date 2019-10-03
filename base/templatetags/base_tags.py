@@ -2,8 +2,8 @@ import re
 
 from django import template
 from django.conf import settings
-from django.utils.functional import allow_lazy
-from django.utils.encoding import force_unicode
+from django.utils.functional import keep_lazy
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.template import Node
 from django.template.defaulttags import CommentNode
@@ -14,10 +14,10 @@ register = template.Library()
 
 
 # https://djangosnippets.org/snippets/569/
+@keep_lazy(str)
 def strip_empty_lines(value):
     """Return the given HTML with empty and all-whitespace lines removed."""
-    return re.sub(r'\n[ \t]*(?=\n)', '', force_unicode(value))
-strip_empty_lines = allow_lazy(strip_empty_lines, unicode)
+    return re.sub(r'\n[ \t]*(?=\n)', '', force_text(value))
 
 
 class GaplessNode(Node):
@@ -28,6 +28,7 @@ class GaplessNode(Node):
         return strip_empty_lines(self.nodelist.render(context).strip())
 
 
+@register.tag
 def gapless(parser, token):
     """
     Remove empty and whitespace-only lines.  Useful for getting rid of those
@@ -52,7 +53,6 @@ def gapless(parser, token):
     nodelist = parser.parse(('endgapless',))
     parser.delete_first_token()
     return GaplessNode(nodelist)
-gapless = register.tag(gapless)
 
 
 @register.simple_tag
@@ -78,6 +78,7 @@ def do_include_maybe(parser, token):
         return CommentNode()
 
     _orig_render = silent_node.render
+
     def wrapped_render(*args, **kwargs):
         try:
             return _orig_render(*args, **kwargs)

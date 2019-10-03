@@ -9,8 +9,6 @@ see https://gitorious.org/wmbr-playback/wmbr-dj3000/source/
 f6ad6a8e947e60ecd097e196003e0400cd8d4829:partialdatefield
 """
 
-from __future__ import unicode_literals
-
 import datetime
 
 from django.db import models
@@ -151,7 +149,7 @@ class PartialDate(object):
         """
         return self._date
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Return the ISO formatted date.  The following is always true:
         str(partialdate) == partialdate.isoformat()

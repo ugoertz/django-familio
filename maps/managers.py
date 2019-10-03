@@ -4,9 +4,6 @@
 # Still needed since CurrentSiteGeoManager is imported in migration 0010 ...
 # Can be deleted once this has been applied "everywhere".
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from django.contrib.sites.models import Site
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.gis.db.models import GeoManager

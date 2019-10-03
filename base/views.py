@@ -1,11 +1,7 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from __future__ import division
-
 """ Views for the base application """
 
-import datetime
 import os.path
 import re
 
@@ -249,10 +245,10 @@ class ToggleStaffView(LoginRequiredMixin, View):
     def post(self, request):
         if request.session.get('staff_view', True):
             request.session['staff_view'] = False
-            print 'set false'
+            # print('set false')
         else:
             request.session['staff_view'] = True
-            print 'set true'
+            # print('set true')
         return HttpResponseRedirect(request.POST.get('next', '/'))
 
 

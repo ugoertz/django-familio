@@ -2,9 +2,6 @@
 
 """Admin classes for maps.models."""
 
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from datetime import datetime
 
 from django.conf import settings
@@ -147,7 +144,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
                 obj.handle += str(obj.location.x)[:10] + '_'
                 obj.handle += str(obj.location.y)[:10]
             obj.handle = obj.handle[:44]
-            obj.handle += u'_' + unicode(datetime.now().microsecond)[:5]
+            obj.handle += u'_' + str(datetime.now().microsecond)[:5]
         super(PlaceAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(Place, PlaceAdmin)

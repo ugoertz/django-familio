@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from django.contrib.sites.models import Site
 from django.test import TestCase
 import factory
@@ -48,7 +45,7 @@ class PersonTest(TestCase):
 
     def test_add_person(self):
         p = PersonFactory()
-        self.assertEqual(unicode(p), ' %s' % p.handle)
+        self.assertEqual(str(p), ' %s' % p.handle)
 
     def test_get_children(self):
         father = PersonFactory()

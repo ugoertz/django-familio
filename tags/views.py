@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from django.apps import apps
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View, ListView

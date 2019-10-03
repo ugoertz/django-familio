@@ -2,7 +2,6 @@
 Extensible permission system for pybbm
 """
 
-from __future__ import unicode_literals
 from django.db.models import Q
 
 from pybb import defaults, util

@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from django.utils.encoding import smart_text
 from django import template
 from django.conf import settings

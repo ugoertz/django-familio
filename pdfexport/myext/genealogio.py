@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from functools import partial
 from docutils import nodes
 from docutils.utils import new_document
@@ -98,7 +95,7 @@ def get_text(name, rawtext, text, lineno, inliner,
                 except KeyError:
                     pass
                 nodelist = [nodes.image(
-                    uri='/../../../' + obj.image.__unicode__(),
+                    uri='/../../../' + str(obj.image),
                     **img_options), ]
                 if name.startswith('i') and obj.caption:
                     settgs = OptionParser(components=(Parser,))\
@@ -123,7 +120,7 @@ def get_text(name, rawtext, text, lineno, inliner,
             try:
                 map = CustomMap.objects.get(id=int(text))
                 image_node = nodes.image(
-                    uri='/../../../' + map.rendered.__unicode__(),
+                    uri='/../../../' + str(map.rendered),
                     **options)
                 nodelist = [image_node, ]
                 if include_title and map.title:

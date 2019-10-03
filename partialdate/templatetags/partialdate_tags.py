@@ -6,9 +6,6 @@ Template tag to format partial dates.
 See https://gitorious.org/wmbr-playback/wmbr-dj3000/source/f6ad6a8e947e60ecd097e196003e0400cd8d4829:partialdatefield
 """
 
-from __future__ import unicode_literals
-from __future__ import absolute_import
-
 from django import template
 from django.conf import settings
 from django.utils.formats import get_format

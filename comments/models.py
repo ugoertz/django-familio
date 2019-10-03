@@ -37,7 +37,7 @@ class Comment(models.Model):
     def depth(self):
         return 30 * (len(self.path) - 1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.content
 
     class Meta:

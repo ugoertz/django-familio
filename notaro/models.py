@@ -1,7 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-
 import os
 import os.path
 import re
@@ -97,14 +95,14 @@ class Source(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
     def get_absolute_url(self):
         return reverse('source-detail', kwargs={'pk': self.id, })
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -146,7 +144,7 @@ class Picture(models.Model):
             through=CustomTagThrough,
             blank=True, help_text="")
 
-    def __unicode__(self):
+    def __str__(self):
         # pylint: disable=no-member
         return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
             escape(self.caption[:25] or self.image.original_filename),
@@ -160,9 +158,9 @@ class Picture(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
     def get_absolute_url(self):
         return reverse('picture-detail', kwargs={'pk': self.id, })
@@ -254,9 +252,9 @@ class Video(models.Model):
                         settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
                         'videos'),
                     prefix=self.video.original_filename + '-')
-            os.chmod(tmpdir, 0775)
+            os.chmod(tmpdir, 0o775)
             self.directory = os.path.basename(tmpdir)
-            print 'self.directory', self.directory
+            # print('self.directory', self.directory)
         if not self.directory:
             # something went wrong
             raise Exception
@@ -264,7 +262,7 @@ class Video(models.Model):
         # pylint: disable=no-member
         super(Video, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         # pylint: disable=no-member
         if self.poster:
             return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
@@ -282,9 +280,9 @@ class Video(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
     def get_absolute_url(self):
         return reverse('video-detail', kwargs={'pk': self.id, })
@@ -392,9 +390,9 @@ class Document(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
     def as_html_in_list(self):
         """
@@ -413,7 +411,7 @@ class Document(models.Model):
             '%s, Objekt-ID: %d</span></li>' % (
                 os.path.basename(self.doc.filename), self.id), ])
 
-    def __unicode__(self):
+    def __str__(self):
         # pylint: disable=no-member
         return self.name
 
@@ -527,11 +525,11 @@ class Note(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import json
 
 from django.conf import settings
@@ -38,7 +35,7 @@ class Url(models.Model):
     title = models.CharField(max_length=200, blank=True, verbose_name="Titel")
     link = models.CharField(max_length=200, verbose_name="Link")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or self.link[:50]
 
     def related_label(self):
@@ -121,7 +118,7 @@ class Place(models.Model):
             self.handle += str(self.location.x)[:10] + '_'
             self.handle += str(self.location.y)[:10]
 
-        self.handle += '-' + unicode(self.id)
+        self.handle += '-' + str(self.id)
         self.handle = self.handle[:49]
 
         # pylint: disable=no-member
@@ -130,11 +127,11 @@ class Place(models.Model):
     def as_tag(self):
         return ("Ort: %s" % self.title, "Ort: %s" % self.title)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def related_label(self):
-        return self.__unicode__()
+        return self.__str__()
 
     @staticmethod
     def autocomplete_search_fields():
@@ -302,7 +299,7 @@ class CustomMap(models.Model):
                 }
         return json.dumps(gj)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_absolute_url(self):

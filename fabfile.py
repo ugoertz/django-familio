@@ -4,8 +4,6 @@
 fabfile for deploying the django-familio project.
 """
 
-from __future__ import unicode_literals
-
 import json
 
 from fabric.api import run, local, env, settings, cd, task

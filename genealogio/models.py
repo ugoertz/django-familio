@@ -2,9 +2,6 @@
 
 """The models of the genealogio app."""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from datetime import datetime
 
 from django.contrib.gis.db import models
@@ -48,13 +45,13 @@ class PrimaryObject(models.Model):
 
     def related_label(self):
         if Site.objects.get_current() in self.sites.all():
-            return self.__unicode__()
+            return self.__str__()
         else:
-            return '[[ %s ]]' % self.__unicode__()
+            return '[[ %s ]]' % self.__str__()
 
-    def __unicode__(self):
-        return u"%s: %s" % (self.__class__.__name__,
-                            self.handle)
+    def __str__(self):
+        return "%s: %s" % (self.__class__.__name__,
+                           self.handle)
 
     def on_current_site(self):
         return Site.objects.get_current() in self.sites.all()
@@ -195,18 +192,18 @@ class Family(PrimaryObject):
             try:
                 self.handle += cleanname(self.father.last_name)
                 if self.father.datebirth:
-                    self.handle += unicode(self.father.datebirth.year)
+                    self.handle += str(self.father.datebirth.year)
             except:
                 pass
             try:
                 self.handle += cleanname(self.mother.last_name)
                 if self.mother.datebirth:
-                    self.handle += unicode(self.mother.datebirth.year)
+                    self.handle += str(self.mother.datebirth.year)
             except:
                 pass
             self.handle = u'%s_%s' % (
                          self.handle[:44],
-                         unicode(datetime.now().microsecond)[:5])
+                         str(datetime.now().microsecond)[:5])
 
         # pylint: disable=no-member
         super(Family, self).save(*args, **kwargs)
@@ -238,17 +235,17 @@ class Family(PrimaryObject):
         try:
             self.handle += cleanname(self.father.last_name)
             if self.father.datebirth:
-                self.handle += unicode(self.father.datebirth.year)
+                self.handle += str(self.father.datebirth.year)
         except:
             pass
         try:
             self.handle += cleanname(self.mother.last_name)
             if self.mother.datebirth:
-                self.handle += unicode(self.mother.datebirth.year)
+                self.handle += str(self.mother.datebirth.year)
         except:
             pass
 
-        self.handle += '-' + unicode(self.id)
+        self.handle += '-' + str(self.id)
         self.handle = self.handle[:49]
         self.save()
 
@@ -285,7 +282,7 @@ class Family(PrimaryObject):
                 }
         return texts.get(self.family_rel_type, 'Familie mit')
 
-    def __unicode__(self):
+    def __str__(self):
         n = ''
 
         # pylint: disable=no-member
@@ -359,9 +356,9 @@ class PersonPlace(models.Model):
             self.start = self.person.datedeath
         super(PersonPlace, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         # pylint: disable=no-member
-        return '%s: %s' % (self.get_typ_display(), self.place.__unicode__())
+        return '%s: %s' % (self.get_typ_display(), self.place.__str__())
 
     class Meta:
         ordering = ['start', ]
@@ -723,19 +720,19 @@ class Person(PrimaryObject):
         handle += cleanname(kwargs.get('first_name', ''))[:20]
 
         try:
-            handle += unicode(kwargs['datebirth'].year)
+            handle += str(kwargs['datebirth'].year)
         except:
             pass
         try:
-            handle += unicode(kwargs['datedeath'].year)
+            handle += str(kwargs['datedeath'].year)
         except:
             pass
         handle = handle[:44]
 
         if 'id' in kwargs:
-            handle += '-' + unicode(kwargs['id'])
+            handle += '-' + str(kwargs['id'])
         else:
-            handle += u'_' + unicode(datetime.now().microsecond)[:5]
+            handle += u'_' + str(datetime.now().microsecond)[:5]
 
         handle = handle[:49]
         return handle
@@ -766,7 +763,7 @@ class Person(PrimaryObject):
 
         return ("%s" % tag, details)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s %s" % (self.get_primary_name(), self.handle)
 
     class Meta:
@@ -966,18 +963,18 @@ class Event(PrimaryObject):
 
         # pylint: disable=no-member
         if self.date:
-            self.handle += unicode(self.date.year)
+            self.handle += str(self.date.year)
         if self.place:
             self.handle += cleanname(self.place.title)[:20]
 
-        self.handle += '-' + unicode(self.id)
+        self.handle += '-' + str(self.id)
         self.handle = self.handle[:49]
         self.save()
 
     def as_tag(self):
         return (self.title, self.title)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.title, self.get_event_type_display())
 
     def description_indented(self):
@@ -1083,7 +1080,7 @@ class TimelineItem(models.Model):
     def color(self):
         return self.COLORS[self.typ]
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.title, self.period)
 
     class Meta:

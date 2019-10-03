@@ -2,9 +2,6 @@
 
 """The models of the books app."""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 from collections import defaultdict
 import json
 
@@ -38,14 +35,14 @@ class FlagWidget(forms.widgets.MultiWidget):
         if value:
             d = json.loads(value)
             l = [d[x[1]][x[2]] for x in FLAGS_FLAT]
-            _from_parent = [isinstance(x, unicode) for x in l]
+            _from_parent = [isinstance(x, str) for x in l]
 
             def convert_to_bool(x):
                 '''
                 x is either a bool (in which case we can return it directly),
                 or a string of the form 'true_by_default'/'false_by_default'
                 '''
-                if isinstance(x, unicode):
+                if isinstance(x, str):
                     return x[:4] == 'true'
                 else:
                     return x
@@ -61,7 +58,7 @@ class FlagWidget(forms.widgets.MultiWidget):
 
     def format_output(self, rendered_widgets):
         """
-        Given a list of rendered widgets (as strings), returns a Unicode string
+        Given a list of rendered widgets (as strings), returns a string
         representing the HTML for the whole lot.
         """
 
@@ -261,7 +258,7 @@ class CollectionCreateForm(forms.ModelForm):
 
     class Meta:
         model = Collection
-        fields = ['title', 'active', 'model', 'parent' ]
+        fields = ['title', 'active', 'model', 'parent', ]
         widgets = {'parent': forms.HiddenInput, }
 
 

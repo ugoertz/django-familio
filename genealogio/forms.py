@@ -2,9 +2,6 @@
 
 """The forms of the genealogio app."""
 
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 import datetime
 
 from django import forms

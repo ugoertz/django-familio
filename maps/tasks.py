@@ -1,9 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import absolute_import
-# NOTE: Do not import unicode_literals here, since this conflicts with the
-# mapnik C++ bindings.
-
 import os
 import os.path
 import re
@@ -175,7 +171,7 @@ def create_custom_map(
     outfile, filename = tempfile.mkstemp(
             dir=settings.MAP_DIRECTORY,
             suffix=".png")
-    os.fchmod(outfile, 0644)
+    os.fchmod(outfile, 0o644)
 
     im = mapnik.Image(size[0], size[1])
     mapnik.render(m, im, scale_factor)
@@ -207,7 +203,7 @@ def save_png(filename, map_id):
                 settings.FILEBROWSER_DIRECTORY,
                 'maps'),
             suffix='.png')
-    os.fchmod(outfile, 0664)
+    os.fchmod(outfile, 0o664)
     fn = fn.encode('utf-8')
     urllib.urlretrieve('%s%s' % (settings.MAP_SERVER, filename), fn)
 
@@ -243,4 +239,3 @@ def render_map(map_id):
     result = chain(s1 | s2)()
     map.render_status = result.id
     map.save()
-

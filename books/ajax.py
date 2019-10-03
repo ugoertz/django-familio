@@ -23,7 +23,7 @@ class GetInstances(View):
         # pylint: disable=no-member
         qs = watson.filter(model.objects.all(), query).distinct()
         return JsonResponse(
-                [{'id': p.id, 'label': p.__unicode__(), } for p in qs],
+                [{'id': p.id, 'label': p.__str__(), } for p in qs],
                 safe=False)
 
 
@@ -42,7 +42,7 @@ class GetPersonsFamilies(View):
                     'label': '%s (%s-%s)' %
                     (x.get_primary_name(), x.year_of_birth, x.year_of_death), }
                     for x in qs_p] +
-                [{'id': x.handle, 'label': 'Familie ' + x.__unicode__(), }
+                [{'id': x.handle, 'label': 'Familie ' + x.__str__(), }
                     for x in qs_f],
                 safe=False
                 )

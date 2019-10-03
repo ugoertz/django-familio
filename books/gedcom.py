@@ -1,8 +1,5 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
-from __future__ import division
-
 import datetime
 from collections import OrderedDict
 from functools import wraps
