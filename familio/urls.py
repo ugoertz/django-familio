@@ -1,7 +1,6 @@
 """ Default urlconf for familio """
 
 from django.conf.urls import include, url
-from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -13,7 +12,6 @@ import debug_toolbar
 from base.views import CustomAutocompleteLookup, download
 from accounts.models import UserSite
 from genealogio.models import Place
-
 
 
 def bad(request):
@@ -55,14 +53,14 @@ urlpatterns = (
                 'paginate_by': 15,
                 'context_object_name': 'object_list',
                 'exclude': (Place, ),
-                }),
+             }),
         url(r'^bad/$', bad),
         url(r'impressum/$',
             ImpressumView.as_view(),
             name='impressum'),
         url(r'robots\.txt$',
             TemplateView.as_view(template_name="robots.txt",
-                content_type='plain/text')),
+                                 content_type='plain/text')),
         url(r'', include('base.urls')),
         url(r'^maps/', include('maps.urls')),
         url(r'^books/', include('books.urls')),
@@ -76,4 +74,3 @@ if settings.DEBUG:
     urlpatterns += (
             url(r'^__debug__/', include(debug_toolbar.urls)),
             )
-
