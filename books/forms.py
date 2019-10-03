@@ -7,35 +7,57 @@ import json
 
 from django import forms
 from django.contrib.contenttypes.models import ContentType
+from django.forms.renderers import get_default_renderer
+from django.utils.safestring import mark_safe
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Div, Submit
 
+# from base.util import eprint
 from genealogio.models import Event, Family, Person, TimelineItem
 from notaro.models import Note, Source
 from .models import Book, Collection, Item, FLAGS, FLAGS_FLAT
 
 
 class FlagWidget(forms.widgets.MultiWidget):
+    template_name = 'books/flagwidget.html'
+
     def __init__(self, attrs=None):
         widgets = []
 
-        # add two CheckboxInputs for each flag
-        # the second half will be used to store whether these are
+        # add a CheckboxInput for each flag
+        # and add a HiddenInput for each flag
+        # the HiddenInputs will be used to store whether these are
         # default values inherited from parent, or values stored
         # in this instance; in the template the default values will
         # be colored differently
         for x in FLAGS_FLAT:
-            widgets.extend([
-                forms.CheckboxInput(),
-                forms.CheckboxInput()])
-        super(FlagWidget, self).__init__(widgets, attrs)
+            widgets.append(forms.CheckboxInput())
+        for x in FLAGS_FLAT:
+            widgets.append(forms.HiddenInput())
+        super().__init__(widgets, attrs)
 
     def decompress(self, value):
+        '''
+        Value is in JSON format, for example:
+        {"genealogio.family": {"include_timeline": "false_by_default",
+        "include_grandchildren": false}, "genealogio.person":
+        {"include_places": "true_by_default"}}
+
+        So a string value ('true_by_default', 'false_by_default') indicates
+        that this is the vale pre-defined by the parent. A bool value
+        indicates an individual value for this item (which might or might
+        not be equal to the default - after the first change this is not
+        checked anymore).
+
+        Returns a list of values, one for each widget (including the
+        HiddenInputs).
+        '''
+
         if value:
             d = json.loads(value)
-            l = [d[x[1]][x[2]] for x in FLAGS_FLAT]
-            _from_parent = [isinstance(x, str) for x in l]
+            li = [d[x[1]][x[2]] for x in FLAGS_FLAT]
+            _from_parent = [isinstance(x, str) for x in li]
 
             def convert_to_bool(x):
                 '''
@@ -47,7 +69,7 @@ class FlagWidget(forms.widgets.MultiWidget):
                 else:
                     return x
 
-            return [convert_to_bool(x) for x in l] + _from_parent
+            return [convert_to_bool(x) for x in li] + _from_parent
         else:
             # upon creating a new Book, value is empty
             return [FLAGS[x[1]][x[2]]['default'] for x in FLAGS_FLAT] +\
@@ -56,52 +78,17 @@ class FlagWidget(forms.widgets.MultiWidget):
     def use_required_attribute(self, initial):
         return False
 
-    def format_output(self, rendered_widgets):
-        """
-        Given a list of rendered widgets (as strings), returns a string
-        representing the HTML for the whole lot.
-        """
-
-        # Put the "label" as text, together with the input element, in a span.
-        # Set class
-        #  - fromparentON: if value is true and is obtained from parent
-        #  - fromparentOFF: if value is false and is obtained from parent
-        #  - fromself: if value is obtained from self.
-        #  (In the template, set colors of the widget so that one can easily
-        #  recognize those properties that are inherited from a parent.)
-        template = '<span class="%s" style="margin-right: 20px; display: ' +\
-                   'inline-block; font-family: cabin, helvetica, sans;">%s</br>'
-
-        labels = []
-
-        # store which properties are inherited
-        # (this information was stored in the "second half" of the rendered
-        # widgets
-        _from_parent = [
-                x.find('checked') != -1
-                for x in rendered_widgets[len(FLAGS_FLAT):]]
-
-        for i, x in enumerate(FLAGS_FLAT):
-            lbl = FLAGS[x[1]][x[2]]['label']
-            value = rendered_widgets[i].find('checked') != -1
-
-            if _from_parent[i]:
-                cl = 'fromparent'
-                if value:
-                    cl += 'ON'
-                else:
-                    cl += 'OFF'
-            else:
-                cl = 'fromself'
-            labels.append(template % (cl, lbl))
-        close = ['</span>'] * len(FLAGS_FLAT)
-
-        return ''.join(
-                [item for l in zip(
-                    labels,
-                    rendered_widgets[:len(FLAGS_FLAT)],
-                    close)
-                    for item in l])
+    def render(self, name, value, attrs=None, renderer=None):
+        decompressed = self.decompress(value)
+        length = len(decompressed)//2
+        context = self.get_context(name, value, attrs)
+        if renderer is None:
+            renderer = get_default_renderer()
+        for i, sw in enumerate(context['widget']['subwidgets'][:length]):
+            sw['from_parent'] = decompressed[i+length]
+            x = FLAGS_FLAT[i]
+            sw['label_text'] = mark_safe(FLAGS[x[1]][x[2]]['label'])
+        return mark_safe(renderer.render(self.template_name, context))
 
 
 class FlagField(forms.fields.MultiValueField):
@@ -109,7 +96,7 @@ class FlagField(forms.fields.MultiValueField):
 
     def __init__(self, *args, **kwargs):
         list_fields = [forms.fields.BooleanField() for x in FLAGS_FLAT]
-        super(FlagField, self).__init__(list_fields, *args, **kwargs)
+        super().__init__(list_fields, *args, **kwargs)
 
     def compress(self, values):
         """Compress list to single object."""

@@ -10,7 +10,7 @@ from ..models import CustomTag
 register = template.Library()
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_obj_list(app, model, obj):
     '''
     Return list of all objects of type app.model tagged with a tag pointing to
@@ -25,7 +25,7 @@ def get_obj_list(app, model, obj):
         return []
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_tag_list(app, model, tag):
     '''
     Return list of all objects of type app.model tagged with the tag "tag".
@@ -44,4 +44,3 @@ def as_tag_text(slug):
         return tag.as_tag_text()
     except ObjectDoesNotExist:
         raise Http404
-

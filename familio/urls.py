@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
+from django.urls import path
 from django.views.generic import TemplateView
 from filebrowser.sites import site
 import debug_toolbar
@@ -37,9 +38,9 @@ urlpatterns = (
         url(r'^grappelli/lookup/autocomplete/$',
             CustomAutocompleteLookup.as_view(),
             name="grp_autocomplete_lookup"),
-        url(r'^admin/filebrowser/', include(site.urls)),
-        url(r'^grappelli/', include('grappelli.urls')),
-        url(r'^admin/', include(admin.site.urls)),
+        path('admin/filebrowser/', site.urls),
+        path('grappelli/', include('grappelli.urls')),
+        path('admin/', admin.site.urls),
         url(r'^forum/', include('pybb.urls', namespace='pybb')),
         url(r'^comments/', include('comments.urls')),
         url(r'^accounts/', include('accounts.urls')),

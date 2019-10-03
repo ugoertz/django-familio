@@ -82,7 +82,7 @@ class CurrentSiteMixin(object):
 def home(request):
     """ Default view for the root """
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             calendar_range = settings.CALENDAR_RANGE
         except:
@@ -131,7 +131,7 @@ protected_path = re.compile('\d+_')
 
 def download(request, fname):
     # check permissions
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         raise Http404
 
     if fname.startswith('tmp') or fname.startswith('latex'):

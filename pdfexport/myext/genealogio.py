@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
 # from django_markup.filter.rst_filter import RstMarkupFilter
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 # pylint: disable=import-error
 from maps.models import CustomMap

@@ -9,7 +9,7 @@ from PIL import ExifTags, Image
 from django.db import models
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.contrib.sites.managers import CurrentSiteManager
 from django.utils.html import escape

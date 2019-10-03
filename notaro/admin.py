@@ -17,7 +17,7 @@ from django.contrib import admin, messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.html import format_html

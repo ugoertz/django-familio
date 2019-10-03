@@ -8,7 +8,7 @@ from docutils.parsers.rst import roles, Parser
 
 from django.core.exceptions import ObjectDoesNotExist
 from django_markup.filter.rst_filter import RstMarkupFilter
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from maps.models import Place, CustomMap
 from notaro.models import Picture, Source, Document

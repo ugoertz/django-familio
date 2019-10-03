@@ -3,9 +3,14 @@ from django.http import Http404
 from .views import NoteDetailVerboseLink
 
 
-class NotaroMiddleware(object):
-    def process_response(self, request, response):
-        if response.status_code != 404 or not request.user.is_authenticated():
+class NotaroMiddleware:
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if response.status_code != 404 or not request.user.is_authenticated:
             return response
 
         try:
@@ -20,4 +25,3 @@ class NotaroMiddleware(object):
             if settings.DEBUG:
                 raise
             return response
-

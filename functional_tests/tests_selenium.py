@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
 from selenium import webdriver
 

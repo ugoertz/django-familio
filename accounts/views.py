@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.mail import EmailMessage
 from django.contrib.sites.models import Site
 from django.contrib.auth import authenticate, login, logout, get_user_model
@@ -187,7 +187,7 @@ class AcceptInvitationView(View):
                             admin.email))
 
                 # log out old user
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     logout(request)
 
                 # Sign the user in.

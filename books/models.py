@@ -16,7 +16,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.template.loader import render_to_string
 
@@ -27,7 +27,7 @@ from notaro.models import Note, Source
 # In FLAGS, store options for pdf export, such as whether to include the time
 # line in a family item. Book, Collection and Item all have a flag field; if
 # a flag is not defined for some item, its value is looked up recursively on
-# its parents. Each Book item needs to set default values for all available
+# its parents. Each Book instance needs to set default values for all available
 # flags.
 #
 # The flags field is a CharField where the values of the flags is stored as

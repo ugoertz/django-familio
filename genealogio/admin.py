@@ -8,7 +8,7 @@ from django.conf import settings
 from django.conf.urls import url
 from django.contrib.gis import admin
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import BaseInlineFormSet
 from django.http import HttpResponseRedirect
 from django.utils.html import format_html
