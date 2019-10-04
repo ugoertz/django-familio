@@ -510,7 +510,7 @@ class Book(models.Model):
             chapter = open(os.path.join(
                 self.get_directory_tmp(),
                 'chapter_%d.rst' % counter), 'w')
-            chapter.write(collection.get_rst().encode('utf8'))
+            chapter.write(collection.get_rst())
             chapter.write('\n\n.. |br| raw:: html\n\n  <br />\n\n')
             chapter.close()
         index.write(INDEX_TEMPLATE_FOOTER)
@@ -523,11 +523,11 @@ class Book(models.Model):
                     as dest:
                 for l in source:
                     if l.find('# TITLE') != -1:
-                        dest.write(b"u'%s',\n" % (
-                            self.root.title.encode('utf8')
+                        dest.write("'%s',\n" % (
+                            self.root.title
                             or 'Unsere Familiengeschichte'))
                     elif l.find('# RELEASENAME') != -1:
-                        dest.write(b"u'%s',\n"
+                        dest.write("'%s',\n"
                                    % Site.objects.get_current().domain)
                     else:
                         dest.write(l)

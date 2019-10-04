@@ -53,9 +53,9 @@ source_suffix = ['.rst']
 master_doc = 'index'
 
 # General information about the project.
-project = u'chronicle'
-copyright = u'2015, ug'
-author = u'ug'
+project = 'chronicle'
+copyright = '2015, ug'
+author = 'ug'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +164,7 @@ latex_elements = {
     'releasename':
     # the following needs to be on a line of its own since it is 
     # replaced by a sed command in books/models.py
-    u'', # RELEASENAME
+    '', # RELEASENAME
 }
 
 
@@ -173,8 +173,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'chronicle.tex',
-   u'UNSERE FAMILIENGESCHICHTE', # TITLE
-   u'',  # Author
+   'UNSERE FAMILIENGESCHICHTE', # TITLE
+   '',  # Author
    'manual'),
 ]
 

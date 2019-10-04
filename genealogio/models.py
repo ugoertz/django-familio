@@ -223,7 +223,9 @@ class Family(PrimaryObject):
                            if v.exists()])
         if not qslist:
             return
-        qs = reduce(lambda x, y: x | y, qslist)
+        qs = qslist[0]
+        for x in qslist[1:]:
+            qs |= x
         return qs.distinct().order_by('datebirth')
 
     def reset_handle(self):
