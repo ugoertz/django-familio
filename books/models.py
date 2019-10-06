@@ -6,6 +6,7 @@ from collections import defaultdict
 import json
 import os
 import os.path
+from pathlib import Path
 import re
 import shutil
 import tempfile
@@ -474,7 +475,7 @@ class Book(models.Model):
         # copy sphinx files ...
         for f in [
                 'sphinx.sty',
-                'appendix.rst', 'license_custom.rst',
+                'appendix.rst',
                 'Makefile', ]:
             shutil.copy(
                     os.path.join(
@@ -482,6 +483,14 @@ class Book(models.Model):
                         'pdfexport',
                         f),
                     self.get_directory_tmp())
+        for f in [  # optional files
+                'license_custom.rst', ]:
+            p = os.path.join(
+                settings.PROJECT_ROOT, 'pdfexport', f)
+            if not os.path.exists(p):
+                Path(os.path.join(self.get_directory_tmp(), f)).touch()
+            else:
+                shutil.copy(p, self.get_directory_tmp())
 
         if not os.path.exists(os.path.join(self.get_directory_tmp(), 'myext')):
             os.mkdir(os.path.join(self.get_directory_tmp(), 'myext'))
