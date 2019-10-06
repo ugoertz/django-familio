@@ -568,8 +568,8 @@ class Book(models.Model):
             os.system(
                 'cd %s '
                 % os.path.join(self.get_directory_tmp(), '_build/latex') +
-                '&& pdftk A=titlepage.pdf B=chronicle.pdf '
-                'cat A B2-end output c.pdf')
+                '&& qpdf --empty --pages titlepage.pdf 1 '
+                'chronicle.pdf 2-z -- c.pdf')
             fn = 'c'
         else:
             fn = 'chronicle'
