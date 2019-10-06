@@ -74,7 +74,7 @@ def compile_video(video_id):
 def create_document_thumbnail(document_id, page):
     # pylint: disable=no-member
     doc = Document.objects.get(pk=document_id)
-    fn = doc.doc.path_full.encode('utf8')
+    fn = doc.doc.path_full
     dir = os.path.join(
             settings.MEDIA_ROOT,
             settings.FILEBROWSER_DIRECTORY,
@@ -87,14 +87,14 @@ def create_document_thumbnail(document_id, page):
 
     out = tempfile.NamedTemporaryFile(dir=dir)
 
-    success = os.system(
-            b'convert -density 300 -scale x800 ' +
-            b'"{fn}[{pg}]" -quality 85 -resize 800x +adjoin {out}.png'.format(
-                fn=fn, out=out.name, pg=page-1))
+    command = ('convert -density 300 -scale x800 '
+               '"{fn}[{pg}]" -quality 85 -resize 800x +adjoin '
+               '{out}.png').format(
+                   fn=fn, out=out.name, pg=page-1)
+    success = os.system(command)
     if success != 0 or not os.path.exists(out.name + '.png'):
-        print('An error occurred')
+        print('An error occurred', success)
     else:
         doc.image = FileObject(os.path.relpath(
                 out.name + '.png', os.path.join(settings.MEDIA_ROOT)))
         doc.save()
-

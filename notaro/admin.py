@@ -512,7 +512,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
 
     def get_clamav_conn(self):
         try:
-            cd = pyclamd.ClamdNetworkSocket(host=b"clamav")  # for docker
+            cd = pyclamd.ClamdNetworkSocket(host="clamav")  # for docker
         except:
             cd = None
 
@@ -604,9 +604,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                         'Verbindung zum Virenscanner fehlgeschlagen.')
             else:
                 result = cd.multiscan_file(
-                        os.path.join(
-                            settings.MEDIA_ROOT,
-                            obj_path.encode('utf8')))
+                        os.path.join(settings.MEDIA_ROOT, obj_path))
                 if result:
                     # we scanned only one file, so this must be it
                     fn = result.keys()[0]
