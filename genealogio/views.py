@@ -450,9 +450,9 @@ class Sparkline(LoginRequiredMixin, View):
     height = 32
 
     def get(self, request, fampk=None, pk=None, tlid=None, fr=None, to=None):
-        response = HttpResponse(content_type="image/png")
         surface = self.get_image(fampk=fampk, pk=pk, tlid=tlid, fr=fr, to=to)
-        surface.write_to_png(response)
+        response = HttpResponse(
+            surface.write_to_png(), content_type="image/png")
         return response
 
     @classmethod
