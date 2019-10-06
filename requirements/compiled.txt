@@ -1,5 +1,0 @@
-# Database adapter (PostgreSQL)
-psycopg2==2.6.2
-
-# for bcrypt passwords
-bcrypt==3.1.2
