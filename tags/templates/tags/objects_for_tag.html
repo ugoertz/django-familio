@@ -24,7 +24,7 @@
 {% if masonry %}
 <script type="text/javascript" src="{% static 'js/libs/masonry.pkgd.min.js' %}"></script>
 <script type="text/javascript">
-$(window).load(function(){
+$(window).on('load', function(){
     $('#obj_list_{{ model }}').masonry({
         itemSelector: '.masonry-item',
         columnWidth: 10

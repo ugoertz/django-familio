@@ -9,7 +9,7 @@
 {% block js %}
 {{ block.super  }}
 {% if user_is_admin %}
-<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/libs/jquery.MultiFile.min.js' %}"></script>
 <script type="text/javascript">
 $(function() {
     $('.js-multi').MultiFile({

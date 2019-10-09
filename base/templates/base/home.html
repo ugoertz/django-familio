@@ -104,7 +104,7 @@ $(window).on('map:init', function (e) {
 
 <script type="text/javascript" src="{% static 'js/libs/masonry.pkgd.min.js' %}"></script>
 <script type="text/javascript">
-$(window).load(function(){
+$(window).on('load', function(){
   $('#pic_list').masonry({
         itemSelector: '.masonry-item',
         columnWidth: 4

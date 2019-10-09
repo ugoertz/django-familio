@@ -1,6 +1,6 @@
 (function($) {
 $(document).ready(function() {
-    if ($("#id_text").size()) {
+    if ($("#id_text").length) {
         CodeMirror.commands.autocomplete = function(cm) {
             cm.showHint({hint: CodeMirror.hint.genrst });
         }

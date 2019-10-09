@@ -3,7 +3,7 @@
 
 (function($) {
 $(document).ready(function() {
-    if ($("#id_caption").size()) {
+    if ($("#id_caption").length) {
         CodeMirror.commands.autocomplete = function(cm) {
             cm.showHint({hint: CodeMirror.hint.genrst });
         }

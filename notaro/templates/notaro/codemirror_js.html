@@ -1,4 +1,4 @@
-if ($("#id_{{ target }}").size()) {
+if ($("#id_{{ target }}").length) {
     CodeMirror.commands.autocomplete = function(cm) {
         cm.showHint({hint: CodeMirror.hint.genrst });
     }

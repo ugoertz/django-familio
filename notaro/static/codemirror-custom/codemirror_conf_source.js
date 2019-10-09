@@ -1,7 +1,7 @@
 
 (function($) {
 $(document).ready(function() {
-    if ($("#id_description").size()) {
+    if ($("#id_description").length) {
         CodeMirror.commands.autocomplete = function(cm) {
             cm.showHint({hint: CodeMirror.hint.genrst });
         }

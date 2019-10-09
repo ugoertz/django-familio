@@ -51,7 +51,7 @@ ul.simple li {
 <script type="text/javascript" src="{% static 'js/showhide.js' %}"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-    $("img").error(function () {
+    $("img").on('error', function () {
         $(this).hide();
     });
 

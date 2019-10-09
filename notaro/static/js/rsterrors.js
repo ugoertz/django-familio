@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    if ($(".system-messages, .system-message").size()) {
+    if ($(".system-messages, .system-message").length) {
         $("#errormsg").html("Fehler anzeigen");
         $("#errormsg").css("display", "");
         $("#errormsg").click(function() {
