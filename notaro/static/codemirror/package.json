@@ -1,48 +1,43 @@
 {
-  "name": "codemirror-minified",
-  "version":"5.22.0",
+  "name": "codemirror",
+  "version": "5.49.0",
   "main": "lib/codemirror.js",
-  "description": "Minified CodeMirror distribution",
+  "style": "lib/codemirror.css",
+  "author": {
+    "name": "Marijn Haverbeke",
+    "email": "marijnh@gmail.com",
+    "url": "http://marijnhaverbeke.nl"
+  },
+  "description": "Full-featured in-browser code editor",
   "license": "MIT",
   "directories": {
     "lib": "./lib"
   },
-  "files": [
-    "addon",
-    "keymap",
-    "lib",
-    "mode",
-    "theme",
-    "bower.json",
-    "package.json",
-    "AUTHORS",
-    "LICENSE",
-    "CHANGELOG.md",
-    "README.md"
-  ],
-  "devDependencies": {
-    "google-closure-compiler": "^20161201.0.0",
-    "gulp": "^3.9.1",
-    "gulp-clean-css": "^2.3.1",
-    "gulp-flatmap": "^1.0.0"
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -w -c",
+    "prepare": "npm run-script build",
+    "test": "node ./test/run.js",
+    "lint": "bin/lint"
   },
-  "bugs": "https://github.com/Dominator008/CodeMirror-minified/issues",
+  "devDependencies": {
+    "blint": "^1",
+    "node-static": "0.7.11",
+    "phantomjs-prebuilt": "^2.1.12",
+    "rollup": "^0.66.2",
+    "rollup-plugin-buble": "^0.19.2",
+    "rollup-watch": "^4.3.1"
+  },
+  "bugs": "http://github.com/codemirror/CodeMirror/issues",
   "keywords": [
     "JavaScript",
     "CodeMirror",
-    "Editor",
-    "minified"
+    "Editor"
   ],
   "homepage": "https://codemirror.net",
-  "maintainers":[
-    {
-      "name": "Michael Zhou",
-      "email": "zhoumotongxue008@gmail.com"
-    }
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Dominator008/CodeMirror-minified.git"
+    "url": "https://github.com/codemirror/CodeMirror.git"
   },
   "jspm": {
     "directories": {},

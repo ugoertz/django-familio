@@ -1,3 +1,121 @@
-'use strict';(function(b){"object"==typeof exports&&"object"==typeof module?b(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],b):b(CodeMirror)})(function(b){b.defineMode("pascal",function(){function b(a,d){var c=a.next();if("#"==c&&d.startOfLine)return a.skipToEnd(),"meta";if('"'==c||"'"==c)return d.tokenize=h(c),d.tokenize(a,d);if("("==c&&a.eat("*"))return d.tokenize=e,e(a,d);if(/[\[\]{}\(\),;\:\.]/.test(c))return null;if(/\d/.test(c))return a.eatWhile(/[\w\.]/),
-"number";if("/"==c&&a.eat("/"))return a.skipToEnd(),"comment";if(g.test(c))return a.eatWhile(g),"operator";a.eatWhile(/[\w\$_]/);a=a.current();return k.propertyIsEnumerable(a)?"keyword":l.propertyIsEnumerable(a)?"atom":"variable"}function h(a){return function(d,c){for(var b=!1,f,e=!1;null!=(f=d.next());){if(f==a&&!b){e=!0;break}b=!b&&"\\"==f}if(e||!b)c.tokenize=null;return"string"}}function e(a,d){for(var c=!1,b;b=a.next();){if(")"==b&&c){d.tokenize=null;break}c="*"==b}return"comment"}var k=function(a){var b=
-{};a=a.split(" ");for(var c=0;c<a.length;++c)b[a[c]]=!0;return b}("and array begin case const div do downto else end file for forward integer boolean char function goto if in label mod nil not of or packed procedure program record repeat set string then to type until var while with"),l={"null":!0},g=/[+\-*&%=<>!?|\/]/;return{startState:function(){return{tokenize:null}},token:function(a,d){return a.eatSpace()?null:(d.tokenize||b)(a,d)},electricChars:"{}"}});b.defineMIME("text/x-pascal","pascal")});
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+"use strict";
+
+CodeMirror.defineMode("pascal", function() {
+  function words(str) {
+    var obj = {}, words = str.split(" ");
+    for (var i = 0; i < words.length; ++i) obj[words[i]] = true;
+    return obj;
+  }
+  var keywords = words(
+    "absolute and array asm begin case const constructor destructor div do " +
+    "downto else end file for function goto if implementation in inherited " +
+    "inline interface label mod nil not object of operator or packed procedure " +
+    "program record reintroduce repeat self set shl shr string then to type " +
+    "unit until uses var while with xor as class dispinterface except exports " +
+    "finalization finally initialization inline is library on out packed " +
+    "property raise resourcestring threadvar try absolute abstract alias " +
+    "assembler bitpacked break cdecl continue cppdecl cvar default deprecated " +
+    "dynamic enumerator experimental export external far far16 forward generic " +
+    "helper implements index interrupt iocheck local message name near " +
+    "nodefault noreturn nostackframe oldfpccall otherwise overload override " +
+    "pascal platform private protected public published read register " +
+    "reintroduce result safecall saveregisters softfloat specialize static " +
+    "stdcall stored strict unaligned unimplemented varargs virtual write");
+  var atoms = {"null": true};
+
+  var isOperatorChar = /[+\-*&%=<>!?|\/]/;
+
+  function tokenBase(stream, state) {
+    var ch = stream.next();
+    if (ch == "#" && state.startOfLine) {
+      stream.skipToEnd();
+      return "meta";
+    }
+    if (ch == '"' || ch == "'") {
+      state.tokenize = tokenString(ch);
+      return state.tokenize(stream, state);
+    }
+    if (ch == "(" && stream.eat("*")) {
+      state.tokenize = tokenComment;
+      return tokenComment(stream, state);
+    }
+    if (/[\[\]{}\(\),;\:\.]/.test(ch)) {
+      return null;
+    }
+    if (/\d/.test(ch)) {
+      stream.eatWhile(/[\w\.]/);
+      return "number";
+    }
+    if (ch == "/") {
+      if (stream.eat("/")) {
+        stream.skipToEnd();
+        return "comment";
+      }
+    }
+    if (isOperatorChar.test(ch)) {
+      stream.eatWhile(isOperatorChar);
+      return "operator";
+    }
+    stream.eatWhile(/[\w\$_]/);
+    var cur = stream.current();
+    if (keywords.propertyIsEnumerable(cur)) return "keyword";
+    if (atoms.propertyIsEnumerable(cur)) return "atom";
+    return "variable";
+  }
+
+  function tokenString(quote) {
+    return function(stream, state) {
+      var escaped = false, next, end = false;
+      while ((next = stream.next()) != null) {
+        if (next == quote && !escaped) {end = true; break;}
+        escaped = !escaped && next == "\\";
+      }
+      if (end || !escaped) state.tokenize = null;
+      return "string";
+    };
+  }
+
+  function tokenComment(stream, state) {
+    var maybeEnd = false, ch;
+    while (ch = stream.next()) {
+      if (ch == ")" && maybeEnd) {
+        state.tokenize = null;
+        break;
+      }
+      maybeEnd = (ch == "*");
+    }
+    return "comment";
+  }
+
+  // Interface
+
+  return {
+    startState: function() {
+      return {tokenize: null};
+    },
+
+    token: function(stream, state) {
+      if (stream.eatSpace()) return null;
+      var style = (state.tokenize || tokenBase)(stream, state);
+      if (style == "comment" || style == "meta") return style;
+      return style;
+    },
+
+    electricChars: "{}"
+  };
+});
+
+CodeMirror.defineMIME("text/x-pascal", "pascal");
+
+});

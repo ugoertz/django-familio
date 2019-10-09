@@ -1,4 +1,78 @@
-'use strict';(function(e){"object"==typeof exports&&"object"==typeof module?e(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],e):e(CodeMirror)})(function(e){function q(b){if(b.getOption("disableInput"))return e.Pass;for(var d=b.listSelections(),a,l=[],m=0;m<d.length;m++){var f=d[m].head,g=b.getTokenAt(f);if("comment"!=g.type)return e.Pass;var c=e.innerMode(b.getMode(),g.state).mode;if(!a)a=c;else if(a!=c)return e.Pass;c=null;if(a.blockCommentStart&&
-a.blockCommentContinue){var k=g.string.indexOf(a.blockCommentEnd),n=b.getRange(e.Pos(f.line,0),e.Pos(f.line,g.end)),h;if(!(-1!=k&&k==g.string.length-a.blockCommentEnd.length&&f.ch>=k))if(0==g.string.indexOf(a.blockCommentStart)){if(c=n.slice(0,g.start),!/^\s*$/.test(c))for(c="",k=0;k<g.start;++k)c+=" "}else-1!=(h=n.indexOf(a.blockCommentContinue))&&h+a.blockCommentContinue.length>g.start&&/^\s*$/.test(n.slice(0,h))&&(c=n.slice(0,h));null!=c&&(c+=a.blockCommentContinue)}null==c&&a.lineComment&&r(b)&&
-(f=b.getLine(f.line),h=f.indexOf(a.lineComment),-1<h&&(c=f.slice(0,h),c=/\S/.test(c)?null:c+(a.lineComment+f.slice(h+a.lineComment.length).match(/^\s*/)[0])));if(null==c)return e.Pass;l[m]="\n"+c}b.operation(function(){for(var a=d.length-1;0<=a;a--)b.replaceRange(l[a],d[a].from(),d[a].to(),"+insert")})}function r(b){return(b=b.getOption("continueComments"))&&"object"==typeof b?!1!==b.continueLineComment:!0}for(var p=["clike","css","javascript"],l=0;l<p.length;++l)e.extendMode(p[l],{blockCommentContinue:" * "});
-e.defineOption("continueComments",null,function(b,d,a){a&&a!=e.Init&&b.removeKeyMap("continueComment");d&&(a="Enter","string"==typeof d?a=d:"object"==typeof d&&d.key&&(a=d.key),d={name:"continueComment"},d[a]=q,b.addKeyMap(d))})});
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  function continueComment(cm) {
+    if (cm.getOption("disableInput")) return CodeMirror.Pass;
+    var ranges = cm.listSelections(), mode, inserts = [];
+    for (var i = 0; i < ranges.length; i++) {
+      var pos = ranges[i].head
+      if (!/\bcomment\b/.test(cm.getTokenTypeAt(pos))) return CodeMirror.Pass;
+      var modeHere = cm.getModeAt(pos)
+      if (!mode) mode = modeHere;
+      else if (mode != modeHere) return CodeMirror.Pass;
+
+      var insert = null;
+      if (mode.blockCommentStart && mode.blockCommentContinue) {
+        var line = cm.getLine(pos.line).slice(0, pos.ch)
+        var end = line.lastIndexOf(mode.blockCommentEnd), found
+        if (end != -1 && end == pos.ch - mode.blockCommentEnd.length) {
+          // Comment ended, don't continue it
+        } else if ((found = line.lastIndexOf(mode.blockCommentStart)) > -1 && found > end) {
+          insert = line.slice(0, found)
+          if (/\S/.test(insert)) {
+            insert = ""
+            for (var j = 0; j < found; ++j) insert += " "
+          }
+        } else if ((found = line.indexOf(mode.blockCommentContinue)) > -1 && !/\S/.test(line.slice(0, found))) {
+          insert = line.slice(0, found)
+        }
+        if (insert != null) insert += mode.blockCommentContinue
+      }
+      if (insert == null && mode.lineComment && continueLineCommentEnabled(cm)) {
+        var line = cm.getLine(pos.line), found = line.indexOf(mode.lineComment);
+        if (found > -1) {
+          insert = line.slice(0, found);
+          if (/\S/.test(insert)) insert = null;
+          else insert += mode.lineComment + line.slice(found + mode.lineComment.length).match(/^\s*/)[0];
+        }
+      }
+      if (insert == null) return CodeMirror.Pass;
+      inserts[i] = "\n" + insert;
+    }
+
+    cm.operation(function() {
+      for (var i = ranges.length - 1; i >= 0; i--)
+        cm.replaceRange(inserts[i], ranges[i].from(), ranges[i].to(), "+insert");
+    });
+  }
+
+  function continueLineCommentEnabled(cm) {
+    var opt = cm.getOption("continueComments");
+    if (opt && typeof opt == "object")
+      return opt.continueLineComment !== false;
+    return true;
+  }
+
+  CodeMirror.defineOption("continueComments", null, function(cm, val, prev) {
+    if (prev && prev != CodeMirror.Init)
+      cm.removeKeyMap("continueComment");
+    if (val) {
+      var key = "Enter";
+      if (typeof val == "string")
+        key = val;
+      else if (typeof val == "object" && val.key)
+        key = val.key;
+      var map = {name: "continueComment"};
+      map[key] = continueComment;
+      cm.addKeyMap(map);
+    }
+  });
+});

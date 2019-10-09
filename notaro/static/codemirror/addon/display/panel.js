@@ -1,5 +1,127 @@
-'use strict';(function(g){"object"==typeof exports&&"object"==typeof module?g(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],g):g(CodeMirror)})(function(g){function f(a,b,c,d){this.cm=a;this.node=b;this.options=c;this.height=d;this.cleared=!1}function h(a){var b=a.getWrapperElement(),c=window.getComputedStyle?window.getComputedStyle(b):b.currentStyle,d=parseInt(c.height),e=a.state.panels={setHeight:b.style.height,heightLeft:d,panels:0,wrapper:document.createElement("div")};
-b.parentNode.insertBefore(e.wrapper,b);c=a.hasFocus();e.wrapper.appendChild(b);c&&a.focus();a._setSize=a.setSize;null!=d&&(a.setSize=function(b,c){if(null==c)return this._setSize(b,c);e.setHeight=c;if("number"!=typeof c){var f=/^(\d+\.?\d*)px$/.exec(c);f?c=Number(f[1]):(e.wrapper.style.height=c,c=e.wrapper.offsetHeight,e.wrapper.style.height="")}a._setSize(b,e.heightLeft+=c-d);d=c})}g.defineExtension("addPanel",function(a,b){b=b||{};this.state.panels||h(this);var c=this.state.panels,d=c.wrapper,e=
-this.getWrapperElement();b.after instanceof f&&!b.after.cleared?d.insertBefore(a,b.before.node.nextSibling):b.before instanceof f&&!b.before.cleared?d.insertBefore(a,b.before.node):b.replace instanceof f&&!b.replace.cleared?(d.insertBefore(a,b.replace.node),b.replace.clear()):"bottom"==b.position?d.appendChild(a):"before-bottom"==b.position?d.insertBefore(a,e.nextSibling):"after-top"==b.position?d.insertBefore(a,e):d.insertBefore(a,d.firstChild);d=b&&b.height||a.offsetHeight;this._setSize(null,c.heightLeft-=
-d);c.panels++;return new f(this,a,b,d)});f.prototype.clear=function(){if(!this.cleared){this.cleared=!0;var a=this.cm.state.panels;this.cm._setSize(null,a.heightLeft+=this.height);a.wrapper.removeChild(this.node);if(0==--a.panels){var a=this.cm,b=a.state.panels;a.state.panels=null;var c=a.getWrapperElement();b.wrapper.parentNode.replaceChild(c,b.wrapper);c.style.height=b.setHeight;a.setSize=a._setSize;a.setSize()}}};f.prototype.changed=function(a){a=null==a?this.node.offsetHeight:a;this.cm._setSize(null,
-this.cm.state.panels.height+=a-this.height);this.height=a}});
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  CodeMirror.defineExtension("addPanel", function(node, options) {
+    options = options || {};
+
+    if (!this.state.panels) initPanels(this);
+
+    var info = this.state.panels;
+    var wrapper = info.wrapper;
+    var cmWrapper = this.getWrapperElement();
+    var replace = options.replace instanceof Panel && !options.replace.cleared;
+
+    if (options.after instanceof Panel && !options.after.cleared) {
+      wrapper.insertBefore(node, options.before.node.nextSibling);
+    } else if (options.before instanceof Panel && !options.before.cleared) {
+      wrapper.insertBefore(node, options.before.node);
+    } else if (replace) {
+      wrapper.insertBefore(node, options.replace.node);
+      info.panels++;
+      options.replace.clear();
+    } else if (options.position == "bottom") {
+      wrapper.appendChild(node);
+    } else if (options.position == "before-bottom") {
+      wrapper.insertBefore(node, cmWrapper.nextSibling);
+    } else if (options.position == "after-top") {
+      wrapper.insertBefore(node, cmWrapper);
+    } else {
+      wrapper.insertBefore(node, wrapper.firstChild);
+    }
+
+    var height = (options && options.height) || node.offsetHeight;
+    this._setSize(null, info.heightLeft -= height);
+    if (!replace) {
+      info.panels++;
+    }
+    if (options.stable && isAtTop(this, node))
+      this.scrollTo(null, this.getScrollInfo().top + height)
+
+    return new Panel(this, node, options, height);
+  });
+
+  function Panel(cm, node, options, height) {
+    this.cm = cm;
+    this.node = node;
+    this.options = options;
+    this.height = height;
+    this.cleared = false;
+  }
+
+  Panel.prototype.clear = function() {
+    if (this.cleared) return;
+    this.cleared = true;
+    var info = this.cm.state.panels;
+    this.cm._setSize(null, info.heightLeft += this.height);
+    if (this.options.stable && isAtTop(this.cm, this.node))
+      this.cm.scrollTo(null, this.cm.getScrollInfo().top - this.height)
+    info.wrapper.removeChild(this.node);
+    if (--info.panels == 0) removePanels(this.cm);
+  };
+
+  Panel.prototype.changed = function(height) {
+    var newHeight = height == null ? this.node.offsetHeight : height;
+    var info = this.cm.state.panels;
+    this.cm._setSize(null, info.heightLeft -= (newHeight - this.height));
+    this.height = newHeight;
+  };
+
+  function initPanels(cm) {
+    var wrap = cm.getWrapperElement();
+    var style = window.getComputedStyle ? window.getComputedStyle(wrap) : wrap.currentStyle;
+    var height = parseInt(style.height);
+    var info = cm.state.panels = {
+      setHeight: wrap.style.height,
+      heightLeft: height,
+      panels: 0,
+      wrapper: document.createElement("div")
+    };
+    wrap.parentNode.insertBefore(info.wrapper, wrap);
+    var hasFocus = cm.hasFocus();
+    info.wrapper.appendChild(wrap);
+    if (hasFocus) cm.focus();
+
+    cm._setSize = cm.setSize;
+    if (height != null) cm.setSize = function(width, newHeight) {
+      if (newHeight == null) return this._setSize(width, newHeight);
+      info.setHeight = newHeight;
+      if (typeof newHeight != "number") {
+        var px = /^(\d+\.?\d*)px$/.exec(newHeight);
+        if (px) {
+          newHeight = Number(px[1]);
+        } else {
+          info.wrapper.style.height = newHeight;
+          newHeight = info.wrapper.offsetHeight;
+          info.wrapper.style.height = "";
+        }
+      }
+      cm._setSize(width, info.heightLeft += (newHeight - height));
+      height = newHeight;
+    };
+  }
+
+  function removePanels(cm) {
+    var info = cm.state.panels;
+    cm.state.panels = null;
+
+    var wrap = cm.getWrapperElement();
+    info.wrapper.parentNode.replaceChild(wrap, info.wrapper);
+    wrap.style.height = info.setHeight;
+    cm.setSize = cm._setSize;
+    cm.setSize();
+  }
+
+  function isAtTop(cm, dom) {
+    for (var sibling = dom.nextSibling; sibling; sibling = sibling.nextSibling)
+      if (sibling == cm.getWrapperElement()) return true
+    return false
+  }
+});

@@ -1,29 +1,1002 @@
-'use strict';(function(m){"object"==typeof exports&&"object"==typeof module?m(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror","diff_match_patch"],m):m(CodeMirror)})(function(m){function A(a,b){this.mv=a;this.type=b;this.classes="left"==b?{chunk:"CodeMirror-merge-l-chunk",start:"CodeMirror-merge-l-chunk-start",end:"CodeMirror-merge-l-chunk-end",insert:"CodeMirror-merge-l-inserted",del:"CodeMirror-merge-l-deleted",connect:"CodeMirror-merge-l-connect"}:
-{chunk:"CodeMirror-merge-r-chunk",start:"CodeMirror-merge-r-chunk-start",end:"CodeMirror-merge-r-chunk-end",insert:"CodeMirror-merge-r-inserted",del:"CodeMirror-merge-r-deleted",connect:"CodeMirror-merge-r-connect"}}function z(a){a.diffOutOfDate&&(a.diff=M(a.orig.getValue(),a.edit.getValue()),a.chunks=N(a.diff),a.diffOutOfDate=!1,m.signal(a.edit,"updateDiff",a.diff))}function aa(a){function b(b){B=!0;l=!1;"full"==b&&(a.svg&&C(a.svg),a.copyButtons&&C(a.copyButtons),G(a.edit,k.marked,a.classes),G(a.orig,
-g.marked,a.classes),k.from=k.to=g.from=g.to=0);z(a);a.showDifferences&&(O(a.edit,a.diff,k,DIFF_INSERT,a.classes),O(a.orig,a.diff,g,DIFF_DELETE,a.classes));"align"==a.mv.options.connect&&H(a);x(a);B=!1}function c(b){B||(a.dealigned=!0,f(b))}function f(a){B||l||(clearTimeout(h),!0===a&&(l=!0),h=setTimeout(b,!0===a?20:250))}function d(b,d){a.diffOutOfDate||(a.diffOutOfDate=!0,k.from=k.to=g.from=g.to=0);c(d.text.length-1!=d.to.line-d.from.line)}function e(){a.diffOutOfDate=!0;b("full")}var k={from:0,
-to:0,marked:[]},g={from:0,to:0,marked:[]},h,l=!1;a.edit.on("change",d);a.orig.on("change",d);a.edit.on("swapDoc",e);a.orig.on("swapDoc",e);a.edit.on("markerAdded",c);a.edit.on("markerCleared",c);a.orig.on("markerAdded",c);a.orig.on("markerCleared",c);a.edit.on("viewportChange",function(){f(!1)});a.orig.on("viewportChange",function(){f(!1)});b();return b}function ba(a){a.edit.on("scroll",function(){I(a,DIFF_INSERT)&&x(a)});a.orig.on("scroll",function(){I(a,DIFF_DELETE)&&x(a)})}function I(a,b){var c,
-f;if(a.diffOutOfDate)return!1;if(!a.lockScroll)return!0;var d,e,k=+new Date;b==DIFF_INSERT?(d=a.edit,e=a.orig):(d=a.orig,e=a.edit);if(d.state.scrollSetBy==a&&(d.state.scrollSetAt||0)+50>k)return!1;var g=d.getScrollInfo();if("align"==a.mv.options.connect)l=g.top;else{var h=.5*g.clientHeight,l=g.top+h;c=d.lineAtHeight(l,"local");for(var n=a.chunks,m=b==DIFF_INSERT,u,t,p,r=0;r<n.length;r++){var v=n[r],P=m?v.editFrom:v.origFrom,q=m?v.editTo:v.origTo;null==t&&(P>c?(t=v.editFrom,p=v.origFrom):q>c&&(t=v.editTo,
-p=v.origTo));q<=c?(u=v.editTo,f=v.origTo):P<=c&&(u=v.editFrom,f=v.origFrom)}c={before:u,after:t};f={before:f,after:p};d=Q(d,b==DIFF_INSERT?c:f);b=Q(e,b==DIFF_INSERT?f:c);var l=b.top-h+(l-d.top)/(d.bot-d.top)*(b.bot-b.top),y;l>g.top&&1>(y=g.top/h)?l=l*y+g.top*(1-y):(b=g.height-g.clientHeight-g.top)<h&&(d=e.getScrollInfo(),d.height-d.clientHeight-l>b&&1>(y=b/h)&&(l=l*y+(d.height-d.clientHeight-b)*(1-y)))}e.scrollTo(g.left,l);e.state.scrollSetAt=k;e.state.scrollSetBy=a;return!0}function Q(a,b){var c=
-b.after;null==c&&(c=a.lastLine()+1);return{top:a.heightAtLine(b.before||0,"local"),bot:a.heightAtLine(c,"local")}}function R(a,b,c){(a.lockScroll=b)&&0!=c&&I(a,DIFF_INSERT)&&x(a);a.lockButton.innerHTML=b?"\u21db\u21da":"\u21db&nbsp;&nbsp;\u21da"}function G(a,b,c){for(var f=0;f<b.length;++f){var d=b[f];if(d instanceof m.TextMarker)d.clear();else if(d.parent)for(var e=a,k=c,g=k.classLocation,h=0;h<g.length;h++)e.removeLineClass(d,g[h],k.chunk),e.removeLineClass(d,g[h],k.start),e.removeLineClass(d,g[h],
-k.end)}b.length=0}function O(a,b,c,f,d){var e=a.getViewport();a.operation(function(){c.from==c.to||20<e.from-c.to||20<c.from-e.to?(G(a,c.marked,d),J(a,b,f,c.marked,e.from,e.to,d),c.from=e.from,c.to=e.to):(e.from<c.from&&(J(a,b,f,c.marked,e.from,c.from,d),c.from=e.from),e.to>c.to&&(J(a,b,f,c.marked,c.to,e.to,d),c.to=e.to))})}function K(a,b,c,f,d,e){var k=c.classLocation;b=a.getLineHandle(b);for(var g=0;g<k.length;g++)f&&a.addLineClass(b,k[g],c.chunk),d&&a.addLineClass(b,k[g],c.start),e&&a.addLineClass(b,
-k[g],c.end);return b}function J(a,b,c,f,d,e,k){function g(b,c){for(var g=Math.max(d,b),h=Math.min(e,c),l=g;l<h;++l)f.push(K(a,l,k,!0,l==b,l==c-1));b==c&&g==c&&h==c&&(g?f.push(K(a,g-1,k,!1,!1,!0)):f.push(K(a,g,k,!1,!0,!1)))}for(var h=q(0,0),l=q(d,0),n=a.clipPos(q(e-1)),m=c==DIFF_DELETE?k.del:k.insert,u=0,t=0;t<b.length;++t){var p=b[t],r=p[0],p=p[1];r==DIFF_EQUAL?(r=h.line+(S(b,t)?0:1),D(h,p),p=h.line+(T(b,t)?1:0),p>r&&(t&&g(u,r),u=p)):r==c&&(r=D(h,p,!0),h=0<(l.line-h.line||l.ch-h.ch)?l:h,p=0>(n.line-
-r.line||n.ch-r.ch)?n:r,h.line==p.line&&h.ch==p.ch||f.push(a.markText(h,p,{className:m})),h=r)}u<=h.line&&g(u,h.line+1)}function x(a){if(a.showDifferences){if(a.svg){C(a.svg);var b=a.gap.offsetWidth;U(a.svg,"width",b,"height",a.gap.offsetHeight)}a.copyButtons&&C(a.copyButtons);for(var c=a.edit.getViewport(),f=a.orig.getViewport(),d=a.mv.wrap.getBoundingClientRect().top,e=d-a.edit.getScrollerElement().getBoundingClientRect().top+a.edit.getScrollInfo().top,d=d-a.orig.getScrollerElement().getBoundingClientRect().top+
-a.orig.getScrollInfo().top,k=0;k<a.chunks.length;k++){var g=a.chunks[k];if(g.editFrom<=c.to&&g.editTo>=c.from&&g.origFrom<=f.to&&g.origTo>=f.from){var h=a,l=d,n=e,m=b,u="left"==h.type,t=h.orig.heightAtLine(g.origFrom,"local",!0)-l;if(h.svg){var p=t,r=h.edit.heightAtLine(g.editFrom,"local",!0)-n;if(u)var v=p,p=r,r=v;var l=h.orig.heightAtLine(g.origTo,"local",!0)-l,q=h.edit.heightAtLine(g.editTo,"local",!0)-n;u&&(v=l,l=q,q=v);u=" C "+m/2+" "+r+" "+m/2+" "+p+" "+(m+2)+" "+p;p=" C "+m/2+" "+l+" "+m/2+
-" "+q+" -1 "+q;U(h.svg.appendChild(document.createElementNS("http://www.w3.org/2000/svg","path")),"d","M -1 "+r+u+" L "+(m+2)+" "+l+p+" z","class",h.classes.connect)}h.copyButtons&&(m=h.copyButtons.appendChild(w("div","left"==h.type?"\u21dd":"\u21dc","CodeMirror-merge-copy")),r=h.mv.options.allowEditingOriginals,m.title=r?"Push to left":"Revert chunk",m.chunk=g,m.style.top=t+"px",r&&(n=h.orig.heightAtLine(g.editFrom,"local")-n,t=h.copyButtons.appendChild(w("div","right"==h.type?"\u21dd":"\u21dc",
-"CodeMirror-merge-copy-reverse")),t.title="Push to right",t.chunk={editFrom:g.origFrom,editTo:g.origTo,origFrom:g.editFrom,origTo:g.editTo},t.style.top=n+"px","right"==h.type?t.style.left="2px":t.style.right="2px"))}}}}function E(a,b){for(var c=0,f=0,d=0;d<b.length;d++){var e=b[d];if(e.editTo>a&&e.editFrom<=a)return null;if(e.editFrom>a)break;c=e.editTo;f=e.origTo}return f+(a-c)}function ca(a,b){for(var c=[],f=0;f<a.chunks.length;f++){var d=a.chunks[f];c.push([d.origTo,d.editTo,b?E(d.editTo,b.chunks):
-null])}if(b)a:for(f=0;f<b.chunks.length;f++){for(var d=b.chunks[f],e=0;e<c.length;e++){var k=c[e][1]-d.editTo;if(0==k)continue a;if(0<k)break}c.splice(e,0,[E(d.editTo,a.chunks),d.editTo,d.origTo])}return c}function H(a,b){if(a.dealigned||b){if(!a.orig.curOp)return a.orig.operation(function(){H(a,b)});a.dealigned=!1;var c=a.mv.left==a?a.mv.right:a.mv.left;c&&(z(c),c.dealigned=!1);for(var f=ca(a,c),d=a.mv.aligners,e=0;e<d.length;e++)d[e].clear();d.length=0;var k=[a.orig,a.edit],g=[];c&&k.push(c.orig);
-for(e=0;e<k.length;e++)g.push(k[e].getScrollInfo().top);for(c=0;c<f.length;c++)da(k,f[c],d);for(e=0;e<k.length;e++)k[e].scrollTo(null,g[e])}}function da(a,b,c){for(var f=0,d=[],e=0;e<a.length;e++)if(null!=b[e]){var k=a[e].heightAtLine(b[e],"local");d[e]=k;f=Math.max(f,k)}for(e=0;e<a.length;e++)null!=b[e]&&(k=f-d[e],1<k&&c.push(ea(a[e],b[e],k)))}function ea(a,b,c){var f=!0;b>a.lastLine()&&(b--,f=!1);var d=document.createElement("div");d.className="CodeMirror-merge-spacer";d.style.height=c+"px";d.style.minWidth=
-"1px";return a.addLineWidget(b,d,{height:c,above:f})}function V(a,b,c,f){if(!a.diffOutOfDate){a=f.editTo>b.lastLine()?q(f.editFrom-1):q(f.editFrom,0);var d=f.origTo>c.lastLine()?q(f.origFrom-1):q(f.origFrom,0);b.replaceRange(c.getRange(d,q(f.origTo,0)),a,q(f.editTo,0))}}function W(a){var b=a.lockButton=w("div",null,"CodeMirror-merge-scrolllock");b.title="Toggle locked scrolling";var c=w("div",[b],"CodeMirror-merge-scrolllock-wrap");m.on(b,"click",function(){R(a,!a.lockScroll)});b=[c];!1!==a.mv.options.revertButtons&&
-(a.copyButtons=w("div",null,"CodeMirror-merge-copybuttons-"+a.type),m.on(a.copyButtons,"click",function(b){b=b.target||b.srcElement;b.chunk&&("CodeMirror-merge-copy-reverse"==b.className?V(a,a.orig,a.edit,b.chunk):V(a,a.edit,a.orig,b.chunk))}),b.unshift(a.copyButtons));"align"!=a.mv.options.connect&&((c=document.createElementNS&&document.createElementNS("http://www.w3.org/2000/svg","svg"))&&!c.createSVGRect&&(c=null),(a.svg=c)&&b.push(c));return a.gap=w("div",b,"CodeMirror-merge-gap")}function X(a){return"string"==
-typeof a?a:a.getValue()}function M(a,b){a=fa.diff_main(a,b);for(b=0;b<a.length;++b){var c=a[b];c[1]?b&&a[b-1][0]==c[0]&&(a.splice(b--,1),a[b][1]+=c[1]):a.splice(b--,1)}return a}function N(a){for(var b=[],c=0,f=0,d=q(0,0),e=q(0,0),k=0;k<a.length;++k){var g=a[k],h=g[0];if(h==DIFF_EQUAL){var l=S(a,k)?0:1,h=d.line+l,l=e.line+l;D(d,g[1],null,e);var m=T(a,k)?1:0,g=d.line+m,m=e.line+m;g>h&&(k&&b.push({origFrom:f,origTo:l,editFrom:c,editTo:h}),c=g,f=m)}else D(h==DIFF_INSERT?d:e,g[1])}(c<=d.line||f<=e.line)&&
-b.push({origFrom:f,origTo:e.line+1,editFrom:c,editTo:d.line+1});return b}function T(a,b){if(b==a.length-1)return!0;var c=a[b+1][1];if(1==c.length||10!=c.charCodeAt(0))return!1;if(b==a.length-2)return!0;c=a[b+2][1];return 1<c.length&&10==c.charCodeAt(0)}function S(a,b){if(0==b)return!0;var c=a[b-1][1];if(10!=c.charCodeAt(c.length-1))return!1;if(1==b)return!0;c=a[b-2][1];return 10==c.charCodeAt(c.length-1)}function ga(a,b,c){function f(){e.clear();a.removeLineClass(b,"wrap","CodeMirror-merge-collapsed-line")}
-a.addLineClass(b,"wrap","CodeMirror-merge-collapsed-line");var d=document.createElement("span");d.className="CodeMirror-merge-collapsed-widget";d.title="Identical text collapsed. Click to expand.";var e=a.markText(q(b,0),q(c-1),{inclusiveLeft:!0,inclusiveRight:!0,replacedWith:d,clearOnEnter:!0});m.on(d,"click",f);return{mark:e,clear:f}}function ha(a,b){function c(){for(var a=0;a<f.length;a++)f[a].clear()}for(var f=[],d=0;d<b.length;d++){var e=b[d],e=ga(e.cm,e.line,e.line+a);f.push(e);e.mark.on("clear",
-c)}return f[0].mark}function Y(a,b,c,f){for(var d=0;d<a.chunks.length;d++)for(var e=a.chunks[d],k=e.editFrom-b;k<e.editTo+b;k++){var g=k+c;0<=g&&g<f.length&&(f[g]=!1)}}function w(a,b,c,f){a=document.createElement(a);c&&(a.className=c);f&&(a.style.cssText=f);if("string"==typeof b)a.appendChild(document.createTextNode(b));else if(b)for(c=0;c<b.length;++c)a.appendChild(b[c]);return a}function C(a){for(var b=a.childNodes.length;0<b;--b)a.removeChild(a.firstChild)}function U(a){for(var b=1;b<arguments.length;b+=
-2)a.setAttribute(arguments[b],arguments[b+1])}function L(a,b){b||(b={});for(var c in a)a.hasOwnProperty(c)&&(b[c]=a[c]);return b}function D(a,b,c,f){a=c?q(a.line,a.ch):a;for(c=0;;){var d=b.indexOf("\n",c);if(-1==d)break;++a.line;f&&++f.line;c=d+1}a.ch=(c?0:a.ch)+(b.length-c);f&&(f.ch=(c?0:f.ch)+(b.length-c));return a}function Z(a,b){var c=null,f=a.state.diffViews,d=a.getCursor().line;if(f)for(var e=0;e<f.length;e++){var k=f[e],g=a==k.orig;z(k);if(0>b)a:{for(var k=k.chunks,h=k.length-1;0<=h;h--){var l=
-k[h],l=(g?l.origTo:l.editTo)-1;if(l<d){g=l;break a}}g=void 0}else a:{k=k.chunks;for(h=0;h<k.length;h++)if(l=k[h],l=g?l.origFrom:l.editFrom,l>d){g=l;break a}g=void 0}null!=g&&(null==c||(0>b?g>c:g<c))&&(c=g)}if(null!=c)a.setCursor(c,0);else return m.Pass}var q=m.Pos;A.prototype={constructor:A,init:function(a,b,c){this.edit=this.mv.edit;(this.edit.state.diffViews||(this.edit.state.diffViews=[])).push(this);this.orig=m(a,L({value:b,readOnly:!this.mv.options.allowEditingOriginals},L(c)));this.orig.state.diffViews=
-[this];a=c.chunkClassLocation||"background";"[object Array]"!=Object.prototype.toString.call(a)&&(a=[a]);this.classes.classLocation=a;this.diff=M(X(b),X(c.value));this.chunks=N(this.diff);this.diffOutOfDate=this.dealigned=!1;this.showDifferences=!1!==c.showDifferences},registerEvents:function(){this.forceUpdate=aa(this);R(this,!0,!1);ba(this)},setShowDifferences:function(a){a=!1!==a;a!=this.showDifferences&&(this.showDifferences=a,this.forceUpdate("full"))}};var B=!1,F=m.MergeView=function(a,b){if(!(this instanceof
-F))return new F(a,b);this.options=b;var c=b.origLeft,f=null==b.origRight?b.orig:b.origRight,d=null!=c,e=null!=f,k=1+(d?1:0)+(e?1:0),g=[],h=this.left=null,l=this.right=null,n=this;if(d){var h=this.left=new A(this,"left"),q=w("div",null,"CodeMirror-merge-pane CodeMirror-merge-left");g.push(q);g.push(W(h))}d=w("div",null,"CodeMirror-merge-pane CodeMirror-merge-editor");g.push(d);if(e){l=this.right=new A(this,"right");g.push(W(l));var u=w("div",null,"CodeMirror-merge-pane CodeMirror-merge-right");g.push(u)}(e?
-u:d).className+=" CodeMirror-merge-pane-rightmost";g.push(w("div",null,null,"height: 0; clear: both;"));var t=this.wrap=a.appendChild(w("div",g,"CodeMirror-merge CodeMirror-merge-"+k+"pane"));this.edit=m(d,L(b));h&&h.init(q,c,b);l&&l.init(u,f,b);b.collapseIdentical&&this.editor().operation(function(){var a=b.collapseIdentical;"number"!=typeof a&&(a=2);for(var c=[],d=n.editor(),e=d.firstLine(),f=e,g=d.lastLine();f<=g;f++)c.push(!0);n.left&&Y(n.left,a,e,c);n.right&&Y(n.right,a,e,c);for(f=0;f<c.length;f++)if(c[f]){for(var g=
-f+e,h=1;f<c.length-1&&c[f+1];f++,h++);if(h>a){var k=[{line:g,cm:d}];n.left&&k.push({line:E(g,n.left.chunks),cm:n.left.orig});n.right&&k.push({line:E(g,n.right.chunks),cm:n.right.orig});k=ha(h,k);if(n.options.onCollapse)n.options.onCollapse(n,g,h,k)}}});"align"==b.connect&&(this.aligners=[],H(this.left||this.right,!0));h&&h.registerEvents();l&&l.registerEvents();var p=function(){h&&x(h);l&&x(l)};m.on(window,"resize",p);var r=setInterval(function(){for(var a=t.parentNode;a&&a!=document.body;a=a.parentNode);
-a||(clearInterval(r),m.off(window,"resize",p))},5E3)};F.prototype={constructor:F,editor:function(){return this.edit},rightOriginal:function(){return this.right&&this.right.orig},leftOriginal:function(){return this.left&&this.left.orig},setShowDifferences:function(a){this.right&&this.right.setShowDifferences(a);this.left&&this.left.setShowDifferences(a)},rightChunks:function(){if(this.right)return z(this.right),this.right.chunks},leftChunks:function(){if(this.left)return z(this.left),this.left.chunks}};
-var fa=new diff_match_patch;m.commands.goNextDiff=function(a){return Z(a,1)};m.commands.goPrevDiff=function(a){return Z(a,-1)}});
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+// declare global: diff_match_patch, DIFF_INSERT, DIFF_DELETE, DIFF_EQUAL
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror")); // Note non-packaged dependency diff_match_patch
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror", "diff_match_patch"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  "use strict";
+  var Pos = CodeMirror.Pos;
+  var svgNS = "http://www.w3.org/2000/svg";
+
+  function DiffView(mv, type) {
+    this.mv = mv;
+    this.type = type;
+    this.classes = type == "left"
+      ? {chunk: "CodeMirror-merge-l-chunk",
+         start: "CodeMirror-merge-l-chunk-start",
+         end: "CodeMirror-merge-l-chunk-end",
+         insert: "CodeMirror-merge-l-inserted",
+         del: "CodeMirror-merge-l-deleted",
+         connect: "CodeMirror-merge-l-connect"}
+      : {chunk: "CodeMirror-merge-r-chunk",
+         start: "CodeMirror-merge-r-chunk-start",
+         end: "CodeMirror-merge-r-chunk-end",
+         insert: "CodeMirror-merge-r-inserted",
+         del: "CodeMirror-merge-r-deleted",
+         connect: "CodeMirror-merge-r-connect"};
+  }
+
+  DiffView.prototype = {
+    constructor: DiffView,
+    init: function(pane, orig, options) {
+      this.edit = this.mv.edit;
+      ;(this.edit.state.diffViews || (this.edit.state.diffViews = [])).push(this);
+      this.orig = CodeMirror(pane, copyObj({value: orig, readOnly: !this.mv.options.allowEditingOriginals}, copyObj(options)));
+      if (this.mv.options.connect == "align") {
+        if (!this.edit.state.trackAlignable) this.edit.state.trackAlignable = new TrackAlignable(this.edit)
+        this.orig.state.trackAlignable = new TrackAlignable(this.orig)
+      }
+      this.lockButton.title = this.edit.phrase("Toggle locked scrolling");
+
+      this.orig.state.diffViews = [this];
+      var classLocation = options.chunkClassLocation || "background";
+      if (Object.prototype.toString.call(classLocation) != "[object Array]") classLocation = [classLocation]
+      this.classes.classLocation = classLocation
+
+      this.diff = getDiff(asString(orig), asString(options.value), this.mv.options.ignoreWhitespace);
+      this.chunks = getChunks(this.diff);
+      this.diffOutOfDate = this.dealigned = false;
+      this.needsScrollSync = null
+
+      this.showDifferences = options.showDifferences !== false;
+    },
+    registerEvents: function(otherDv) {
+      this.forceUpdate = registerUpdate(this);
+      setScrollLock(this, true, false);
+      registerScroll(this, otherDv);
+    },
+    setShowDifferences: function(val) {
+      val = val !== false;
+      if (val != this.showDifferences) {
+        this.showDifferences = val;
+        this.forceUpdate("full");
+      }
+    }
+  };
+
+  function ensureDiff(dv) {
+    if (dv.diffOutOfDate) {
+      dv.diff = getDiff(dv.orig.getValue(), dv.edit.getValue(), dv.mv.options.ignoreWhitespace);
+      dv.chunks = getChunks(dv.diff);
+      dv.diffOutOfDate = false;
+      CodeMirror.signal(dv.edit, "updateDiff", dv.diff);
+    }
+  }
+
+  var updating = false;
+  function registerUpdate(dv) {
+    var edit = {from: 0, to: 0, marked: []};
+    var orig = {from: 0, to: 0, marked: []};
+    var debounceChange, updatingFast = false;
+    function update(mode) {
+      updating = true;
+      updatingFast = false;
+      if (mode == "full") {
+        if (dv.svg) clear(dv.svg);
+        if (dv.copyButtons) clear(dv.copyButtons);
+        clearMarks(dv.edit, edit.marked, dv.classes);
+        clearMarks(dv.orig, orig.marked, dv.classes);
+        edit.from = edit.to = orig.from = orig.to = 0;
+      }
+      ensureDiff(dv);
+      if (dv.showDifferences) {
+        updateMarks(dv.edit, dv.diff, edit, DIFF_INSERT, dv.classes);
+        updateMarks(dv.orig, dv.diff, orig, DIFF_DELETE, dv.classes);
+      }
+
+      if (dv.mv.options.connect == "align")
+        alignChunks(dv);
+      makeConnections(dv);
+      if (dv.needsScrollSync != null) syncScroll(dv, dv.needsScrollSync)
+
+      updating = false;
+    }
+    function setDealign(fast) {
+      if (updating) return;
+      dv.dealigned = true;
+      set(fast);
+    }
+    function set(fast) {
+      if (updating || updatingFast) return;
+      clearTimeout(debounceChange);
+      if (fast === true) updatingFast = true;
+      debounceChange = setTimeout(update, fast === true ? 20 : 250);
+    }
+    function change(_cm, change) {
+      if (!dv.diffOutOfDate) {
+        dv.diffOutOfDate = true;
+        edit.from = edit.to = orig.from = orig.to = 0;
+      }
+      // Update faster when a line was added/removed
+      setDealign(change.text.length - 1 != change.to.line - change.from.line);
+    }
+    function swapDoc() {
+      dv.diffOutOfDate = true;
+      dv.dealigned = true;
+      update("full");
+    }
+    dv.edit.on("change", change);
+    dv.orig.on("change", change);
+    dv.edit.on("swapDoc", swapDoc);
+    dv.orig.on("swapDoc", swapDoc);
+    if (dv.mv.options.connect == "align") {
+      CodeMirror.on(dv.edit.state.trackAlignable, "realign", setDealign)
+      CodeMirror.on(dv.orig.state.trackAlignable, "realign", setDealign)
+    }
+    dv.edit.on("viewportChange", function() { set(false); });
+    dv.orig.on("viewportChange", function() { set(false); });
+    update();
+    return update;
+  }
+
+  function registerScroll(dv, otherDv) {
+    dv.edit.on("scroll", function() {
+      syncScroll(dv, true) && makeConnections(dv);
+    });
+    dv.orig.on("scroll", function() {
+      syncScroll(dv, false) && makeConnections(dv);
+      if (otherDv) syncScroll(otherDv, true) && makeConnections(otherDv);
+    });
+  }
+
+  function syncScroll(dv, toOrig) {
+    // Change handler will do a refresh after a timeout when diff is out of date
+    if (dv.diffOutOfDate) {
+      if (dv.lockScroll && dv.needsScrollSync == null) dv.needsScrollSync = toOrig
+      return false
+    }
+    dv.needsScrollSync = null
+    if (!dv.lockScroll) return true;
+    var editor, other, now = +new Date;
+    if (toOrig) { editor = dv.edit; other = dv.orig; }
+    else { editor = dv.orig; other = dv.edit; }
+    // Don't take action if the position of this editor was recently set
+    // (to prevent feedback loops)
+    if (editor.state.scrollSetBy == dv && (editor.state.scrollSetAt || 0) + 250 > now) return false;
+
+    var sInfo = editor.getScrollInfo();
+    if (dv.mv.options.connect == "align") {
+      targetPos = sInfo.top;
+    } else {
+      var halfScreen = .5 * sInfo.clientHeight, midY = sInfo.top + halfScreen;
+      var mid = editor.lineAtHeight(midY, "local");
+      var around = chunkBoundariesAround(dv.chunks, mid, toOrig);
+      var off = getOffsets(editor, toOrig ? around.edit : around.orig);
+      var offOther = getOffsets(other, toOrig ? around.orig : around.edit);
+      var ratio = (midY - off.top) / (off.bot - off.top);
+      var targetPos = (offOther.top - halfScreen) + ratio * (offOther.bot - offOther.top);
+
+      var botDist, mix;
+      // Some careful tweaking to make sure no space is left out of view
+      // when scrolling to top or bottom.
+      if (targetPos > sInfo.top && (mix = sInfo.top / halfScreen) < 1) {
+        targetPos = targetPos * mix + sInfo.top * (1 - mix);
+      } else if ((botDist = sInfo.height - sInfo.clientHeight - sInfo.top) < halfScreen) {
+        var otherInfo = other.getScrollInfo();
+        var botDistOther = otherInfo.height - otherInfo.clientHeight - targetPos;
+        if (botDistOther > botDist && (mix = botDist / halfScreen) < 1)
+          targetPos = targetPos * mix + (otherInfo.height - otherInfo.clientHeight - botDist) * (1 - mix);
+      }
+    }
+
+    other.scrollTo(sInfo.left, targetPos);
+    other.state.scrollSetAt = now;
+    other.state.scrollSetBy = dv;
+    return true;
+  }
+
+  function getOffsets(editor, around) {
+    var bot = around.after;
+    if (bot == null) bot = editor.lastLine() + 1;
+    return {top: editor.heightAtLine(around.before || 0, "local"),
+            bot: editor.heightAtLine(bot, "local")};
+  }
+
+  function setScrollLock(dv, val, action) {
+    dv.lockScroll = val;
+    if (val && action != false) syncScroll(dv, DIFF_INSERT) && makeConnections(dv);
+    (val ? CodeMirror.addClass : CodeMirror.rmClass)(dv.lockButton, "CodeMirror-merge-scrolllock-enabled");
+  }
+
+  // Updating the marks for editor content
+
+  function removeClass(editor, line, classes) {
+    var locs = classes.classLocation
+    for (var i = 0; i < locs.length; i++) {
+      editor.removeLineClass(line, locs[i], classes.chunk);
+      editor.removeLineClass(line, locs[i], classes.start);
+      editor.removeLineClass(line, locs[i], classes.end);
+    }
+  }
+
+  function clearMarks(editor, arr, classes) {
+    for (var i = 0; i < arr.length; ++i) {
+      var mark = arr[i];
+      if (mark instanceof CodeMirror.TextMarker)
+        mark.clear();
+      else if (mark.parent)
+        removeClass(editor, mark, classes);
+    }
+    arr.length = 0;
+  }
+
+  // FIXME maybe add a margin around viewport to prevent too many updates
+  function updateMarks(editor, diff, state, type, classes) {
+    var vp = editor.getViewport();
+    editor.operation(function() {
+      if (state.from == state.to || vp.from - state.to > 20 || state.from - vp.to > 20) {
+        clearMarks(editor, state.marked, classes);
+        markChanges(editor, diff, type, state.marked, vp.from, vp.to, classes);
+        state.from = vp.from; state.to = vp.to;
+      } else {
+        if (vp.from < state.from) {
+          markChanges(editor, diff, type, state.marked, vp.from, state.from, classes);
+          state.from = vp.from;
+        }
+        if (vp.to > state.to) {
+          markChanges(editor, diff, type, state.marked, state.to, vp.to, classes);
+          state.to = vp.to;
+        }
+      }
+    });
+  }
+
+  function addClass(editor, lineNr, classes, main, start, end) {
+    var locs = classes.classLocation, line = editor.getLineHandle(lineNr);
+    for (var i = 0; i < locs.length; i++) {
+      if (main) editor.addLineClass(line, locs[i], classes.chunk);
+      if (start) editor.addLineClass(line, locs[i], classes.start);
+      if (end) editor.addLineClass(line, locs[i], classes.end);
+    }
+    return line;
+  }
+
+  function markChanges(editor, diff, type, marks, from, to, classes) {
+    var pos = Pos(0, 0);
+    var top = Pos(from, 0), bot = editor.clipPos(Pos(to - 1));
+    var cls = type == DIFF_DELETE ? classes.del : classes.insert;
+    function markChunk(start, end) {
+      var bfrom = Math.max(from, start), bto = Math.min(to, end);
+      for (var i = bfrom; i < bto; ++i)
+        marks.push(addClass(editor, i, classes, true, i == start, i == end - 1));
+      // When the chunk is empty, make sure a horizontal line shows up
+      if (start == end && bfrom == end && bto == end) {
+        if (bfrom)
+          marks.push(addClass(editor, bfrom - 1, classes, false, false, true));
+        else
+          marks.push(addClass(editor, bfrom, classes, false, true, false));
+      }
+    }
+
+    var chunkStart = 0, pending = false;
+    for (var i = 0; i < diff.length; ++i) {
+      var part = diff[i], tp = part[0], str = part[1];
+      if (tp == DIFF_EQUAL) {
+        var cleanFrom = pos.line + (startOfLineClean(diff, i) ? 0 : 1);
+        moveOver(pos, str);
+        var cleanTo = pos.line + (endOfLineClean(diff, i) ? 1 : 0);
+        if (cleanTo > cleanFrom) {
+          if (pending) { markChunk(chunkStart, cleanFrom); pending = false }
+          chunkStart = cleanTo;
+        }
+      } else {
+        pending = true
+        if (tp == type) {
+          var end = moveOver(pos, str, true);
+          var a = posMax(top, pos), b = posMin(bot, end);
+          if (!posEq(a, b))
+            marks.push(editor.markText(a, b, {className: cls}));
+          pos = end;
+        }
+      }
+    }
+    if (pending) markChunk(chunkStart, pos.line + 1);
+  }
+
+  // Updating the gap between editor and original
+
+  function makeConnections(dv) {
+    if (!dv.showDifferences) return;
+
+    if (dv.svg) {
+      clear(dv.svg);
+      var w = dv.gap.offsetWidth;
+      attrs(dv.svg, "width", w, "height", dv.gap.offsetHeight);
+    }
+    if (dv.copyButtons) clear(dv.copyButtons);
+
+    var vpEdit = dv.edit.getViewport(), vpOrig = dv.orig.getViewport();
+    var outerTop = dv.mv.wrap.getBoundingClientRect().top
+    var sTopEdit = outerTop - dv.edit.getScrollerElement().getBoundingClientRect().top + dv.edit.getScrollInfo().top
+    var sTopOrig = outerTop - dv.orig.getScrollerElement().getBoundingClientRect().top + dv.orig.getScrollInfo().top;
+    for (var i = 0; i < dv.chunks.length; i++) {
+      var ch = dv.chunks[i];
+      if (ch.editFrom <= vpEdit.to && ch.editTo >= vpEdit.from &&
+          ch.origFrom <= vpOrig.to && ch.origTo >= vpOrig.from)
+        drawConnectorsForChunk(dv, ch, sTopOrig, sTopEdit, w);
+    }
+  }
+
+  function getMatchingOrigLine(editLine, chunks) {
+    var editStart = 0, origStart = 0;
+    for (var i = 0; i < chunks.length; i++) {
+      var chunk = chunks[i];
+      if (chunk.editTo > editLine && chunk.editFrom <= editLine) return null;
+      if (chunk.editFrom > editLine) break;
+      editStart = chunk.editTo;
+      origStart = chunk.origTo;
+    }
+    return origStart + (editLine - editStart);
+  }
+
+  // Combines information about chunks and widgets/markers to return
+  // an array of lines, in a single editor, that probably need to be
+  // aligned with their counterparts in the editor next to it.
+  function alignableFor(cm, chunks, isOrig) {
+    var tracker = cm.state.trackAlignable
+    var start = cm.firstLine(), trackI = 0
+    var result = []
+    for (var i = 0;; i++) {
+      var chunk = chunks[i]
+      var chunkStart = !chunk ? 1e9 : isOrig ? chunk.origFrom : chunk.editFrom
+      for (; trackI < tracker.alignable.length; trackI += 2) {
+        var n = tracker.alignable[trackI] + 1
+        if (n <= start) continue
+        if (n <= chunkStart) result.push(n)
+        else break
+      }
+      if (!chunk) break
+      result.push(start = isOrig ? chunk.origTo : chunk.editTo)
+    }
+    return result
+  }
+
+  // Given information about alignable lines in two editors, fill in
+  // the result (an array of three-element arrays) to reflect the
+  // lines that need to be aligned with each other.
+  function mergeAlignable(result, origAlignable, chunks, setIndex) {
+    var rI = 0, origI = 0, chunkI = 0, diff = 0
+    outer: for (;; rI++) {
+      var nextR = result[rI], nextO = origAlignable[origI]
+      if (!nextR && nextO == null) break
+
+      var rLine = nextR ? nextR[0] : 1e9, oLine = nextO == null ? 1e9 : nextO
+      while (chunkI < chunks.length) {
+        var chunk = chunks[chunkI]
+        if (chunk.origFrom <= oLine && chunk.origTo > oLine) {
+          origI++
+          rI--
+          continue outer;
+        }
+        if (chunk.editTo > rLine) {
+          if (chunk.editFrom <= rLine) continue outer;
+          break
+        }
+        diff += (chunk.origTo - chunk.origFrom) - (chunk.editTo - chunk.editFrom)
+        chunkI++
+      }
+      if (rLine == oLine - diff) {
+        nextR[setIndex] = oLine
+        origI++
+      } else if (rLine < oLine - diff) {
+        nextR[setIndex] = rLine + diff
+      } else {
+        var record = [oLine - diff, null, null]
+        record[setIndex] = oLine
+        result.splice(rI, 0, record)
+        origI++
+      }
+    }
+  }
+
+  function findAlignedLines(dv, other) {
+    var alignable = alignableFor(dv.edit, dv.chunks, false), result = []
+    if (other) for (var i = 0, j = 0; i < other.chunks.length; i++) {
+      var n = other.chunks[i].editTo
+      while (j < alignable.length && alignable[j] < n) j++
+      if (j == alignable.length || alignable[j] != n) alignable.splice(j++, 0, n)
+    }
+    for (var i = 0; i < alignable.length; i++)
+      result.push([alignable[i], null, null])
+
+    mergeAlignable(result, alignableFor(dv.orig, dv.chunks, true), dv.chunks, 1)
+    if (other)
+      mergeAlignable(result, alignableFor(other.orig, other.chunks, true), other.chunks, 2)
+
+    return result
+  }
+
+  function alignChunks(dv, force) {
+    if (!dv.dealigned && !force) return;
+    if (!dv.orig.curOp) return dv.orig.operation(function() {
+      alignChunks(dv, force);
+    });
+
+    dv.dealigned = false;
+    var other = dv.mv.left == dv ? dv.mv.right : dv.mv.left;
+    if (other) {
+      ensureDiff(other);
+      other.dealigned = false;
+    }
+    var linesToAlign = findAlignedLines(dv, other);
+
+    // Clear old aligners
+    var aligners = dv.mv.aligners;
+    for (var i = 0; i < aligners.length; i++)
+      aligners[i].clear();
+    aligners.length = 0;
+
+    var cm = [dv.edit, dv.orig], scroll = [];
+    if (other) cm.push(other.orig);
+    for (var i = 0; i < cm.length; i++)
+      scroll.push(cm[i].getScrollInfo().top);
+
+    for (var ln = 0; ln < linesToAlign.length; ln++)
+      alignLines(cm, linesToAlign[ln], aligners);
+
+    for (var i = 0; i < cm.length; i++)
+      cm[i].scrollTo(null, scroll[i]);
+  }
+
+  function alignLines(cm, lines, aligners) {
+    var maxOffset = 0, offset = [];
+    for (var i = 0; i < cm.length; i++) if (lines[i] != null) {
+      var off = cm[i].heightAtLine(lines[i], "local");
+      offset[i] = off;
+      maxOffset = Math.max(maxOffset, off);
+    }
+    for (var i = 0; i < cm.length; i++) if (lines[i] != null) {
+      var diff = maxOffset - offset[i];
+      if (diff > 1)
+        aligners.push(padAbove(cm[i], lines[i], diff));
+    }
+  }
+
+  function padAbove(cm, line, size) {
+    var above = true;
+    if (line > cm.lastLine()) {
+      line--;
+      above = false;
+    }
+    var elt = document.createElement("div");
+    elt.className = "CodeMirror-merge-spacer";
+    elt.style.height = size + "px"; elt.style.minWidth = "1px";
+    return cm.addLineWidget(line, elt, {height: size, above: above, mergeSpacer: true, handleMouseEvents: true});
+  }
+
+  function drawConnectorsForChunk(dv, chunk, sTopOrig, sTopEdit, w) {
+    var flip = dv.type == "left";
+    var top = dv.orig.heightAtLine(chunk.origFrom, "local", true) - sTopOrig;
+    if (dv.svg) {
+      var topLpx = top;
+      var topRpx = dv.edit.heightAtLine(chunk.editFrom, "local", true) - sTopEdit;
+      if (flip) { var tmp = topLpx; topLpx = topRpx; topRpx = tmp; }
+      var botLpx = dv.orig.heightAtLine(chunk.origTo, "local", true) - sTopOrig;
+      var botRpx = dv.edit.heightAtLine(chunk.editTo, "local", true) - sTopEdit;
+      if (flip) { var tmp = botLpx; botLpx = botRpx; botRpx = tmp; }
+      var curveTop = " C " + w/2 + " " + topRpx + " " + w/2 + " " + topLpx + " " + (w + 2) + " " + topLpx;
+      var curveBot = " C " + w/2 + " " + botLpx + " " + w/2 + " " + botRpx + " -1 " + botRpx;
+      attrs(dv.svg.appendChild(document.createElementNS(svgNS, "path")),
+            "d", "M -1 " + topRpx + curveTop + " L " + (w + 2) + " " + botLpx + curveBot + " z",
+            "class", dv.classes.connect);
+    }
+    if (dv.copyButtons) {
+      var copy = dv.copyButtons.appendChild(elt("div", dv.type == "left" ? "\u21dd" : "\u21dc",
+                                                "CodeMirror-merge-copy"));
+      var editOriginals = dv.mv.options.allowEditingOriginals;
+      copy.title = dv.edit.phrase(editOriginals ? "Push to left" : "Revert chunk");
+      copy.chunk = chunk;
+      copy.style.top = (chunk.origTo > chunk.origFrom ? top : dv.edit.heightAtLine(chunk.editFrom, "local") - sTopEdit) + "px";
+
+      if (editOriginals) {
+        var topReverse = dv.edit.heightAtLine(chunk.editFrom, "local") - sTopEdit;
+        var copyReverse = dv.copyButtons.appendChild(elt("div", dv.type == "right" ? "\u21dd" : "\u21dc",
+                                                         "CodeMirror-merge-copy-reverse"));
+        copyReverse.title = "Push to right";
+        copyReverse.chunk = {editFrom: chunk.origFrom, editTo: chunk.origTo,
+                             origFrom: chunk.editFrom, origTo: chunk.editTo};
+        copyReverse.style.top = topReverse + "px";
+        dv.type == "right" ? copyReverse.style.left = "2px" : copyReverse.style.right = "2px";
+      }
+    }
+  }
+
+  function copyChunk(dv, to, from, chunk) {
+    if (dv.diffOutOfDate) return;
+    var origStart = chunk.origTo > from.lastLine() ? Pos(chunk.origFrom - 1) : Pos(chunk.origFrom, 0)
+    var origEnd = Pos(chunk.origTo, 0)
+    var editStart = chunk.editTo > to.lastLine() ? Pos(chunk.editFrom - 1) : Pos(chunk.editFrom, 0)
+    var editEnd = Pos(chunk.editTo, 0)
+    var handler = dv.mv.options.revertChunk
+    if (handler)
+      handler(dv.mv, from, origStart, origEnd, to, editStart, editEnd)
+    else
+      to.replaceRange(from.getRange(origStart, origEnd), editStart, editEnd)
+  }
+
+  // Merge view, containing 0, 1, or 2 diff views.
+
+  var MergeView = CodeMirror.MergeView = function(node, options) {
+    if (!(this instanceof MergeView)) return new MergeView(node, options);
+
+    this.options = options;
+    var origLeft = options.origLeft, origRight = options.origRight == null ? options.orig : options.origRight;
+
+    var hasLeft = origLeft != null, hasRight = origRight != null;
+    var panes = 1 + (hasLeft ? 1 : 0) + (hasRight ? 1 : 0);
+    var wrap = [], left = this.left = null, right = this.right = null;
+    var self = this;
+
+    if (hasLeft) {
+      left = this.left = new DiffView(this, "left");
+      var leftPane = elt("div", null, "CodeMirror-merge-pane CodeMirror-merge-left");
+      wrap.push(leftPane);
+      wrap.push(buildGap(left));
+    }
+
+    var editPane = elt("div", null, "CodeMirror-merge-pane CodeMirror-merge-editor");
+    wrap.push(editPane);
+
+    if (hasRight) {
+      right = this.right = new DiffView(this, "right");
+      wrap.push(buildGap(right));
+      var rightPane = elt("div", null, "CodeMirror-merge-pane CodeMirror-merge-right");
+      wrap.push(rightPane);
+    }
+
+    (hasRight ? rightPane : editPane).className += " CodeMirror-merge-pane-rightmost";
+
+    wrap.push(elt("div", null, null, "height: 0; clear: both;"));
+
+    var wrapElt = this.wrap = node.appendChild(elt("div", wrap, "CodeMirror-merge CodeMirror-merge-" + panes + "pane"));
+    this.edit = CodeMirror(editPane, copyObj(options));
+
+    if (left) left.init(leftPane, origLeft, options);
+    if (right) right.init(rightPane, origRight, options);
+    if (options.collapseIdentical)
+      this.editor().operation(function() {
+        collapseIdenticalStretches(self, options.collapseIdentical);
+      });
+    if (options.connect == "align") {
+      this.aligners = [];
+      alignChunks(this.left || this.right, true);
+    }
+    if (left) left.registerEvents(right)
+    if (right) right.registerEvents(left)
+
+
+    var onResize = function() {
+      if (left) makeConnections(left);
+      if (right) makeConnections(right);
+    };
+    CodeMirror.on(window, "resize", onResize);
+    var resizeInterval = setInterval(function() {
+      for (var p = wrapElt.parentNode; p && p != document.body; p = p.parentNode) {}
+      if (!p) { clearInterval(resizeInterval); CodeMirror.off(window, "resize", onResize); }
+    }, 5000);
+  };
+
+  function buildGap(dv) {
+    var lock = dv.lockButton = elt("div", null, "CodeMirror-merge-scrolllock");
+    var lockWrap = elt("div", [lock], "CodeMirror-merge-scrolllock-wrap");
+    CodeMirror.on(lock, "click", function() { setScrollLock(dv, !dv.lockScroll); });
+    var gapElts = [lockWrap];
+    if (dv.mv.options.revertButtons !== false) {
+      dv.copyButtons = elt("div", null, "CodeMirror-merge-copybuttons-" + dv.type);
+      CodeMirror.on(dv.copyButtons, "click", function(e) {
+        var node = e.target || e.srcElement;
+        if (!node.chunk) return;
+        if (node.className == "CodeMirror-merge-copy-reverse") {
+          copyChunk(dv, dv.orig, dv.edit, node.chunk);
+          return;
+        }
+        copyChunk(dv, dv.edit, dv.orig, node.chunk);
+      });
+      gapElts.unshift(dv.copyButtons);
+    }
+    if (dv.mv.options.connect != "align") {
+      var svg = document.createElementNS && document.createElementNS(svgNS, "svg");
+      if (svg && !svg.createSVGRect) svg = null;
+      dv.svg = svg;
+      if (svg) gapElts.push(svg);
+    }
+
+    return dv.gap = elt("div", gapElts, "CodeMirror-merge-gap");
+  }
+
+  MergeView.prototype = {
+    constructor: MergeView,
+    editor: function() { return this.edit; },
+    rightOriginal: function() { return this.right && this.right.orig; },
+    leftOriginal: function() { return this.left && this.left.orig; },
+    setShowDifferences: function(val) {
+      if (this.right) this.right.setShowDifferences(val);
+      if (this.left) this.left.setShowDifferences(val);
+    },
+    rightChunks: function() {
+      if (this.right) { ensureDiff(this.right); return this.right.chunks; }
+    },
+    leftChunks: function() {
+      if (this.left) { ensureDiff(this.left); return this.left.chunks; }
+    }
+  };
+
+  function asString(obj) {
+    if (typeof obj == "string") return obj;
+    else return obj.getValue();
+  }
+
+  // Operations on diffs
+  var dmp;
+  function getDiff(a, b, ignoreWhitespace) {
+    if (!dmp) dmp = new diff_match_patch();
+
+    var diff = dmp.diff_main(a, b);
+    // The library sometimes leaves in empty parts, which confuse the algorithm
+    for (var i = 0; i < diff.length; ++i) {
+      var part = diff[i];
+      if (ignoreWhitespace ? !/[^ \t]/.test(part[1]) : !part[1]) {
+        diff.splice(i--, 1);
+      } else if (i && diff[i - 1][0] == part[0]) {
+        diff.splice(i--, 1);
+        diff[i][1] += part[1];
+      }
+    }
+    return diff;
+  }
+
+  function getChunks(diff) {
+    var chunks = [];
+    if (!diff.length) return chunks;
+    var startEdit = 0, startOrig = 0;
+    var edit = Pos(0, 0), orig = Pos(0, 0);
+    for (var i = 0; i < diff.length; ++i) {
+      var part = diff[i], tp = part[0];
+      if (tp == DIFF_EQUAL) {
+        var startOff = !startOfLineClean(diff, i) || edit.line < startEdit || orig.line < startOrig ? 1 : 0;
+        var cleanFromEdit = edit.line + startOff, cleanFromOrig = orig.line + startOff;
+        moveOver(edit, part[1], null, orig);
+        var endOff = endOfLineClean(diff, i) ? 1 : 0;
+        var cleanToEdit = edit.line + endOff, cleanToOrig = orig.line + endOff;
+        if (cleanToEdit > cleanFromEdit) {
+          if (i) chunks.push({origFrom: startOrig, origTo: cleanFromOrig,
+                              editFrom: startEdit, editTo: cleanFromEdit});
+          startEdit = cleanToEdit; startOrig = cleanToOrig;
+        }
+      } else {
+        moveOver(tp == DIFF_INSERT ? edit : orig, part[1]);
+      }
+    }
+    if (startEdit <= edit.line || startOrig <= orig.line)
+      chunks.push({origFrom: startOrig, origTo: orig.line + 1,
+                   editFrom: startEdit, editTo: edit.line + 1});
+    return chunks;
+  }
+
+  function endOfLineClean(diff, i) {
+    if (i == diff.length - 1) return true;
+    var next = diff[i + 1][1];
+    if ((next.length == 1 && i < diff.length - 2) || next.charCodeAt(0) != 10) return false;
+    if (i == diff.length - 2) return true;
+    next = diff[i + 2][1];
+    return (next.length > 1 || i == diff.length - 3) && next.charCodeAt(0) == 10;
+  }
+
+  function startOfLineClean(diff, i) {
+    if (i == 0) return true;
+    var last = diff[i - 1][1];
+    if (last.charCodeAt(last.length - 1) != 10) return false;
+    if (i == 1) return true;
+    last = diff[i - 2][1];
+    return last.charCodeAt(last.length - 1) == 10;
+  }
+
+  function chunkBoundariesAround(chunks, n, nInEdit) {
+    var beforeE, afterE, beforeO, afterO;
+    for (var i = 0; i < chunks.length; i++) {
+      var chunk = chunks[i];
+      var fromLocal = nInEdit ? chunk.editFrom : chunk.origFrom;
+      var toLocal = nInEdit ? chunk.editTo : chunk.origTo;
+      if (afterE == null) {
+        if (fromLocal > n) { afterE = chunk.editFrom; afterO = chunk.origFrom; }
+        else if (toLocal > n) { afterE = chunk.editTo; afterO = chunk.origTo; }
+      }
+      if (toLocal <= n) { beforeE = chunk.editTo; beforeO = chunk.origTo; }
+      else if (fromLocal <= n) { beforeE = chunk.editFrom; beforeO = chunk.origFrom; }
+    }
+    return {edit: {before: beforeE, after: afterE}, orig: {before: beforeO, after: afterO}};
+  }
+
+  function collapseSingle(cm, from, to) {
+    cm.addLineClass(from, "wrap", "CodeMirror-merge-collapsed-line");
+    var widget = document.createElement("span");
+    widget.className = "CodeMirror-merge-collapsed-widget";
+    widget.title = cm.phrase("Identical text collapsed. Click to expand.");
+    var mark = cm.markText(Pos(from, 0), Pos(to - 1), {
+      inclusiveLeft: true,
+      inclusiveRight: true,
+      replacedWith: widget,
+      clearOnEnter: true
+    });
+    function clear() {
+      mark.clear();
+      cm.removeLineClass(from, "wrap", "CodeMirror-merge-collapsed-line");
+    }
+    if (mark.explicitlyCleared) clear();
+    CodeMirror.on(widget, "click", clear);
+    mark.on("clear", clear);
+    CodeMirror.on(widget, "click", clear);
+    return {mark: mark, clear: clear};
+  }
+
+  function collapseStretch(size, editors) {
+    var marks = [];
+    function clear() {
+      for (var i = 0; i < marks.length; i++) marks[i].clear();
+    }
+    for (var i = 0; i < editors.length; i++) {
+      var editor = editors[i];
+      var mark = collapseSingle(editor.cm, editor.line, editor.line + size);
+      marks.push(mark);
+      mark.mark.on("clear", clear);
+    }
+    return marks[0].mark;
+  }
+
+  function unclearNearChunks(dv, margin, off, clear) {
+    for (var i = 0; i < dv.chunks.length; i++) {
+      var chunk = dv.chunks[i];
+      for (var l = chunk.editFrom - margin; l < chunk.editTo + margin; l++) {
+        var pos = l + off;
+        if (pos >= 0 && pos < clear.length) clear[pos] = false;
+      }
+    }
+  }
+
+  function collapseIdenticalStretches(mv, margin) {
+    if (typeof margin != "number") margin = 2;
+    var clear = [], edit = mv.editor(), off = edit.firstLine();
+    for (var l = off, e = edit.lastLine(); l <= e; l++) clear.push(true);
+    if (mv.left) unclearNearChunks(mv.left, margin, off, clear);
+    if (mv.right) unclearNearChunks(mv.right, margin, off, clear);
+
+    for (var i = 0; i < clear.length; i++) {
+      if (clear[i]) {
+        var line = i + off;
+        for (var size = 1; i < clear.length - 1 && clear[i + 1]; i++, size++) {}
+        if (size > margin) {
+          var editors = [{line: line, cm: edit}];
+          if (mv.left) editors.push({line: getMatchingOrigLine(line, mv.left.chunks), cm: mv.left.orig});
+          if (mv.right) editors.push({line: getMatchingOrigLine(line, mv.right.chunks), cm: mv.right.orig});
+          var mark = collapseStretch(size, editors);
+          if (mv.options.onCollapse) mv.options.onCollapse(mv, line, size, mark);
+        }
+      }
+    }
+  }
+
+  // General utilities
+
+  function elt(tag, content, className, style) {
+    var e = document.createElement(tag);
+    if (className) e.className = className;
+    if (style) e.style.cssText = style;
+    if (typeof content == "string") e.appendChild(document.createTextNode(content));
+    else if (content) for (var i = 0; i < content.length; ++i) e.appendChild(content[i]);
+    return e;
+  }
+
+  function clear(node) {
+    for (var count = node.childNodes.length; count > 0; --count)
+      node.removeChild(node.firstChild);
+  }
+
+  function attrs(elt) {
+    for (var i = 1; i < arguments.length; i += 2)
+      elt.setAttribute(arguments[i], arguments[i+1]);
+  }
+
+  function copyObj(obj, target) {
+    if (!target) target = {};
+    for (var prop in obj) if (obj.hasOwnProperty(prop)) target[prop] = obj[prop];
+    return target;
+  }
+
+  function moveOver(pos, str, copy, other) {
+    var out = copy ? Pos(pos.line, pos.ch) : pos, at = 0;
+    for (;;) {
+      var nl = str.indexOf("\n", at);
+      if (nl == -1) break;
+      ++out.line;
+      if (other) ++other.line;
+      at = nl + 1;
+    }
+    out.ch = (at ? 0 : out.ch) + (str.length - at);
+    if (other) other.ch = (at ? 0 : other.ch) + (str.length - at);
+    return out;
+  }
+
+  // Tracks collapsed markers and line widgets, in order to be able to
+  // accurately align the content of two editors.
+
+  var F_WIDGET = 1, F_WIDGET_BELOW = 2, F_MARKER = 4
+
+  function TrackAlignable(cm) {
+    this.cm = cm
+    this.alignable = []
+    this.height = cm.doc.height
+    var self = this
+    cm.on("markerAdded", function(_, marker) {
+      if (!marker.collapsed) return
+      var found = marker.find(1)
+      if (found != null) self.set(found.line, F_MARKER)
+    })
+    cm.on("markerCleared", function(_, marker, _min, max) {
+      if (max != null && marker.collapsed)
+        self.check(max, F_MARKER, self.hasMarker)
+    })
+    cm.on("markerChanged", this.signal.bind(this))
+    cm.on("lineWidgetAdded", function(_, widget, lineNo) {
+      if (widget.mergeSpacer) return
+      if (widget.above) self.set(lineNo - 1, F_WIDGET_BELOW)
+      else self.set(lineNo, F_WIDGET)
+    })
+    cm.on("lineWidgetCleared", function(_, widget, lineNo) {
+      if (widget.mergeSpacer) return
+      if (widget.above) self.check(lineNo - 1, F_WIDGET_BELOW, self.hasWidgetBelow)
+      else self.check(lineNo, F_WIDGET, self.hasWidget)
+    })
+    cm.on("lineWidgetChanged", this.signal.bind(this))
+    cm.on("change", function(_, change) {
+      var start = change.from.line, nBefore = change.to.line - change.from.line
+      var nAfter = change.text.length - 1, end = start + nAfter
+      if (nBefore || nAfter) self.map(start, nBefore, nAfter)
+      self.check(end, F_MARKER, self.hasMarker)
+      if (nBefore || nAfter) self.check(change.from.line, F_MARKER, self.hasMarker)
+    })
+    cm.on("viewportChange", function() {
+      if (self.cm.doc.height != self.height) self.signal()
+    })
+  }
+
+  TrackAlignable.prototype = {
+    signal: function() {
+      CodeMirror.signal(this, "realign")
+      this.height = this.cm.doc.height
+    },
+
+    set: function(n, flags) {
+      var pos = -1
+      for (; pos < this.alignable.length; pos += 2) {
+        var diff = this.alignable[pos] - n
+        if (diff == 0) {
+          if ((this.alignable[pos + 1] & flags) == flags) return
+          this.alignable[pos + 1] |= flags
+          this.signal()
+          return
+        }
+        if (diff > 0) break
+      }
+      this.signal()
+      this.alignable.splice(pos, 0, n, flags)
+    },
+
+    find: function(n) {
+      for (var i = 0; i < this.alignable.length; i += 2)
+        if (this.alignable[i] == n) return i
+      return -1
+    },
+
+    check: function(n, flag, pred) {
+      var found = this.find(n)
+      if (found == -1 || !(this.alignable[found + 1] & flag)) return
+      if (!pred.call(this, n)) {
+        this.signal()
+        var flags = this.alignable[found + 1] & ~flag
+        if (flags) this.alignable[found + 1] = flags
+        else this.alignable.splice(found, 2)
+      }
+    },
+
+    hasMarker: function(n) {
+      var handle = this.cm.getLineHandle(n)
+      if (handle.markedSpans) for (var i = 0; i < handle.markedSpans.length; i++)
+        if (handle.markedSpans[i].marker.collapsed && handle.markedSpans[i].to != null)
+          return true
+      return false
+    },
+
+    hasWidget: function(n) {
+      var handle = this.cm.getLineHandle(n)
+      if (handle.widgets) for (var i = 0; i < handle.widgets.length; i++)
+        if (!handle.widgets[i].above && !handle.widgets[i].mergeSpacer) return true
+      return false
+    },
+
+    hasWidgetBelow: function(n) {
+      if (n == this.cm.lastLine()) return false
+      var handle = this.cm.getLineHandle(n + 1)
+      if (handle.widgets) for (var i = 0; i < handle.widgets.length; i++)
+        if (handle.widgets[i].above && !handle.widgets[i].mergeSpacer) return true
+      return false
+    },
+
+    map: function(from, nBefore, nAfter) {
+      var diff = nAfter - nBefore, to = from + nBefore, widgetFrom = -1, widgetTo = -1
+      for (var i = 0; i < this.alignable.length; i += 2) {
+        var n = this.alignable[i]
+        if (n == from && (this.alignable[i + 1] & F_WIDGET_BELOW)) widgetFrom = i
+        if (n == to && (this.alignable[i + 1] & F_WIDGET_BELOW)) widgetTo = i
+        if (n <= from) continue
+        else if (n < to) this.alignable.splice(i--, 2)
+        else this.alignable[i] += diff
+      }
+      if (widgetFrom > -1) {
+        var flags = this.alignable[widgetFrom + 1]
+        if (flags == F_WIDGET_BELOW) this.alignable.splice(widgetFrom, 2)
+        else this.alignable[widgetFrom + 1] = flags & ~F_WIDGET_BELOW
+      }
+      if (widgetTo > -1 && nAfter)
+        this.set(from + nAfter, F_WIDGET_BELOW)
+    }
+  }
+
+  function posMin(a, b) { return (a.line - b.line || a.ch - b.ch) < 0 ? a : b; }
+  function posMax(a, b) { return (a.line - b.line || a.ch - b.ch) > 0 ? a : b; }
+  function posEq(a, b) { return a.line == b.line && a.ch == b.ch; }
+
+  function findPrevDiff(chunks, start, isOrig) {
+    for (var i = chunks.length - 1; i >= 0; i--) {
+      var chunk = chunks[i];
+      var to = (isOrig ? chunk.origTo : chunk.editTo) - 1;
+      if (to < start) return to;
+    }
+  }
+
+  function findNextDiff(chunks, start, isOrig) {
+    for (var i = 0; i < chunks.length; i++) {
+      var chunk = chunks[i];
+      var from = (isOrig ? chunk.origFrom : chunk.editFrom);
+      if (from > start) return from;
+    }
+  }
+
+  function goNearbyDiff(cm, dir) {
+    var found = null, views = cm.state.diffViews, line = cm.getCursor().line;
+    if (views) for (var i = 0; i < views.length; i++) {
+      var dv = views[i], isOrig = cm == dv.orig;
+      ensureDiff(dv);
+      var pos = dir < 0 ? findPrevDiff(dv.chunks, line, isOrig) : findNextDiff(dv.chunks, line, isOrig);
+      if (pos != null && (found == null || (dir < 0 ? pos > found : pos < found)))
+        found = pos;
+    }
+    if (found != null)
+      cm.setCursor(found, 0);
+    else
+      return CodeMirror.Pass;
+  }
+
+  CodeMirror.commands.goNextDiff = function(cm) {
+    return goNearbyDiff(cm, 1);
+  };
+  CodeMirror.commands.goPrevDiff = function(cm) {
+    return goNearbyDiff(cm, -1);
+  };
+});

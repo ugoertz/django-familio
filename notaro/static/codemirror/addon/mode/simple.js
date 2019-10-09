@@ -1,8 +1,216 @@
-'use strict';(function(l){"object"==typeof exports&&"object"==typeof module?l(require("../../lib/codemirror")):"function"==typeof define&&define.amd?define(["../../lib/codemirror"],l):l(CodeMirror)})(function(l){function r(e,c){if(!e.hasOwnProperty(c))throw Error("Undefined state "+c+" in simple mode");}function q(e,c){if(!e)return/(?:)/;var d="";e instanceof RegExp?(e.ignoreCase&&(d="i"),e=e.source):e=String(e);return new RegExp((!1===c?"":"^")+"(?:"+e+")",d)}function u(e,c){(e.next||e.push)&&r(c,
-e.next||e.push);this.regex=q(e.regex);if(c=e.token)if("string"==typeof c)c=c.replace(/\./g," ");else{for(var d=[],a=0;a<c.length;a++)d.push(c[a]&&c[a].replace(/\./g," "));c=d}else c=null;this.token=c;this.data=e}function v(e,c){return function(d,a){if(a.pending){var b=a.pending.shift();0==a.pending.length&&(a.pending=null);d.pos+=b.text.length;return b.token}if(a.local){if(a.local.end&&d.match(a.local.end))b=a.local.endToken||null,a.local=a.localState=null;else{var b=a.local.mode.token(d,a.localState),
-f;a.local.endScan&&(f=a.local.endScan.exec(d.current()))&&(d.pos=d.start+f.index)}return b}for(var g=e[a.state],h=0;h<g.length;h++)if(b=g[h],f=(!b.data.sol||d.sol())&&d.match(b.regex)){b.data.next?a.state=b.data.next:b.data.push?((a.stack||(a.stack=[])).push(a.state),a.state=b.data.push):b.data.pop&&a.stack&&a.stack.length&&(a.state=a.stack.pop());if(b.data.mode){var g=void 0,m=c,h=a,k=b.data.mode,n=b.token;if(k.persistent)for(var p=h.persistentStates;p&&!g;p=p.next)if(k.spec?t(k.spec,p.spec):k.mode==
-p.mode)g=p;m=g?g.mode:k.mode||l.getMode(m,k.spec);p=g?g.state:l.startState(m);k.persistent&&!g&&(h.persistentStates={mode:m,spec:k.spec,state:p,next:h.persistentStates});h.localState=p;h.local={mode:m,end:k.end&&q(k.end),endScan:k.end&&!1!==k.forceEnd&&q(k.end,!1),endToken:n&&n.join?n[n.length-1]:n}}b.data.indent&&a.indent.push(d.indentation()+c.indentUnit);b.data.dedent&&a.indent.pop();if(2<f.length){a.pending=[];for(g=2;g<f.length;g++)f[g]&&a.pending.push({text:f[g],token:b.token[g-1]});d.backUp(f[0].length-
-(f[1]?f[1].length:0));return b.token[0]}return b.token&&b.token.join?b.token[0]:b.token}d.next();return null}}function t(e,c){if(e===c)return!0;if(!e||"object"!=typeof e||!c||"object"!=typeof c)return!1;var d=0,a;for(a in e)if(e.hasOwnProperty(a)){if(!c.hasOwnProperty(a)||!t(e[a],c[a]))return!1;d++}for(a in c)c.hasOwnProperty(a)&&d--;return 0==d}function w(e,c){return function(d,a,b){if(d.local&&d.local.mode.indent)return d.local.mode.indent(d.localState,a,b);if(!(b=null==d.indent||d.local)&&(b=c.dontIndentStates)){a:{b=
-c.dontIndentStates;for(var f=0;f<b.length;f++)if(b[f]===d.state){b=!0;break a}b=void 0}b=-1<b}if(b)return l.Pass;b=d.indent.length-1;f=e[d.state];a:for(;;){for(var g=0;g<f.length;g++){var h=f[g];if(h.data.dedent&&!1!==h.data.dedentIfLineStart){var m=h.regex.exec(a);if(m&&m[0]){b--;if(h.next||h.push)f=e[h.next||h.push];a=a.slice(m[0].length);continue a}}}break}return 0>b?0:d.indent[b]}}l.defineSimpleMode=function(e,c){l.defineMode(e,function(d){return l.simpleMode(d,c)})};l.simpleMode=function(e,c){r(c,
-"start");var d={},a=c.meta||{},b=!1,f;for(f in c)if(f!=a&&c.hasOwnProperty(f))for(var g=d[f]=[],h=c[f],m=0;m<h.length;m++){var k=h[m];g.push(new u(k,c));if(k.indent||k.dedent)b=!0}e={startState:function(){return{state:"start",pending:null,local:null,localState:null,indent:b?[]:null}},copyState:function(a){var b={state:a.state,pending:a.pending,local:a.local,localState:null,indent:a.indent&&a.indent.slice(0)};a.localState&&(b.localState=l.copyState(a.local.mode,a.localState));a.stack&&(b.stack=a.stack.slice(0));
-for(var c=a.persistentStates;c;c=c.next)b.persistentStates={mode:c.mode,spec:c.spec,state:c.state==a.localState?b.localState:l.copyState(c.mode,c.state),next:b.persistentStates};return b},token:v(d,e),innerMode:function(a){return a.local&&{mode:a.local.mode,state:a.localState}},indent:w(d,a)};if(a)for(var n in a)a.hasOwnProperty(n)&&(e[n]=a[n]);return e}});
+// CodeMirror, copyright (c) by Marijn Haverbeke and others
+// Distributed under an MIT license: https://codemirror.net/LICENSE
+
+(function(mod) {
+  if (typeof exports == "object" && typeof module == "object") // CommonJS
+    mod(require("../../lib/codemirror"));
+  else if (typeof define == "function" && define.amd) // AMD
+    define(["../../lib/codemirror"], mod);
+  else // Plain browser env
+    mod(CodeMirror);
+})(function(CodeMirror) {
+  "use strict";
+
+  CodeMirror.defineSimpleMode = function(name, states) {
+    CodeMirror.defineMode(name, function(config) {
+      return CodeMirror.simpleMode(config, states);
+    });
+  };
+
+  CodeMirror.simpleMode = function(config, states) {
+    ensureState(states, "start");
+    var states_ = {}, meta = states.meta || {}, hasIndentation = false;
+    for (var state in states) if (state != meta && states.hasOwnProperty(state)) {
+      var list = states_[state] = [], orig = states[state];
+      for (var i = 0; i < orig.length; i++) {
+        var data = orig[i];
+        list.push(new Rule(data, states));
+        if (data.indent || data.dedent) hasIndentation = true;
+      }
+    }
+    var mode = {
+      startState: function() {
+        return {state: "start", pending: null,
+                local: null, localState: null,
+                indent: hasIndentation ? [] : null};
+      },
+      copyState: function(state) {
+        var s = {state: state.state, pending: state.pending,
+                 local: state.local, localState: null,
+                 indent: state.indent && state.indent.slice(0)};
+        if (state.localState)
+          s.localState = CodeMirror.copyState(state.local.mode, state.localState);
+        if (state.stack)
+          s.stack = state.stack.slice(0);
+        for (var pers = state.persistentStates; pers; pers = pers.next)
+          s.persistentStates = {mode: pers.mode,
+                                spec: pers.spec,
+                                state: pers.state == state.localState ? s.localState : CodeMirror.copyState(pers.mode, pers.state),
+                                next: s.persistentStates};
+        return s;
+      },
+      token: tokenFunction(states_, config),
+      innerMode: function(state) { return state.local && {mode: state.local.mode, state: state.localState}; },
+      indent: indentFunction(states_, meta)
+    };
+    if (meta) for (var prop in meta) if (meta.hasOwnProperty(prop))
+      mode[prop] = meta[prop];
+    return mode;
+  };
+
+  function ensureState(states, name) {
+    if (!states.hasOwnProperty(name))
+      throw new Error("Undefined state " + name + " in simple mode");
+  }
+
+  function toRegex(val, caret) {
+    if (!val) return /(?:)/;
+    var flags = "";
+    if (val instanceof RegExp) {
+      if (val.ignoreCase) flags = "i";
+      val = val.source;
+    } else {
+      val = String(val);
+    }
+    return new RegExp((caret === false ? "" : "^") + "(?:" + val + ")", flags);
+  }
+
+  function asToken(val) {
+    if (!val) return null;
+    if (val.apply) return val
+    if (typeof val == "string") return val.replace(/\./g, " ");
+    var result = [];
+    for (var i = 0; i < val.length; i++)
+      result.push(val[i] && val[i].replace(/\./g, " "));
+    return result;
+  }
+
+  function Rule(data, states) {
+    if (data.next || data.push) ensureState(states, data.next || data.push);
+    this.regex = toRegex(data.regex);
+    this.token = asToken(data.token);
+    this.data = data;
+  }
+
+  function tokenFunction(states, config) {
+    return function(stream, state) {
+      if (state.pending) {
+        var pend = state.pending.shift();
+        if (state.pending.length == 0) state.pending = null;
+        stream.pos += pend.text.length;
+        return pend.token;
+      }
+
+      if (state.local) {
+        if (state.local.end && stream.match(state.local.end)) {
+          var tok = state.local.endToken || null;
+          state.local = state.localState = null;
+          return tok;
+        } else {
+          var tok = state.local.mode.token(stream, state.localState), m;
+          if (state.local.endScan && (m = state.local.endScan.exec(stream.current())))
+            stream.pos = stream.start + m.index;
+          return tok;
+        }
+      }
+
+      var curState = states[state.state];
+      for (var i = 0; i < curState.length; i++) {
+        var rule = curState[i];
+        var matches = (!rule.data.sol || stream.sol()) && stream.match(rule.regex);
+        if (matches) {
+          if (rule.data.next) {
+            state.state = rule.data.next;
+          } else if (rule.data.push) {
+            (state.stack || (state.stack = [])).push(state.state);
+            state.state = rule.data.push;
+          } else if (rule.data.pop && state.stack && state.stack.length) {
+            state.state = state.stack.pop();
+          }
+
+          if (rule.data.mode)
+            enterLocalMode(config, state, rule.data.mode, rule.token);
+          if (rule.data.indent)
+            state.indent.push(stream.indentation() + config.indentUnit);
+          if (rule.data.dedent)
+            state.indent.pop();
+          var token = rule.token
+          if (token && token.apply) token = token(matches)
+          if (matches.length > 2 && rule.token && typeof rule.token != "string") {
+            state.pending = [];
+            for (var j = 2; j < matches.length; j++)
+              if (matches[j])
+                state.pending.push({text: matches[j], token: rule.token[j - 1]});
+            stream.backUp(matches[0].length - (matches[1] ? matches[1].length : 0));
+            return token[0];
+          } else if (token && token.join) {
+            return token[0];
+          } else {
+            return token;
+          }
+        }
+      }
+      stream.next();
+      return null;
+    };
+  }
+
+  function cmp(a, b) {
+    if (a === b) return true;
+    if (!a || typeof a != "object" || !b || typeof b != "object") return false;
+    var props = 0;
+    for (var prop in a) if (a.hasOwnProperty(prop)) {
+      if (!b.hasOwnProperty(prop) || !cmp(a[prop], b[prop])) return false;
+      props++;
+    }
+    for (var prop in b) if (b.hasOwnProperty(prop)) props--;
+    return props == 0;
+  }
+
+  function enterLocalMode(config, state, spec, token) {
+    var pers;
+    if (spec.persistent) for (var p = state.persistentStates; p && !pers; p = p.next)
+      if (spec.spec ? cmp(spec.spec, p.spec) : spec.mode == p.mode) pers = p;
+    var mode = pers ? pers.mode : spec.mode || CodeMirror.getMode(config, spec.spec);
+    var lState = pers ? pers.state : CodeMirror.startState(mode);
+    if (spec.persistent && !pers)
+      state.persistentStates = {mode: mode, spec: spec.spec, state: lState, next: state.persistentStates};
+
+    state.localState = lState;
+    state.local = {mode: mode,
+                   end: spec.end && toRegex(spec.end),
+                   endScan: spec.end && spec.forceEnd !== false && toRegex(spec.end, false),
+                   endToken: token && token.join ? token[token.length - 1] : token};
+  }
+
+  function indexOf(val, arr) {
+    for (var i = 0; i < arr.length; i++) if (arr[i] === val) return true;
+  }
+
+  function indentFunction(states, meta) {
+    return function(state, textAfter, line) {
+      if (state.local && state.local.mode.indent)
+        return state.local.mode.indent(state.localState, textAfter, line);
+      if (state.indent == null || state.local || meta.dontIndentStates && indexOf(state.state, meta.dontIndentStates) > -1)
+        return CodeMirror.Pass;
+
+      var pos = state.indent.length - 1, rules = states[state.state];
+      scan: for (;;) {
+        for (var i = 0; i < rules.length; i++) {
+          var rule = rules[i];
+          if (rule.data.dedent && rule.data.dedentIfLineStart !== false) {
+            var m = rule.regex.exec(textAfter);
+            if (m && m[0]) {
+              pos--;
+              if (rule.next || rule.push) rules = states[rule.next || rule.push];
+              textAfter = textAfter.slice(m[0].length);
+              continue scan;
+            }
+          }
+        }
+        break;
+      }
+      return pos < 0 ? 0 : state.indent[pos];
+    };
+  }
+});
