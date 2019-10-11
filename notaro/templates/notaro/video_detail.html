@@ -70,7 +70,7 @@ $(document).ready(function() {
     <div class="row">
         <div class="col-md-8">
             <div style="margin-top: 20px;">
-                <video poster="{{ object.poster.url }}" width="600" height="480" class="mejs-player" data-mejsoptions='{"alwaysShowControls": true}' preload>
+                <video poster="{{ object.poster.url }}" width="600" height="480" controls="controls" preload>
                     <source src="{{ object.get_mp4_url }}" type="video/mp4"></source>
                     <source src="{{ object.get_webm_url }}" type="video/webm"></source>
                     <source src="{{ object.get_ogv_url }}" type="video/ogv"></source>
