@@ -68,9 +68,9 @@ class AcceptInviteForm(forms.Form):
 
     def clean_username(self):
         username = self.cleaned_data['username']
-        if re.match('^[\@\. \w-]+$', username) is None:
+        if re.match(r'^[\@\.\w-]+$', username) is None:
             raise forms.ValidationError(
-                    'Der Benutzername darf nur A-Z, a-z, Leerzeichen, ., - '
+                    'Der Benutzername darf nur Buchstaben, ., - '
                     'und @ enthalten.')
         if get_user_model().objects.filter(username__iexact=username).exists():
             raise forms.ValidationError(
@@ -78,7 +78,6 @@ class AcceptInviteForm(forms.Form):
                     'anderen aus.')
 
         return username
-
 
     def clean(self):
         """
@@ -93,4 +92,3 @@ class AcceptInviteForm(forms.Form):
                 raise forms.ValidationError(
                         'Die Passwörter stimmen nicht überein.')
             return self.cleaned_data
-

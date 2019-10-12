@@ -3,7 +3,7 @@
 {% endif %}
 {% blocktrans with site.name as site %}Wir haben eine Anfrage erhalten, die Email-Adresse zu Deinem Account bei  {{ site }} zu ändern.{% endblocktrans %}
 
-{% blocktrans %}Wir haben eine Email an {{ new_email }} geschickt. Bitte klicke den Link in dieser Email an, um Deine Adresse bei uns zu ändern. (Wenn Du Deine Adresse nicht ändern möchtest, dann brauchst Du nichts zu tun.{% endblocktrans %}
+{% blocktrans %}Wir haben eine Email an {{ new_email }} geschickt. Bitte klicke den Link in dieser Email an, um Deine Adresse bei uns zu ändern. (Wenn Du Deine Adresse nicht ändern möchtest, dann brauchst Du nichts zu tun.){% endblocktrans %}
 
 {% trans "Danke, dass Du unsere Seite benutzt." %}
 
