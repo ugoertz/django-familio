@@ -202,5 +202,3 @@ class AcceptInvitationView(View):
         except:
             messages.error(request, 'Es ist ein Fehler aufgetreten.')
             return HttpResponseRedirect('/')
-
-

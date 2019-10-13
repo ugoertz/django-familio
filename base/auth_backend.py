@@ -6,14 +6,15 @@ from userena.backends import UserenaAuthenticationBackend
 
 
 class SiteBackend(UserenaAuthenticationBackend):
-    def authenticate(self, **credentials):
+    def authenticate(self, request, **credentials):
         if 'username' in credentials and 'password' in credentials:
             # auth request from admin login form
-            user_or_none = super(SiteBackend, self).authenticate(
+            user_or_none = super().authenticate(
+                    request,
                     identification=credentials['username'],
                     password=credentials['password'])
         else:
-            user_or_none = super(SiteBackend, self).authenticate(**credentials)
+            user_or_none = super().authenticate(request, **credentials)
         if (user_or_none and
                 Site.objects.get_current()
                 not in user_or_none.userprofile.sites.all()):

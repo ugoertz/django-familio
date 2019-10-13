@@ -126,7 +126,7 @@ def home(request):
             context)
 
 
-protected_path = re.compile('\d+_')
+protected_path = re.compile(r'\d+_')
 
 
 def download(request, fname):
@@ -267,4 +267,3 @@ class StorePaginateByView(LoginRequiredMixin, View):
             except:
                 pass
         return HttpResponse()
-
