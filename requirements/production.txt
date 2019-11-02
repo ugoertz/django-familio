@@ -45,7 +45,7 @@ ipython==5.1.0
 
 git+https://github.com/ugoertz/django-userena.git
 
-Pillow==3.4.2
+Pillow==6.2.0
 cairocffi==0.7.2
 cffi==1.9.1
 
