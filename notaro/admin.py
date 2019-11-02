@@ -429,6 +429,30 @@ class UploadZipFileForm(forms.Form):
             # sanitize uploaded files:
             # FIXME: pdf, doc, ...
 
+            # virus scan
+            try:
+                scanner = VirusScan()
+            except pyclamd.ConnectionError:
+                # not ideal -- check for ClamAV connection in
+                # handle_file_upload, too
+                pass
+            else:
+                filedata.seek(0)
+                result = scanner.cd.scan_stream(filedata)
+                if result:
+                    # we scanned only one file, so this must be it
+                    fn = list(result)[0]
+                    info = result[fn]
+                    raise forms.ValidationError(
+                        ('In der Datei %s wurde der Virus ' % filedata.name) +
+                        ('%s gefunden.\n' % ', '.join(info)) +
+                        'Die Datei ist auf dem Server gespeichert, '
+                        'wurde aber '
+                        'nicht in die Datenbank eingefügt. Das kann '
+                        'gegebenenfalls manuell im Verwaltungsbereich '
+                        'durchgeführt werden.')
+
+            filedata.seek(0)
             if filedata.name[-4:] in ['.jpg', '.png']:
                 # from django.forms.fields.ImageField
                 from PIL import Image
@@ -471,6 +495,24 @@ class SourcePictureInline(admin.TabularInline):
     verbose_name_plural = "Quellenangaben"
 
 
+class VirusScan:
+
+    def __init__(self):
+        try:
+            self.cd = pyclamd.ClamdNetworkSocket(host="clamav")  # for docker
+        except:
+            self.cd = None
+
+        if not self.cd:
+            try:
+                self.cd = pyclamd.ClamdAgnostic()
+            except:
+                self.cd = None
+
+        if not (self.cd and self.cd.ping()):
+            raise pyclamd.ConnectionError('Could not connect to clamav.')
+
+
 class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
     """Admin class for Picture model."""
 
@@ -501,7 +543,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
 
     def get_urls(self):
         # pylint: disable=no-member
-        urls = super(PictureAdmin, self).get_urls()
+        urls = super().get_urls()
         return [url(r'^uploadarchive/$',
                     self.admin_site.admin_view(self.upload_archive),
                     name="uploadarchive"),
@@ -510,27 +552,12 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     name="scanall"),
                 ] + urls
 
-    def get_clamav_conn(self):
-        try:
-            cd = pyclamd.ClamdNetworkSocket(host="clamav")  # for docker
-        except:
-            cd = None
-
-        if not cd:
-            try:
-                cd = pyclamd.ClamdAgnostic()
-            except:
-                cd = None
-
-        if cd and cd.ping():
-            return cd
-        return None
-
     def scan_all(self, request):
         results = ''
 
-        cd = self.get_clamav_conn()
-        if cd is None:
+        try:
+            scanner = VirusScan()
+        except pyclamd.ConnectionError:
             messages.error(
                     request,
                     'Verbindung zum Virenscanner fehlgeschlagen')
@@ -539,7 +566,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                     'customadmin/scanall.html',
                     {'results': results, })
 
-        results = cd.multiscan_file(os.path.join(
+        results = scanner.cd.multiscan_file(os.path.join(
             settings.MEDIA_ROOT,
             settings.FILEBROWSER_DIRECTORY))
 
@@ -593,33 +620,16 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
         final_path = default_storage.save(
                 os.path.join(full_path, filename),
                 filedata)
-        if create_objects:
-            obj_path = os.path.relpath(final_path, settings.MEDIA_ROOT)
 
-            # virus scan
-            cd = self.get_clamav_conn()
-            if cd is None:
+        if create_objects:
+            try:
+                VirusScan()
+            except pyclamd.ConnectionError:
                 messages.warning(
                         request,
                         'Verbindung zum Virenscanner fehlgeschlagen.')
-            else:
-                result = cd.multiscan_file(
-                        os.path.join(settings.MEDIA_ROOT, obj_path))
-                if result:
-                    # we scanned only one file, so this must be it
-                    fn = list(result)[0]
-                    info = result[fn]
-                    f = os.path.basename(fn)
-                    messages.error(
-                            request,
-                            ('In der Datei %s wurde der Virus ' % f) +
-                            ('%s gefunden.\n' % ', '.join(info)) +
-                            'Die Datei ist auf dem Server gespeichert, '
-                            'wurde aber '
-                            'nicht in die Datenbank eingefügt. Das kann '
-                            'gegebenenfalls manuell im Verwaltungsbereich '
-                            'durchgeführt werden.')
-                    return
+            obj_path = os.path.relpath(final_path, settings.MEDIA_ROOT)
+
             if target == 'images':
                 # pylint: disable=no-member
                 picture = Picture.objects.create(
