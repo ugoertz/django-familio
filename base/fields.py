@@ -7,7 +7,7 @@ from django import forms
 
 
 class MultiFileInput(forms.FileInput):
-    def render(self, name, value, attrs={}):
+    def render(self, name, value, attrs={}, renderer=None):
         attrs['multiple'] = 'multiple'
         attrs['class'] = attrs.get('class', '') + ' js-multi with-preview'
         return '<span class="file-wrapper"><span class="button">Datei auswählen (Klick oder Drag-and-drop)</span>' +\

@@ -607,7 +607,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                         os.path.join(settings.MEDIA_ROOT, obj_path))
                 if result:
                     # we scanned only one file, so this must be it
-                    fn = result.keys()[0]
+                    fn = list(result)[0]
                     info = result[fn]
                     f = os.path.basename(fn)
                     messages.error(

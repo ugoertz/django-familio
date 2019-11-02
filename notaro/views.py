@@ -6,7 +6,6 @@ import os.path
 import sys
 from itertools import chain
 
-from django.shortcuts import render
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import (
         DetailView, TemplateView, UpdateView, View, )
