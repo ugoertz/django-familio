@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='item',
             name='obj_content_type',
-            field=models.ForeignKey(verbose_name='Typ des zugeordneten Objekts', blank=True, to='contenttypes.ContentType', null=True),
+            field=models.ForeignKey(verbose_name='Typ des zugeordneten Objekts', blank=True, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(

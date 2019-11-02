@@ -42,7 +42,7 @@ class UserProfile(UserenaBaseProfile, PybbProfile):
     person = models.ForeignKey(
             Person,
             blank=True, null=True,
-            on_delete=models.CASCADE)
+            on_delete=models.SET_NULL)
     email_on_message = models.BooleanField(
             default=False,
             verbose_name="Email-Benachrichtigung bei Nachrichten")

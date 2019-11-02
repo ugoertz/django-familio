@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('object_id', models.IntegerField(verbose_name='Object id', db_index=True)),
-                ('content_type', models.ForeignKey(related_name='tags_customtagthrough_tagged_items', verbose_name='Content type', to='contenttypes.ContentType')),
-                ('tag', models.ForeignKey(related_name='tags_customtagthrough_items', to='tags.CustomTag')),
+                ('content_type', models.ForeignKey(related_name='tags_customtagthrough_tagged_items', verbose_name='Content type', to='contenttypes.ContentType', on_delete=models.CASCADE)),
+                ('tag', models.ForeignKey(related_name='tags_customtagthrough_items', to='tags.CustomTag', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

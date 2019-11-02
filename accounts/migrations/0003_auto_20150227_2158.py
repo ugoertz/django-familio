@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='person',
-            field=models.ForeignKey(blank=True, to='genealogio.Person', null=True),
+            field=models.ForeignKey(blank=True, to='genealogio.Person', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

@@ -33,8 +33,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('role', models.IntegerField(default=0, choices=[(0, b'Benutzer'), (1, b'Redakteur'), (2, b'Administrator')])),
-                ('site', models.ForeignKey(to='sites.Site')),
-                ('user', models.ForeignKey(to='accounts.UserProfile')),
+                ('site', models.ForeignKey(to='sites.Site', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to='accounts.UserProfile', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='user',
-            field=models.OneToOneField(related_name='userprofile', verbose_name='Benutzer', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(related_name='userprofile', verbose_name='Benutzer', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

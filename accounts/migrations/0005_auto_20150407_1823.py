@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='userprofile',
             name='avatar',
-            field=models.ImageField(upload_to=pybb.util.FilePathGenerator(to=b'pybb/avatar'), null=True, verbose_name='Avatar', blank=True),
+            field=models.ImageField(upload_to=pybb.util.FilePathGenerator(to='pybb/avatar'), null=True, verbose_name='Avatar', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(

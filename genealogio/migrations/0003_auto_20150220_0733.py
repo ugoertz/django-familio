@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='personplace',
             name='place',
-            field=models.ForeignKey(verbose_name='Ort', to='genealogio.Place'),
+            field=models.ForeignKey(verbose_name='Ort', to='genealogio.Place', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(

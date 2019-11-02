@@ -156,11 +156,11 @@ class Family(PrimaryObject):
     father = models.ForeignKey('Person', related_name="father_ref",
                                null=True, blank=True,
                                verbose_name='Vater',
-                               on_delete=models.CASCADE)
+                               on_delete=models.SET_NULL)
     mother = models.ForeignKey('Person', related_name="mother_ref",
                                null=True, blank=True,
                                verbose_name='Mutter',
-                               on_delete=models.CASCADE)
+                               on_delete=models.SET_NULL)
     family_rel_type = models.IntegerField(choices=FAMILY_REL_TYPE,
                                           default=3,
                                           verbose_name="Art der Beziehung")
@@ -441,7 +441,7 @@ class Person(PrimaryObject):
                                     verbose_name='Orte')
     portrait = models.ForeignKey(Picture, blank=True, null=True,
                                  verbose_name='Portrait',
-                                 on_delete=models.CASCADE)
+                                 on_delete=models.SET_NULL)
 
     notes = models.ManyToManyField(Note, blank=True, through=PersonNote)
     family = models.ManyToManyField(Family, through="PersonFamily",
@@ -946,7 +946,7 @@ class Event(PrimaryObject):
                                    verbose_name='Beschreibung')
     place = models.ForeignKey(Place, null=True, blank=True,
                               verbose_name='Ort',
-                              on_delete=models.CASCADE)
+                              on_delete=models.SET_NULL)
     sources = models.ManyToManyField(Source, blank=True,
                                      through=EventSource,
                                      verbose_name='Quellen')

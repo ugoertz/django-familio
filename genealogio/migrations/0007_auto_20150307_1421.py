@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('position', models.IntegerField(default=1)),
-                ('event', models.ForeignKey(to='genealogio.Event')),
-                ('note', models.ForeignKey(to='notaro.Note')),
+                ('event', models.ForeignKey(to='genealogio.Event', on_delete=models.CASCADE)),
+                ('note', models.ForeignKey(to='notaro.Note', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Text zu Ereignis',
@@ -31,8 +31,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('position', models.IntegerField(default=1)),
-                ('family', models.ForeignKey(to='genealogio.Family')),
-                ('note', models.ForeignKey(to='notaro.Note')),
+                ('family', models.ForeignKey(to='genealogio.Family', on_delete=models.CASCADE)),
+                ('note', models.ForeignKey(to='notaro.Note', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Text zu Familie',
@@ -45,8 +45,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('position', models.IntegerField(default=1)),
-                ('note', models.ForeignKey(to='notaro.Note')),
-                ('person', models.ForeignKey(to='genealogio.Person')),
+                ('note', models.ForeignKey(to='notaro.Note', on_delete=models.CASCADE)),
+                ('person', models.ForeignKey(to='genealogio.Person', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Text zu Person',
@@ -59,8 +59,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('position', models.IntegerField(default=1)),
-                ('note', models.ForeignKey(to='notaro.Note')),
-                ('place', models.ForeignKey(to='genealogio.Place')),
+                ('note', models.ForeignKey(to='notaro.Note', on_delete=models.CASCADE)),
+                ('place', models.ForeignKey(to='genealogio.Place', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Text zu Ort',

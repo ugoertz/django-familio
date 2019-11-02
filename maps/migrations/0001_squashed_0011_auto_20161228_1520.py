@@ -13,7 +13,7 @@ import taggit.managers
 
 class Migration(migrations.Migration):
 
-    replaces = [(b'maps', '0001_initial'), (b'maps', '0002_auto_20150523_1203'), (b'maps', '0003_auto_20150524_1537'), (b'maps', '0004_auto_20150525_1006'), (b'maps', '0005_auto_20150525_1446'), (b'maps', '0006_auto_20150525_1457'), (b'maps', '0007_auto_20150531_1512'), (b'maps', '0008_auto_20150613_2041'), (b'maps', '0009_custommap_tags'), (b'maps', '0010_auto_20160220_1634'), (b'maps', '0011_auto_20161228_1520')]
+    replaces = [('maps', '0001_initial'), ('maps', '0002_auto_20150523_1203'), ('maps', '0003_auto_20150524_1537'), ('maps', '0004_auto_20150525_1006'), ('maps', '0005_auto_20150525_1446'), ('maps', '0006_auto_20150525_1457'), ('maps', '0007_auto_20150531_1512'), ('maps', '0008_auto_20150613_2041'), ('maps', '0009_custommap_tags'), ('maps', '0010_auto_20160220_1634'), ('maps', '0011_auto_20161228_1520')]
 
     initial = True
 
@@ -81,12 +81,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='place',
             name='notes',
-            field=models.ManyToManyField(blank=True, through='maps.PlaceNote', to=b'notaro.Note'),
+            field=models.ManyToManyField(blank=True, through='maps.PlaceNote', to='notaro.Note'),
         ),
         migrations.AddField(
             model_name='place',
             name='urls',
-            field=models.ManyToManyField(blank=True, through='maps.PlaceUrl', to=b'maps.Url'),
+            field=models.ManyToManyField(blank=True, through='maps.PlaceUrl', to='maps.Url'),
         ),
         migrations.CreateModel(
             name='CustomMap',
@@ -115,12 +115,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='custommap',
             name='markers',
-            field=models.ManyToManyField(blank=True, through='maps.CustomMapMarker', to=b'maps.Place', verbose_name='Markierungen'),
+            field=models.ManyToManyField(blank=True, through='maps.CustomMapMarker', to='maps.Place', verbose_name='Markierungen'),
         ),
         migrations.AddField(
             model_name='custommap',
             name='sites',
-            field=models.ManyToManyField(to=b'sites.Site'),
+            field=models.ManyToManyField(to='sites.Site'),
         ),
         migrations.AddField(
             model_name='custommap',
@@ -158,7 +158,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='place',
             name='notes',
-            field=models.ManyToManyField(blank=True, through='maps.PlaceNote', to=b'notaro.Note', verbose_name='Texte'),
+            field=models.ManyToManyField(blank=True, through='maps.PlaceNote', to='notaro.Note', verbose_name='Texte'),
         ),
         migrations.AlterField(
             model_name='place',
@@ -168,7 +168,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='place',
             name='urls',
-            field=models.ManyToManyField(blank=True, through='maps.PlaceUrl', to=b'maps.Url', verbose_name='URLs'),
+            field=models.ManyToManyField(blank=True, through='maps.PlaceUrl', to='maps.Url', verbose_name='URLs'),
         ),
         migrations.AlterField(
             model_name='placeurl',

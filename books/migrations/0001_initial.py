@@ -46,10 +46,10 @@ class Migration(migrations.Migration):
                 ('level', models.IntegerField(default=0)),
                 ('position', models.IntegerField(default=0)),
                 ('order_by', models.CharField(help_text='Durch Kommata getrennte Datenbank-Felder, nach denen sortiert werden soll.', max_length=100, blank=True)),
-                ('book', models.ForeignKey(verbose_name='Zugeh\xf6riges Buch', to='books.Book')),
-                ('model', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
-                ('parent', models.ForeignKey(blank=True, to='books.Collection', null=True)),
-                ('site', models.ForeignKey(to='sites.Site')),
+                ('book', models.ForeignKey(verbose_name='Zugeh\xf6riges Buch', to='books.Book', on_delete=models.CASCADE)),
+                ('model', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE)),
+                ('parent', models.ForeignKey(blank=True, to='books.Collection', null=True, on_delete=models.CASCADE)),
+                ('site', models.ForeignKey(to='sites.Site', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('position',),
@@ -67,9 +67,9 @@ class Migration(migrations.Migration):
                 ('flags', models.CharField(max_length=800, verbose_name='Einstellungen', blank=True)),
                 ('active', models.BooleanField(default=True, verbose_name='Aktiv')),
                 ('position', models.IntegerField(default=1)),
-                ('obj_content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True)),
-                ('parent', models.ForeignKey(to='books.Collection')),
-                ('site', models.ForeignKey(to='sites.Site')),
+                ('obj_content_type', models.ForeignKey(blank=True, to='contenttypes.ContentType', null=True, on_delete=models.CASCADE)),
+                ('parent', models.ForeignKey(to='books.Collection', on_delete=models.CASCADE)),
+                ('site', models.ForeignKey(to='sites.Site', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('position',),
@@ -81,13 +81,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='book',
             name='root',
-            field=models.ForeignKey(related_name='book_root', blank=True, to='books.Collection', null=True),
+            field=models.ForeignKey(related_name='book_root', blank=True, to='books.Collection', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='book',
             name='site',
-            field=models.ForeignKey(verbose_name='Familienbaum', to='sites.Site'),
+            field=models.ForeignKey(verbose_name='Familienbaum', to='sites.Site', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

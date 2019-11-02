@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import migrations
 import django.db.models.manager
-import maps.managers
 import django.contrib.sites.managers
 
 
@@ -18,21 +17,21 @@ class Migration(migrations.Migration):
             name='event',
             managers=[
                 ('all_objects', django.db.models.manager.Manager()),
-                ('objects', maps.managers.CurrentSiteGeoManager()),
+                ('objects', django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.AlterModelManagers(
             name='family',
             managers=[
                 ('all_objects', django.db.models.manager.Manager()),
-                ('objects', maps.managers.CurrentSiteGeoManager()),
+                ('objects', django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.AlterModelManagers(
             name='person',
             managers=[
                 ('all_objects', django.db.models.manager.Manager()),
-                ('objects', maps.managers.CurrentSiteGeoManager()),
+                ('objects', django.contrib.sites.managers.CurrentSiteManager()),
             ],
         ),
         migrations.AlterModelManagers(

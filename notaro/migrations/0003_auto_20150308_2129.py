@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('position', models.IntegerField(default=1)),
-                ('note', models.ForeignKey(verbose_name='Text', to='notaro.Note')),
-                ('picture', models.ForeignKey(verbose_name='Bild', to='notaro.Picture')),
+                ('note', models.ForeignKey(verbose_name='Text', to='notaro.Note', on_delete=models.CASCADE)),
+                ('picture', models.ForeignKey(verbose_name='Bild', to='notaro.Picture', on_delete=models.CASCADE)),
             ],
             options={
             },

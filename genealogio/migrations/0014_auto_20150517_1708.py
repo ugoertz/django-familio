@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='place',
-            field=models.ForeignKey(verbose_name='Ort', blank=True, to='maps.Place', null=True),
+            field=models.ForeignKey(verbose_name='Ort', blank=True, to='maps.Place', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(
@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='personplace',
             name='place',
-            field=models.ForeignKey(verbose_name='Ort', to='maps.Place'),
+            field=models.ForeignKey(verbose_name='Ort', to='maps.Place', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.DeleteModel(

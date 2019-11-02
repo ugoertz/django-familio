@@ -17,8 +17,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('comment', models.CharField(max_length=500, verbose_name='Kommentar', blank=True)),
-                ('person', models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event')),
-                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source')),
+                ('person', models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event', on_delete=models.CASCADE)),
+                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('comment', models.CharField(max_length=500, verbose_name='Kommentar', blank=True)),
-                ('family', models.ForeignKey(verbose_name='Familie', to='genealogio.Family')),
-                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source')),
+                ('family', models.ForeignKey(verbose_name='Familie', to='genealogio.Family', on_delete=models.CASCADE)),
+                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -41,8 +41,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('comment', models.CharField(max_length=500, verbose_name='Kommentar', blank=True)),
-                ('person', models.ForeignKey(verbose_name='Person', to='genealogio.Person')),
-                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source')),
+                ('person', models.ForeignKey(verbose_name='Person', to='genealogio.Person', on_delete=models.CASCADE)),
+                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source', on_delete=models.CASCADE)),
             ],
             options={
             },

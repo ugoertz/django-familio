@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.models import Site
@@ -10,13 +11,18 @@ from django.contrib.postgres.fields import ArrayField
 from notaro.managers import GenManager
 
 
+def get_sentinel_user():
+    return get_user_model().objects.get_or_create(username='Benutzer Gelöscht')[0]
+
+
 class Comment(models.Model):
     author = models.ForeignKey(
-            settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET(get_sentinel_user))
     content = models.TextField(verbose_name="Dein Kommentar")
     date = models.DateTimeField(auto_now_add=True)
     path = ArrayField(
-            models.IntegerField(), blank=True, editable=False, unique=True)
+        models.IntegerField(), blank=True, editable=False, unique=True)
 
     # Content-object field
     content_type = models.ForeignKey(

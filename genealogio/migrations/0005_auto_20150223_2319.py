@@ -21,13 +21,13 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='family',
             name='father',
-            field=models.ForeignKey(related_name='father_ref', verbose_name='Vater', blank=True, to='genealogio.Person', null=True),
+            field=models.ForeignKey(related_name='father_ref', verbose_name='Vater', blank=True, to='genealogio.Person', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='family',
             name='mother',
-            field=models.ForeignKey(related_name='mother_ref', verbose_name='Mutter', blank=True, to='genealogio.Person', null=True),
+            field=models.ForeignKey(related_name='mother_ref', verbose_name='Mutter', blank=True, to='genealogio.Person', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AlterField(

@@ -34,37 +34,37 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='personplace',
             name='person',
-            field=models.ForeignKey(to='genealogio.Person'),
+            field=models.ForeignKey(to='genealogio.Person', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personplace',
             name='place',
-            field=models.ForeignKey(to='genealogio.Place'),
+            field=models.ForeignKey(to='genealogio.Place', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personfamily',
             name='family',
-            field=models.ForeignKey(verbose_name='Familie', to='genealogio.Family'),
+            field=models.ForeignKey(verbose_name='Familie', to='genealogio.Family', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personfamily',
             name='person',
-            field=models.ForeignKey(to='genealogio.Person'),
+            field=models.ForeignKey(to='genealogio.Person', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personevent',
             name='event',
-            field=models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event'),
+            field=models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='personevent',
             name='person',
-            field=models.ForeignKey(to='genealogio.Person'),
+            field=models.ForeignKey(to='genealogio.Person', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='person',
             name='portrait',
-            field=models.ForeignKey(verbose_name='Portrait', blank=True, to='notaro.Picture', null=True),
+            field=models.ForeignKey(verbose_name='Portrait', blank=True, to='notaro.Picture', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -112,19 +112,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='name',
             name='person',
-            field=models.ForeignKey(to='genealogio.Person'),
+            field=models.ForeignKey(to='genealogio.Person', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='familyevent',
             name='event',
-            field=models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event'),
+            field=models.ForeignKey(verbose_name='Ereignis', to='genealogio.Event', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='familyevent',
             name='family',
-            field=models.ForeignKey(verbose_name='Familie', to='genealogio.Family'),
+            field=models.ForeignKey(verbose_name='Familie', to='genealogio.Family', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -136,13 +136,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='family',
             name='father',
-            field=models.ForeignKey(related_name='father_ref', blank=True, to='genealogio.Person', null=True),
+            field=models.ForeignKey(related_name='father_ref', blank=True, to='genealogio.Person', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='family',
             name='mother',
-            field=models.ForeignKey(related_name='mother_ref', blank=True, to='genealogio.Person', null=True),
+            field=models.ForeignKey(related_name='mother_ref', blank=True, to='genealogio.Person', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -178,7 +178,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='place',
-            field=models.ForeignKey(verbose_name='Ort', blank=True, to='genealogio.Place', null=True),
+            field=models.ForeignKey(verbose_name='Ort', blank=True, to='genealogio.Place', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

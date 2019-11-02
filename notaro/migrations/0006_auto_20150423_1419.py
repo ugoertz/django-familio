@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('comment', models.CharField(max_length=500, verbose_name='Kommentar', blank=True)),
-                ('note', models.ForeignKey(verbose_name='Text', to='notaro.Note')),
-                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source')),
+                ('note', models.ForeignKey(verbose_name='Text', to='notaro.Note', on_delete=models.CASCADE)),
+                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -28,8 +28,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('comment', models.CharField(max_length=500, verbose_name='Kommentar', blank=True)),
-                ('picture', models.ForeignKey(verbose_name='Bild', to='notaro.Picture')),
-                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source')),
+                ('picture', models.ForeignKey(verbose_name='Bild', to='notaro.Picture', on_delete=models.CASCADE)),
+                ('source', models.ForeignKey(verbose_name='Quelle', to='notaro.Source', on_delete=models.CASCADE)),
             ],
             options={
             },
