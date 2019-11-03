@@ -1,23 +1,22 @@
+The django-familio Project
+==========================
 
-# The django-familio Project #
+## About
 
-## About ##
+This django project serves to build a genealogy web site for a family. (So far,
+the front-end and documentation is in German, only.)
 
-This django project serves to build a genealogy web site for a family.
+## Based on ...
 
-## Prerequisites ##
+Python 3, Django 2.1
 
-- Python 2.7
-- pip
-- virtualenv (virtualenvwrapper is recommended for use during development)
+## Installation
 
-## Installation ##
-
-to be added
+See the documentation.
 
 
-License
--------
+## License
+
 This software is licensed under the [New BSD License][BSD]. For more
 information, read the file ``LICENSE``.
 
