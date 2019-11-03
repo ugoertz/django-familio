@@ -181,7 +181,7 @@ class Picture(models.Model):
 
     def get_exif_data(self):
         try:
-            p = Image.open(open(self.image.path_full))
+            p = Image.open(self.image.path_full)
             raw_exif = p._getexif()
             exif = {ExifTags.TAGS.get(k, k): raw_exif[k] for k in raw_exif}
             return [exif.get(k, '')
