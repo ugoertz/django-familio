@@ -187,8 +187,8 @@ class Picture(models.Model):
             result = [exif.get(k, '')
                     for k in ['DateTimeOriginal', 'Make', 'Model', ]]
             if ((result[0] == '' or result[0].startswith('0000')) and
-                    'DateTime' in raw_exif):
-                 result[0] = exif.get('DateTime', '')
+                    'DateTime' in exif):
+                result[0] = exif.get('DateTime', '')
             return result
         except:
             return ['Keine EXIF-Daten gefunden.', ]
