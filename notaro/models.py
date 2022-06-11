@@ -184,8 +184,12 @@ class Picture(models.Model):
             p = Image.open(self.image.path_full)
             raw_exif = p._getexif()
             exif = {ExifTags.TAGS.get(k, k): raw_exif[k] for k in raw_exif}
-            return [exif.get(k, '')
+            result = [exif.get(k, '')
                     for k in ['DateTimeOriginal', 'Make', 'Model', ]]
+            if ((result[0] == '' or result[0].startswith('0000')) and
+                    'DateTime' in raw_exif):
+                 result[0] = exif.get('DateTime', '')
+            return result
         except:
             return ['Keine EXIF-Daten gefunden.', ]
 
