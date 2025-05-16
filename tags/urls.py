@@ -1,17 +1,17 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from .views import TagSearch, SaveTags, TagList
 from .ajax import GetTags
 
 urlpatterns = (
-    url(r'^save-tags/(?P<app>\w+)/(?P<model>\w+)/(?P<pk>\d+)/$',
+    re_path(r'^save-tags/(?P<app>\w+)/(?P<model>\w+)/(?P<pk>\d+)/$',
         SaveTags.as_view(), name='save-tags'),
-    url(r'^tag-search/(?P<tag>[\w !:\.,;_+-]+)/$',
+    re_path(r'^tag-search/(?P<tag>[\w !:\.,;_+-]+)/$',
         TagSearch.as_view(), name='tag-search'),
-    url(r'^tag-list/$',
+    re_path(r'^tag-list/$',
         TagList.as_view(), name='tag-list'),
 
     # ajax
-    url(r'^get-tags/$', GetTags.as_view(), name="get-tags"),
+    re_path(r'^get-tags/$', GetTags.as_view(), name="get-tags"),
     )
 

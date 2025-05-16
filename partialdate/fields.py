@@ -177,7 +177,7 @@ class PartialDateField(models.CharField):
         del kwargs["max_length"]
         return name, path, args, kwargs
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         if not value:
             return value
         return PartialDate(*[int(x) for x in value.split('-')])

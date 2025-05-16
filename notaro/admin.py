@@ -9,10 +9,11 @@ import os.path
 import tempfile
 import zipfile
 import pyclamd
+from urllib.parse import quote as urlquote
 
 from django import forms
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin, messages
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
@@ -21,7 +22,6 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils.html import format_html
-from django.utils.http import urlquote
 from django.utils.safestring import mark_safe
 
 from filebrowser.base import FileObject
@@ -99,7 +99,7 @@ class CurrentSiteAdmin(object):
     def get_urls(self):
         # pylint: disable=no-member
         urls = super(CurrentSiteAdmin, self).get_urls()
-        return [url(r'^(?P<pk>\d+)/remove/$',
+        return [re_path(r'^(?P<pk>\d+)/remove/$',
                     self.admin_site.admin_view(self.remove_object)),
                 ] + urls
 
@@ -280,7 +280,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
     def get_urls(self):
         # pylint: disable=no-member
         urls = super(NoteAdmin, self).get_urls()
-        return [url(r'^import/$',
+        return [re_path(r'^import/$',
                     self.admin_site.admin_view(self.import_object),
                     name="importnote"),
                 ] + urls
@@ -544,10 +544,10 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
     def get_urls(self):
         # pylint: disable=no-member
         urls = super().get_urls()
-        return [url(r'^uploadarchive/$',
+        return [re_path(r'^uploadarchive/$',
                     self.admin_site.admin_view(self.upload_archive),
                     name="uploadarchive"),
-                url(r'^virusscanall/$',
+                re_path(r'^virusscanall/$',
                     self.admin_site.admin_view(self.scan_all),
                     name="scanall"),
                 ] + urls
@@ -602,11 +602,12 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                         '.png, .tif, .mp3/4')
                 return
 
-        full_path = os.path.join(
-                settings.MEDIA_ROOT,
+        store_path = os.path.join(
                 settings.FILEBROWSER_DIRECTORY,
                 target,
-                path)
+                path,
+        )
+        full_path = os.path.join(settings.MEDIA_ROOT, store_path)
 
         # There is a small risk of a race condition here (if the same
         # user tries to upload files twice at the same time from
@@ -618,7 +619,7 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                 raise
 
         final_path = default_storage.save(
-                os.path.join(full_path, filename),
+                os.path.join(store_path, filename),
                 filedata)
 
         if create_objects:
@@ -628,7 +629,8 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
                 messages.warning(
                         request,
                         'Verbindung zum Virenscanner fehlgeschlagen.')
-            obj_path = os.path.relpath(final_path, settings.MEDIA_ROOT)
+            obj_path = final_path
+                       # was: os.path.relpath(final_path, settings.MEDIA_ROOT)
 
             if target == 'images':
                 # pylint: disable=no-member
@@ -830,7 +832,7 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
     def get_urls(self):
         # pylint: disable=no-member
         urls = super(VideoAdmin, self).get_urls()
-        return [url(r'^(?P<pk>\d+)/recompile/$',
+        return [re_path(r'^(?P<pk>\d+)/recompile/$',
                     self.admin_site.admin_view(self.recompile_video)),
                 ] + urls
 

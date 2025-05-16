@@ -141,7 +141,7 @@ $(window).on('load', function(){
             <h2>Geburts- und Todestage</h2>
             <ul class="list-group">
                 {% for d, born, died in birthdeathdays %}
-                <li class="list-group-item clearfix" {% ifequal today d %}style="background-color: lightblue;"{% endifequal %}><p><b>{{ d|date:"j. F" }}</b></p>
+                <li class="list-group-item clearfix" {% if today == d %}style="background-color: lightblue;"{% endif %}><p><b>{{ d|date:"j. F" }}</b></p>
                 <p>{% for person in born %}* {% include "genealogio/person_snippet_full.html" %}
                 {% if person.userprofile_set.count and person.userprofile_set.first.user.is_active %}<a href="/messages/compose/{{ person.userprofile_set.first.user.username }}/" style="font-size: 85%; float: right" class="cabin">Gratulieren</a>{% endif %}<br>
                 {% endfor %}</p>
@@ -155,7 +155,7 @@ $(window).on('load', function(){
             <h2>Die neuesten Texte</h2>
             <ul class="list-group">
                 {% for note in notes %}
-                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% ifequal note.date_added|date:"d.M.Y" note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"j. M." }}{% endifequal %}</span>
+                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% if note.date_added|date:"d.M.Y" == note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"j. M." }}{% endif %}</span>
                 </li>
                 {% endfor %}
             </ul>
@@ -166,7 +166,7 @@ $(window).on('load', function(){
             <ul class="list-group">
                 {% for person in personen %}
                 <li class="list-group-item clearfix">{% include "genealogio/person_snippet_full.html" %}
-                <span class="cabin small pull-right">{% ifequal person.date_added|date:"d.M.Y" person.date_changed|date:"d.M.Y" %}Hinzugefügt am {{ person.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ person.date_changed|date:"j. M." }}{% endifequal %}</span></li>
+                <span class="cabin small pull-right">{% if person.date_added|date:"d.M.Y" == person.date_changed|date:"d.M.Y" %}Hinzugefügt am {{ person.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ person.date_changed|date:"j. M." }}{% endif %}</span></li>
                 {% endfor %}
             </ul>
             <p><a href="{% url "person-list" %}">Alle Personen</a></p>

@@ -3,7 +3,7 @@ import re
 from django import template
 from django.conf import settings
 from django.utils.functional import keep_lazy
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.template import Node
 from django.template.defaulttags import CommentNode
@@ -17,7 +17,7 @@ register = template.Library()
 @keep_lazy(str)
 def strip_empty_lines(value):
     """Return the given HTML with empty and all-whitespace lines removed."""
-    return re.sub(r'\n[ \t]*(?=\n)', '', force_text(value))
+    return re.sub(r'\n[ \t]*(?=\n)', '', force_str(value))
 
 
 class GaplessNode(Node):

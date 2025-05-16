@@ -10,7 +10,7 @@ from django import template
 from django.conf import settings
 from django.utils.formats import get_format
 from django.utils.dateformat import DateFormat, re_formatchars, re_escaped
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from ..fields import PartialDate
 
@@ -45,10 +45,10 @@ class PartialDateFormat(DateFormat):
     def format(self, formatstr):
         pieces = []
         trailing_indices = []
-        for i, piece in enumerate(re_formatchars.split(force_text(formatstr))):
+        for i, piece in enumerate(re_formatchars.split(force_str(formatstr))):
             if i % 2:
                 try:
-                    pieces.append(force_text(getattr(self, piece)()))
+                    pieces.append(force_str(getattr(self, piece)()))
                     skip_literal = False
                 except IndeterminateDateValueException:
                     skip_literal = True

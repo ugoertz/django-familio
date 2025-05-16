@@ -10,6 +10,7 @@ import logging
 # into your settings, but ImproperlyConfigured is an exception.
 from django.contrib.messages import constants as messages
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Your project root
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__) + "../../../")
@@ -66,6 +67,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'taggit',
     'crispy_forms',
+    'crispy_bootstrap3',
     'django_markup',
     'typogrify',
     'watson',
@@ -94,13 +96,12 @@ INSTALLED_APPS = (
 # Place bcrypt first in the list, so it will be the default password hashing
 # mechanism
 PASSWORD_HASHERS = (
-    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
     'django.contrib.auth.hashers.BCryptPasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-    'django.contrib.auth.hashers.SHA1PasswordHasher',
-    'django.contrib.auth.hashers.MD5PasswordHasher',
-    'django.contrib.auth.hashers.CryptPasswordHasher',
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
 )
 
 # Sessions

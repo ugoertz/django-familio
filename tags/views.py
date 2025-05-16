@@ -75,7 +75,7 @@ class SaveTags(LoginRequiredMixin, View):
             if t:
                 taglist.append(t)
 
-        obj.tags.set(*taglist)
+        obj.tags.set(taglist)
 
         if request.POST['next']:
             return HttpResponseRedirect(request.POST['next'])

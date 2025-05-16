@@ -56,7 +56,7 @@ def create_video_version(video_id, fmt):
             ])
 
     os.system(
-            ('ffmpeg -i {fn} -filter:v "scale=min(720\, iw):-2" ' +
+            ('ffmpeg -i {fn} -filter:v "scale=min(720\\, iw):-2" ' +
              '{options} -y {tgt}.{fmt}').format(
                  fn=fn, options=options, tgt=target, fmt=fmt))
 

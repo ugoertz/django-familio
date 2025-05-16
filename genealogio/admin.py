@@ -5,7 +5,7 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib.gis import admin
 from django.contrib.sites.models import Site
 from django.urls import reverse
@@ -53,7 +53,7 @@ class CurrentSiteGenAdmin(CurrentSiteAdmin):
     def get_urls(self):
         # pylint: disable=no-member
         urls = super(CurrentSiteGenAdmin, self).get_urls()
-        return [url(r'^(?P<pk>\d+)/resethandle/$',
+        return [re_path(r'^(?P<pk>\d+)/resethandle/$',
                     self.admin_site.admin_view(self.reset_handle)),
                 ] + urls
 
@@ -66,7 +66,7 @@ class NameFormSet(BaseInlineFormSet):
         super(NameFormSet, self).__init__(*args, **kwargs)
 
         # Check that the data doesn't already exist
-        if not kwargs['instance'].name_set.exists():
+        if not kwargs['instance'].pk or not kwargs['instance'].name_set.exists():
             self.initial = [{'typ': Name.FIRSTNAME, },
                             {'typ': Name.BIRTHNAME, },
                             {'typ': Name.MARRIEDNAME, }, ]

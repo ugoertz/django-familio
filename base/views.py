@@ -12,7 +12,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import ungettext
+from django.utils.translation import ngettext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, View
 
@@ -216,7 +216,7 @@ class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
         return [{"value": f.pk, "label": get_label(f)}
                 for f in self.get_queryset(request)[:AUTOCOMPLETE_LIMIT]]
 
-    @never_cache
+    @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         self.check_user_permission()
         self.GET = self.request.GET
@@ -226,7 +226,7 @@ class CustomAutocompleteLookup(LoginRequiredMixin, AutocompleteLookup):
             if data:
                 return ajax_response(data)
         # overcomplicated label translation
-        label = ungettext('%(counter)s result',
+        label = ngettext('%(counter)s result',
                           '%(counter)s results', 0) % {'counter': 0}
         data = [{"value": None, "label": label}]
         return ajax_response(data)

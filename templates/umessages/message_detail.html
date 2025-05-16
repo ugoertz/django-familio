@@ -24,7 +24,7 @@
 
 <ul class="list-group">
 {% for message in message_list %}
-<li class="list-group-item" {% ifequal message.sender.username request.user.username %}style="background-color: #eeeeee;"{% endifequal %}>
+<li class="list-group-item" {% if message.sender.username == request.user.username %}style="background-color: #eeeeee;"{% endif %}>
 {{ message.body|apply_markup:"genrestructuredtext" }}
 <p style="font-size: 100%;">{% blocktrans with message.sent_at as sent_at %}Geschrieben am {{ sent_at }}{% endblocktrans %}</p>
 </li>

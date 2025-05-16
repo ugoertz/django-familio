@@ -75,7 +75,7 @@ class NotePlaceInline(GrappelliSortableHiddenMixin,
         return obj.note
 
 
-class PlaceAdmin(admin.OSMGeoAdmin):
+class PlaceAdmin(admin.GISModelAdmin):
     """The PlaceAdmin class."""
 
     fieldsets = (
@@ -86,14 +86,6 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     list_display = ('title', 'first_url', 'handle', )
     search_fields = ('title', )
     inlines = [UrlInline, NotePlaceInline, ]
-
-    openlayers_url = 'https://cdnjs.cloudflare.com/ajax/libs/' +\
-                     'openlayers/2.13.1/OpenLayers.js'
-
-    pnt = Point(8, 50.5, srid=4326)
-    pnt.transform(3857)
-    default_lon, default_lat = pnt.coords
-    default_zoom = 5
 
     def view_on_site(self, obj):
         return obj.get_absolute_url()
@@ -128,7 +120,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
             # specified, so try to retrieve them using geopy
             from geopy.geocoders import Nominatim
             from django.contrib.gis.geos import fromstr
-            geolocator = Nominatim(timeout=2)
+            geolocator = Nominatim(user_agent=settings.NOMINATIM_USER_AGENT, timeout=2)
             try:
                 location = geolocator.geocode(obj.title)
                 obj.location = fromstr('POINT(%f %f)' %
@@ -147,60 +139,56 @@ class PlaceAdmin(admin.OSMGeoAdmin):
             obj.handle += u'_' + str(datetime.now().microsecond)[:5]
         super(PlaceAdmin, self).save_model(request, obj, form, change)
 
+    class Media:
+        css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
+
 admin.site.register(Place, PlaceAdmin)
 
 
-class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
-                            admin.TabularInline):
-    model = CustomMapMarker
-    extra = 2
-    raw_id_fields = ('place', )
-    autocomplete_lookup_fields = {'fk': ['place', ], }
-    sortable_excludes = ('position', 'label_offset_x', 'label_offset_y', )
+# class CustomMapMarkerInline(GrappelliSortableHiddenMixin,
+#                             admin.TabularInline):
+#     model = CustomMapMarker
+#     extra = 2
+#     raw_id_fields = ('place', )
+#     autocomplete_lookup_fields = {'fk': ['place', ], }
+#     sortable_excludes = ('position', 'label_offset_x', 'label_offset_y', )
 
-    def formfield_for_dbfield(self, db_field, **kwargs):
-        if db_field.name == 'label':
-            kwargs['widget'] = TextInput(attrs={'size': 2, })
-        return super(CustomMapMarkerInline, self)\
-            .formfield_for_dbfield(db_field, **kwargs)
+#     def formfield_for_dbfield(self, db_field, **kwargs):
+#         if db_field.name == 'label':
+#             kwargs['widget'] = TextInput(attrs={'size': 2, })
+#         return super(CustomMapMarkerInline, self)\
+#             .formfield_for_dbfield(db_field, **kwargs)
 
 
-class CustomMapAdmin(
-        CurrentSiteAdmin, admin.OSMGeoAdmin, VersionAdmin):
-    """Admin class for CustomMap model."""
+# class CustomMapAdmin(
+#         CurrentSiteAdmin, admin.GISModelAdmin, VersionAdmin):
+#     """Admin class for CustomMap model."""
 
-    fieldsets = (
-            ('', {'fields': ('title', 'description', ), }),
-            ('Geo-Daten', {'fields': ('refresh', 'bbox', ), }),
-            ('Marker', {'classes': ('placeholder custommapmarker_set-group', ),
-                        'fields': ()}),
-            ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
-                                'fields': ('sites', ), }), )
-    inlines = [CustomMapMarkerInline, ]
-    raw_id_fields = ('sites', )
-    autocomplete_lookup_fields = {'m2m': ['sites', ], }
-    list_display = ('id', 'title', 'render_status', 'view_on_site_link', )
-    search_fields = ('title', 'description', )
-    change_list_template = "admin/change_list_filter_sidebar.html"
+#     fieldsets = (
+#             ('', {'fields': ('title', 'description', ), }),
+#             ('Geo-Daten', {'fields': ('refresh', 'bbox', ), }),
+#             ('Marker', {'classes': ('placeholder custommapmarker_set-group', ),
+#                         'fields': ()}),
+#             ('Familienbäume', {'classes': ('grp-collapse grp-closed', ),
+#                                 'fields': ('sites', ), }), )
+#     inlines = [CustomMapMarkerInline, ]
+#     raw_id_fields = ('sites', )
+#     autocomplete_lookup_fields = {'m2m': ['sites', ], }
+#     list_display = ('id', 'title', 'render_status', 'view_on_site_link', )
+#     search_fields = ('title', 'description', )
+#     change_list_template = "admin/change_list_filter_sidebar.html"
 
-    openlayers_url = 'https://cdnjs.cloudflare.com/ajax/libs/' +\
-                     'openlayers/2.13.1/OpenLayers.js'
-    pnt = Point(8, 50.5, srid=4326)
-    pnt.transform(3857)
-    default_lon, default_lat = pnt.coords
-    default_zoom = 5
+#     class Media:
+#         css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
+#         js =  CODEMIRROR_JS + (
+#               'js/adminactions.js',
+#               )
 
-    class Media:
-        css = {'all': ('css/custommap_admin.css', ) + CODEMIRROR_CSS, }
-        js =  CODEMIRROR_JS + (
-              'js/adminactions.js',
-              )
+#         try:
+#             js += settings.NOTARO_SETTINGS['autocomplete_helper']
+#         except:
+#             pass
+#         js += ('codemirror-custom/codemirror_conf_custommap.js', )
 
-        try:
-            js += settings.NOTARO_SETTINGS['autocomplete_helper']
-        except:
-            pass
-        js += ('codemirror-custom/codemirror_conf_custommap.js', )
-
-admin.site.register(CustomMap, CustomMapAdmin)
+# admin.site.register(CustomMap, CustomMapAdmin)
 

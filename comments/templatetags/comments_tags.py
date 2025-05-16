@@ -1,4 +1,4 @@
-from django.utils.encoding import smart_text
+from django.utils.encoding import smart_str
 from django import template
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -96,7 +96,7 @@ class BaseCommentNode(template.Node):
 
         qs = self.comment_model.objects.filter(
             content_type=ctype,
-            object_pk=smart_text(object_pk),
+            object_pk=smart_str(object_pk),
             site__pk=settings.SITE_ID,
         )
 

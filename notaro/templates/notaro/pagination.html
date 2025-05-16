@@ -8,11 +8,11 @@
         {% endfor %}
         {% if page_obj.paginator.start_main_dots %}...{% endif %}
         {% for i in page_obj.paginator.main_range %}
-        {% ifequal i page_obj.number %}
+        {% if i == page_obj.number %}
         <span style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px; background-color: #dddddd;">{{ i }}</span>
         {% else %}
         <a href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" style="margin-left: 5px; margin-right: 5px; border: 1px solid gray; padding-left:4px; padding-right: 4px;">{{ i }}</a>
-        {% endifequal %}
+        {% endif %}
         {% endfor %}
         {% if page_obj.paginator.main_end_dots %}...{% endif %}
         {% for i in page_obj.paginator.end_range %}

@@ -9,7 +9,8 @@ from django.contrib.sites.models import Site
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core import mail
 from django.urls import reverse
-from selenium.webdriver.firefox.webdriver import WebDriver, FirefoxProfile
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
 from selenium import webdriver
 
 from accounts.models import UserSite
@@ -32,13 +33,12 @@ class LoginTest(StaticLiveServerTestCase):
     def setUpClass(cls):
         super(LoginTest, cls).setUpClass()
 
-        capabilities = webdriver.DesiredCapabilities().FIREFOX
-        capabilities['acceptSslCerts'] = True
-        profile = FirefoxProfile()
+        profile = Options()
         profile.set_preference('intl.accept_languages', 'de')
+        profile.set_preference('acceptSslCerts', True)
         profile.accept_untrusted_certs = True
 
-        cls.selenium = WebDriver(profile, capabilities=capabilities)
+        cls.selenium = WebDriver(profile)
         cls.selenium.implicitly_wait(3)
 
     def setUp(self):

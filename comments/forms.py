@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.conf import settings
 from django import forms
 from .models import Comment
@@ -29,7 +29,7 @@ class CommentForm(forms.ModelForm):
         """
         return dict(
             content_type=ContentType.objects.get_for_model(self.target_object),
-            object_pk=force_text(self.target_object._get_pk_val()),
+            object_pk=force_str(self.target_object._get_pk_val()),
             content=self.cleaned_data["content"],
             site_id=settings.SITE_ID,
             )
