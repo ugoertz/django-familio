@@ -18,7 +18,7 @@ from django.urls import reverse
 from django.db.models import Count
 from django.shortcuts import render
 
-from filebrowser.base import FileListing
+from filebrowser.base import FileListing, FileObject
 
 from base.views import CurrentSiteMixin, PaginateListView
 from tags.models import CustomTag
@@ -292,7 +292,8 @@ class UnboundImagesView(LoginRequiredMixin, View):
 
         # create Picture object for filename
         # pylint: disable=no-member
-        picture = Picture.objects.create(image=request.POST['filename'])
+        picture = Picture(image=FileObject(request.POST['filename']))
+        picture.save()
         picture.sites.add(request.site)
 
         return HttpResponseRedirect(picture.get_absolute_url())
