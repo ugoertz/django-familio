@@ -89,7 +89,7 @@ $(document).ready(function() {
             {% with url=object.get_img_url %}
             {% if url %}
             <div style="margin-top: 30px; margin-bottom: 30px; border: 1px solid gray; padding: 20px; display: flex; align-items: center; justify-content: center;">
-                <a href="{{ url }}"><img src="{{ url }}" width="100%"></a>
+                <a href="{{ url }}"><img src="{{ url }}-preview.png" width="100%"></a>
             </div>
             {% endif %}
             {% endwith %}

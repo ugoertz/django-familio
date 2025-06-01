@@ -63,6 +63,13 @@ def create_pdf(familytree_id):
         os.path.join(ft.get_directory_tmp(), 'ftree.png'),
         ft.get_directory_dest(),
     )
+    os.system('cd %s && convert ftree.png -resize 1200x ftree.png-preview.png'
+              % (ft.get_directory_tmp(), )
+              )
+    shutil.copy(
+        os.path.join(ft.get_directory_tmp(), 'ftree.png-preview.png'),
+        ft.get_directory_dest(),
+    )
 
 
     ft.render_status = FamilyTree.RENDERED
