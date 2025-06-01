@@ -42,8 +42,10 @@ class FTCreateForm(FTForm):
 
     # pylint: disable=no-member
     reference = forms.CharField(
-            required=True,
-            widget=forms.Select(choices=[]))
+        required=True,
+        widget=forms.Select(choices=[]),
+        label='Referenzobjekt',
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,5 +59,8 @@ class FTCreateForm(FTForm):
                 'reference',
                 Submit('Abspeichern', 'Abspeichern', css_class='btn-success'))
 
+    class Meta:
+        model = FamilyTree
+        fields = ['title', 'public', 'levels_up', 'levels_down', ]
 
 
