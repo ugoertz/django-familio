@@ -65,6 +65,7 @@ urlpatterns = (
         re_path(r'', include('base.urls')),
         re_path(r'^maps/', include('maps.urls')),
         re_path(r'^books/', include('books.urls')),
+        re_path(r'^familytrees/', include('familytrees.urls')),
         re_path(r'^gen/', include('genealogio.urls')),
         re_path(r'^notes/', include('notaro.urls')),
         re_path(r'^' + settings.MEDIA_URL[1:] + r'(?P<fname>.*)$',

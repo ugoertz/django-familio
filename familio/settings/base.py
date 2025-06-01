@@ -91,6 +91,7 @@ INSTALLED_APPS = (
     'genealogio',
     'notaro',
     'partialdate',
+    'familytrees',
 )
 
 # Place bcrypt first in the list, so it will be the default password hashing

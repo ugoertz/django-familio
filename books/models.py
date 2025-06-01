@@ -25,6 +25,33 @@ from genealogio.models import Event, Family, Person, TimelineItem
 from genealogio.views import FamilyDetail
 from notaro.models import Note, Source
 
+
+def get_tmp_dir():
+    '''Get directory name which is unused under MEDIA_ROOT/PDF_DIRECTORY
+    and under MEDIA_ROOT/tmp/PDF_DIRECTORY
+
+    Fails (not very gracefully ... FIXME) if unsucessful after 5 tries.
+    '''
+
+    ctr = 0
+    while ctr < 5:
+        ctr += 1
+        tmpdir = tempfile.mkdtemp(
+                dir=os.path.join(
+                    settings.MEDIA_ROOT,
+                    'tmp',
+                    settings.PDF_DIRECTORY))
+        os.chmod(tmpdir, 0o775)
+        d = os.path.basename(tmpdir)
+        dest = os.path.join(
+                settings.MEDIA_ROOT, settings.PDF_DIRECTORY, d)
+        if not os.path.exists(dest):
+            os.mkdir(dest)
+            os.chmod(dest, 0o775)
+            return d
+    raise Exception
+
+
 # In FLAGS, store options for pdf export, such as whether to include the time
 # line in a family item. Book, Collection and Item all have a flag field; if
 # a flag is not defined for some item, its value is looked up recursively on
@@ -326,25 +353,12 @@ class Book(models.Model):
             upload_to=get_upload_to)
 
     def save(self, *args, **kwargs):
-        ctr = 0
-        while ctr < 5 and not self.directory:
-            ctr += 1
-            tmpdir = tempfile.mkdtemp(
-                    dir=os.path.join(
-                        settings.MEDIA_ROOT,
-                        'tmp',
-                        settings.PDF_DIRECTORY))
-            os.chmod(tmpdir, 0o775)
-            d = os.path.basename(tmpdir)
-            dest = os.path.join(
-                    settings.MEDIA_ROOT, settings.PDF_DIRECTORY, d)
-            if not os.path.exists(dest):
-                os.mkdir(dest)
-                os.chmod(dest, 0o775)
-                self.directory = d
+        # set self.directory which lives under MEDIA_ROOT/PDF_DIRECTORY
+        # and "also" under MEDIA_ROOT/tmp/PDF_DIRECTORY (which is why we
+        # create this in this cumbersome way ...
+
         if not self.directory:
-            # something went wrong
-            raise Exception
+            self.directory = get_tmp_dir()
 
         # pylint: disable=no-member
         if self.site_id is None:

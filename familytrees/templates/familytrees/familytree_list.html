@@ -1,0 +1,41 @@
+{% extends "_layouts/base.html" %}
+{% load base_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="cabin col-md-12">
+            <h2>{{ page_title }}</h2>
+            <p><span class="pull-right">
+                <a href="{% settings_value "DOCUMENTATION_URL" %}pdfexport.html" class="btn btn-default">Dokumentation</a>
+            {% if public_fts %}
+            <a class="btn btn-default" href="{% url 'my-ft-list' %}">Meine Stammbäume</a>
+            {% else %}
+            <a class="btn btn-default" href="{% url 'public-ft-list' %}">Öffentlich verfügbare Stammbäume</a>
+            {% endif %}
+            <a href="{% url "ft-create" %}" class="btn btn-success">Neuen Stammbaum anlegen</a>
+            </span></p>
+
+            {% if object_list %}
+            <table style="margin-top: 50px;" class="table">
+                <tr><th>Titel</th><th>Autoren</th></tr>
+                {% for object in object_list %}
+                <tr>
+                    <td>{{ object.title }}</td>
+                    <td>{{ object.description }}</td>
+                    {% with authors=object.authors.all %}
+                    <td>{% for a in authors %}{{ a.get_full_name }}, {% endfor %}</td>
+                    <td>{% with pdflink=object.get_pdf_url %}{% if pdflink %}<a href="{{ pdflink }}">pdf</a> ({{ object.get_pdf_creation_date }}){% else %}Noch kein PDF vorhanden<br>{{ object.render_status }}{% endif %}{% endwith %}</td>
+                    <td>{% if request.user in authors %}<a href="{{ object.get_absolute_url }}" class="btn btn-default btn-sm">Bearbeiten</a>{% endif %}
+                    {% endwith %}
+                </tr>
+                {% endfor %}
+            </table>
+            {% include "notaro/pagination.html" %}
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

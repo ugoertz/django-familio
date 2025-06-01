@@ -1,0 +1,108 @@
+{% extends "_layouts/base.html" %}
+{% load static %}
+{% load typogrify_tags %}
+{% load crispy_forms_tags %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/selectize.bootstrap3.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-switch.min.css' %}">
+<style>
+div.bootstrap-switch span {
+    font-family: cabin, helvetica, sans;
+}
+label, input {
+    font-family: cabin, helvetica, sans;
+}
+textarea {
+    font-family: monospace, courier;
+}
+</style>
+{% endblock %}
+
+{% block js %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'js/selectize.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-switch.min.js' %}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#id_reference').selectize({
+        valueField: 'id',
+        searchField: ['label'],
+        closeAfterSelect: true,
+        render: {
+            option:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                },
+            item:
+                function (item, escape) {
+                    return "<div class=\"cabin\">" + escape(item.label) + "</div>";
+                }
+        },
+        create: false,
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.get(
+                    "{% url 'get-families' %}",
+                    {query: query},
+                    callback);
+        }
+    });
+
+    // bootstrapSwitch the checkboxes for model fields
+    $('label > input[type=checkbox]').bootstrapSwitch({
+        onText: "Ein", offText: "Aus",
+        onColor: "success",
+        size: "small"
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 cabin">
+            <h2><span style="color: gray;">Stammbaum</span> {{ object.title }}</h2>
+
+            {% if object.id %} {# check whether we already have a family tree, or whether we are creating one right now #}
+            <div class="cabin" style="font-size: 120%; padding-bottom: 15px; margin-bottom: 20px; margin-top: 20px; border-bottom: 2px dashed black;">Download:
+            {% with url=object.get_pdf_url %}
+            {% if url %}
+            <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">pdf-Datei</a>
+            {% else %}
+            Noch keine pdf-Datei erstellt.
+            {{ object.render_status }}
+            {% endif %}
+            {% endwith %}
+            {% with url=object.get_zip_url %}
+            {% if url %}
+            <a style="margin-left: 10px; margin-right: 10px;" href="{{ url }}">zip-Archiv der TeX-Datei</a>
+            {% endif %}
+            {% endwith %}
+
+            <a href="{% url "ft-create-pdf" object.id %}"  style="margin-left: 30px;" class="btn {% if object.render_status == 'RENDERED' or object.render_status == '' %}btn-primary{% else %}btn-warning{% endif %}">PDF erstellen</a>
+            </div>
+            {% endif %}
+
+            {% with url=object.get_img_url %}
+            {% if url %}
+            <div style="margin-top: 30px; margin-bottom: 30px; border: 1px solid gray; padding: 20px; display: flex; align-items: center; justify-content: center;">
+                <a href="{{ url }}"><img src="{{ url }}" width="100%"></a>
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            {% crispy form form.helper %}
+
+            {% if object.authors.all %}
+            <p style="margin-top: 20px;">Autoren:
+            {% for a in object.authors.all %}{{ a.get_full_name }}, {% endfor %}
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

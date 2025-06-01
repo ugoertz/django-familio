@@ -1,7 +1,3 @@
-# -*- coding: utf8 -*-
-
-"""The models of the books app."""
-
 from collections import defaultdict
 import json
 
@@ -109,7 +105,7 @@ class FlagField(forms.fields.MultiValueField):
 
 class BookForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        super(BookForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         helper = FormHelper()
         helper.form_class = 'form-horizontal'
@@ -146,7 +142,7 @@ class BookCreateForm(BookForm):
             widget=forms.Select(choices=[]))
 
     def __init__(self, *args, **kwargs):
-        super(BookCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper.layout = Layout(
                 'title',
@@ -165,7 +161,7 @@ class CollectionForm(forms.ModelForm):
     c_flags = FlagField(label="Einstellungen")
 
     def __init__(self, *args, **kwargs):
-        super(CollectionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         helper = FormHelper()
         helper.form_class = 'form-horizontal'
         helper.label_class = 'col-md-2'
@@ -181,7 +177,7 @@ class CollectionForm(forms.ModelForm):
         self.helper = helper
 
     def clean(self):
-        super(CollectionForm, self).clean()
+        super().clean()
 
         d = defaultdict(dict)
         if self.instance.flags:
@@ -220,7 +216,7 @@ class CollectionForm(forms.ModelForm):
 class CollectionCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(CollectionCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         modellist = [Note, Person, Family, Event, Source, TimelineItem]
 
@@ -254,7 +250,7 @@ class ItemForm(forms.ModelForm):
     c_flags = FlagField(label="Einstellungen")
 
     def __init__(self, *args, **kwargs):
-        super(ItemForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         helper = FormHelper()
         helper.form_class = 'form-horizontal'
@@ -271,7 +267,7 @@ class ItemForm(forms.ModelForm):
         self.helper = helper
 
     def clean(self):
-        super(ItemForm, self).clean()
+        super().clean()
 
         d = defaultdict(dict)
         if self.instance.flags:
@@ -307,7 +303,7 @@ class ItemForm(forms.ModelForm):
 class ItemCreateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(ItemCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         modellist = [Note, Person, Family, Event, Source, TimelineItem]
 
