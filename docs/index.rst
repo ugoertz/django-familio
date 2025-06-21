@@ -17,6 +17,7 @@ Dokumentation zur unserefamilie.net-Webseite
    quellen
    karten
    pdfexport
+   stammbaeume
    familienbaeume
    admin
 
