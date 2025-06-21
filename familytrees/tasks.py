@@ -1,7 +1,8 @@
-import tempfile
+import datetime
 import os
 import os.path
 import shutil
+import tempfile
 
 from celery import shared_task, chain
 
@@ -66,12 +67,13 @@ def create_pdf(familytree_id):
     os.system('cd %s && convert ftree.png -resize 1200x ftree.png-preview.png'
               % (ft.get_directory_tmp(), )
               )
+    dt = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
     shutil.copy(
         os.path.join(ft.get_directory_tmp(), 'ftree.png-preview.png'),
-        ft.get_directory_dest(),
+        os.path.join(ft.get_directory_dest(), 'ftree.png-%s.png' % dt),
     )
 
-
+    ft.preview_img = dt
     ft.render_status = FamilyTree.RENDERED
     ft.save()
 

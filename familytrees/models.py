@@ -294,6 +294,7 @@ class FamilyTree(models.Model):
             max_length=800,
             blank=True,
             verbose_name="Status")
+    preview_img = models.CharField(max_length=15, default='preview', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.directory:
