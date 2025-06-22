@@ -310,7 +310,7 @@ class Video(models.Model):
             sz = os.path.getsize(os.path.join(
                 settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.mp4'.format(dir=self.directory)))
-            return (sz / 100000) / 10.0
+            return (sz // 100000) / 10.0
         except OSError:
             return None
 
@@ -319,7 +319,7 @@ class Video(models.Model):
             sz = os.path.getsize(os.path.join(
                 settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.ogv'.format(dir=self.directory)))
-            return (sz / 100000) / 10.0
+            return (sz // 100000) / 10.0
         except OSError:
             return None
 
@@ -328,7 +328,7 @@ class Video(models.Model):
             sz = os.path.getsize(os.path.join(
                 settings.MEDIA_ROOT, settings.FILEBROWSER_DIRECTORY,
                 'videos/{dir}/video.webm'.format(dir=self.directory)))
-            return (sz / 100000) / 10.0
+            return (sz // 100000) / 10.0
         except OSError:
             return None
 
