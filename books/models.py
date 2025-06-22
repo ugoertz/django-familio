@@ -742,6 +742,13 @@ class Item(models.Model):
                     "%s/%s_detail.rst" % (
                         self.obj._meta.app_label, self.obj._meta.model_name),
                     context)
+
+            if (self.obj_content_type
+                    == ContentType.objects.get_for_model(Note)):
+                pattern = re.compile(':f:`([^`]*) (F_[a-zA-Z0-9_]*)`')
+                result = re.sub(pattern, r':ref:`\1 <\2>`', result)
+                pattern = re.compile(':p:`([^`]*) (P_[a-zA-Z0-9_]*)`')
+                result = re.sub(pattern, r':ref:`\1 <\2>`', result)
             if force_from_template:
                 return result
 
