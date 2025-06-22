@@ -591,7 +591,7 @@ class Book(models.Model):
             os.system(
                 'cd %s '
                 % os.path.join(self.get_directory_tmp(), '_build/latex') +
-                '&& qpdf --empty --pages titlepage.pdf 1 '
+                '&& qpdf chronicle.pdf --pages titlepage.pdf '
                 'chronicle.pdf 2-z -- c.pdf')
             fn = 'c'
         else:
