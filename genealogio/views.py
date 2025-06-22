@@ -20,6 +20,7 @@ from djgeojson.views import GeoJSONLayerView
 
 from base.views import CurrentSiteMixin, PaginateListView
 from maps.models import Place
+from notaro.models import Picture
 from partialdate.fields import string_to_partialdate
 
 from .forms import AddParentForm, AddPersonForm, AddSpouseForm
@@ -754,7 +755,7 @@ class AddParents(LoginRequiredMixin, FormView):
                 reverse('family-detail', kwargs={'pk': family.pk, }))
 
 
-class AddPersonView(CreateView):
+class AddPersonView(LoginRequiredMixin, CreateView):
 
     model = Person
 
@@ -927,4 +928,14 @@ class AddSpouseView(AddPersonView):
                 pass
 
         return initial
+
+
+class UpdatePortrait(LoginRequiredMixin, View):
+
+    def post(self, *args, **kwargs):
+        person = Person.objects.get(pk=int(self.request.POST['person_id']))
+        person.portrait = Picture.objects.get(pk=int(self.request.POST['img_id']))
+        person.save()
+        return HttpResponseRedirect(
+                reverse('person-detail', kwargs={'pk': person.pk, }))
 

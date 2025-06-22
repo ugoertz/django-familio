@@ -1,16 +1,17 @@
 from django.urls import re_path
 
 from .views import (
-        PersonList, PersonDetail, EventDetail, FamilyList,
-        Sparkline,
-        Pedigree, PedigreePDF,
-        Descendants, DescendantsPDF,
-        HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
-        AddParents, AddChildView, AddSpouseView,
-        )
+    PersonList, PersonDetail, EventDetail, FamilyList,
+    Sparkline,
+    Pedigree, PedigreePDF,
+    Descendants, DescendantsPDF,
+    HomeGeoJSON, FamilyDetail, PPlacesGeoJSON,
+    AddParents, AddChildView, AddSpouseView,
+    UpdatePortrait,
+)
 from .ajax import (
-        PPlacesLines, AutocompleteView, PopoverData,
-        )
+    PPlacesLines, AutocompleteView, PopoverData,
+)
 
 
 urlpatterns = (
@@ -72,6 +73,10 @@ urlpatterns = (
         re_path(r'^add-spouse/(?P<pk>\d+)/',
                 AddSpouseView.as_view(),
                 name="add_spouse"),
+        re_path(r'make-portrait/',
+                UpdatePortrait.as_view(),
+                name="make-portrait",
+                ),
 
         # ajax
         re_path(r'^pplaces-lines/(?P<person_id>\d+)/$',
