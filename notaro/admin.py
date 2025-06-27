@@ -13,16 +13,18 @@ from urllib.parse import quote as urlquote
 
 from django import forms
 from django.conf import settings
-from django.urls import re_path
 from django.contrib import admin, messages
+from django.contrib.admin import helpers
 from django.contrib.admin.helpers import ActionForm
 from django.contrib.sites.models import Site
 from django.core.files.storage import default_storage
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import re_path
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 from filebrowser.base import FileObject
 from filebrowser.settings import ADMIN_THUMBNAIL
@@ -524,6 +526,22 @@ class PictureAdmin(CurrentSiteAdmin, VersionAdmin):
     list_filter = ('sites', )
     search_fields = ('caption', )
     inlines = [SourcePictureInline, ]
+
+    def action_checkbox(self, obj):
+        """
+        A list_display column containing a checkbox widget.
+        Override this here because Picture.__str__ includes HTML code for the
+        picture thumbnail, and we do not want to put that inside the aria-label.
+        """
+        attrs = {
+            "class": "action-select",
+            "aria-label": format_html(
+                _("Select this object for an action - {}, {}"),
+                str(obj.pk), obj.caption[:40],
+            ),
+        }
+        checkbox = forms.CheckboxInput(attrs, lambda value: False)
+        return checkbox.render(helpers.ACTION_CHECKBOX_NAME, str(obj.pk))
 
     def get_changeform_initial_data(self, request):
         return {'sites': [request.site, ], }
