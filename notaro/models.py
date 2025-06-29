@@ -461,7 +461,14 @@ class NoteSource(models.Model):
 class Note(models.Model):
 
     title = models.CharField(max_length=200, verbose_name='Titel')
-    link = models.CharField(max_length=50, unique=True)
+    link = models.CharField(
+        max_length=50,
+        unique=True,
+        help_text='Link, unter dem der Text aufgerufen werden kann '
+        '(ohne die Domain), zum Beispiel "/personen/mueller/otto/". '
+        'Beginn und Ende "/", weitere "/" möglich; sonst nur a-z0-9. '
+        'Keine Umlaute, Sonderzeichen, Leerzeichen, Satzzeichen außer ".".',
+    )
     text = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
     date_changed = models.DateTimeField(auto_now=True)

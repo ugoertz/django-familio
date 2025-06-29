@@ -155,7 +155,7 @@ $(window).on('load', function(){
             <h2>Die neuesten Texte</h2>
             <ul class="list-group">
                 {% for note in notes %}
-                <li class="list-group-item clearfix"><a href="{% url "note-detail" note.id %}">{{ note.title }}</a><span class="cabin small pull-right">{% if note.date_added|date:"d.M.Y" == note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"j. M." }}{% endif %}</span>
+                <li class="list-group-item clearfix"><a href="{{ note.get_absolute_url }}">{{ note.title }}</a><span class="cabin small pull-right">{% if note.date_added|date:"d.M.Y" == note.date_changed|date:"d.M.Y" %}Neu am {{ note.date_added|date:"j. M." }}{% else %}Aktualisiert am {{ note.date_changed|date:"j. M." }}{% endif %}</span>
                 </li>
                 {% endfor %}
             </ul>
