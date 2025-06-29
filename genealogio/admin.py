@@ -52,8 +52,8 @@ class CurrentSiteGenAdmin(CurrentSiteAdmin):
 
     def get_urls(self):
         # pylint: disable=no-member
-        urls = super(CurrentSiteGenAdmin, self).get_urls()
-        return [re_path(r'^(?P<pk>\d+)/resethandle/$',
+        urls = super().get_urls()
+        return [re_path(r'^(?P<pk>\d+)/change/resethandle/$',
                     self.admin_site.admin_view(self.reset_handle)),
                 ] + urls
 

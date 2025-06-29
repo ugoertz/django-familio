@@ -9,6 +9,7 @@ from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from filebrowser.settings import ADMIN_THUMBNAIL
 from partialdate.fields import PartialDateField
 
 from notaro.managers import GenManager
@@ -283,6 +284,9 @@ class Family(PrimaryObject):
                 Family.CIVILUNION: 'Eingetragene Partnerschaft mit',
                 }
         return texts.get(self.family_rel_type, 'Familie mit')
+
+    def display_as_search_result(self):
+        return 'Familie ' + self.__str__()
 
     def __str__(self):
         n = ''
@@ -776,7 +780,17 @@ class Person(PrimaryObject):
         return ("%s" % tag, details)
 
     def __str__(self):
-        return u"%s %s" % (self.get_primary_name(), self.handle)
+        return "%s %s" % (self.get_primary_name(), self.handle)
+
+    def display_as_search_result(self):
+        if self.portrait:
+            return mark_safe('<img style="margin-right: 20px;" src="%s"> %s' % (
+                self.portrait.image.version_generate(ADMIN_THUMBNAIL).url,
+                self.get_primary_name() + ' (%s - %s)' % (
+                    self.year_of_birth, self.year_of_death),
+            ))
+        return self.get_primary_name() + ' (%s - %s)' % (
+            self.year_of_birth, self.year_of_death)
 
     class Meta:
         ordering = ('handle', 'datebirth', )

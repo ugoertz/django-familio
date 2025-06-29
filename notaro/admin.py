@@ -100,8 +100,8 @@ class CurrentSiteAdmin(object):
 
     def get_urls(self):
         # pylint: disable=no-member
-        urls = super(CurrentSiteAdmin, self).get_urls()
-        return [re_path(r'^(?P<pk>\d+)/remove/$',
+        urls = super().get_urls()
+        return [re_path(r'^(?P<pk>\d+)/change/remove/$',
                     self.admin_site.admin_view(self.remove_object)),
                 ] + urls
 
@@ -281,7 +281,7 @@ class NoteAdmin(CurrentSiteAdmin, VersionAdmin):
 
     def get_urls(self):
         # pylint: disable=no-member
-        urls = super(NoteAdmin, self).get_urls()
+        urls = super().get_urls()
         return [re_path(r'^import/$',
                     self.admin_site.admin_view(self.import_object),
                     name="importnote"),
@@ -822,6 +822,22 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
     search_fields = ('caption', )
     inlines = [SourceVideoInline, ]
 
+    def action_checkbox(self, obj):
+        """
+        A list_display column containing a checkbox widget.
+        Override this here because Picture.__str__ includes HTML code for the
+        picture thumbnail, and we do not want to put that inside the aria-label.
+        """
+        attrs = {
+            "class": "action-select",
+            "aria-label": format_html(
+                _("Select this object for an action - {}, {}"),
+                str(obj.pk), obj.caption[:40],
+            ),
+        }
+        checkbox = forms.CheckboxInput(attrs, lambda value: False)
+        return checkbox.render(helpers.ACTION_CHECKBOX_NAME, str(obj.pk))
+
     def image_thumbnail(self, obj):
         """Display thumbnail, to be used in django admin list_display."""
 
@@ -849,8 +865,8 @@ class VideoAdmin(CurrentSiteAdmin, VersionAdmin):
 
     def get_urls(self):
         # pylint: disable=no-member
-        urls = super(VideoAdmin, self).get_urls()
-        return [re_path(r'^(?P<pk>\d+)/recompile/$',
+        urls = super().get_urls()
+        return [re_path(r'^(?P<pk>\d+)/change/recompile/$',
                     self.admin_site.admin_view(self.recompile_video)),
                 ] + urls
 

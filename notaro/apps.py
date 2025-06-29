@@ -18,3 +18,6 @@ class NotaroConfig(AppConfig):
 
         PictureModel = self.get_model("Picture")
         watson.register(PictureModel.objects.all(), exclude=('image'))
+
+        VideoModel = self.get_model("Video")
+        watson.register(VideoModel.objects.all(), exclude=('video', 'poster'))

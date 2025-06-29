@@ -146,9 +146,16 @@ class Picture(models.Model):
 
     def __str__(self):
         # pylint: disable=no-member
-        return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
-            escape(self.caption[:25] or self.image.original_filename),
-            self.image.version_generate(ADMIN_THUMBNAIL).url))
+        return self.caption[:25] or self.image.original_filename
+
+    def display_as_search_result(self):
+        short_caption = self.caption[:100]
+        if len(self.caption) > 100:
+            short_caption += '...'
+        return mark_safe('<img style="margin-right: 20px;" src="%s"> %s' % (
+            self.image.version_generate(ADMIN_THUMBNAIL).url,
+            escape(short_caption or self.image.original_filename),
+        ))
 
     @staticmethod
     def autocomplete_search_fields():
@@ -267,14 +274,18 @@ class Video(models.Model):
         super(Video, self).save(*args, **kwargs)
 
     def __str__(self):
-        # pylint: disable=no-member
+        return '[%d] %s' %\
+            (self.id, self.caption[:25] or self.video.original_filename)
+
+    def display_as_search_result(self):
         if self.poster:
-            return mark_safe('%s <img style="margin-left: 20px;" src="%s">' % (
-                escape(self.caption[:25] or self.video.original_filename),
-                self.poster.version_generate(ADMIN_THUMBNAIL).url))
+            return mark_safe('<img style="margin-right: 20px;" src="%s"> %s' % (
+                self.poster.version_generate(ADMIN_THUMBNAIL).url,
+                escape(self.caption[:100] or self.video.original_filename),
+            ))
         else:
-            return '[%d] %s' %\
-                (self.id, self.caption[:25] or self.video.original_filename)
+            return 'Video: [%d] %s' %\
+                (self.id, self.caption[:100] or self.video.original_filename)
 
     @staticmethod
     def autocomplete_search_fields():
