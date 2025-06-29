@@ -358,6 +358,16 @@ class PersonPlace(models.Model):
             self.start = self.person.datedeath
         super(PersonPlace, self).save(*args, **kwargs)
 
+    def get_type(self):
+        result = []
+        if self.typ not in [PersonPlace.UNKNOWN, PersonPlace.OTHER]:
+            result.append(self.get_typ_display())
+        if self.comment:
+            result.append(self.comment)
+        if result:
+            return f'({', '.join(result)})'
+        return ''
+
     def __str__(self):
         # pylint: disable=no-member
         return '%s: %s' % (self.get_typ_display(), self.place.__str__())
@@ -456,7 +466,7 @@ class Person(PrimaryObject):
             # pylint: disable=no-member
             return self.datebirth.year
         except:
-            return ''
+            return '?'
 
     @property
     def year_of_death(self):
@@ -464,7 +474,7 @@ class Person(PrimaryObject):
             # pylint: disable=no-member
             return self.datedeath.year
         except:
-            return ''
+            return '' if self.probably_alive else '?'
 
     @property
     def placebirth(self):

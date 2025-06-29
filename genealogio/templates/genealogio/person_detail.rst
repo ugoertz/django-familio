@@ -24,7 +24,7 @@
 {% endif %}
 {% endif %}
 
-{% if object.datebirth or object.placebirth %}geboren {{ object.datebirth|partial_date:"j.n.Y" }}{% if object.placebirth %} in `{{ object.placebirth }} <{% url "place-detail" object.placebirth.id %}>`__ {% endif %}{% if object.datedeath or object.placedeath %} - {% endif %}{% endif %}{% if object.datedeath or object.placedeath %}gestorben {{ object.datedeath|partial_date:"j.n.Y" }}{% if object.placedeath %} in `{{ object.placedeath }} <{% url "place-detail" object.placedeath.id %}>`__ {% endif %}{% endif %}
+{% if object.datebirth or object.placebirth %}geboren {{ object.datebirth|partial_date:"j.n.Y" }}{% if object.placebirth %} in `{{ object.placebirth }} <{% url "place-detail" object.placebirth.id %}>`__ {% endif %}{% if object.datedeath or object.placedeath or not object.probably_alive %} - {% endif %}{% endif %}{% if object.datedeath or object.placedeath or not object.probably_alive %}gestorben {% if object.datedeath %}{{ object.datedeath|partial_date:"j.n.Y" }}{% else %}?{% endif %}{% if object.placedeath %} in `{{ object.placedeath }} <{% url "place-detail" object.placedeath.id %}>`__ {% endif %}{% else %}{% endif %}
 
 {% include "genealogio/person_snippet_full.rst" with person=object.get_father label="**Vater:** " %}
 
@@ -74,7 +74,7 @@ Orte
 ----
 
 {% for pl in object.personplace_set.all %}
-* {% if pl.start and pl.start != pl.end %}{{ pl.start|partial_date:"j.n.Y" }}{% endif %}{% if pl.start and pl.end and pl.start != pl.end %} - {% endif %}{{ pl.end|partial_date:"j.n.Y" }}{% if pl.start or pl.end %}: {% endif %} `{{ pl.place }} <{{ pl.place.get_absolute_url }}>`__ ({{ pl.get_typ_display }})
+* {% if pl.start and pl.start != pl.end %}{{ pl.start|partial_date:"j.n.Y" }}{% endif %}{% if pl.start and pl.end and pl.start != pl.end %} - {% endif %}{{ pl.end|partial_date:"j.n.Y" }}{% if pl.start or pl.end %}: {% endif %} `{{ pl.place }} <{{ pl.place.get_absolute_url }}>`__ {{ pl.get_type }}
 {% endfor %}
 {% endif %}
 
