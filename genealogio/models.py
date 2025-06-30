@@ -9,7 +9,6 @@ from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from filebrowser.settings import ADMIN_THUMBNAIL
 from partialdate.fields import PartialDateField
 
 from notaro.managers import GenManager
@@ -784,8 +783,8 @@ class Person(PrimaryObject):
 
     def display_as_search_result(self):
         if self.portrait:
-            return mark_safe('<img style="margin-right: 20px;" src="%s"> %s' % (
-                self.portrait.image.version_generate(ADMIN_THUMBNAIL).url,
+            return mark_safe('<img style="margin-right: 20px;" src="%s"> <span style="vertical-align: top;">%s</span>' % (
+                self.portrait.image.version_generate('small').url,
                 self.get_primary_name() + ' (%s - %s)' % (
                     self.year_of_birth, self.year_of_death),
             ))
