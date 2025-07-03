@@ -15,7 +15,7 @@
     {% for obj in obj_list %}
     <div style="display: inline-block; {% if model == "document" %}width: 100%; {% endif %}margin: 5px;" {% if masonry %}class="masonry-item"{% endif %}>
         <a href="{{ obj.get_absolute_url }}">{{ obj.as_html_in_list|safe }}</a>
-        {% if show_id %}<br><span class="cabin">Objekt-ID: {{ obj.id }}</span>{% endif %}{% if portrait_for and user_is_admin %}<br><span><form action="{% url 'make-portrait' %}" method="POST">{% csrf_token %}<input type="hidden" name="person_id" value="{{ portrait_for }}"><input type="hidden" name="img_id" value="{{ obj.id }}"><input class="btn btn-default btn-xs pull-right" type="submit" value="Portrait"></form></span>{% endif %}
+        {% if show_id %}<br><span class="cabin">Objekt-ID: {{ obj.id }}</span>{% endif %}{% if portrait_for and user_is_admin %}<span><form action="{% url 'make-portrait' %}" method="POST">{% csrf_token %}<input type="hidden" name="person_id" value="{{ portrait_for }}"><input type="hidden" name="img_id" value="{{ obj.id }}"><input class="btn btn-default btn-xs pull-right" type="submit" value="Portrait"></form></span>{% endif %}
     </div>
     {% endfor %}
 </div>

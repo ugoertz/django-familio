@@ -18,8 +18,16 @@
 {% endif %}
 {% else %}
 {% if request.site in object.portrait.sites.all %}
+.. raw:: html
+
+    <div class="pull-right" style="position: relative;">
+
 .. image:: {% version object.portrait.image 'small' %}
-    :class: pull-right
+
+.. raw:: html
+
+    <div class="cabin img-rounded" style="font-weight: bold; box-sizing: border-box; position: absolute; right: 2px; bottom: 2px; background: rgba(255, 255, 255, 0.8); color: black; padding: 2px;">{{ object.portrait.date.year }}</div>
+    </div>
 {% endif %}
 {% endif %}
 {% endif %}
