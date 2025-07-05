@@ -89,6 +89,9 @@ class CreatePDFView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         # pylint: disable=unsubscriptable-object
         ft = FamilyTree.objects.get(pk=int(self.kwargs['id']))
+        if self.request.user not in ft.authors.all():
+            raise PermissionDenied
+
         result = create_pdf.delay(ft.pk)
         ft.render_status = result.id
         ft.save()

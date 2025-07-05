@@ -180,7 +180,7 @@ class Picture(models.Model):
 
         # pylint: disable=no-member
         if self.date:
-                                        return '<div style="position: relative;"><img src="%s"><div class="cabin img-rounded" style="font-size: 80%%; font-weight: bold; box-sizing: border-box; position: absolute; right: 2px; bottom: 2px; background: rgba(255, 255, 255, 0.85); color: black; padding: 2px;">%d</div></div>' % (self.image.version_generate('small').url, self.date.year, )
+            return '<div style="position: relative;"><img src="%s"><div class="cabin img-rounded" style="font-size: 80%%; font-weight: bold; box-sizing: border-box; position: absolute; right: 2px; bottom: 2px; background: rgba(255, 255, 255, 0.85); color: black; padding: 2px;">%d</div></div>' % (self.image.version_generate('small').url, self.date.year, )
         else:
             return '<img src="%s">' % (self.image.version_generate('small').url, )
 

@@ -3,7 +3,7 @@
 import datetime
 import json
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -155,6 +155,9 @@ class CollectionCreateView(LoginRequiredMixin, CreateView):
         collection.position = Collection.objects.filter(
                 parent=form.cleaned_data['parent']).count()
         collection.parent = form.cleaned_data['parent']
+
+        if not self.request.user in collection.parent.book.authors.all():
+            raise PermissionDenied
         collection.save()
 
         if form.cleaned_data['model']:
@@ -208,6 +211,8 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         item.position = Item.objects.filter(
                 parent=form.cleaned_data['parent']).count()
         item.parent = form.cleaned_data['parent']
+        if not self.request.user in item.parent.book.authors.all():
+            raise PermissionDenied
         item.save()
 
         return super(ItemCreateView, self).form_valid(form)
@@ -224,9 +229,12 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
         return result
 
 
-class ItemRetrieveText(LoginRequiredMixin, DetailView):
+class ItemRetrieveText(UserPassesTestMixin, DetailView):
 
     model = Item
+
+    def test_func(self):
+        return self.request.user in self.get_object().parent.book.authors.all()
 
     def get(self, *args, **kwargs):
         obj = self.get_object()
@@ -234,11 +242,14 @@ class ItemRetrieveText(LoginRequiredMixin, DetailView):
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
-class ExportGEDCOMView(View):
+class ExportGEDCOMView(LoginRequiredMixin, View):
 
     def get(self, *args, **kwargs):
         # pylint: disable=unsubscriptable-object
         book = Book.objects.get(id=self.kwargs['id'])
+        if self.request.user not in book.authors.all():
+            raise PermissionDenied
+
         data = {
                 'persons': set([]),
                 'families': set([]),

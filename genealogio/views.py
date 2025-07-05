@@ -7,7 +7,7 @@ import json
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.sites.models import Site
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
@@ -621,9 +621,12 @@ class Sparkline(LoginRequiredMixin, View):
         return surface
 
 
-class AddParents(LoginRequiredMixin, FormView):
+class AddParents(UserPassesTestMixin, FormView):
     template_name = "genealogio/add_parents.html"
     form_class = AddParentForm
+
+    def test_function(self):
+        return self.request.user.is_staff
 
     def get_initial(self):
         child = Person.objects.get(pk=self.kwargs['pk'])
@@ -755,9 +758,12 @@ class AddParents(LoginRequiredMixin, FormView):
                 reverse('family-detail', kwargs={'pk': family.pk, }))
 
 
-class AddPersonView(LoginRequiredMixin, CreateView):
+class AddPersonView(UserPassesTestMixin, CreateView):
 
     model = Person
+
+    def test_function(self):
+        return self.request.user.is_staff
 
     def save_person(self, form):
         handle = Person.get_handle(
@@ -930,7 +936,10 @@ class AddSpouseView(AddPersonView):
         return initial
 
 
-class UpdatePortrait(LoginRequiredMixin, View):
+class UpdatePortrait(UserPassesTestMixin, View):
+
+    def test_func(self):
+        return self.request.user.is_staff
 
     def post(self, *args, **kwargs):
         person = Person.objects.get(pk=int(self.request.POST['person_id']))

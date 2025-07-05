@@ -6,18 +6,18 @@ import os.path
 import sys
 from itertools import chain
 
-from django.http import Http404, HttpResponseRedirect
-from django.views.generic import (
-        DetailView, TemplateView, UpdateView, View, )
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
-from django.urls import reverse
-from django.views.generic.list import ListView
 from django.db.models import Count
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
+from django.views.generic import (
+        DetailView, TemplateView, UpdateView, View, )
+from django.views.generic.list import ListView
 
 from filebrowser.base import FileListing, FileObject
 
@@ -322,13 +322,14 @@ class UnboundImagesView(LoginRequiredMixin, View):
 
         return HttpResponseRedirect(picture.get_absolute_url())
 
-class SetDateFromEXIF(LoginRequiredMixin, View):
+
+class SetDateFromEXIF(UserPassesTestMixin, View):
+
+    def test_func(self):
+        return (self.request.user.is_authenticated and
+                self.request.user.userprofile.is_staff_for_site)
 
     def post(self, request, pk):
-        if not self.request.user.userprofile.is_staff_for_site:
-            messages.error(request, 'Es ist ein Fehler aufgetreten.')
-            return HttpResponseRedirect('/')
-
         try:
             pic = Picture.objects.get(pk=pk)
             d = pic.get_exif_data()[0].split(' ')[0]
