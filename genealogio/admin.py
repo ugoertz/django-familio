@@ -312,13 +312,17 @@ class PersonAdmin(CurrentSiteGenAdmin, VersionAdmin):
                     typ=Name.MARRIEDNAME).reverse()[0].name
         except:
             obj.last_name_current = obj.last_name
+
         try:
-            obj.first_name = obj.name_set.filter(typ__in=[Name.FIRSTNAME,
-                                                          Name.RUFNAME,
-                                                          Name.NICKNAME,
-                                                          ])[0].name
-        except:
-            pass
+            obj.first_name = obj.name_set.get(typ=Name.FIRSTNAME).name
+        except ObjectDoesNotExist:
+            try:
+                obj.first_name = obj.name_set.get(typ=Name.RUFNAME).name
+            except ObjectDoesNotExist:
+                try:
+                    obj.first_name = obj.name_set.get(typ=Name.NICKNAME).name
+                except ObjectDoesNotExist:
+                    pass
         obj.save()
 
     class Media:
