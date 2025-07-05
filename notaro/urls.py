@@ -1,7 +1,7 @@
 from django.urls import re_path
 
 from .views import (
-        NoteDetail, NoteList, PictureDetail, PictureList,
+        NoteDetail, NoteList, PictureDetail, PictureList, PictureListUntagged,
         VideoDetail, VideoList,
         SourceDetail,
         DocumentList, DocumentDetail, SourceList,
@@ -39,6 +39,10 @@ urlpatterns = (
             PictureList.as_view(), name='picture-list'),
         re_path(r'^picture-list/(?P<size>\w+)/$',
             PictureList.as_view(), name='picture-list'),
+        re_path(r'^picture-untagged/$',
+            PictureListUntagged.as_view(), name='picture-list-untagged'),
+        re_path(r'^picture-untagged/(?P<size>\w+)/$',
+            PictureListUntagged.as_view(), name='picture-list-untagged'),
         re_path(r'^create-thumbnail/$',
             CreateThumbnail.as_view(),
             name='document-thumbnail'),

@@ -21,7 +21,7 @@
 
 {% block content_main %}
 <div class="row">
-<h1>Bilder
+    <h1>{% if pagetitle %}{{ pagetitle }}{% else %}Bilder{% endif %}
     <div style="margin-bottom: 50px;" class="pull-right">
         <a class="{% if "thumbnail" in request.path %}active {% endif %}btn btn-default btn-sm cabin" href="{% url "picture-list" %}thumbnail/">Klein</a>
         <a class="{% if not "thumbnail" in request.path and not "medium" in request.path %}active {% endif %}btn btn-default btn-sm cabin" href="{% url "picture-list" %}">Normal</a>
@@ -70,6 +70,8 @@
 {% block content_right %}
 {% if user_is_admin %}
 <div style="margin-bottom: 50px;" class="adminbox">
+    <div style="margin-bottom: 15px; border-bottom: 1px solid gray; padding-bottom: 25px;"><a class="btn btn-default btn-sm cabin" href="{% url 'picture-list-untagged' %}">Bilder ohne Schlagwort</a></div>
+
     {% include "notaro/add_files_form.html" with target="images" %}
 </div>
 {% endif %}

@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
+from django.views.generic.list import ListView
 from django.db.models import Count
 from django.shortcuts import render
 
@@ -220,7 +221,7 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     model = Picture
 
     def get_context_data(self, **kwargs):
-        context = super(PictureList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update({
             'size': self.kwargs.get('size', 'small'),
             'tag_list':
@@ -235,6 +236,29 @@ class PictureList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
         return context
 
 
+class PictureListUntagged(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
+
+    """Display list of all untagged pictures."""
+
+    model = Picture
+    template_name = 'notaro/picture_list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        qs = qs.filter(tags=None)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'pagetitle': 'Bilder ohne Schlagwort',
+            'size': self.kwargs.get('size', 'small'),
+            'tag_list': [],
+        })
+
+        return context
+
+
 class VideoList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
 
     """Display list of all pictures."""
@@ -242,7 +266,7 @@ class VideoList(LoginRequiredMixin, CurrentSiteMixin, PaginateListView):
     model = Video
 
     def get_context_data(self, **kwargs):
-        context = super(VideoList, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context.update({
             'tag_list':
             CustomTag.objects
